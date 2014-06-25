@@ -36,6 +36,7 @@ public class TinkerTime {
 		try {
 			manager.enableMod(mod);
 			manager.disableMod(mod);
+			manager.deleteMod(mod);
 		} catch (IOException | ModException e) {
 			e.printStackTrace();
 		}

@@ -66,6 +66,17 @@ public class ModManager {
 		System.out.println("Finished downloading " + mod.getNewestFile());
 	}
 	
+	public void deleteMod(Mod mod) throws ModException {
+		// disable mod if enabled
+		if (mod.isEnabled()){
+			disableMod(mod);
+		}
+		
+		System.out.println("Deleting " + mod.getName());
+		FileUtils.deleteQuietly(modZipPath(mod).toFile());
+		System.out.println("Deleted " + mod.getName());
+	}
+	
 	// -- Exceptions -----------------------
 	
 	@SuppressWarnings("serial")
