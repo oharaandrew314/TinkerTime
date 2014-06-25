@@ -2,11 +2,6 @@ package aohara.tinkertime.controllers;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
 
@@ -18,17 +13,17 @@ public class ModManager {
 	
 	// -- Path Methods ----------------------
 	
-	public Path kerbalPath(){
+	private Path kerbalPath(){
 		return new Config().getKerbalPath();
 	}
 	
-	public Path modZipPath(ModApi mod){
+	private Path modZipPath(ModApi mod){
 		return new Config().getModPath().resolve(mod.getNewestFile());
 	}
 	
 	// -- State Methods ------------------------
 	
-	public boolean isDownloaded(Mod mod){
+	private boolean isDownloaded(Mod mod){
 		return modZipPath(mod).toFile().exists();
 	}
 	
@@ -69,26 +64,6 @@ public class ModManager {
 			modZipPath(mod).toFile()
 		);
 		System.out.println("Finished downloading " + mod.getNewestFile());
-	}
-	
-	// -- Other ---------------
-	
-	public Set<String> getFiles(Mod mod) throws ModException {
-		if (!isDownloaded(mod)){
-			throw new ModNotDownloadedException();
-		}
-		
-		Set<String> set = new HashSet<>();		
-		try (ZipFile zipFile = new ZipFile(modZipPath(mod).toFile())){
-			Enumeration<? extends ZipEntry> entries = zipFile.entries();
-
-		    while(entries.hasMoreElements()){
-		        set.add(entries.nextElement().getName());
-		    }
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return set;
 	}
 	
 	// -- Exceptions -----------------------

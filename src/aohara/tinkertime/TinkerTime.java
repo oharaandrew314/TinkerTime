@@ -35,15 +35,6 @@ public class TinkerTime {
 		}
 		
 		try {
-			for (String file : manager.getFiles(mod)){
-				System.out.println(file);
-			}
-		} catch (ModException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		try {
 			manager.enableMod(mod);
 			manager.disableMod(mod);
 		} catch (IOException | ModException e) {
