@@ -30,7 +30,6 @@ public class TinkerTime {
 		try {
 			manager.downloadMod(mod);
 		} catch (IOException | ModException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -38,7 +37,6 @@ public class TinkerTime {
 			manager.enableMod(mod);
 			manager.disableMod(mod);
 		} catch (IOException | ModException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

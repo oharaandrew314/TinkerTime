@@ -61,14 +61,4 @@ public class ZipManager {
 			e.printStackTrace();
 		}
 	}
-	
-	public static boolean isUnzippedTo(Path zipPath, Path destPath){
-		for (String file : getFiles(zipPath)){
-			if (!destPath.resolve(file).toFile().exists()){
-				return false;
-			}
-		}
-		return true;
-	}
-
 }

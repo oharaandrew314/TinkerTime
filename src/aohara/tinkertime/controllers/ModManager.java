@@ -71,12 +71,12 @@ public class ModManager {
 	@SuppressWarnings("serial")
 	public abstract class ModException extends Throwable {}
 	@SuppressWarnings("serial")
-	private class ModAlreadyEnabledException extends ModException {}
+	public class ModAlreadyEnabledException extends ModException {}
 	@SuppressWarnings("serial")
-	private class ModAlreadyDisabledException extends ModException {}
+	public class ModAlreadyDisabledException extends ModException {}
 	@SuppressWarnings("serial")
-	private class ModNotDownloadedException extends ModException {}
+	public class ModNotDownloadedException extends ModException {}
 	@SuppressWarnings("serial")
-	private class ModAlreadyDownlodedException extends ModException {}
+	public class ModAlreadyDownlodedException extends ModException {}
 
 }
