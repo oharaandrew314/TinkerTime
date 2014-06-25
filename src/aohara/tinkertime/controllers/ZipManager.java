@@ -16,7 +16,7 @@ public class ZipManager {
 		Set<String> set = new HashSet<>();	
 		
 		try(ZipFile zipFile = new ZipFile(zipPath.toFile())){
-			for (ZipEntry entry : getZipEntries(zipFile)){
+			for (ZipEntry entry : getZipEntries(zipFile, false)){
 				set.add(entry.getName());
 			}
 		} catch (IOException e) {
@@ -25,19 +25,23 @@ public class ZipManager {
 		return set;
 	}
 	
-	private static Set<ZipEntry> getZipEntries(ZipFile zipFile){
+	private static Set<ZipEntry> getZipEntries(ZipFile zipFile, boolean includeDirs){
 		Set<ZipEntry> set = new HashSet<>();		
 		Enumeration<? extends ZipEntry> entries = zipFile.entries();
 
 	    while(entries.hasMoreElements()){
-	        set.add(entries.nextElement());
+	    	ZipEntry entry = entries.nextElement();
+	    	if (!entry.isDirectory() || includeDirs){
+	    		set.add(entry);
+	    	}
+	        
 	    }
 		return set;
 	}
 	
 	public static void unzipFile(Path zipPath, Path destPath){
 		try(ZipFile zipFile = new ZipFile(zipPath.toFile())){
-			for (ZipEntry entry : getZipEntries(zipFile)){
+			for (ZipEntry entry : getZipEntries(zipFile, false)){
 				FileUtils.copyInputStreamToFile(
 					zipFile.getInputStream(entry),
 					destPath.resolve(entry.getName()).toFile()
@@ -47,5 +51,24 @@ public class ZipManager {
 			e.printStackTrace();
 		}
     }
+	
+	public static void deleteZipFiles(Path zipPath, Path filePath){
+		try(ZipFile zipFile = new ZipFile(zipPath.toFile())){
+			for (ZipEntry entry : getZipEntries(zipFile, true)){
+				FileUtils.deleteQuietly(filePath.resolve(entry.getName()).toFile());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static boolean isUnzippedTo(Path zipPath, Path destPath){
+		for (String file : getFiles(zipPath)){
+			if (!destPath.resolve(file).toFile().exists()){
+				return false;
+			}
+		}
+		return true;
+	}
 
 }

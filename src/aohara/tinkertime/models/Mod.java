@@ -8,6 +8,7 @@ public class Mod implements ModApi{
 	private final String name, creator, newestFile;
 	private final Date lastUpdated;
 	private final URL downloadLink, imageUrl, pageUrl;
+	private boolean enabled = false;
 	
 	public Mod(ModApi page){
 		name = page.getName();
@@ -60,6 +61,14 @@ public class Mod implements ModApi{
 	
 	public boolean isNewer(ModApi mod){
 		return mod.getUpdatedOn().compareTo(getUpdatedOn()) > 0;
+	}
+	
+	public boolean isEnabled(){
+		return enabled;
+	}
+	
+	public void setEnabled(boolean enabled){
+		this.enabled = enabled;
 	}
 	
 }

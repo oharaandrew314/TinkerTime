@@ -22,53 +22,51 @@ public class ModManager {
 		return new Config().getKerbalPath();
 	}
 	
-	public Path modPath(ModApi mod){
+	public Path modZipPath(ModApi mod){
 		return new Config().getModPath().resolve(mod.getNewestFile());
 	}
 	
 	// -- State Methods ------------------------
 	
-	public boolean isEnabled(Mod mod){
-		return false;
-		//return kerbalPath(mod).toFile().exists();
-	}
-	
 	public boolean isDownloaded(Mod mod){
-		return modPath(mod).toFile().exists();
+		return modZipPath(mod).toFile().exists();
 	}
 	
 	// -- Modifiers ---------------------------------
 	
 	public void enableMod(Mod mod) throws ModException, IOException {
-		if (isEnabled(mod)){
+		if (mod.isEnabled()){
 			throw new ModAlreadyEnabledException();
 		} else if (!isDownloaded(mod)){
 			throw new ModNotDownloadedException();
 		}
 		
 		System.out.println("Enabling " + mod.getName());
-		ZipManager.unzipFile(modPath(mod), kerbalPath());
+		ZipManager.unzipFile(modZipPath(mod), kerbalPath());
+		mod.setEnabled(true);
 		System.out.println("Enabled " + mod.getName());
 	}
 	
 	public void disableMod(Mod mod) throws ModException {
-		if (!isEnabled(mod)){
+		if (!mod.isEnabled()){
 			throw new ModAlreadyDisabledException();
 		}
 		
 		System.out.println("Disabling " + mod.getName());
-		throw new UnsupportedOperationException();
+		ZipManager.deleteZipFiles(modZipPath(mod), kerbalPath());
+		mod.setEnabled(false);
+		System.out.println("Disabled " + mod.getName());
 	}
 	
 	public void downloadMod(ModApi mod) throws IOException, ModException {
-		if (modPath(mod).toFile().getName().equals(mod.getName())){
+		if (modZipPath(mod).toFile().exists()){
 			throw new ModAlreadyDownlodedException();
 		}
 		
 		System.out.println("Downloading " + mod.getNewestFile());
 		FileUtils.copyURLToFile(
 			mod.getDownloadLink(),
-			modPath(mod).toFile()
+			modZipPath(mod).toFile()
 		);
 		System.out.println("Finished downloading " + mod.getNewestFile());
 	}
@@ -81,7 +79,7 @@ public class ModManager {
 		}
 		
 		Set<String> set = new HashSet<>();		
-		try (ZipFile zipFile = new ZipFile(modPath(mod).toFile())){
+		try (ZipFile zipFile = new ZipFile(modZipPath(mod).toFile())){
 			Enumeration<? extends ZipEntry> entries = zipFile.entries();
 
 		    while(entries.hasMoreElements()){
