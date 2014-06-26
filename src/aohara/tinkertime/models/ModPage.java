@@ -6,6 +6,8 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,11 +15,13 @@ import org.jsoup.nodes.Element;
 
 public class ModPage implements ModApi {
 	
+	private static Pattern ID_PATTERN = Pattern.compile("(\\d{4})(\\d{3})");
+	
 	private final Document doc;
-	private final String url;
+	private final URL url;
 	
 	public ModPage(String url) throws IOException {
-		this.url = url;
+		this.url = new URL(url);
 		doc = Jsoup.connect(url).get();
 	}
 	
@@ -57,22 +61,17 @@ public class ModPage implements ModApi {
 	
 	@Override
 	public URL getDownloadLink(){
-		Element ele = doc.select(
-			"#tab-other-downloads > div > div.listing-body" +
-			"> table > tbody > tr.even > td:nth-child(1) > a"
-		).first();
-		
-		String[] bits = ele.attr("href").split("/");
-		String id = bits[bits.length - 1];
-		
+		Element ele = doc.select("#tab-other-downloads tr.even a").first();
+		Matcher m = ID_PATTERN.matcher(ele.attr("href"));
+
+		m.find();
 		try {
 			return new URL(String.format(
 				"http://addons.curse.cursecdn.com/files/%s/%s/%s",
-				id.substring(0, 4),
-				id.substring(4),
+				m.group(1), m.group(2),
 				getNewestFile().replaceAll("_", " ").replaceAll(" ", "%20")
 			));
-		} catch (MalformedURLException e) {
+		} catch (MalformedURLException | IndexOutOfBoundsException e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -91,11 +90,6 @@ public class ModPage implements ModApi {
 	
 	@Override
 	public URL getPageUrl(){
-		try {
-			return new URL(url);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-			return null;
-		}
+		return url;
 	}
 }
