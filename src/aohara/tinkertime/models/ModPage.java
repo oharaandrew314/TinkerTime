@@ -21,8 +21,13 @@ public class ModPage implements ModApi {
 	private final URL url;
 	
 	public ModPage(String url) throws IOException {
-		this.url = new URL(url);
-		doc = Jsoup.connect(url).get();
+		this(new URL(url));
+		
+	}
+	
+	public ModPage(URL url) throws IOException {
+		this.url = url;
+		doc = Jsoup.connect(url.toString()).get();
 	}
 	
 	@Override

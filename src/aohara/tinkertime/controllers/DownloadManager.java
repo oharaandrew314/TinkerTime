@@ -56,5 +56,4 @@ public class DownloadManager extends Listenable<ModDownloadListener> {
 		}
 		
 	}
-
 }

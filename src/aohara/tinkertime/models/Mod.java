@@ -5,21 +5,13 @@ import java.util.Date;
 
 public class Mod implements ModApi{
 	
-	private final String name, creator, newestFile;
-	private final Date lastUpdated;
-	private final URL downloadLink, imageUrl, pageUrl;
+	private String name, creator, newestFile;
+	private Date lastUpdated;
+	private URL downloadLink, imageUrl, pageUrl;
 	private boolean enabled = false;
 	
 	public Mod(ModApi page){
-		name = page.getName();
-		creator = page.getCreator();
-		newestFile = page.getNewestFile();
-		
-		lastUpdated = page.getUpdatedOn();
-		
-		downloadLink = page.getDownloadLink();
-		imageUrl = page.getImageUrl();
-		pageUrl = page.getPageUrl();
+		updateMod(page);
 	}
 
 	@Override
@@ -69,6 +61,18 @@ public class Mod implements ModApi{
 	
 	public void setEnabled(boolean enabled){
 		this.enabled = enabled;
+	}
+	
+	public void updateMod(ModApi mod){
+		name = mod.getName();
+		creator = mod.getCreator();
+		newestFile = mod.getNewestFile();
+		
+		lastUpdated = mod.getUpdatedOn();
+		
+		downloadLink = mod.getDownloadLink();
+		imageUrl = mod.getImageUrl();
+		pageUrl = mod.getPageUrl();
 	}
 	
 }

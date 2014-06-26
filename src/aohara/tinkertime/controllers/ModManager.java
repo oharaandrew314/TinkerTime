@@ -8,6 +8,7 @@ import org.apache.commons.io.FileUtils;
 import aohara.tinkertime.config.Config;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModApi;
+import aohara.tinkertime.models.ModPage;
 
 public class ModManager {
 	
@@ -57,6 +58,17 @@ public class ModManager {
 		System.out.println("Disabled " + mod.getName());
 	}
 	
+	public static Mod addMod(
+		String url, DownloadManager downloadManager
+	) throws IOException{
+		System.out.println("Adding Mod from " + url);
+		Mod mod = new Mod(new ModPage(url));
+		// TODO save mod
+		downloadManager.downloadMod(mod);
+		System.out.println("Added mod: " + mod.getName());
+		return mod;
+	}
+	
 	public static void deleteMod(Mod mod) {
 		// Try to disable mod
 		try {
@@ -78,7 +90,5 @@ public class ModManager {
 	public static class ModAlreadyDisabledException extends Throwable {}
 	@SuppressWarnings("serial")
 	public static class ModNotDownloadedException extends Throwable {}
-	@SuppressWarnings("serial")
-	public static class ModAlreadyDownlodedException extends Throwable {}
 
 }
