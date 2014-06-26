@@ -13,23 +13,23 @@ public class ModManager {
 	
 	// -- Path Methods ----------------------
 	
-	private Path kerbalPath(){
+	private static Path kerbalPath(){
 		return new Config().getKerbalPath();
 	}
 	
-	private Path modZipPath(ModApi mod){
+	public static Path modZipPath(ModApi mod){
 		return new Config().getModsPath().resolve(mod.getNewestFile());
 	}
 	
 	// -- State Methods ------------------------
 	
-	public boolean isDownloaded(Mod mod){
+	public static boolean isDownloaded(Mod mod){
 		return modZipPath(mod).toFile().exists();
 	}
 	
 	// -- Modifiers ---------------------------------
 	
-	public void enableMod(Mod mod)
+	public static void enableMod(Mod mod)
 		throws ModAlreadyEnabledException,
 		ModNotDownloadedException,
 		IOException
@@ -46,7 +46,7 @@ public class ModManager {
 		System.out.println("Enabled " + mod.getName());
 	}
 	
-	public void disableMod(Mod mod) throws ModAlreadyDisabledException {
+	public static void disableMod(Mod mod) throws ModAlreadyDisabledException {
 		if (!mod.isEnabled()){
 			throw new ModAlreadyDisabledException();
 		}
@@ -57,24 +57,7 @@ public class ModManager {
 		System.out.println("Disabled " + mod.getName());
 	}
 	
-	public void downloadMod(ModApi mod) throws ModNotDownloadedException, ModAlreadyDownlodedException {
-		if (modZipPath(mod).toFile().exists()){
-			throw new ModAlreadyDownlodedException();
-		}
-		
-		System.out.println("Downloading " + mod.getNewestFile());
-		try {
-			FileUtils.copyURLToFile(
-				mod.getDownloadLink(),
-				modZipPath(mod).toFile()
-			);
-			System.out.println("Finished downloading " + mod.getNewestFile());
-		} catch (IOException e) {
-			throw new ModNotDownloadedException();
-		}
-	}
-	
-	public void deleteMod(Mod mod) {
+	public static void deleteMod(Mod mod) {
 		// Try to disable mod
 		try {
 			disableMod(mod);
@@ -90,12 +73,12 @@ public class ModManager {
 	// -- Exceptions -----------------------
 	
 	@SuppressWarnings("serial")
-	public class ModAlreadyEnabledException extends Throwable {}
+	public static class ModAlreadyEnabledException extends Throwable {}
 	@SuppressWarnings("serial")
-	public class ModAlreadyDisabledException extends Throwable {}
+	public static class ModAlreadyDisabledException extends Throwable {}
 	@SuppressWarnings("serial")
-	public class ModNotDownloadedException extends Throwable {}
+	public static class ModNotDownloadedException extends Throwable {}
 	@SuppressWarnings("serial")
-	public class ModAlreadyDownlodedException extends Throwable {}
+	public static class ModAlreadyDownlodedException extends Throwable {}
 
 }

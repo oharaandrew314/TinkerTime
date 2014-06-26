@@ -70,7 +70,7 @@ public class ModPage implements ModApi {
 				"http://addons.curse.cursecdn.com/files/%s/%s/%s",
 				id.substring(0, 4),
 				id.substring(4),
-				getNewestFile()
+				getNewestFile().replaceAll("_", " ").replaceAll(" ", "%20")
 			));
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
