@@ -38,7 +38,7 @@ public class UpdateManager {
 			if (!mod.isNewer(remotePage)){
 				throw new ModAlreadyUpToDateException();
 			}
-			mod.updateMod(remotePage);
+			mod.updateModData(remotePage);
 			downloadManager.downloadMod(mod);
 		} catch (IOException e) {
 			throw new ModUpdateFailedException();

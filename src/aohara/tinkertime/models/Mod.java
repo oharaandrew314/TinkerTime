@@ -11,7 +11,7 @@ public class Mod implements ModApi{
 	private boolean enabled = false;
 	
 	public Mod(ModApi page){
-		updateMod(page);
+		updateModData(page);
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class Mod implements ModApi{
 		this.enabled = enabled;
 	}
 	
-	public void updateMod(ModApi mod){
+	public void updateModData(ModApi mod){
 		name = mod.getName();
 		creator = mod.getCreator();
 		newestFile = mod.getNewestFile();
