@@ -29,7 +29,11 @@ public class ModManager {
 	
 	// -- Modifiers ---------------------------------
 	
-	public void enableMod(Mod mod) throws ModException, IOException {
+	public void enableMod(Mod mod)
+		throws ModAlreadyEnabledException,
+		ModNotDownloadedException,
+		IOException
+	{
 		if (mod.isEnabled()){
 			throw new ModAlreadyEnabledException();
 		} else if (!isDownloaded(mod)){
@@ -42,7 +46,7 @@ public class ModManager {
 		System.out.println("Enabled " + mod.getName());
 	}
 	
-	public void disableMod(Mod mod) throws ModException {
+	public void disableMod(Mod mod) throws ModAlreadyDisabledException {
 		if (!mod.isEnabled()){
 			throw new ModAlreadyDisabledException();
 		}
@@ -53,23 +57,29 @@ public class ModManager {
 		System.out.println("Disabled " + mod.getName());
 	}
 	
-	public void downloadMod(ModApi mod) throws IOException, ModException {
+	public void downloadMod(ModApi mod) throws ModNotDownloadedException, ModAlreadyDownlodedException {
 		if (modZipPath(mod).toFile().exists()){
 			throw new ModAlreadyDownlodedException();
 		}
 		
 		System.out.println("Downloading " + mod.getNewestFile());
-		FileUtils.copyURLToFile(
-			mod.getDownloadLink(),
-			modZipPath(mod).toFile()
-		);
-		System.out.println("Finished downloading " + mod.getNewestFile());
+		try {
+			FileUtils.copyURLToFile(
+				mod.getDownloadLink(),
+				modZipPath(mod).toFile()
+			);
+			System.out.println("Finished downloading " + mod.getNewestFile());
+		} catch (IOException e) {
+			throw new ModNotDownloadedException();
+		}
 	}
 	
-	public void deleteMod(Mod mod) throws ModException {
-		// disable mod if enabled
-		if (mod.isEnabled()){
+	public void deleteMod(Mod mod) {
+		// Try to disable mod
+		try {
 			disableMod(mod);
+		} catch (ModAlreadyDisabledException e) {
+			// Do Nothing
 		}
 		
 		System.out.println("Deleting " + mod.getName());
@@ -80,14 +90,12 @@ public class ModManager {
 	// -- Exceptions -----------------------
 	
 	@SuppressWarnings("serial")
-	public abstract class ModException extends Throwable {}
+	public class ModAlreadyEnabledException extends Throwable {}
 	@SuppressWarnings("serial")
-	public class ModAlreadyEnabledException extends ModException {}
+	public class ModAlreadyDisabledException extends Throwable {}
 	@SuppressWarnings("serial")
-	public class ModAlreadyDisabledException extends ModException {}
+	public class ModNotDownloadedException extends Throwable {}
 	@SuppressWarnings("serial")
-	public class ModNotDownloadedException extends ModException {}
-	@SuppressWarnings("serial")
-	public class ModAlreadyDownlodedException extends ModException {}
+	public class ModAlreadyDownlodedException extends Throwable {}
 
 }
