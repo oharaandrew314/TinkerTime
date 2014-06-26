@@ -15,8 +15,16 @@ public class TinkerTime implements ModDownloadListener {
 	private final DownloadManager downloadManager = new DownloadManager();
 	
 	public TinkerTime(){
+		// Initialize Config
+		Config config = new Config();
+		if (config.getModsPath() == null || config.getKerbalPath() == null){
+			new DirectoryChooser().setVisible(true);
+		}
+		
 		downloadManager.addListener(this);
 		
+		
+		// Test Code
 		try {
 			ModPage mechJeb = new ModPage("http://www.curse.com/ksp-mods/kerbal/220221-mechjeb");
 			ModPage engineer = new ModPage("http://www.curse.com/ksp-mods/kerbal/220285-kerbal-engineer-redux");
@@ -27,17 +35,6 @@ public class TinkerTime implements ModDownloadListener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public static void main(String[] args) {
-		// Initialize Config
-		Config config = new Config();
-		if (config.getModsPath() == null || config.getKerbalPath() == null){
-			new DirectoryChooser().setVisible(true);
-		}
-		
-		new TinkerTime();
-		
 	}
 
 	@Override
@@ -53,6 +50,10 @@ public class TinkerTime implements ModDownloadListener {
 	@Override
 	public void modDownloadError(ModApi mod) {
 		System.out.println("Error downloading " + mod.getNewestFile());
+	}
+	
+	public static void main(String[] args) {
+		new TinkerTime();
 	}
 
 }
