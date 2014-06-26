@@ -1,45 +1,19 @@
 package aohara.tinkertime;
 
-import java.io.IOException;
-
-import aohara.tinkertime.controllers.ModManager;
-import aohara.tinkertime.controllers.ModManager.ModException;
-import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.models.ModPage;
+import aohara.tinkertime.config.Config;
+import aohara.tinkertime.views.DirectoryChooser;
 
 public class TinkerTime {
-
+	
+	public static final String NAME = "Tinker Time";
+	
 	public static void main(String[] args) {
-		String url = "http://www.curse.com/ksp-mods/kerbal/220221-mechjeb";
-			
-		ModPage page = null;
-		try {
-			page = new ModPage(url);
-			System.out.println(page.getName());
-			System.out.println(page.getUpdatedOn());
-			System.out.println(page.getCreator());
-			System.out.println(page.getNewestFile());
-			System.out.println(page.getDownloadLink());
-			System.out.println(page.getImageUrl());
-		} catch (IOException e) {
-			e.printStackTrace();
+		// Initialize Config
+		Config config = new Config();
+		if (config.getModsPath() == null || config.getKerbalPath() == null){
+			new DirectoryChooser().setVisible(true);
 		}
-		
-		ModManager manager = new ModManager();
-		Mod mod = new Mod(page);
-		try {
-			manager.downloadMod(mod);
-		} catch (IOException | ModException e) {
-			e.printStackTrace();
-		}
-		
-		try {
-			manager.enableMod(mod);
-			manager.disableMod(mod);
-			manager.deleteMod(mod);
-		} catch (IOException | ModException e) {
-			e.printStackTrace();
-		}
+
 	}
 
 }

@@ -18,12 +18,12 @@ public class ModManager {
 	}
 	
 	private Path modZipPath(ModApi mod){
-		return new Config().getModPath().resolve(mod.getNewestFile());
+		return new Config().getModsPath().resolve(mod.getNewestFile());
 	}
 	
 	// -- State Methods ------------------------
 	
-	private boolean isDownloaded(Mod mod){
+	public boolean isDownloaded(Mod mod){
 		return modZipPath(mod).toFile().exists();
 	}
 	
