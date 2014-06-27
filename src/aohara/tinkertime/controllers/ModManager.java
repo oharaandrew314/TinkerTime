@@ -59,7 +59,7 @@ public class ModManager {
 	}
 	
 	public static Mod addMod(
-		String url, DownloadManager downloadManager
+		String url, ModDownloadManager downloadManager
 	) throws IOException{
 		System.out.println("Adding Mod from " + url);
 		Mod mod = new Mod(new ModPage(url));

@@ -1,7 +1,7 @@
 package aohara.tinkertime;
 
 import aohara.tinkertime.config.Config;
-import aohara.tinkertime.controllers.DownloadManager;
+import aohara.tinkertime.controllers.ModDownloadManager;
 import aohara.tinkertime.controllers.ModDownloadListener;
 import aohara.tinkertime.models.ModApi;
 import aohara.tinkertime.views.DirectoryChooser;
@@ -9,7 +9,7 @@ import aohara.tinkertime.views.DirectoryChooser;
 public class TinkerTime implements ModDownloadListener {
 	
 	public static final String NAME = "Tinker Time";
-	private final DownloadManager downloadManager = new DownloadManager();
+	private final ModDownloadManager downloadManager = new ModDownloadManager();
 	
 	public TinkerTime(){
 		// Initialize Config

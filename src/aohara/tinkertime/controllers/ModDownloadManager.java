@@ -9,7 +9,7 @@ import org.apache.commons.io.FileUtils;
 import aoahara.common.Listenable;
 import aohara.tinkertime.models.ModApi;
 
-public class DownloadManager extends Listenable<ModDownloadListener> {
+public class ModDownloadManager extends Listenable<ModDownloadListener> {
 	
 	public static final int NUM_CONCURRENT_DOWNLOADS = 4;
 	

@@ -19,7 +19,7 @@ public class UpdateManager {
 	}
 	
 	public static void updateMod(
-		Mod mod, DownloadManager downloadManager
+		Mod mod, ModDownloadManager downloadManager
 	) throws ModUpdateFailedException, ModAlreadyUpToDateException {
 		System.out.println("Updating " + mod.getName());
 		
