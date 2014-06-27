@@ -59,10 +59,10 @@ public class ModManager {
 	}
 	
 	public static Mod addMod(
-		String url, ModDownloadManager downloadManager
-	) throws IOException{
-		System.out.println("Adding Mod from " + url);
-		Mod mod = new Mod(new ModPage(url));
+		ModPage modPage, ModDownloadManager downloadManager
+	) {
+		System.out.println("Adding " + modPage.getName());
+		Mod mod = new Mod(modPage);
 		// TODO save mod
 		downloadManager.downloadMod(mod);
 		System.out.println("Added mod: " + mod.getName());

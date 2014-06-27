@@ -9,13 +9,15 @@ import org.jsoup.Jsoup;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
+import aohara.tinkertime.config.Config;
 import aohara.tinkertime.models.ModPage;
 
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
    TestModPage.class,
-   TestZipManager.class
+   TestZipManager.class,
+   TestModManager.class
 })
 
 public class UnitTestSuite {
@@ -42,6 +44,19 @@ public class UnitTestSuite {
 			return Files.createTempDirectory(name);
 		} catch (IOException e1) {
 			e1.printStackTrace();
+			return null;
+		}
+	}
+	
+	public static class MockConfig extends Config {
+		
+		@Override
+		public Path getKerbalPath(){
+			return null;
+		}
+		
+		@Override
+		public Path getModsPath(){
 			return null;
 		}
 	}
