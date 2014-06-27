@@ -18,16 +18,17 @@ public class ModPage implements ModApi {
 	private static Pattern ID_PATTERN = Pattern.compile("(\\d{4})(\\d{3})");
 	
 	private final Document doc;
-	private final URL url;
 	
 	public ModPage(String url) throws IOException {
-		this(new URL(url));
-		
+		this(Jsoup.connect(url).get());
 	}
 	
 	public ModPage(URL url) throws IOException {
-		this.url = url;
-		doc = Jsoup.connect(url.toString()).get();
+		this(url.toString());
+	}
+	
+	public ModPage(Document doc){
+		this.doc = doc;
 	}
 	
 	@Override
@@ -54,7 +55,7 @@ public class ModPage implements ModApi {
 	public String getCreator(){
 		Element ele = doc.getElementById("project-overview");
 		ele = ele.getElementsContainingOwnText("Manager").first();
-		return ele.text();
+		return ele.text().split(":")[1].trim();
 	}
 	
 	@Override
@@ -95,6 +96,11 @@ public class ModPage implements ModApi {
 	
 	@Override
 	public URL getPageUrl(){
-		return url;
+		try {
+			return new URL(doc.location());
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

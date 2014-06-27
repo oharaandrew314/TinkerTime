@@ -1,15 +1,8 @@
 package aohara.tinkertime;
 
-import java.io.IOException;
-
 import aohara.tinkertime.config.Config;
 import aohara.tinkertime.controllers.DownloadManager;
 import aohara.tinkertime.controllers.ModDownloadListener;
-import aohara.tinkertime.controllers.ModManager;
-import aohara.tinkertime.controllers.UpdateManager;
-import aohara.tinkertime.controllers.UpdateManager.ModAlreadyUpToDateException;
-import aohara.tinkertime.controllers.UpdateManager.ModUpdateFailedException;
-import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModApi;
 import aohara.tinkertime.views.DirectoryChooser;
 
@@ -26,18 +19,6 @@ public class TinkerTime implements ModDownloadListener {
 		}
 		
 		downloadManager.addListener(this);
-		
-		
-		// Test Code
-		try {
-			Mod mechJeb = ModManager.addMod("http://www.curse.com/ksp-mods/kerbal/220221-mechjeb", downloadManager);
-			Mod engineer = ModManager.addMod("http://www.curse.com/ksp-mods/kerbal/220285-kerbal-engineer-redux", downloadManager);
-			
-			UpdateManager.updateMod(mechJeb, downloadManager);
-			
-		} catch (IOException | ModUpdateFailedException | ModAlreadyUpToDateException e) {
-			e.printStackTrace();
-		}
 	}
 
 	@Override
