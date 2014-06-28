@@ -1,11 +1,13 @@
 package test;
 
-import static org.mockito.Mockito.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import java.nio.file.Path;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -24,6 +26,7 @@ public class TestModStateManager {
 	private Mod mod1, mod2;
 	private ModStateManager stateManager;
 	private Path path;
+	private List<Mod> mods;
 
 	@BeforeClass
 	public static void setUpClass() {
@@ -54,6 +57,11 @@ public class TestModStateManager {
 
 		return new Mod(mocked);
 	}
+	
+	private void update(Mod mod){
+		stateManager.modUpdated(mod);
+		mods = new ArrayList<Mod>(stateManager.getMods());
+	}
 
 	@Before
 	public void setUp() {
@@ -72,20 +80,20 @@ public class TestModStateManager {
 
 	@Test
 	public void testSaveOne() {
-		stateManager.modUpdated(mod1);
+		update(mod1);
 
-		assertEquals(1, stateManager.getMods().size());
-		assertTrue(stateManager.getMods().contains(mod1));
+		assertEquals(1, mods.size());
+		assertTrue(mods.contains(mod1));
 	}
 
 	@Test
 	public void testSaveTwo() {
 		testSaveOne();
 
-		stateManager.modUpdated(mod2);
+		update(mod2);
 
-		assertEquals(2, stateManager.getMods().size());
-		assertTrue(stateManager.getMods().contains(mod2));
+		assertEquals(2, mods.size());
+		assertTrue(mods.contains(mod2));
 	}
 
 	@Test
@@ -95,19 +103,34 @@ public class TestModStateManager {
 	}
 
 	@Test
-	public void testSaveUpdate() {
+	public void testSaveUpdatedMod() {
 		testSaveOne();
 		
 		String newestFile = mod1.getNewestFile() + "-updated";
 		Mod newer = getUpdatedMod(mod1, newestFile);
 		assertEquals(newestFile, newer.getNewestFile());
 		
-		stateManager.modUpdated(newer);
+		update(newer);
 		
-		Set<Mod> mods = stateManager.getMods();
 		assertEquals(1, mods.size());
 		assertTrue(mods.contains(newer));
-		assertEquals(newestFile, mods.iterator().next().getNewestFile());
+		assertEquals(newestFile, mods.get(0).getNewestFile());
+	}
+	
+	@Test
+	public void testSaveModState(){
+		boolean mod1State = false;
+		mod1.setEnabled(mod1State);
+		update(mod1);
+		
+		assertEquals(mod1State, mods.get(0).isEnabled());
+		
+		boolean mod2State = true;
+		mod2.setEnabled(mod2State);
+		update(mod2);
+		
+		assertEquals(mod1State, mods.get(0).isEnabled());
+		assertEquals(mod2State, mods.get(1).isEnabled());
 	}
 
 }
