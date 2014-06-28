@@ -34,13 +34,15 @@ public class TestZipManager {
 	}
 
 	@Test
-	public void testGetFiles() {
-		HashSet<String> files = new HashSet<>();
-		files.add("TestMod/Icons/icon.ico");
-		files.add("TestMod/Plugins/Foo.dll");
-		files.add("TestMod/Parts/Fuel/BigTank/BigTank.tank");
-		files.add("TestMod/TestMod.txt");		
-		
+	public void testGetFiles() {	
+		HashSet<String> files = new HashSet<>();		
+		files.add("Dependency/part1.txt");
+		files.add("TestMod1/Plugins/Foo.dll");
+		files.add("Dependency/Dependency.txt");
+		files.add("TestMod1/Parts/Fuel/BigTank/BigTank.tank");
+		files.add("TestMod1/Icons/icon.ico");
+		files.add("TestMod1/TestMod1.txt");
+
 		assertEquals(files, ZipManager.getFiles(ZIP));
 	}
 	
