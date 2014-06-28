@@ -58,12 +58,14 @@ public class ModManager {
 		System.out.println("Disabled " + mod.getName());
 	}
 	
-	public static Mod addMod(
-		ModPage modPage, ModDownloadManager downloadManager
+	public static Mod addNewMod(
+		ModPage modPage,
+		ModDownloadManager downloadManager,
+		ModUpdateListener updateListener
 	) {
 		System.out.println("Adding " + modPage.getName());
 		Mod mod = new Mod(modPage);
-		// TODO save mod
+		updateListener.modUpdated(mod);
 		downloadManager.downloadMod(mod);
 		System.out.println("Added mod: " + mod.getName());
 		return mod;

@@ -2,13 +2,18 @@ package aohara.tinkertime.controllers;
 
 import java.io.IOException;
 
+import aoahara.common.Listenable;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModPage;
 
-public class UpdateManager {
+public class UpdateManager extends Listenable<ModUpdateListener> {
 	
-	public static boolean isUpdateAvailable(Mod mod){
+	public UpdateManager(ModUpdateListener updateListener){
+		addListener(updateListener);
+	}
+	
+	public boolean isUpdateAvailable(Mod mod){
 		try {
 			ModPage remoteMod = new ModPage(mod.getPageUrl());
 			return mod.isNewer(remoteMod);
@@ -18,7 +23,7 @@ public class UpdateManager {
 		}
 	}
 	
-	public static void updateMod(
+	public void updateMod(
 		Mod mod, ModDownloadManager downloadManager
 	) throws ModUpdateFailedException, ModAlreadyUpToDateException {
 		System.out.println("Updating " + mod.getName());
@@ -39,6 +44,12 @@ public class UpdateManager {
 				throw new ModAlreadyUpToDateException();
 			}
 			mod.updateModData(remotePage);
+			
+			// Notify listeners of mod update
+			for (ModUpdateListener l : getListeners()){
+				l.modUpdated(mod);
+			}
+
 			downloadManager.downloadMod(mod);
 		} catch (IOException e) {
 			throw new ModUpdateFailedException();

@@ -21,7 +21,7 @@ public class TestZipManager {
 	
 	@Before
 	public void setUp(){
-		path = UnitTestSuite.getTempPath("testZip");
+		path = UnitTestSuite.getTempDir("testZip");
 	}
 	
 	@After

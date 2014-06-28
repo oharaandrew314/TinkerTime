@@ -75,4 +75,17 @@ public class Mod implements ModApi{
 		pageUrl = mod.getPageUrl();
 	}
 	
+	@Override
+	public int hashCode(){
+		return name.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object o){
+		if (o instanceof Mod){
+			return ((Mod)o).getName().equals(getName());
+		}
+		return false;
+	}
+	
 }

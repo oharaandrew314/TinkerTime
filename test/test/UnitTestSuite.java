@@ -17,7 +17,8 @@ import aohara.tinkertime.models.ModPage;
 @Suite.SuiteClasses({
    TestModPage.class,
    TestZipManager.class,
-   TestModManager.class
+   TestModManager.class,
+   TestModStateManager.class,
 })
 
 public class UnitTestSuite {
@@ -39,9 +40,18 @@ public class UnitTestSuite {
 		}
 	}
 	
-	public static Path getTempPath(String name) {
+	public static Path getTempDir(String name) {
 		try {
 			return Files.createTempDirectory(name);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			return null;
+		}
+	}
+	
+	public static Path getTempFile(String name, String suffix) {
+		try {
+			return Files.createTempFile(name, suffix);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 			return null;

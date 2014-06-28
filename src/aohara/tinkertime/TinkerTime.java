@@ -1,15 +1,18 @@
 package aohara.tinkertime;
 
 import aohara.tinkertime.config.Config;
-import aohara.tinkertime.controllers.ModDownloadManager;
 import aohara.tinkertime.controllers.ModDownloadListener;
+import aohara.tinkertime.controllers.ModDownloadManager;
+import aohara.tinkertime.controllers.ModStateManager;
+import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModApi;
 import aohara.tinkertime.views.DirectoryChooser;
 
 public class TinkerTime implements ModDownloadListener {
 	
 	public static final String NAME = "Tinker Time";
-	private final ModDownloadManager downloadManager = new ModDownloadManager();
+	private final ModDownloadManager dm = new ModDownloadManager();
+	private final ModStateManager stateManager;
 	
 	public TinkerTime(){
 		// Initialize Config
@@ -18,7 +21,16 @@ public class TinkerTime implements ModDownloadListener {
 			new DirectoryChooser().setVisible(true);
 		}
 		
-		downloadManager.addListener(this);
+		// Initialize Controllers
+		stateManager = new ModStateManager(
+			config.getModsPath().resolve("mods.json")
+		);
+		dm.addListener(this);
+		
+		System.out.println("Existing Mods:");
+		for (Mod mod : stateManager.getMods()){
+			System.out.println(mod.getName());
+		}		
 	}
 
 	@Override
