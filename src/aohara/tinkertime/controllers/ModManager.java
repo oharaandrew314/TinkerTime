@@ -57,7 +57,7 @@ public class ModManager extends Listenable<ModUpdateListener> {
 				// TODO: Resolve Conflict
 			} else {
 				structure.getZipManager().unzipModule(
-					module, config.getGameDataPath());
+					module.getEntries(), config.getGameDataPath());
 			}
 		}
 		
