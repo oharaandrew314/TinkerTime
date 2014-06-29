@@ -5,10 +5,19 @@ import java.nio.file.Paths;
 
 import aoahara.common.AbstractConfig;
 import aohara.tinkertime.TinkerTime;
+import aohara.tinkertime.models.ModApi;
+import aohara.tinkertime.views.DirectoryChooser;
 
 public class Config extends AbstractConfig {
 	
 	public static final String KSP_EXE = "KSP.exe";
+	
+	static {
+		Config config = new Config();
+		if (config.getModsPath() == null || config.getGameDataPath() == null){
+			new DirectoryChooser().setVisible(true);
+		}
+	}
 	
 	public Config(){
 		super(TinkerTime.NAME);
@@ -32,11 +41,15 @@ public class Config extends AbstractConfig {
 		}
 	}
 	
-	public Path getKerbalPath(){
+	public Path getGameDataPath(){
 		if (hasProperty("kerbalPath")){
-			return Paths.get(getProperty("kerbalPath"));
+			return Paths.get(getProperty("kerbalPath")).resolve("GameData");
 		}
 		return null;
+	}
+	
+	public Path getModZipPath(ModApi mod){
+		return new Config().getModsPath().resolve(mod.getNewestFile());
 	}
 	
 	public Path getModsPath(){

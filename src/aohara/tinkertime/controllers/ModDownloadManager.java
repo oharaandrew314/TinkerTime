@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import org.apache.commons.io.FileUtils;
 
 import aoahara.common.Listenable;
+import aohara.tinkertime.config.Config;
 import aohara.tinkertime.models.ModApi;
 
 public class ModDownloadManager extends Listenable<ModDownloadListener> {
@@ -39,7 +40,7 @@ public class ModDownloadManager extends Listenable<ModDownloadListener> {
 			try {
 				FileUtils.copyURLToFile(
 					mod.getDownloadLink(),
-					ModManager.modZipPath(mod).toFile()
+					new Config().getModZipPath(mod).toFile()
 				);
 				
 				// Notify download complete

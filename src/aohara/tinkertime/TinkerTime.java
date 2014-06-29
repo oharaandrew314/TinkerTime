@@ -6,7 +6,6 @@ import aohara.tinkertime.controllers.ModDownloadManager;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModApi;
-import aohara.tinkertime.views.DirectoryChooser;
 
 public class TinkerTime implements ModDownloadListener {
 	
@@ -14,16 +13,10 @@ public class TinkerTime implements ModDownloadListener {
 	private final ModDownloadManager dm = new ModDownloadManager();
 	private final ModStateManager stateManager;
 	
-	public TinkerTime(){
-		// Initialize Config
-		Config config = new Config();
-		if (config.getModsPath() == null || config.getKerbalPath() == null){
-			new DirectoryChooser().setVisible(true);
-		}
-		
+	public TinkerTime(){		
 		// Initialize Controllers
 		stateManager = new ModStateManager(
-			config.getModsPath().resolve("mods.json")
+			new Config().getModsPath().resolve("mods.json")
 		);
 		dm.addListener(this);
 		

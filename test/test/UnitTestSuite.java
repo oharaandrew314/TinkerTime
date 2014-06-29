@@ -9,7 +9,6 @@ import org.jsoup.Jsoup;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-import aohara.tinkertime.config.Config;
 import aohara.tinkertime.models.ModPage;
 
 
@@ -42,7 +41,9 @@ public class UnitTestSuite {
 	
 	public static Path getTempDir(String name) {
 		try {
-			return Files.createTempDirectory(name);
+			Path path =  Files.createTempDirectory(name);
+			path.toFile().deleteOnExit();
+			return path;
 		} catch (IOException e1) {
 			e1.printStackTrace();
 			return null;
@@ -51,24 +52,12 @@ public class UnitTestSuite {
 	
 	public static Path getTempFile(String name, String suffix) {
 		try {
-			return Files.createTempFile(name, suffix);
+			Path file =  Files.createTempFile(name, suffix);
+			file.toFile().deleteOnExit();
+			return file;
 		} catch (IOException e1) {
 			e1.printStackTrace();
 			return null;
 		}
-	}
-	
-	public static class MockConfig extends Config {
-		
-		@Override
-		public Path getKerbalPath(){
-			return null;
-		}
-		
-		@Override
-		public Path getModsPath(){
-			return null;
-		}
-	}
-	
+	}	
 }
