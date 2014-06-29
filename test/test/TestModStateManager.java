@@ -9,8 +9,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,14 +28,14 @@ public class TestModStateManager {
 
 	@BeforeClass
 	public static void setUpClass() {
-		MOD1 = new Mod(
-				UnitTestSuite
-						.getModPage("MechJeb",
-								"http://www.curse.com/ksp-mods/kerbal/220285-kerbal-engineer-redux"));
-		MOD2 = new Mod(
-				UnitTestSuite
-						.getModPage("Kerbal Engineer Redux",
-								"http://www.curse.com/ksp-mods/kerbal/220285-kerbal-engineer-redux"));
+		MOD1 = new Mod(UnitTestSuite.getModPage(
+			"MechJeb",
+			"http://www.curse.com/ksp-mods/kerbal/220221-mechjeb"
+		));
+		MOD2 = new Mod(UnitTestSuite.getModPage(
+			"Kerbal Engineer Redux",
+			"http://www.curse.com/ksp-mods/kerbal/220285-kerbal-engineer-redux"
+		));
 	}
 
 	private static Mod getUpdatedMod(final Mod mod, final String newestFile) {
@@ -71,11 +69,6 @@ public class TestModStateManager {
 		mod2 = new Mod(MOD2);
 
 		stateManager = new ModStateManager(path);
-	}
-
-	@After
-	public void tearDown() {
-		FileUtils.deleteQuietly(path.toFile());
 	}
 
 	@Test
@@ -123,14 +116,23 @@ public class TestModStateManager {
 		mod1.setEnabled(mod1State);
 		update(mod1);
 		
+		assertEquals(mod1State, mod1.isEnabled());
 		assertEquals(mod1State, mods.get(0).isEnabled());
 		
 		boolean mod2State = true;
 		mod2.setEnabled(mod2State);
 		update(mod2);
 		
-		assertEquals(mod1State, mods.get(0).isEnabled());
-		assertEquals(mod2State, mods.get(1).isEnabled());
+		assertEquals(mod2State, mod2.isEnabled());
+		for (Mod mod : mods){
+			if (mod.equals(mod1)){
+				assertEquals(mod1State, mod.isEnabled());
+			} else if (mod.equals(mod2)){
+				assertEquals(mod2State, mod.isEnabled());
+			} else {
+				assertTrue(false);
+			}
+		}
 	}
 
 }
