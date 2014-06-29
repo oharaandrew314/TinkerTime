@@ -23,16 +23,18 @@ public class TestZipManager {
 	private static final ModStructure STRUCT = new ModStructure(ZIP);
 
 	private Path gameDataPath;
+	private ZipManager zipManager;
 
 	@Before
 	public void setUp() {
 		gameDataPath = UnitTestSuite.getTempDir("testZip");
+		zipManager = new ZipManager(ZIP);
 	}
 
 	@Test
 	public void testGetEntries() {
 		Set<String> actualNames = new HashSet<>();
-		for (ZipEntry entry : ZipManager.getZipEntries(ZIP)) {
+		for (ZipEntry entry : zipManager.getZipEntries()) {
 			if (!entry.isDirectory()){
 				actualNames.add(entry.getName());
 			}	
@@ -54,7 +56,7 @@ public class TestZipManager {
 	public void testUnzip() {
 		try {
 			for (Module module : STRUCT.getModules()) {
-				ZipManager.unzipModule(module, gameDataPath);
+				zipManager.unzipModule(module, gameDataPath);
 				for (Path filePath : module.getFilePaths()) {
 					Path expectedPath = gameDataPath.resolve(filePath);
 					assertTrue(expectedPath.toFile().exists());
@@ -69,7 +71,7 @@ public class TestZipManager {
 	public void testGetFileText() {
 		assertEquals(
 			"readme for TestMod",
-			ZipManager.getFileText(ZIP, "readme.txt")
+			zipManager.getFileText("readme.txt")
 		);
 	}
 

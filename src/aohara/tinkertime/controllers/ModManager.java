@@ -10,7 +10,6 @@ import org.apache.commons.io.FileUtils;
 import aoahara.common.Listenable;
 import aohara.tinkertime.config.Config;
 import aohara.tinkertime.controllers.files.ConflictResolver;
-import aohara.tinkertime.controllers.files.ZipManager;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
 import aohara.tinkertime.models.ModPage;
@@ -52,11 +51,13 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		
 		System.out.println("Enabling " + mod.getName());
 		
-		for (Module module : new ModStructure(mod).getModules()){
+		ModStructure structure = new ModStructure(mod);
+		for (Module module : structure.getModules()){
 			if (module.isEnabled()){
 				// TODO: Resolve Conflict
 			} else {
-				ZipManager.unzipModule(module, config.getGameDataPath());
+				structure.getZipManager().unzipModule(
+					module, config.getGameDataPath());
 			}
 		}
 		

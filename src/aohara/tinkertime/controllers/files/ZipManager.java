@@ -15,8 +15,14 @@ import org.apache.commons.io.IOUtils;
 import aohara.tinkertime.models.ModStructure.Module;
 
 public class ZipManager {
+	
+	private final Path zipPath;
+	
+	public ZipManager(Path zipPath){
+		this.zipPath = zipPath;
+	}
 
-	public static Set<ZipEntry> getZipEntries(Path zipPath) {
+	public Set<ZipEntry> getZipEntries() {
 		Set<ZipEntry> set = new HashSet<>();
 
 		try (ZipFile zipFile = new ZipFile(zipPath.toFile())) {
@@ -30,17 +36,18 @@ public class ZipManager {
 		return set;
 	}
 
-	public static void unzipModule(Module module, Path gameDataPath)
+	public void unzipModule(Module module, Path gameDataPath)
 			throws IOException {
-		try (ZipFile zipFile = new ZipFile(module.getZipPath().toFile())) {
+		try (ZipFile zipFile = new ZipFile(zipPath.toFile())) {
 			for (ZipEntry entry : module.getEntries()) {
-				FileUtils.copyInputStreamToFile(zipFile.getInputStream(entry),
-						gameDataPath.resolve(entry.getName()).toFile());
+				FileUtils.copyInputStreamToFile(
+					zipFile.getInputStream(entry),
+					gameDataPath.resolve(entry.getName()).toFile());
 			}
 		}
 	}
 
-	public static String getFileText(Path zipPath, String fileName) {
+	public String getFileText(String fileName) {
 		try (ZipFile zipFile = new ZipFile(zipPath.toFile())) {
 			ZipEntry entry = zipFile.getEntry(fileName);
 
