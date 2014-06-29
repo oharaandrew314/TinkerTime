@@ -18,6 +18,7 @@ import aohara.tinkertime.models.ModPage;
    TestZipManager.class,
    TestModManager.class,
    TestModStateManager.class,
+   TestModStructure.class,
 })
 
 public class UnitTestSuite {
