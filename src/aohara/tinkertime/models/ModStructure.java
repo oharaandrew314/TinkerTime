@@ -114,6 +114,7 @@ public class ModStructure {
 			return pathWithinZip.getFileName().toString();
 		}
 
+		/*
 		public boolean isEnabled(Config config){
 			for (File file : config.getGameDataPath().toFile().listFiles()){
 				if (file.isDirectory() && file.getName().equals(getName())){
@@ -121,6 +122,16 @@ public class ModStructure {
 				}
 			}
 			return false;
+		}
+		*/
+		
+		public File getConflict(Config config){
+			for (File file : config.getGameDataPath().toFile().listFiles()){
+				if (file.isDirectory() && file.getName().equals(getName())){
+					return file;
+				}
+			}
+			return null;
 		}
 	}
 }

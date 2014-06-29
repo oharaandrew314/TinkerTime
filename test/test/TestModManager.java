@@ -21,6 +21,7 @@ import aohara.tinkertime.config.Config;
 import aohara.tinkertime.config.Config.IllegalPathException;
 import aohara.tinkertime.controllers.ModDownloadManager;
 import aohara.tinkertime.controllers.ModManager;
+import aohara.tinkertime.controllers.ModManager.CannotDisableModException;
 import aohara.tinkertime.controllers.ModManager.CannotEnableModException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledException;
@@ -29,9 +30,11 @@ import aohara.tinkertime.controllers.ModManager.ModNotDownloadedException;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.controllers.files.ConflictResolver;
+import aohara.tinkertime.controllers.files.ConflictResolver.Resolution;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModApi;
 import aohara.tinkertime.models.ModPage;
+import aohara.tinkertime.models.ModStructure.Module;
 
 public class TestModManager {
 	
@@ -53,7 +56,8 @@ public class TestModManager {
 		manager = new ModManager(
 			sm = mock(ModStateManager.class),
 			dm = spy(new MockDM()),
-			config = spy(new Config())
+			config = spy(new Config()),
+			cr = spy(new MockCR(config, sm))
 		);
 		
 		try {
@@ -68,7 +72,6 @@ public class TestModManager {
 		}
 		
 		mod = ModLoader.addMod(ModLoader.MECHJEB, config);
-		cr = spy(new MockCR());
 	}
 	
 	// -- Tests -----------------------------------------------
@@ -98,14 +101,11 @@ public class TestModManager {
 	
 	// -- Enable Tests ------------------------------------
 	
-	private void enableMod(Mod mod)
-			throws ModAlreadyEnabledException, ModNotDownloadedException,
-			CannotEnableModException
-		{
+	private void enableMod(Mod mod) throws Throwable {
 			reset(sm);
 			assertTrue(manager.isDownloaded(mod));
 			
-			manager.enableMod(mod, cr);
+			manager.enableMod(mod);
 			
 			verifyZeroInteractions(cr);
 			verify(sm, times(1)).modUpdated(mod);
@@ -126,6 +126,30 @@ public class TestModManager {
 		
 		enableMod(mod);
 		enableMod(mod);
+	}
+	
+	// -- Enable Conflict Tests -----------------------
+	
+	@Test
+	public void testConflictOverwrite() throws Throwable {
+		cr.res = Resolution.Overwrite;
+		
+		Mod mod1 = ModLoader.addMod(ModLoader.TESTMOD1, config);
+		Mod mod2 = ModLoader.addMod(ModLoader.TESTMOD2, config);
+		
+		manager.enableMod(mod1);
+		manager.enableMod(mod2);
+	}
+	
+	@Test
+	public void testConflictSkip() throws Throwable {
+		cr.res = Resolution.Skip;
+		
+		Mod mod1 = ModLoader.addMod(ModLoader.TESTMOD1, config);
+		Mod mod2 = ModLoader.addMod(ModLoader.TESTMOD2, config);
+		
+		manager.enableMod(mod1);
+		manager.enableMod(mod2);
 	}
 	
 	// -- Disable Tests -------------------------------
@@ -173,10 +197,14 @@ public class TestModManager {
 	
 	public static class MockCR extends ConflictResolver {
 		
+		public MockCR(Config config, ModStateManager sm) {
+			super(config, sm);
+		}
+
 		public Resolution res;
 
 		@Override
-		public Resolution getResolution(Path Conflict, Mod mod) {
+		public Resolution getResolution(Module module, Mod mod) {
 			return res;
 		}
 	}

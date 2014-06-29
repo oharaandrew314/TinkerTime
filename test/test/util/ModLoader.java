@@ -34,6 +34,14 @@ public class ModLoader {
 			"MechJeb",
 			"http://www.curse.com/ksp-mods/kerbal/220221-mechjeb"
 		);
+		PAGE_URLS.put(
+			"TestMod",
+			"http://www.curse.com/ksp-mods/kerbal/220285-kerbal-engineer-redux"
+		);
+		PAGE_URLS.put(
+			"TestMod2",
+			"http://www.curse.com/ksp-mods/kerbal/220285-kerbal-engineer-redux"
+		);
 	}
 
 	public static ModPage getPage(String name){

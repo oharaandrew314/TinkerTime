@@ -1,31 +1,33 @@
 package aohara.tinkertime.controllers;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Map.Entry;
-import java.util.Set;
+import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
 
 import aoahara.common.Listenable;
 import aohara.tinkertime.config.Config;
 import aohara.tinkertime.controllers.files.ConflictResolver;
+import aohara.tinkertime.controllers.files.ConflictResolver.Resolution;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModApi;
-import aohara.tinkertime.models.ModStructure;
 import aohara.tinkertime.models.ModPage;
+import aohara.tinkertime.models.ModStructure;
 import aohara.tinkertime.models.ModStructure.Module;
 
 public class ModManager extends Listenable<ModUpdateListener> {
 	
-	private final ModStateManager sm;
 	private final ModDownloadManager dm;
 	private final Config config;
+	private final ConflictResolver cr;
 	
-	public ModManager(ModStateManager sm, ModDownloadManager dm, Config config){
-		this.sm = sm;
+	public ModManager(
+			ModStateManager sm, ModDownloadManager dm, Config config,
+			ConflictResolver cr){
 		this.dm = dm;
 		this.config = config;
+		this.cr = cr;
 		addListener(sm);
 	}
 	
@@ -47,17 +49,6 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		return dm.isUpdateAvailable(mod);
 	}
 	
-	public Set<Mod> getDependentMods(Module module){
-		Set<Mod> mods = new HashSet<Mod>();
-		
-		for (Entry<Mod, ModStructure> entry : sm.getModStructures(config).entrySet()){
-			if (entry.getValue().usesModule(module)){
-				mods.add(entry.getKey());
-			}
-		}
-		return mods;
-	}
-	
 	// -- Modifiers ---------------------------------
 	
 	public Mod addNewMod(ModPage modPage) {
@@ -67,9 +58,9 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		return mod;
 	}
 	
-	public void enableMod(Mod mod, ConflictResolver cr)
+	public void enableMod(Mod mod)
 		throws ModAlreadyEnabledException, ModNotDownloadedException,
-		CannotEnableModException
+		CannotEnableModException, CannotDisableModException
 	{
 		if (mod.isEnabled()){
 			throw new ModAlreadyEnabledException();
@@ -79,15 +70,23 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		
 		ModStructure structure = new ModStructure(mod, config);
 		for (Module module : structure.getModules()){
-			if (module.isEnabled(config)){
-				// TODO: Resolve Conflict
-			} else {
-				try {
-					structure.getZipManager().unzipModule(
-						module.getEntries(), config.getGameDataPath());
-				} catch (IOException e) {
-					throw new CannotEnableModException();
+			
+			File conflict = module.getConflict(config);
+			if (conflict != null){
+				// There is a conflict, so resolve it
+				Resolution res = cr.getResolution(module, mod);
+				if (res.equals(Resolution.Overwrite)){
+					disableModule(conflict);
+					enableModule(structure, module);
+				} else if (res.equals(Resolution.Skip)){
+					// Skip Module
+				} else {
+					throw new IllegalStateException("Uncaught Resolution");
 				}
+			} 
+			// No Conflict, so just enable module
+			else {
+				enableModule(structure, module);
 			}
 		}
 		
@@ -95,26 +94,43 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		notifyListeners(mod);
 	}
 	
-	public void disableMod(Mod mod) throws ModAlreadyDisabledException, CannotDisableModException {
+	public void disableMod(Mod mod)
+			throws ModAlreadyDisabledException, CannotDisableModException {
 		if (!mod.isEnabled()){
 			throw new ModAlreadyDisabledException();
 		}
 		
-		try {
-			for (Module module : new ModStructure(mod, config).getModules()){
-				if (getDependentMods(module).size() == 1){
-					FileUtils.deleteDirectory(
-						config.getGameDataPath().resolve(module.getName())
-						.toFile()
-					);
-				}
+		for (Module module : new ModStructure(mod, config).getModules()){
+			if (cr.getDependentMods(module).size() == 1){
+				disableModule(module);
 			}
-		} catch (IOException e) {
-			throw new CannotDisableModException();
 		}
 		
 		mod.setEnabled(false);
 		notifyListeners(mod);
+	}
+	
+	private void enableModule(ModStructure structure, Module module)
+			throws CannotEnableModException {
+		try {
+			structure.getZipManager().unzipModule(
+				module.getEntries(), config.getGameDataPath());
+		} catch (IOException e) {
+			throw new CannotEnableModException();
+		}
+	}
+	
+	private void disableModule(Module module) throws CannotDisableModException {
+		Path path = config.getGameDataPath().resolve(module.getName());
+		disableModule(path.toFile());
+	}
+	
+	private void disableModule(File file) throws CannotDisableModException {
+		try {
+			FileUtils.deleteDirectory(file);
+		} catch (IOException e) {
+			throw new CannotDisableModException();
+		}
 	}
 	
 	private void tryDisableMod(Mod mod) throws CannotDisableModException {
