@@ -5,30 +5,35 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import test.util.ModLoader;
 import aohara.tinkertime.controllers.files.ZipManager;
 import aohara.tinkertime.models.ModStructure;
 import aohara.tinkertime.models.ModStructure.Module;
 
 public class TestZipManager {
 
-	private static final Path ZIP = Paths.get("test/res/TestMod.zip");
-	private static final ModStructure STRUCT = new ModStructure(ZIP);
-
-	private Path gameDataPath;
+	private static ModStructure STRUCT;
+	
 	private ZipManager zipManager;
+	private Path gameDataPath;
+	
+	@BeforeClass
+	public static void setUpClass(){
+		STRUCT = ModLoader.getStructure(ModLoader.TESTMOD1);
+	}
 
 	@Before
 	public void setUp() {
 		gameDataPath = UnitTestSuite.getTempDir("testZip");
-		zipManager = new ZipManager(ZIP);
+		zipManager = STRUCT.getZipManager();
 	}
 
 	@Test

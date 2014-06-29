@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import test.util.ModLoader;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;
 
@@ -28,14 +29,8 @@ public class TestModStateManager {
 
 	@BeforeClass
 	public static void setUpClass() {
-		MOD1 = new Mod(UnitTestSuite.getModPage(
-			"MechJeb",
-			"http://www.curse.com/ksp-mods/kerbal/220221-mechjeb"
-		));
-		MOD2 = new Mod(UnitTestSuite.getModPage(
-			"Kerbal Engineer Redux",
-			"http://www.curse.com/ksp-mods/kerbal/220285-kerbal-engineer-redux"
-		));
+		MOD1 = new Mod(ModLoader.getPage(ModLoader.MECHJEB));
+		MOD2 = new Mod(ModLoader.getPage(ModLoader.ENGINEER));
 	}
 
 	private static Mod getUpdatedMod(final Mod mod, final String newestFile) {

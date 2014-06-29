@@ -7,6 +7,7 @@ import java.util.Date;
 
 import org.junit.Test;
 
+import test.util.ModLoader;
 import aohara.tinkertime.models.ModPage;
 
 public class TestModPage {
@@ -15,7 +16,7 @@ public class TestModPage {
 		String modName, String modUrl, Date updatedOn, String creator,
 		String newestFile, String downloadLink, String imageLink
 	){
-		ModPage page = UnitTestSuite.getModPage(modName, modUrl);
+		ModPage page = ModLoader.getPage(modName);
 		
 		assertEquals(modName, page.getName());
 		assertEquals(updatedOn.toString(), page.getUpdatedOn().toString());
@@ -35,7 +36,7 @@ public class TestModPage {
 	@Test
 	public void testMechjeb() {		
 		compare(
-			"MechJeb",
+			ModLoader.MECHJEB,
 			"http://www.curse.com/ksp-mods/kerbal/220221-mechjeb",
 			getDate(2014, 4, 6),
 			"r4m0n",
@@ -49,7 +50,7 @@ public class TestModPage {
 	@Test
 	public void testEngineer(){		
 		compare(
-			"Kerbal Engineer Redux",
+			ModLoader.ENGINEER,
 			"http://www.curse.com/ksp-mods/kerbal/220285-kerbal-engineer-redux",
 			getDate(2014, 4, 12),
 			"cybutek",

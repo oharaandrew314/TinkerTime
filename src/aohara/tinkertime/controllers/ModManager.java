@@ -24,16 +24,38 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		addListener(sm);
 	}
 	
-	// -- State Methods ------------------------
-	
-	public static boolean isDownloaded(Mod mod){
-		return new Config().getModZipPath(mod).toFile().exists();
-	}
+	// -- Listeners -----------------------
 	
 	private void notifyListeners(Mod mod){
 		for (ModUpdateListener l : getListeners()){
 			l.modUpdated(mod);
 		}
+	}
+	
+	// -- Accessors ------------------------
+	
+	public static boolean isDownloaded(Mod mod){
+		return new Config().getModZipPath(mod).toFile().exists();
+	}
+	
+	public boolean isUpdateAvailable(Mod mod){
+		try {
+			ModPage remoteMod = new ModPage(mod.getPageUrl());
+			return mod.isNewer(remoteMod);
+		} catch (IOException e) {
+			return false;
+		}
+	}
+	
+	private Set<Mod> getDependentMods(Module module){
+		Set<Mod> mods = new HashSet<Mod>();
+		
+		for (Entry<Mod, ModStructure> entry : sm.getModStructures().entrySet()){
+			if (entry.getValue().usesModule(module)){
+				mods.add(entry.getKey());
+			}
+		}
+		return mods;
 	}
 	
 	// -- Modifiers ---------------------------------
@@ -92,18 +114,6 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		System.out.println("Disabled " + mod.getName());
 	}
 	
-	private Set<Mod> getDependentMods(Module module){
-		Set<Mod> mods = new HashSet<Mod>();
-		
-		for (Entry<Mod, ModStructure> entry : sm.getModStructures().entrySet()){
-			if (entry.getValue().usesModule(module)){
-				mods.add(entry.getKey());
-			}
-		}
-		
-		return mods;
-	}
-	
 	public Mod addNewMod(
 		ModPage modPage,
 		ModDownloadManager downloadManager,
@@ -129,15 +139,6 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		notifyListeners(mod); // FIXME this will not work
 		FileUtils.deleteQuietly(new Config().getModZipPath(mod).toFile());
 		System.out.println("Deleted " + mod.getName());
-	}
-	
-	public boolean isUpdateAvailable(Mod mod){
-		try {
-			ModPage remoteMod = new ModPage(mod.getPageUrl());
-			return mod.isNewer(remoteMod);
-		} catch (IOException e) {
-			return false;
-		}
 	}
 	
 	public void updateMod(
