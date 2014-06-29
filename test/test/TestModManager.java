@@ -40,7 +40,7 @@ public class TestModManager {
 	private Config config;
 	private ModManager manager;
 	private static ModPage MECHJEB;
-	private Mod mod;
+	private Mod mod, testMod1, testMod2;
 	private MockCR cr;
 	
 	@BeforeClass
@@ -69,6 +69,8 @@ public class TestModManager {
 		}
 		
 		mod = ModLoader.addMod(ModLoader.MECHJEB, config);
+		testMod1 = ModLoader.addMod(ModLoader.TESTMOD1, config);
+		testMod2 = ModLoader.addMod(ModLoader.TESTMOD2, config);
 	}
 	
 	// -- Tests -----------------------------------------------
@@ -78,7 +80,7 @@ public class TestModManager {
 		Mod mod = manager.addNewMod(MECHJEB);
 	
 		verify(dm, times(1)).downloadMod(mod);
-		verify(sm, times(1)).modUpdated(mod);
+		verify(sm, times(1)).modUpdated(mod, false);
 	}
 
 	@Test
@@ -105,7 +107,7 @@ public class TestModManager {
 			manager.enableMod(mod);
 			
 			verifyZeroInteractions(cr);
-			verify(sm, times(1)).modUpdated(mod);
+			verify(sm, times(1)).modUpdated(mod, false);
 			assertTrue(mod.isEnabled());
 		}
 	
@@ -131,22 +133,16 @@ public class TestModManager {
 	public void testConflictOverwrite() throws Throwable {
 		cr.res = Resolution.Overwrite;
 		
-		Mod mod1 = ModLoader.addMod(ModLoader.TESTMOD1, config);
-		Mod mod2 = ModLoader.addMod(ModLoader.TESTMOD2, config);
-		
-		manager.enableMod(mod1);
-		manager.enableMod(mod2);
+		manager.enableMod(testMod1);
+		manager.enableMod(testMod2);
 	}
 	
 	@Test
 	public void testConflictSkip() throws Throwable {
 		cr.res = Resolution.Skip;
 		
-		Mod mod1 = ModLoader.addMod(ModLoader.TESTMOD1, config);
-		Mod mod2 = ModLoader.addMod(ModLoader.TESTMOD2, config);
-		
-		manager.enableMod(mod1);
-		manager.enableMod(mod2);
+		manager.enableMod(testMod1);
+		manager.enableMod(testMod2);
 	}
 	
 	// -- Disable Tests -------------------------------

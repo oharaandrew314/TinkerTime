@@ -33,9 +33,9 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	
 	// -- Listeners -----------------------
 	
-	private void notifyListeners(Mod mod){
+	private void notifyListeners(Mod mod, boolean deleted){
 		for (ModUpdateListener l : getListeners()){
-			l.modUpdated(mod);
+			l.modUpdated(mod, deleted);
 		}
 	}
 	
@@ -54,7 +54,7 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	public Mod addNewMod(ModPage modPage) {
 		Mod mod = new Mod(modPage);
 		dm.downloadMod(mod);
-		notifyListeners(mod);
+		notifyListeners(mod, false);
 		return mod;
 	}
 	
@@ -91,7 +91,7 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		}
 		
 		mod.setEnabled(true);
-		notifyListeners(mod);
+		notifyListeners(mod, false);
 	}
 	
 	public void disableMod(Mod mod)
@@ -107,7 +107,7 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		}
 		
 		mod.setEnabled(false);
-		notifyListeners(mod);
+		notifyListeners(mod, false);
 	}
 	
 	private void enableModule(ModStructure structure, Module module)
@@ -151,14 +151,14 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		
 		// Notify listeners of mod update
 		for (ModUpdateListener l : getListeners()){
-			l.modUpdated(mod);
+			l.modUpdated(mod, false);
 		}
 	}
 	
 	public void deleteMod(Mod mod) throws CannotDisableModException {
 		tryDisableMod(mod);
 		
-		notifyListeners(mod); // FIXME this will not work
+		notifyListeners(mod, true);
 		FileUtils.deleteQuietly(config.getModZipPath(mod).toFile());
 	}
 	

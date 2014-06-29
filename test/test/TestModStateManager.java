@@ -1,7 +1,6 @@
 package test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -45,8 +44,8 @@ public class TestModStateManager {
 		return new Mod(mocked);
 	}
 	
-	private void update(Mod mod){
-		stateManager.modUpdated(mod);
+	private void update(Mod mod, boolean deleted){
+		stateManager.modUpdated(mod, deleted);
 		mods = new ArrayList<Mod>(stateManager.getMods());
 	}
 
@@ -62,7 +61,7 @@ public class TestModStateManager {
 
 	@Test
 	public void testSaveOne() {
-		update(mod1);
+		update(mod1, false);
 
 		assertEquals(1, mods.size());
 		assertTrue(mods.contains(mod1));
@@ -72,7 +71,7 @@ public class TestModStateManager {
 	public void testSaveTwo() {
 		testSaveOne();
 
-		update(mod2);
+		update(mod2, false);
 
 		assertEquals(2, mods.size());
 		assertTrue(mods.contains(mod2));
@@ -92,7 +91,7 @@ public class TestModStateManager {
 		Mod newer = getUpdatedMod(mod1, newestFile);
 		assertEquals(newestFile, newer.getNewestFile());
 		
-		update(newer);
+		update(newer, false);
 		
 		assertEquals(1, mods.size());
 		assertTrue(mods.contains(newer));
@@ -103,14 +102,14 @@ public class TestModStateManager {
 	public void testSaveModState(){
 		boolean mod1State = false;
 		mod1.setEnabled(mod1State);
-		update(mod1);
+		update(mod1, false);
 		
 		assertEquals(mod1State, mod1.isEnabled());
 		assertEquals(mod1State, mods.get(0).isEnabled());
 		
 		boolean mod2State = true;
 		mod2.setEnabled(mod2State);
-		update(mod2);
+		update(mod2, false);
 		
 		assertEquals(mod2State, mod2.isEnabled());
 		for (Mod mod : mods){
@@ -122,6 +121,19 @@ public class TestModStateManager {
 				assertTrue(false);
 			}
 		}
+	}
+	
+	@Test
+	public void testModDeleted(){
+		update(mod1, false);
+		update(mod2, false);
+		
+		assertEquals(2, mods.size());
+		
+		update(mod1, true);
+		assertEquals(1, mods.size());
+		assertFalse(mods.contains(mod1));
+		assertTrue(mods.contains(mod2));
 	}
 
 }

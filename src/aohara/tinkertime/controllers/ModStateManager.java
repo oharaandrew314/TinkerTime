@@ -75,7 +75,7 @@ public class ModStateManager implements ModUpdateListener {
 	}
 
 	@Override
-	public void modUpdated(Mod mod) {
+	public void modUpdated(Mod mod, boolean deleted) {
 		modCache.clear();
 		structureCache.clear();
 		
@@ -83,7 +83,9 @@ public class ModStateManager implements ModUpdateListener {
 		if (mods.contains(mod)){
 			mods.remove(mod);
 		}
-		mods.add(mod);
+		if (!deleted){
+			mods.add(mod);
+		}
 		
 		saveMods(mods);
 		
