@@ -35,12 +35,6 @@ public class TestModStateManager {
 
 	private static Mod getUpdatedMod(final Mod mod, final String newestFile) {
 		Mod mocked = spy(mod);
-		when(mocked.isNewer(mod)).thenAnswer(new Answer<Boolean>() {
-			@Override
-			public Boolean answer(InvocationOnMock invocation) throws Throwable {
-				return true;
-			}
-		});
 		when(mocked.getNewestFile()).thenAnswer(new Answer<String>() {
 			@Override
 			public String answer(InvocationOnMock invocation) throws Throwable {

@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import aohara.tinkertime.config.Config;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
 
@@ -60,17 +61,17 @@ public class ModStateManager implements ModUpdateListener {
 		return new HashSet<Mod>(modCache);
 	}
 	
-	public Map<Mod, ModStructure> getModStructures(){
+	public Map<Mod, ModStructure> getModStructures(Config config){
 		if (structureCache.isEmpty()){
 			for (Mod mod : getMods()){
-				structureCache.put(mod, new ModStructure(mod));
+				structureCache.put(mod, new ModStructure(mod, config));
 			}
 		}
 		return new HashMap<Mod, ModStructure>(structureCache);
 	}
 	
-	public Set<ModStructure> getStructures(){
-		return new HashSet<ModStructure>(getModStructures().values());
+	public Set<ModStructure> getStructures(Config config){
+		return new HashSet<ModStructure>(getModStructures(config).values());
 	}
 
 	@Override

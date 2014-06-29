@@ -51,10 +51,6 @@ public class Mod implements ModApi{
 	
 	// -- Other Methods --------------------
 	
-	public boolean isNewer(ModApi mod){
-		return mod.getUpdatedOn().compareTo(getUpdatedOn()) > 0;
-	}
-	
 	public boolean isEnabled(){
 		return enabled;
 	}

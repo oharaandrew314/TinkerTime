@@ -21,6 +21,7 @@ public class Config extends AbstractConfig {
 	
 	public Config(){
 		super(TinkerTime.NAME);
+		setLoadOnGet(true);
 	}
 	
 	public void setKerbalPath(Path path) throws IllegalPathException {

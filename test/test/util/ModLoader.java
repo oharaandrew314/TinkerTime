@@ -7,10 +7,14 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
 
+import aohara.tinkertime.config.Config;
+import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModPage;
 import aohara.tinkertime.models.ModStructure;
+import aohara.tinkertime.models.ModStructure.Module;
 
 public class ModLoader {
 	
@@ -31,7 +35,7 @@ public class ModLoader {
 			"http://www.curse.com/ksp-mods/kerbal/220221-mechjeb"
 		);
 	}
-	
+
 	public static ModPage getPage(String name){
 		try {
 			return new ModPage(Jsoup.parse(
@@ -47,17 +51,40 @@ public class ModLoader {
 		}
 	}
 	
-	public static ModStructure getStructure(String name){
-		URL url = ModLoader.class.getClassLoader().getResource(
+	private static URL getZipUrl(String name){
+		return ModLoader.class.getClassLoader().getResource(
 			String.format("test/res/%s.zip", name)
 		);
+	}
+	
+	public static ModStructure getStructure(String name){
 		try {
-			return new ModStructure(Paths.get(url.toURI()));
+			return new ModStructure(Paths.get(getZipUrl(name).toURI()));
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
 	
-
+	public static Module getModule(ModStructure struct, String moduleName){
+		for (Module module : struct.getModules()){
+			if (module.getName().equals(moduleName)){
+				return module;
+			}
+		}
+		return null;
+	}
+	
+	public static Mod addMod(String name, Config config){
+		ModPage mod = getPage(name);
+		try {
+			FileUtils.copyURLToFile(
+				getZipUrl(name),
+				config.getModZipPath(mod).toFile()
+			);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return new Mod(mod);
+	}
 }

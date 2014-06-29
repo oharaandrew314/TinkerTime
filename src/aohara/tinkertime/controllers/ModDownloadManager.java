@@ -8,7 +8,11 @@ import org.apache.commons.io.FileUtils;
 
 import aoahara.common.Listenable;
 import aohara.tinkertime.config.Config;
+import aohara.tinkertime.controllers.ModManager.ModAlreadyUpToDateException;
+import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
+import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModApi;
+import aohara.tinkertime.models.ModPage;
 
 public class ModDownloadManager extends Listenable<ModDownloadListener> {
 	
@@ -20,6 +24,40 @@ public class ModDownloadManager extends Listenable<ModDownloadListener> {
 	
 	public void downloadMod(ModApi mod){
 		executor.execute(new DownloadTask(mod));
+	}
+	
+	private ModPage getNewPage(Mod mod) throws ModUpdateFailedException {
+		try {
+			return new ModPage(mod.getPageUrl());
+		} catch (IOException e) {
+			throw new ModUpdateFailedException();
+		}
+	}
+	
+	public boolean isUpdateAvailable(Mod mod){
+		try {
+			return isUpdateAvailable(mod, getNewPage(mod));
+		} catch (ModUpdateFailedException e) {
+			return false;
+		}
+	}
+	
+	public boolean isUpdateAvailable(Mod mod, ModPage page){
+		System.err.println("mod " + mod.getUpdatedOn());
+		System.err.println("page " + page.getUpdatedOn());
+		return (page.getUpdatedOn().compareTo(mod.getUpdatedOn()) > 0);
+	}
+	
+	
+	public void tryUpdateData(Mod mod)
+			throws ModAlreadyUpToDateException, ModUpdateFailedException {
+		System.err.println("try update mod");
+		ModPage page = getNewPage(mod);
+		if (isUpdateAvailable(mod, page)){
+			mod.updateModData(page);
+		} else {
+			throw new ModAlreadyUpToDateException();
+		}
 	}
 	
 	private class DownloadTask implements Runnable {

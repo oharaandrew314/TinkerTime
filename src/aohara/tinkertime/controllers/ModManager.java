@@ -11,6 +11,7 @@ import aoahara.common.Listenable;
 import aohara.tinkertime.config.Config;
 import aohara.tinkertime.controllers.files.ConflictResolver;
 import aohara.tinkertime.models.Mod;
+import aohara.tinkertime.models.ModApi;
 import aohara.tinkertime.models.ModStructure;
 import aohara.tinkertime.models.ModPage;
 import aohara.tinkertime.models.ModStructure.Module;
@@ -18,9 +19,13 @@ import aohara.tinkertime.models.ModStructure.Module;
 public class ModManager extends Listenable<ModUpdateListener> {
 	
 	private final ModStateManager sm;
+	private final ModDownloadManager dm;
+	private final Config config;
 	
-	public ModManager(ModStateManager sm){
+	public ModManager(ModStateManager sm, ModDownloadManager dm, Config config){
 		this.sm = sm;
+		this.dm = dm;
+		this.config = config;
 		addListener(sm);
 	}
 	
@@ -34,23 +39,18 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	
 	// -- Accessors ------------------------
 	
-	public static boolean isDownloaded(Mod mod){
-		return new Config().getModZipPath(mod).toFile().exists();
+	public boolean isDownloaded(ModApi mod){
+		return config.getModZipPath(mod).toFile().exists();
 	}
 	
 	public boolean isUpdateAvailable(Mod mod){
-		try {
-			ModPage remoteMod = new ModPage(mod.getPageUrl());
-			return mod.isNewer(remoteMod);
-		} catch (IOException e) {
-			return false;
-		}
+		return dm.isUpdateAvailable(mod);
 	}
 	
-	private Set<Mod> getDependentMods(Module module){
+	public Set<Mod> getDependentMods(Module module){
 		Set<Mod> mods = new HashSet<Mod>();
 		
-		for (Entry<Mod, ModStructure> entry : sm.getModStructures().entrySet()){
+		for (Entry<Mod, ModStructure> entry : sm.getModStructures(config).entrySet()){
 			if (entry.getValue().usesModule(module)){
 				mods.add(entry.getKey());
 			}
@@ -60,10 +60,16 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	
 	// -- Modifiers ---------------------------------
 	
-	public void enableMod(Mod mod, Config config, ConflictResolver cr)
-		throws ModAlreadyEnabledException,
-		ModNotDownloadedException,
-		IOException
+	public Mod addNewMod(ModPage modPage) {
+		Mod mod = new Mod(modPage);
+		dm.downloadMod(mod);
+		notifyListeners(mod);
+		return mod;
+	}
+	
+	public void enableMod(Mod mod, ConflictResolver cr)
+		throws ModAlreadyEnabledException, ModNotDownloadedException,
+		CannotEnableModException
 	{
 		if (mod.isEnabled()){
 			throw new ModAlreadyEnabledException();
@@ -71,21 +77,22 @@ public class ModManager extends Listenable<ModUpdateListener> {
 			throw new ModNotDownloadedException();
 		}
 		
-		System.out.println("Enabling " + mod.getName());
-		
-		ModStructure structure = new ModStructure(mod);
+		ModStructure structure = new ModStructure(mod, config);
 		for (Module module : structure.getModules()){
-			if (module.isEnabled()){
+			if (module.isEnabled(config)){
 				// TODO: Resolve Conflict
 			} else {
-				structure.getZipManager().unzipModule(
-					module.getEntries(), config.getGameDataPath());
+				try {
+					structure.getZipManager().unzipModule(
+						module.getEntries(), config.getGameDataPath());
+				} catch (IOException e) {
+					throw new CannotEnableModException();
+				}
 			}
 		}
 		
 		mod.setEnabled(true);
 		notifyListeners(mod);
-		System.out.println("Enabled " + mod.getName());
 	}
 	
 	public void disableMod(Mod mod) throws ModAlreadyDisabledException, CannotDisableModException {
@@ -93,11 +100,8 @@ public class ModManager extends Listenable<ModUpdateListener> {
 			throw new ModAlreadyDisabledException();
 		}
 		
-		System.out.println("Disabling " + mod.getName());
-		Config config = new Config();
-		
 		try {
-			for (Module module : new ModStructure(mod).getModules()){
+			for (Module module : new ModStructure(mod, config).getModules()){
 				if (getDependentMods(module).size() == 1){
 					FileUtils.deleteDirectory(
 						config.getGameDataPath().resolve(module.getName())
@@ -111,66 +115,35 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		
 		mod.setEnabled(false);
 		notifyListeners(mod);
-		System.out.println("Disabled " + mod.getName());
 	}
 	
-	public Mod addNewMod(
-		ModPage modPage,
-		ModDownloadManager downloadManager,
-		ModUpdateListener updateListener
-	) {
-		System.out.println("Adding " + modPage.getName());
-		Mod mod = new Mod(modPage);
-		updateListener.modUpdated(mod);
-		downloadManager.downloadMod(mod);
-		notifyListeners(mod);
-		System.out.println("Added mod: " + mod.getName());
-		return mod;
-	}
-	
-	public void deleteMod(Mod mod) throws CannotDisableModException {
+	private void tryDisableMod(Mod mod) throws CannotDisableModException {
 		try {
 			disableMod(mod);
 		} catch (ModAlreadyDisabledException e) {
 			// Do Nothing
 		}
-		
-		System.out.println("Deleting " + mod.getName());
-		notifyListeners(mod); // FIXME this will not work
-		FileUtils.deleteQuietly(new Config().getModZipPath(mod).toFile());
-		System.out.println("Deleted " + mod.getName());
 	}
 	
-	public void updateMod(
-		Mod mod, ModDownloadManager downloadManager
-	) throws ModUpdateFailedException, ModAlreadyUpToDateException, CannotDisableModException {
-		System.out.println("Updating " + mod.getName());
+	public void updateMod(Mod mod) 
+		throws ModUpdateFailedException, ModAlreadyUpToDateException,
+		CannotDisableModException
+	{
+		tryDisableMod(mod);
+		dm.tryUpdateData(mod); // Throws Exception if failure
+		dm.downloadMod(mod);
 		
-		try {
-			disableMod(mod);
-		} catch (ModAlreadyDisabledException e) {
-			// Do nothing
+		// Notify listeners of mod update
+		for (ModUpdateListener l : getListeners()){
+			l.modUpdated(mod);
 		}
+	}
+	
+	public void deleteMod(Mod mod) throws CannotDisableModException {
+		tryDisableMod(mod);
 		
-		// Try to update mod
-		try {
-			ModPage remotePage = new ModPage(mod.getPageUrl());
-			
-			// If mod is up to date, throw exception
-			if (!mod.isNewer(remotePage)){
-				throw new ModAlreadyUpToDateException();
-			}
-			mod.updateModData(remotePage);
-			
-			// Notify listeners of mod update
-			for (ModUpdateListener l : getListeners()){
-				l.modUpdated(mod);
-			}
-
-			downloadManager.downloadMod(mod);
-		} catch (IOException e) {
-			throw new ModUpdateFailedException();
-		}
+		notifyListeners(mod); // FIXME this will not work
+		FileUtils.deleteQuietly(config.getModZipPath(mod).toFile());
 	}
 	
 	// -- Exceptions -----------------------
@@ -183,6 +156,8 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	public static class ModNotDownloadedException extends Throwable {}
 	@SuppressWarnings("serial")
 	public static class CannotDisableModException extends Throwable {}
+	@SuppressWarnings("serial")
+	public static class CannotEnableModException extends Throwable {}
 	@SuppressWarnings("serial")
 	public static class ModUpdateFailedException extends Exception {}
 	@SuppressWarnings("serial")

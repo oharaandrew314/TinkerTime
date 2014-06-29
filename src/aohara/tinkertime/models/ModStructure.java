@@ -16,8 +16,8 @@ public class ModStructure {
 	private Set<Module> modules = new HashSet<>();
 	private final ZipManager zipManager;
 	
-	public ModStructure(Mod mod){
-		this(new Config().getModZipPath(mod));
+	public ModStructure(Mod mod, Config config){
+		this(config.getModZipPath(mod));
 	}
 	
 	public ModStructure(Path zipPath){
@@ -114,8 +114,8 @@ public class ModStructure {
 			return pathWithinZip.getFileName().toString();
 		}
 
-		public boolean isEnabled(){
-			for (File file : new Config().getGameDataPath().toFile().listFiles()){
+		public boolean isEnabled(Config config){
+			for (File file : config.getGameDataPath().toFile().listFiles()){
 				if (file.isDirectory() && file.getName().equals(getName())){
 					return true;
 				}

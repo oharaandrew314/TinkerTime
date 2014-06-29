@@ -68,21 +68,12 @@ public class TestModStructure {
 		testModuleNames(struct2, expectedNames);
 	}
 	
-	private Module getModule(ModStructure struct, String moduleName){
-		for (Module module : struct.getModules()){
-			if (module.getName().equals(moduleName)){
-				return module;
-			}
-		}
-		return null;
-	}
-	
 	@Test
 	public void testUsesModule(){
 		Module
-			commonModule = getModule(struct1, "Dependency"),
-			module1 = getModule(struct1, "TestMod1"),
-			module2 = getModule(struct2, "TestMod2");
+			commonModule = ModLoader.getModule(struct1, "Dependency"),
+			module1 = ModLoader.getModule(struct1, "TestMod1"),
+			module2 = ModLoader.getModule(struct2, "TestMod2");
 		
 		assertTrue(struct1.usesModule(commonModule));
 		assertTrue(struct2.usesModule(commonModule));
@@ -96,7 +87,7 @@ public class TestModStructure {
 	
 	@Test
 	public void testModulePaths(){
-		Module commonModule = getModule(struct1, "Dependency");
+		Module commonModule = ModLoader.getModule(struct1, "Dependency");
 		
 		Set<Path> paths = new HashSet<Path>();
 		paths.add(Paths.get("Dependency/Dependency.txt"));
