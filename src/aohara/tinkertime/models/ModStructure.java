@@ -113,17 +113,6 @@ public class ModStructure {
 		public String getName(){
 			return pathWithinZip.getFileName().toString();
 		}
-
-		/*
-		public boolean isEnabled(Config config){
-			for (File file : config.getGameDataPath().toFile().listFiles()){
-				if (file.isDirectory() && file.getName().equals(getName())){
-					return true;
-				}
-			}
-			return false;
-		}
-		*/
 		
 		public File getConflict(Config config){
 			for (File file : config.getGameDataPath().toFile().listFiles()){
