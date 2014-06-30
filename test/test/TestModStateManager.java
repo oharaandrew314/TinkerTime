@@ -84,7 +84,7 @@ public class TestModStateManager {
 	}
 
 	@Test
-	public void testSaveUpdatedMod() throws Throwable {
+	public void testSaveUpdatedMod() throws Throwable {	
 		testSaveOne();
 		
 		String newestFile = mod1.getNewestFile() + "-updated";

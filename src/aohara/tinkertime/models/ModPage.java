@@ -13,23 +13,36 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import aohara.tinkertime.controllers.ModManager.CannotAddModException;
+
 public class ModPage extends ModApi {
 	
 	private static Pattern ID_PATTERN = Pattern.compile("(\\d{4})(\\d{3})");
 	
-	private final Document doc;
+	private final Element doc;
+	private final URL pageUrl;
 	
-	public ModPage(String url) throws IOException {
-		this(Jsoup.connect(url).get());
+	public static ModPage createFromUrl(String url)
+			throws CannotAddModException {
+		try {
+			Document doc = Jsoup.connect(url).get();
+			return new ModPage(doc, new URL(url));
+		} catch (IOException e) {
+			throw new CannotAddModException();
+		}
 	}
 	
-	public ModPage(URL url) throws IOException {
-		this(url.toString());
+	public static ModPage getLatestPage(Mod mod) throws CannotAddModException {
+		return createFromUrl(mod.getPageUrl().toString());
 	}
 	
-	public ModPage(Document doc){
+	
+	
+	public ModPage(Element doc, URL pageUrl){
 		this.doc = doc;
+		this.pageUrl = pageUrl;
 	}
+
 	
 	@Override
 	public String getName(){
@@ -96,12 +109,7 @@ public class ModPage extends ModApi {
 	
 	@Override
 	public URL getPageUrl(){
-		try {
-			return new URL(doc.location());
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-			return null;
-		}
+		return pageUrl;
 	}
 	
 	@SuppressWarnings("serial")

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -21,8 +22,17 @@ public class UnitTestSuite {
 	
 	public static Path getTempDir(String name) {
 		try {
-			Path path =  Files.createTempDirectory(name);
-			path.toFile().deleteOnExit();
+			final Path path =  Files.createTempDirectory(name);
+			 Runtime.getRuntime().addShutdownHook(new Thread() {
+		            @Override
+		            public void run() {
+		                try {
+							FileUtils.deleteDirectory(path.toFile());
+						} catch (IOException e) {
+							System.err.println("Could not delete " + path.toString());
+						}
+		            }
+		        });
 			return path;
 		} catch (IOException e1) {
 			e1.printStackTrace();

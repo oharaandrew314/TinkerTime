@@ -29,8 +29,8 @@ public class ModDownloadManager extends Listenable<ModDownloadListener> {
 	
 	private ModPage getNewPage(Mod mod) throws ModUpdateFailedException {
 		try {
-			return new ModPage(mod.getPageUrl());
-		} catch (IOException e) {
+			return ModPage.getLatestPage(mod);
+		} catch (CannotAddModException e) {
 			throw new ModUpdateFailedException();
 		}
 	}
@@ -50,16 +50,13 @@ public class ModDownloadManager extends Listenable<ModDownloadListener> {
 	}
 	
 	
-	public void tryUpdateData(Mod mod)
-			throws ModAlreadyUpToDateException, ModUpdateFailedException,
-			CannotAddModException {
-		System.err.println("try update mod");
+	public boolean tryUpdateData(Mod mod) throws ModUpdateFailedException, CannotAddModException{
 		ModPage page = getNewPage(mod);
 		if (isUpdateAvailable(mod, page)){
 			mod.updateModData(page);
-		} else {
-			throw new ModAlreadyUpToDateException();
+			return true;
 		}
+		return false;
 	}
 	
 	private class DownloadTask implements Runnable {

@@ -52,11 +52,7 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	// -- Modifiers ---------------------------------
 	
 	public Mod addNewMod(String url) throws CannotAddModException{
-		try {
-			return addNewMod(new ModPage(url));
-		} catch (IOException e) {
-			throw new CannotAddModException();
-		}
+		return addNewMod(ModPage.createFromUrl(url));
 	}
 	
 	public Mod addNewMod(ModPage modPage) throws CannotAddModException, CannotAddModException {
@@ -154,7 +150,9 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		CannotDisableModException, CannotAddModException
 	{
 		tryDisableMod(mod);
-		dm.tryUpdateData(mod); // Throws Exception if failure
+		if (!dm.tryUpdateData(mod)){
+			throw new ModAlreadyUpToDateException();
+		}
 		dm.downloadMod(mod);
 		
 		// Notify listeners of mod update

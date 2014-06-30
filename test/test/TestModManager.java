@@ -2,12 +2,7 @@ package test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -15,12 +10,15 @@ import java.nio.file.Path;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
+import test.util.MockConfig;
 import test.util.ModLoader;
 import aohara.tinkertime.config.Config;
-import aohara.tinkertime.config.Config.IllegalPathException;
 import aohara.tinkertime.controllers.ModDownloadManager;
 import aohara.tinkertime.controllers.ModManager;
+import aohara.tinkertime.controllers.ModManager.CannotAddModException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyUpToDateException;
@@ -35,13 +33,14 @@ import aohara.tinkertime.models.ModStructure.Module;
 
 public class TestModManager {
 	
-	private MockDM dm;
+	private ModDownloadManager dm;
 	private ModStateManager sm;
 	private Config config;
 	private ModManager manager;
 	private static ModPage MECHJEB;
 	private Mod mod, testMod1, testMod2;
 	private MockCR cr;
+	private boolean allowUpdate;
 	
 	@BeforeClass
 	public static void setUpClass(){
@@ -50,23 +49,14 @@ public class TestModManager {
 	
 	@Before
 	public void setUp() throws Throwable {
+		allowUpdate = true;
+		
 		manager = new ModManager(
 			sm = mock(ModStateManager.class),
-			dm = spy(new MockDM()),
-			config = spy(new Config()),
+			dm = getMockDM(),
+			config = MockConfig.getSpy(),
 			cr = spy(new MockCR(config, sm))
 		);
-		
-		try {
-			Path kerbalPath = UnitTestSuite.getTempDir("ksp");
-			kerbalPath.resolve(Config.KSP_EXE).toFile().createNewFile();
-			kerbalPath.resolve("GameData").toFile().mkdirs();
-			
-			config.setKerbalPath(kerbalPath);
-			config.setModsPath(UnitTestSuite.getTempDir("mods"));
-		} catch (IllegalPathException | IOException e) {
-			e.printStackTrace();
-		}
 		
 		mod = ModLoader.addMod(ModLoader.MECHJEB, config);
 		testMod1 = ModLoader.addMod(ModLoader.TESTMOD1, config);
@@ -165,7 +155,7 @@ public class TestModManager {
 	
 	@Test(expected = ModAlreadyUpToDateException.class)
 	public void testModAlreadyUpToDate() throws Throwable {
-		dm.allowUpdate = false;
+		allowUpdate = false;
 		manager.updateMod(mod);
 	}
 	
@@ -202,16 +192,16 @@ public class TestModManager {
 		}
 	}
 	
-	public static class MockDM extends ModDownloadManager {
+	private ModDownloadManager getMockDM() throws ModAlreadyUpToDateException, ModUpdateFailedException, CannotAddModException{
+		ModDownloadManager dm = mock(ModDownloadManager.class);
 		
-		public boolean allowUpdate = true;
-		
-		@Override
-		public void tryUpdateData(Mod mod)
-				throws ModAlreadyUpToDateException, ModUpdateFailedException {
-			if (!allowUpdate){
-				throw new ModAlreadyUpToDateException();
+		when(dm.tryUpdateData(any(Mod.class))).then(new Answer<Boolean>(){
+			@Override
+			public Boolean answer(InvocationOnMock invocation) throws Throwable {
+				return allowUpdate;
 			}
-		}
+		});
+		
+		return dm;
 	}
 }
