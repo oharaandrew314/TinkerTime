@@ -103,4 +103,7 @@ public class ModPage extends ModApi {
 			return null;
 		}
 	}
+	
+	@SuppressWarnings("serial")
+	public class CannotScrapeException extends Throwable {}
 }

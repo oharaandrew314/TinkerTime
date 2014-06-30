@@ -27,12 +27,12 @@ public class TestModStateManager {
 	private List<Mod> mods;
 
 	@BeforeClass
-	public static void setUpClass() {
+	public static void setUpClass() throws Throwable {
 		MOD1 = new Mod(ModLoader.getPage(ModLoader.MECHJEB));
 		MOD2 = new Mod(ModLoader.getPage(ModLoader.ENGINEER));
 	}
 
-	private static Mod getUpdatedMod(final Mod mod, final String newestFile) {
+	private static Mod getUpdatedMod(final Mod mod, final String newestFile) throws Throwable {
 		Mod mocked = spy(mod);
 		when(mocked.getNewestFile()).thenAnswer(new Answer<String>() {
 			@Override
@@ -50,7 +50,7 @@ public class TestModStateManager {
 	}
 
 	@Before
-	public void setUp() {
+	public void setUp() throws Throwable {
 		path = UnitTestSuite.getTempFile("mods", ".json");
 
 		mod1 = new Mod(MOD1);
@@ -84,7 +84,7 @@ public class TestModStateManager {
 	}
 
 	@Test
-	public void testSaveUpdatedMod() {
+	public void testSaveUpdatedMod() throws Throwable {
 		testSaveOne();
 		
 		String newestFile = mod1.getNewestFile() + "-updated";

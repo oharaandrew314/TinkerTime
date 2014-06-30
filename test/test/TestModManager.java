@@ -49,7 +49,7 @@ public class TestModManager {
 	}
 	
 	@Before
-	public void setUp(){
+	public void setUp() throws Throwable {
 		manager = new ModManager(
 			sm = mock(ModStateManager.class),
 			dm = spy(new MockDM()),
@@ -76,7 +76,7 @@ public class TestModManager {
 	// -- Tests -----------------------------------------------
 	
 	@Test
-	public void testAddMod() {
+	public void testAddMod() throws Throwable {
 		Mod mod = manager.addNewMod(MECHJEB);
 	
 		verify(dm, times(1)).downloadMod(mod);

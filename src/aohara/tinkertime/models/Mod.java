@@ -3,6 +3,8 @@ package aohara.tinkertime.models;
 import java.net.URL;
 import java.util.Date;
 
+import aohara.tinkertime.controllers.ModManager.CannotAddModException;
+
 public class Mod extends ModApi{
 	
 	private String name, creator, newestFile;
@@ -10,7 +12,7 @@ public class Mod extends ModApi{
 	private URL downloadLink, imageUrl, pageUrl;
 	private boolean enabled = false;
 	
-	public Mod(ModApi page){
+	public Mod(ModApi page) throws CannotAddModException {
 		updateModData(page);
 	}
 
@@ -59,16 +61,20 @@ public class Mod extends ModApi{
 		this.enabled = enabled;
 	}
 	
-	public void updateModData(ModApi mod){
-		name = mod.getName();
-		creator = mod.getCreator();
-		newestFile = mod.getNewestFile();
-		
-		lastUpdated = mod.getUpdatedOn();
-		
-		downloadLink = mod.getDownloadLink();
-		imageUrl = mod.getImageUrl();
-		pageUrl = mod.getPageUrl();
+	public void updateModData(ModApi mod) throws CannotAddModException{
+		try{
+			name = mod.getName();
+			creator = mod.getCreator();
+			newestFile = mod.getNewestFile();
+			
+			lastUpdated = mod.getUpdatedOn();
+			
+			downloadLink = mod.getDownloadLink();
+			imageUrl = mod.getImageUrl();
+			pageUrl = mod.getPageUrl();
+		} catch(NullPointerException e){
+			throw new CannotAddModException();
+		}
 	}
 	
 	@Override

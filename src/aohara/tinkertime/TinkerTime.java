@@ -31,7 +31,7 @@ public class TinkerTime implements ModDownloadListener {
 		sm.addListener(sp);
 		sm.getMods();  // Load mods (will notify selector panel)
 		
-		new Frame(sp);
+		new Frame(sp, mm);
 	}
 
 	@Override

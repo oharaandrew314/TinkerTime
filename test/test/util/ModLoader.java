@@ -83,7 +83,7 @@ public class ModLoader {
 		return null;
 	}
 	
-	public static Mod addMod(String name, Config config){
+	public static Mod addMod(String name, Config config) throws Throwable {
 		ModPage mod = getPage(name);
 		try {
 			FileUtils.copyURLToFile(

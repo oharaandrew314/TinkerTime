@@ -59,7 +59,7 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		}
 	}
 	
-	public Mod addNewMod(ModPage modPage) {
+	public Mod addNewMod(ModPage modPage) throws CannotAddModException, CannotAddModException {
 		Mod mod = new Mod(modPage);
 		dm.downloadMod(mod);
 		notifyListeners(mod, false);
@@ -151,7 +151,7 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	
 	public void updateMod(Mod mod) 
 		throws ModUpdateFailedException, ModAlreadyUpToDateException,
-		CannotDisableModException
+		CannotDisableModException, CannotAddModException
 	{
 		tryDisableMod(mod);
 		dm.tryUpdateData(mod); // Throws Exception if failure
