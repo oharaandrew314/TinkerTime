@@ -47,6 +47,11 @@ public class TinkerMenuBar extends JMenuBar {
 				JOptionPane.QUESTION_MESSAGE
 			);
 			
+			// Cancel if not input given
+			if (url == null || url.trim().isEmpty()){
+				return;
+			}
+			
 			// Check if URL is valid
 			try {
 				URI uri = new URI(url);
