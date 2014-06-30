@@ -9,7 +9,6 @@ import org.apache.commons.io.FileUtils;
 import aoahara.common.Listenable;
 import aohara.tinkertime.config.Config;
 import aohara.tinkertime.controllers.ModManager.CannotAddModException;
-import aohara.tinkertime.controllers.ModManager.ModAlreadyUpToDateException;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModApi;
