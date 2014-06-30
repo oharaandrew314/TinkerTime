@@ -51,6 +51,14 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	
 	// -- Modifiers ---------------------------------
 	
+	public Mod addNewMod(String url) throws CannotAddModException{
+		try {
+			return addNewMod(new ModPage(url));
+		} catch (IOException e) {
+			throw new CannotAddModException();
+		}
+	}
+	
 	public Mod addNewMod(ModPage modPage) {
 		Mod mod = new Mod(modPage);
 		dm.downloadMod(mod);
@@ -164,6 +172,8 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	
 	// -- Exceptions -----------------------
 	
+	@SuppressWarnings("serial")
+	public static class CannotAddModException extends Throwable {}
 	@SuppressWarnings("serial")
 	public static class ModAlreadyEnabledException extends Throwable {}
 	@SuppressWarnings("serial")

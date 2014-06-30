@@ -13,7 +13,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-public class ModPage implements ModApi {
+public class ModPage extends ModApi {
 	
 	private static Pattern ID_PATTERN = Pattern.compile("(\\d{4})(\\d{3})");
 	

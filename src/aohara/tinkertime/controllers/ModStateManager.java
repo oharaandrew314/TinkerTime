@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import aoahara.common.Listenable;
+import aoahara.common.selectorPanel.SelectorListener;
 import aohara.tinkertime.config.Config;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
@@ -18,7 +20,8 @@ import aohara.tinkertime.models.ModStructure;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-public class ModStateManager implements ModUpdateListener {
+public class ModStateManager extends Listenable<SelectorListener<Mod>>
+		implements ModUpdateListener {
 	
 	private final Gson gson;
 	private final Path modsPath;
@@ -36,6 +39,12 @@ public class ModStateManager implements ModUpdateListener {
 		try(FileReader reader = new FileReader(modsPath.toFile())){
 			Set<Mod> mods = gson.fromJson(reader, modsType);
 			if (mods != null){
+				
+				// Update Listeners
+				for (SelectorListener<Mod> l : getListeners()){
+					l.setDataSource(mods);
+				}
+				
 				return mods;
 			}
 		} catch (FileNotFoundException e){

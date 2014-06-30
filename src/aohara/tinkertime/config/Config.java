@@ -12,13 +12,6 @@ public class Config extends AbstractConfig {
 	
 	public static final String KSP_EXE = "KSP.exe";
 	
-	static {
-		Config config = new Config();
-		if (config.getModsPath() == null || config.getGameDataPath() == null){
-			new DirectoryChooser().setVisible(true);
-		}
-	}
-	
 	public Config(){
 		super(TinkerTime.NAME);
 		setLoadOnGet(true);
@@ -69,6 +62,13 @@ public class Config extends AbstractConfig {
 	public class IllegalPathException extends Exception {
 		public IllegalPathException(String message){
 			super(message);
+		}
+	}
+	
+	public static void verifyConfig(){
+		Config config = new Config();
+		if (config.getModsPath() == null || config.getGameDataPath() == null){
+			new DirectoryChooser().setVisible(true);
 		}
 	}
 

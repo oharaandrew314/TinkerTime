@@ -3,7 +3,7 @@ package aohara.tinkertime.models;
 import java.net.URL;
 import java.util.Date;
 
-public class Mod implements ModApi{
+public class Mod extends ModApi{
 	
 	private String name, creator, newestFile;
 	private Date lastUpdated;
