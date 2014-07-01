@@ -9,6 +9,7 @@ import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModApi;
 import aohara.tinkertime.views.Frame;
+import aohara.tinkertime.views.ModImageView;
 import aohara.tinkertime.views.ModView;
 
 public class TinkerTime implements ModDownloadListener {
@@ -28,6 +29,7 @@ public class TinkerTime implements ModDownloadListener {
 		
 		// Initialize GUI
 		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new ModView());
+		sp.addControlPanel(true, new ModImageView());
 		sm.addListener(sp);
 		sm.getMods();  // Load mods (will notify selector panel)
 		

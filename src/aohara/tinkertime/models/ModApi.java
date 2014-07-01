@@ -19,6 +19,8 @@ public abstract class ModApi {
 
 	public abstract URL getPageUrl();
 	
+	public abstract String getDescription();
+	
 	@Override
 	public String toString(){
 		return getName();

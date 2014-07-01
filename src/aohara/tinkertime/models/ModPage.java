@@ -36,8 +36,6 @@ public class ModPage extends ModApi {
 		return createFromUrl(mod.getPageUrl().toString());
 	}
 	
-	
-	
 	public ModPage(Element doc, URL pageUrl){
 		this.doc = doc;
 		this.pageUrl = pageUrl;
@@ -105,6 +103,12 @@ public class ModPage extends ModApi {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	@Override
+	public String getDescription(){
+		Element ele = doc.select("div#tab-description").first();
+		return String.format("<html>%s</html>", ele.html());
 	}
 	
 	@Override
