@@ -38,7 +38,7 @@ public class TinkerTime implements ElementClickListener<Mod> {
 		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new ModView());
 		sp.addControlPanel(true, new ModImageView());
 		sp.setListCellRenderer(new ModListCellRenderer());
-		StatusBar statusBar = new StatusBar();  // TODO: add to frame
+		StatusBar statusBar = new StatusBar();
 		
 		// Add Listeners
 		sp.addListener(this);
