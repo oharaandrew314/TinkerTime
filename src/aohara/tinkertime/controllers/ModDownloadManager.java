@@ -43,8 +43,6 @@ public class ModDownloadManager extends Listenable<ModDownloadListener> {
 	}
 	
 	public boolean isUpdateAvailable(Mod mod, ModPage page){
-		System.err.println("mod " + mod.getUpdatedOn());
-		System.err.println("page " + page.getUpdatedOn());
 		return (page.getUpdatedOn().compareTo(mod.getUpdatedOn()) > 0);
 	}
 	
@@ -60,6 +58,8 @@ public class ModDownloadManager extends Listenable<ModDownloadListener> {
 	
 	private class DownloadTask implements Runnable {
 		
+		private int downloads = 0;
+		
 		private final ModApi mod;
 		
 		public DownloadTask(ModApi mod){
@@ -68,9 +68,12 @@ public class ModDownloadManager extends Listenable<ModDownloadListener> {
 
 		@Override
 		public void run() {
+			boolean error = false;
+			downloads++;
+			
 			// Notify download start
 			for (ModDownloadListener l : getListeners()){
-				l.modDownloadStarted(mod);
+				l.modDownloadStarted(mod, downloads);
 			}
 			
 			try {
@@ -78,16 +81,17 @@ public class ModDownloadManager extends Listenable<ModDownloadListener> {
 					mod.getDownloadLink(),
 					new Config().getModZipPath(mod).toFile()
 				);
-				
-				// Notify download complete
-				for (ModDownloadListener l : getListeners()){
-					l.modDownloadComplete(mod);
-				}
 			} catch (IOException e) {
-				e.printStackTrace();
-				// Notify download error
-				for (ModDownloadListener l : getListeners()){
-					l.modDownloadError(mod);
+				error = true;
+			}
+			
+			// Notify of download result
+			downloads--;
+			for (ModDownloadListener l : getListeners()){
+				if (error){
+					l.modDownloadError(mod, downloads);
+				} else {
+					l.modDownloadComplete(mod, downloads);
 				}
 			}
 		}

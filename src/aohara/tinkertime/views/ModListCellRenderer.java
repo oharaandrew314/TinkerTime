@@ -8,16 +8,19 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
+import aohara.tinkertime.config.Config;
+import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.models.Mod;
 
 public class ModListCellRenderer implements ListCellRenderer<Mod> {
 	
-	private final ImageIcon checkIcon, xIcon;
+	private final ImageIcon checkIcon, xIcon, errorIcon;
 	private final DefaultListCellRenderer def = new DefaultListCellRenderer();
 	
 	public ModListCellRenderer(){
 		checkIcon = getImage("check.png");
 		xIcon = getImage("x.png");
+		errorIcon = getImage("exclamation.png");
 	}
 	
 	private ImageIcon getImage(String name){
@@ -29,7 +32,13 @@ public class ModListCellRenderer implements ListCellRenderer<Mod> {
 			Mod value, int index, boolean isSelected, boolean cellHasFocus) {
 		
 		JLabel label = (JLabel) def.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-		label.setIcon(value.isEnabled() ? checkIcon : xIcon);
+		if (ModManager.isDownloaded(value, new Config())){
+			label.setIcon(value.isEnabled() ? checkIcon : xIcon);
+		} else {
+			label.setIcon(errorIcon);
+		}
+		
+		
 		return label;
 	}
 

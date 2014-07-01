@@ -25,7 +25,7 @@ import aohara.tinkertime.config.Config;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
 
-public class ModView implements SelectorView<Mod>, HyperlinkListener {
+public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 	
 	private Mod mod;
 	private final JPanel panel = new JPanel();
@@ -82,7 +82,7 @@ public class ModView implements SelectorView<Mod>, HyperlinkListener {
 	}
 
 	@Override
-	public JComponent getComponent() {
+	public JPanel getComponent() {
 		return panel;
 	}
 

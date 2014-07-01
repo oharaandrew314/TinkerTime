@@ -16,7 +16,9 @@ public class ModImageView extends ControlPanel<Mod> {
 	
 	@Override
 	public void display(Mod element){
-		super.display(element);
-		label.setIcon(new ImageIcon(element.getImageUrl()));
+		if (element != null){
+			super.display(element);
+			label.setIcon(new ImageIcon(element.getImageUrl()));
+		}
 	}
 }
