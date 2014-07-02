@@ -3,7 +3,7 @@ package aohara.tinkertime.views;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
-import aoahara.common.selectorPanel.ControlPanel;
+import aohara.common.selectorPanel.ControlPanel;
 import aohara.tinkertime.models.Mod;
 
 public class ModImageView extends ControlPanel<Mod> {

@@ -5,7 +5,7 @@ import java.awt.FlowLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import aoahara.common.selectorPanel.DecoratedComponent;
+import aohara.common.selectorPanel.DecoratedComponent;
 import aohara.tinkertime.controllers.ModDownloadListener;
 import aohara.tinkertime.models.ModApi;
 

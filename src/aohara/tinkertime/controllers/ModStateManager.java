@@ -11,8 +11,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import aoahara.common.Listenable;
-import aoahara.common.selectorPanel.SelectorListener;
+import aohara.common.Listenable;
+import aohara.common.selectorPanel.SelectorListener;
 import aohara.tinkertime.config.Config;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;

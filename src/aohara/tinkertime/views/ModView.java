@@ -19,8 +19,8 @@ import javax.swing.JTextArea;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
-import aoahara.common.VerticalLayout;
-import aoahara.common.selectorPanel.SelectorView;
+import aohara.common.VerticalLayout;
+import aohara.common.selectorPanel.SelectorView;
 import aohara.tinkertime.config.Config;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;

@@ -3,7 +3,7 @@ package aohara.tinkertime.config;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import aoahara.common.AbstractConfig;
+import aohara.common.AbstractConfig;
 import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.models.ModApi;
 import aohara.tinkertime.views.DirectoryChooser;

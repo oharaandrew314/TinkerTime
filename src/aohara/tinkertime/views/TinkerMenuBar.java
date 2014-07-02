@@ -1,6 +1,5 @@
 package aohara.tinkertime.views;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -11,23 +10,31 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import aohara.common.selectorPanel.ListListener;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.CannotAddModException;
+import aohara.tinkertime.controllers.ModManager.CannotDisableModException;
+import aohara.tinkertime.models.Mod;
 
 @SuppressWarnings("serial")
-public class TinkerMenuBar extends JMenuBar {
+public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
-	private final Component frame;
 	private final ModManager mm;
+	private Mod selectedMod;
 	
-	public TinkerMenuBar(Component frame, ModManager mm){
-		this.frame = frame;
+	public TinkerMenuBar(ModManager mm){
 		this.mm = mm;
 		
 		JMenu fileMenu = new JMenu("File");
 		fileMenu.add(new JMenuItem(new AddModAction()));
+		fileMenu.add(new JMenuItem(new DeleteModAction()));
 		add(fileMenu);
-		
+	}
+	
+	private void errorMessage(String message){
+		JOptionPane.showMessageDialog(
+			getParent(), message, "Cannot Add Mod",
+			JOptionPane.ERROR_MESSAGE);
 	}
 	
 	private class AddModAction extends AbstractAction {
@@ -40,7 +47,7 @@ public class TinkerMenuBar extends JMenuBar {
 		public void actionPerformed(ActionEvent e) {
 			// Get URL from user
 			String url = JOptionPane.showInputDialog(
-				frame,
+				getParent(),
 				"Please enter the Curse.com URl of the mod you would like to"
 				+ "add.\ne.g. http://www.curse.com/ksp-mods/kerbal/220221-mechjeb",
 				"Enter Curse.com Mod URL",
@@ -77,12 +84,36 @@ public class TinkerMenuBar extends JMenuBar {
 				);
 			}
 		}
+	}
+	
+	private class DeleteModAction extends AbstractAction {
 		
-		private void errorMessage(String message){
-			JOptionPane.showMessageDialog(
-				frame, message, "Cannot Add Mod", JOptionPane.ERROR_MESSAGE
-			);
+		public DeleteModAction(){
+			super("Delete");
 		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (selectedMod != null){
+				try {
+					assert selectedMod != null;
+					mm.deleteMod(selectedMod);
+				} catch (CannotDisableModException e1) {
+					errorMessage(selectedMod.getName() + " could not be disabled.");
+				}
+			}
+		}
+		
+	}
+
+	@Override
+	public void elementClicked(Mod element, int numTimes) {
+		// Do Nothing
+	}
+
+	@Override
+	public void elementSelected(Mod element) {
+		selectedMod = element;
 	}
 
 }

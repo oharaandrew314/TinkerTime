@@ -15,7 +15,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import aoahara.common.VerticalLayout;
+import aohara.common.VerticalLayout;
 import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.config.Config;
 import aohara.tinkertime.config.Config.IllegalPathException;
