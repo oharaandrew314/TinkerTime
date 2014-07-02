@@ -40,7 +40,7 @@ public class TinkerTime implements ListListener<Mod> {
 		sp.addControlPanel(true, new ModImageView());
 		sp.setListCellRenderer(new ModListCellRenderer());
 		StatusBar statusBar = new StatusBar();
-		TinkerMenuBar menuBar = new TinkerMenuBar(mm);		
+		TinkerMenuBar menuBar = new TinkerMenuBar(mm, sm);		
 		
 		// Add Listeners
 		sp.addListener(this);

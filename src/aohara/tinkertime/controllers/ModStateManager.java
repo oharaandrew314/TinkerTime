@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import aohara.common.Listenable;
-import aohara.common.selectorPanel.SelectorListener;
+import aohara.common.selectorPanel.SelectorInterface;
 import aohara.tinkertime.config.Config;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
@@ -20,7 +20,7 @@ import aohara.tinkertime.models.ModStructure;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-public class ModStateManager extends Listenable<SelectorListener<Mod>>
+public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 		implements ModUpdateListener {
 	
 	private final Gson gson;
@@ -41,7 +41,7 @@ public class ModStateManager extends Listenable<SelectorListener<Mod>>
 			if (mods != null){
 				
 				// Update Listeners
-				for (SelectorListener<Mod> l : getListeners()){
+				for (SelectorInterface<Mod> l : getListeners()){
 					l.setDataSource(mods);
 				}
 				
@@ -99,12 +99,11 @@ public class ModStateManager extends Listenable<SelectorListener<Mod>>
 		}
 		mods.removeAll(toRemove);
 		
-		// If the mod ie being updated, add the new data
+		// If the mod is being updated, add the new data
 		if (!deleted){
 			mods.add(mod);
 		}
 		
 		saveMods(mods);
-	}	
-
+	}
 }

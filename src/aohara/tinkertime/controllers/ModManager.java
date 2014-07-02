@@ -21,6 +21,7 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	private final ModDownloadManager dm;
 	private final Config config;
 	private final ConflictResolver cr;
+	private final ModStateManager sm;
 	
 	public ModManager(
 			ModStateManager sm, ModDownloadManager dm, Config config,
@@ -28,6 +29,7 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		this.dm = dm;
 		this.config = config;
 		this.cr = cr;
+		this.sm = sm;
 		addListener(sm);
 	}
 	
@@ -153,16 +155,15 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		throws ModUpdateFailedException, ModAlreadyUpToDateException,
 		CannotDisableModException, CannotAddModException
 	{
-		tryDisableMod(mod);
-		if (!dm.tryUpdateData(mod)){
-			throw new ModAlreadyUpToDateException();
+		if (dm.isUpdateAvailable(mod)){
+			tryDisableMod(mod);
+			dm.tryUpdateData(mod);
+			dm.downloadMod(mod);
+		} else {
+			throw new ModAlreadyUpToDateException();	
 		}
-		dm.downloadMod(mod);
 		
-		// Notify listeners of mod update
-		for (ModUpdateListener l : getListeners()){
-			l.modUpdated(mod, false);
-		}
+		notifyListeners(mod, false);
 	}
 	
 	public void deleteMod(Mod mod) throws CannotDisableModException {
@@ -170,6 +171,20 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		
 		notifyListeners(mod, true);
 		FileUtils.deleteQuietly(config.getModZipPath(mod).toFile());
+	}
+	
+	public int checkForUpdates() {
+		// FIXME do in background
+		int numAvailable = 0;
+		for (Mod mod : sm.getMods()){
+			if (isUpdateAvailable(mod)){
+				mod.setUpdateAvailable();
+				numAvailable++;
+				notifyListeners(mod, false);
+			}
+		}
+		
+		return numAvailable;
 	}
 	
 	// -- Exceptions -----------------------

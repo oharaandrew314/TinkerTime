@@ -7,10 +7,11 @@ import aohara.tinkertime.controllers.ModManager.CannotAddModException;
 
 public class Mod extends ModApi{
 	
-	private String name, creator, newestFile, description;
+	private String name, creator, currentFile, description;
 	private Date lastUpdated;
 	private URL downloadLink, imageUrl, pageUrl;
 	private boolean enabled = false;
+	private transient boolean updateAvailable = false;
 	
 	public Mod(ModApi page) throws CannotAddModException {
 		updateModData(page);
@@ -33,7 +34,7 @@ public class Mod extends ModApi{
 
 	@Override
 	public String getNewestFile() {
-		return newestFile;
+		return currentFile;
 	}
 
 	@Override
@@ -70,7 +71,7 @@ public class Mod extends ModApi{
 		try{
 			name = mod.getName();
 			creator = mod.getCreator();
-			newestFile = mod.getNewestFile();
+			currentFile = mod.getNewestFile();
 			description = mod.getDescription();
 			
 			lastUpdated = mod.getUpdatedOn();
@@ -78,9 +79,19 @@ public class Mod extends ModApi{
 			downloadLink = mod.getDownloadLink();
 			imageUrl = mod.getImageUrl();
 			pageUrl = mod.getPageUrl();
+			
+			updateAvailable = false;
 		} catch(NullPointerException e){
 			throw new CannotAddModException();
 		}
+	}
+	
+	public void setUpdateAvailable(){
+		updateAvailable = true;
+	}
+	
+	public boolean isUpdateAvailable(){
+		return updateAvailable;
 	}
 	
 	@Override

@@ -14,28 +14,57 @@ import aohara.common.selectorPanel.ListListener;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.CannotAddModException;
 import aohara.tinkertime.controllers.ModManager.CannotDisableModException;
+import aohara.tinkertime.controllers.ModManager.ModAlreadyUpToDateException;
+import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
+import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;
 
 @SuppressWarnings("serial")
 public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private final ModManager mm;
+	private final ModStateManager sm;
 	private Mod selectedMod;
 	
-	public TinkerMenuBar(ModManager mm){
+	public TinkerMenuBar(ModManager mm, ModStateManager sm){
 		this.mm = mm;
+		this.sm = sm;
 		
-		JMenu fileMenu = new JMenu("File");
-		fileMenu.add(new JMenuItem(new AddModAction()));
-		fileMenu.add(new JMenuItem(new DeleteModAction()));
-		add(fileMenu);
+		JMenu modMenu = new JMenu("Mod");
+		modMenu.add(new JMenuItem(new AddModAction()));
+		modMenu.add(new JMenuItem(new DeleteModAction()));
+		add(modMenu);
+		
+		JMenu updateMenu = new JMenu("Update");
+		updateMenu.add(new JMenuItem(new UpdateModAction()));
+		updateMenu.add(new JMenuItem(new UpdateAllAction()));
+		updateMenu.add(new JMenuItem(new CheckforUpdatesAction()));
+		add(updateMenu);
 	}
 	
 	private void errorMessage(String message){
 		JOptionPane.showMessageDialog(
-			getParent(), message, "Cannot Add Mod",
-			JOptionPane.ERROR_MESSAGE);
+			getParent(), message, "Error", JOptionPane.ERROR_MESSAGE);
 	}
+	
+	private void successMessage(String message){
+		JOptionPane.showMessageDialog(
+			getParent(), message, "Success", JOptionPane.INFORMATION_MESSAGE);	
+	}
+	
+	// -- Listeners --------------------------------------------------
+
+		@Override
+		public void elementClicked(Mod element, int numTimes) {
+			// Do Nothing
+		}
+
+		@Override
+		public void elementSelected(Mod element) {
+			selectedMod = element;
+		}
+		
+	// -- Actions ---------------------------------------------------
 	
 	private class AddModAction extends AbstractAction {
 		
@@ -49,7 +78,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 			String url = JOptionPane.showInputDialog(
 				getParent(),
 				"Please enter the Curse.com URl of the mod you would like to"
-				+ "add.\ne.g. http://www.curse.com/ksp-mods/kerbal/220221-mechjeb",
+				+ " add.\ne.g. http://www.curse.com/ksp-mods/kerbal/220221-mechjeb",
 				"Enter Curse.com Mod URL",
 				JOptionPane.QUESTION_MESSAGE
 			);
@@ -96,24 +125,88 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		public void actionPerformed(ActionEvent e) {
 			if (selectedMod != null){
 				try {
-					assert selectedMod != null;
 					mm.deleteMod(selectedMod);
 				} catch (CannotDisableModException e1) {
 					errorMessage(selectedMod.getName() + " could not be disabled.");
 				}
 			}
 		}
+	}
+	
+	private class UpdateModAction extends AbstractAction {
 		
-	}
+		public UpdateModAction(){
+			this("Update Mod");
+		}
+		
+		protected UpdateModAction(String string){
+			super(string);
+		}
 
-	@Override
-	public void elementClicked(Mod element, int numTimes) {
-		// Do Nothing
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (selectedMod != null){
+				try {
+					updateMod(selectedMod);
+					successMessage(
+						"New Mod Data retrieved.  Downloading "
+						+ selectedMod.getName() + "...");
+				} catch (ModAlreadyUpToDateException e1) {
+					errorMessage(selectedMod.getName() + " is already up to date.");
+				}
+			}
+		}
+		
+		protected boolean updateMod(Mod mod) throws ModAlreadyUpToDateException{
+			try {
+				mm.updateMod(selectedMod);
+				return true;
+			} catch (ModUpdateFailedException e1) {
+				errorMessage("There was an error updating the mod");
+				e1.printStackTrace();
+			} catch (CannotDisableModException e1) {
+				errorMessage("The mod could not be disabled before updating.");
+				e1.printStackTrace();
+			} catch (CannotAddModException e1) {
+				errorMessage("Updated mod information could not be retrieved");
+				e1.printStackTrace();
+			}
+			return false;
+		}
 	}
+	
+	private class UpdateAllAction extends UpdateModAction {
+		
+		public UpdateAllAction() {
+			super("Update All");
+		}
 
-	@Override
-	public void elementSelected(Mod element) {
-		selectedMod = element;
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			int numUpdated = 0;
+			for (Mod mod : sm.getMods()){
+				try {
+					if (updateMod(mod)){
+						numUpdated++;
+					}
+				} catch (ModAlreadyUpToDateException ex){
+					// Do nothing
+				}
+			}
+			successMessage(numUpdated + " mods were updated.");
+		}
 	}
+	
+private class CheckforUpdatesAction extends AbstractAction {
+		
+		public CheckforUpdatesAction(){
+			super("Check for Updates");
+		}
 
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			int numUpdates = mm.checkForUpdates();
+			successMessage(numUpdates + " mod(s) are ready to be updated.");
+		}
+	}
 }
