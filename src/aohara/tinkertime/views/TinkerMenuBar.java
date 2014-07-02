@@ -1,6 +1,7 @@
 package aohara.tinkertime.views;
 
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -11,6 +12,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import aohara.common.selectorPanel.ListListener;
+import aohara.tinkertime.config.Config;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.CannotAddModException;
 import aohara.tinkertime.controllers.ModManager.CannotDisableModException;
@@ -40,6 +42,9 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		updateMenu.add(new JMenuItem(new UpdateAllAction()));
 		updateMenu.add(new JMenuItem(new CheckforUpdatesAction()));
 		add(updateMenu);
+		
+		JMenuItem launchItem = new JMenuItem(new LaunchKspAction());
+		add(launchItem);
 	}
 	
 	private void errorMessage(String message){
@@ -197,7 +202,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		}
 	}
 	
-private class CheckforUpdatesAction extends AbstractAction {
+	private class CheckforUpdatesAction extends AbstractAction {
 		
 		public CheckforUpdatesAction(){
 			super("Check for Updates");
@@ -208,5 +213,23 @@ private class CheckforUpdatesAction extends AbstractAction {
 			int numUpdates = mm.checkForUpdates();
 			successMessage(numUpdates + " mod(s) are ready to be updated.");
 		}
+	}
+	
+	private class LaunchKspAction extends AbstractAction {
+		
+		public LaunchKspAction(){
+			super("Launch KSP");
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			try {
+				Runtime.getRuntime().exec(new Config().getKerbalExePath().toString());
+			} catch (IOException e1) {
+				errorMessage("Could not launch KSP!\n" + e1.getMessage());
+				e1.printStackTrace();
+			}
+		}
+		
 	}
 }

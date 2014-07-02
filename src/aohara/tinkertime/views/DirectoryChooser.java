@@ -38,7 +38,7 @@ public class DirectoryChooser extends JDialog {
 		
 		add(new InnerPanel(
 			KERBAL_PATH,
-			"Please choose the path to " + Config.KSP_EXE,
+			"Please choose the path to the KSP executable",
 			JFileChooser.FILES_AND_DIRECTORIES
 		));
 		
