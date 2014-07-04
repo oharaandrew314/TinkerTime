@@ -2,11 +2,14 @@ package aohara.tinkertime.controllers;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
 
 import aohara.common.Listenable;
+import aohara.common.executors.Downloader;
 import aohara.tinkertime.config.Config;
 import aohara.tinkertime.controllers.files.ConflictResolver;
 import aohara.tinkertime.controllers.files.ConflictResolver.Resolution;
@@ -18,18 +21,22 @@ import aohara.tinkertime.models.ModStructure.Module;
 
 public class ModManager extends Listenable<ModUpdateListener> {
 	
-	private final ModDownloadManager dm;
+	public static final int NUM_CONCURRENT_DOWNLOADS = 4;
+	
+	private final ModPageManager dm;
+	private final Downloader downloader;
 	private final Config config;
 	private final ConflictResolver cr;
 	private final ModStateManager sm;
 	
 	public ModManager(
-			ModStateManager sm, ModDownloadManager dm, Config config,
-			ConflictResolver cr){
+			ModStateManager sm, ModPageManager dm, Config config,
+			ConflictResolver cr, Downloader downloader){
 		this.dm = dm;
 		this.config = config;
 		this.cr = cr;
 		this.sm = sm;
+		this.downloader = downloader;
 		addListener(sm);
 	}
 	
@@ -51,19 +58,27 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		return isDownloaded(mod, config);
 	}
 	
-	public boolean isUpdateAvailable(Mod mod){
+	private boolean isUpdateAvailable(Mod mod){
 		return dm.isUpdateAvailable(mod);
 	}
 	
 	// -- Modifiers ---------------------------------
 	
 	public Mod addNewMod(String url) throws CannotAddModException{
-		return addNewMod(ModPage.createFromUrl(url));
+		try {
+			return addNewMod(ModPage.createFromUrl(new URL(url)));
+		} catch (MalformedURLException e) {
+			throw new CannotAddModException();
+		}
+	}
+	
+	private void downloadMod(Mod mod){
+		downloader.download(mod.getDownloadLink(), config.getModZipPath(mod));
 	}
 	
 	public Mod addNewMod(ModPage modPage) throws CannotAddModException, CannotAddModException {
 		Mod mod = new Mod(modPage);
-		dm.downloadMod(mod);
+		downloadMod(mod);
 		notifyListeners(mod, false);
 		return mod;
 	}
@@ -155,10 +170,10 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		throws ModUpdateFailedException, ModAlreadyUpToDateException,
 		CannotDisableModException, CannotAddModException
 	{
-		if (dm.isUpdateAvailable(mod)){
+		if (isUpdateAvailable(mod)){
 			tryDisableMod(mod);
 			dm.tryUpdateData(mod);
-			dm.downloadMod(mod);
+			downloadMod(mod);
 		} else {
 			throw new ModAlreadyUpToDateException();	
 		}

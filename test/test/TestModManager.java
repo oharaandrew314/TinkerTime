@@ -16,7 +16,7 @@ import org.mockito.stubbing.Answer;
 import test.util.MockConfig;
 import test.util.ModLoader;
 import aohara.tinkertime.config.Config;
-import aohara.tinkertime.controllers.ModDownloadManager;
+import aohara.tinkertime.controllers.ModPageManager;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.CannotAddModException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledException;
@@ -33,7 +33,7 @@ import aohara.tinkertime.models.ModStructure.Module;
 
 public class TestModManager {
 	
-	private ModDownloadManager dm;
+	private ModPageManager dm;
 	private ModStateManager sm;
 	private Config config;
 	private ModManager manager;
@@ -192,8 +192,8 @@ public class TestModManager {
 		}
 	}
 	
-	private ModDownloadManager getMockDM() throws ModAlreadyUpToDateException, ModUpdateFailedException, CannotAddModException{
-		ModDownloadManager dm = mock(ModDownloadManager.class);
+	private ModPageManager getMockDM() throws ModAlreadyUpToDateException, ModUpdateFailedException, CannotAddModException{
+		ModPageManager dm = mock(ModPageManager.class);
 		
 		when(dm.tryUpdateData(any(Mod.class))).then(new Answer<Boolean>(){
 			@Override

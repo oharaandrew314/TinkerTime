@@ -1,11 +1,15 @@
 package aohara.tinkertime;
 
+import java.nio.file.Path;
+
 import javax.swing.JOptionPane;
 
+import aohara.common.executors.Downloader;
+import aohara.common.progressDialog.ProgressDialog;
 import aohara.common.selectorPanel.ListListener;
 import aohara.common.selectorPanel.SelectorPanel;
 import aohara.tinkertime.config.Config;
-import aohara.tinkertime.controllers.ModDownloadManager;
+import aohara.tinkertime.controllers.ModPageManager;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.CannotDisableModException;
 import aohara.tinkertime.controllers.ModManager.CannotEnableModException;
@@ -31,9 +35,12 @@ public class TinkerTime implements ListListener<Mod> {
 		
 		// Initialize Controllers
 		Config config = new Config();
-		ModDownloadManager dm = new ModDownloadManager();
+		ModPageManager dm = new ModPageManager();
 		ModStateManager sm = new ModStateManager(config.getModsPath().resolve("mods.json"));
-		mm = new ModManager(sm, dm, config, null);  // FIXME: Implement CR
+		
+		Downloader downloader = new Downloader(ModManager.NUM_CONCURRENT_DOWNLOADS);
+		
+		mm = new ModManager(sm, dm, config, null, downloader);  // FIXME: Implement CR
 		
 		// Initialize GUI
 		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new ModView());
@@ -45,7 +52,8 @@ public class TinkerTime implements ListListener<Mod> {
 		// Add Listeners
 		sp.addListener(this);
 		sp.addListener(menuBar);
-		dm.addListener(statusBar);
+		downloader.addListener(statusBar);
+		downloader.addListener(new ProgressDialog<Path>("Mod Downloads"));
 		sm.addListener(sp);
 
 		// Start Application

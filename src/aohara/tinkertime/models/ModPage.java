@@ -3,6 +3,7 @@ package aohara.tinkertime.models;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,18 +23,28 @@ public class ModPage extends ModApi {
 	private final Element doc;
 	private final URL pageUrl;
 	
-	public static ModPage createFromUrl(String url)
+	public static ModPage createFromUrl(URL url)
 			throws CannotAddModException {
 		try {
-			Document doc = Jsoup.connect(url).get();
-			return new ModPage(doc, new URL(url));
+			Document doc = Jsoup.connect(url.toString()).get();
+			return new ModPage(doc, url);
+		} catch (IOException e) {
+			throw new CannotAddModException();
+		}
+	}
+	
+	public static ModPage createFromFile(Path path, URL pageUrl) 
+			throws CannotAddModException{
+		try {
+			Element ele = Jsoup.parse(path.toFile(), "UTF-8");
+			return new ModPage(ele, pageUrl);
 		} catch (IOException e) {
 			throw new CannotAddModException();
 		}
 	}
 	
 	public static ModPage getLatestPage(Mod mod) throws CannotAddModException {
-		return createFromUrl(mod.getPageUrl().toString());
+		return createFromUrl(mod.getPageUrl());
 	}
 	
 	public ModPage(Element doc, URL pageUrl){
