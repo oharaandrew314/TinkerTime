@@ -23,26 +23,24 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	
 	public static final int NUM_CONCURRENT_DOWNLOADS = 4;
 	
-	private final ModPageManager dm;
+	private final ModPageDownloader dm;
 	private final Downloader downloader;
 	private final Config config;
 	private final ConflictResolver cr;
-	private final ModStateManager sm;
 	
 	public ModManager(
-			ModStateManager sm, ModPageManager dm, Config config,
+			ModStateManager sm, ModPageDownloader dm, Config config,
 			ConflictResolver cr, Downloader downloader){
 		this.dm = dm;
 		this.config = config;
 		this.cr = cr;
-		this.sm = sm;
 		this.downloader = downloader;
 		addListener(sm);
 	}
 	
 	// -- Listeners -----------------------
 	
-	private void notifyModUpdated(Mod mod, boolean deleted){
+	public void notifyModUpdated(Mod mod, boolean deleted){
 		for (ModUpdateListener l : getListeners()){
 			l.modUpdated(mod, deleted);
 		}
@@ -186,20 +184,6 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		
 		notifyModUpdated(mod, true);
 		FileUtils.deleteQuietly(config.getModZipPath(mod).toFile());
-	}
-	
-	public int checkForUpdates() {
-		// FIXME do in background
-		int numAvailable = 0;
-		for (Mod mod : sm.getMods()){
-			if (isUpdateAvailable(mod)){
-				mod.setUpdateAvailable();
-				numAvailable++;
-				notifyModUpdated(mod, false);
-			}
-		}
-		
-		return numAvailable;
 	}
 	
 	// -- Exceptions -----------------------

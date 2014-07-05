@@ -11,7 +11,7 @@ import aohara.common.progressDialog.ProgressDialog;
 import aohara.common.selectorPanel.ListListener;
 import aohara.common.selectorPanel.SelectorPanel;
 import aohara.tinkertime.config.Config;
-import aohara.tinkertime.controllers.ModPageManager;
+import aohara.tinkertime.controllers.ModPageDownloader;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.CannotDisableModException;
 import aohara.tinkertime.controllers.ModManager.CannotEnableModException;
@@ -36,12 +36,13 @@ public class TinkerTime implements ListListener<Mod> {
 		Config.verifyConfig();
 		
 		// Initialize Controllers
-		Config config = new Config();
-		ModPageManager dm = new ModPageManager();
-		ModStateManager sm = new ModStateManager(config.getModsPath().resolve("mods.json"));
-		
 		FileMover fileMover = new FileMover();
 		Downloader downloader = new TempDownloader(ModManager.NUM_CONCURRENT_DOWNLOADS, fileMover);
+		ProgressDialog<Path> progressDialog = new ProgressDialog<>("Downloads Mods");
+		
+		Config config = new Config();
+		ModStateManager sm = new ModStateManager(config.getModsPath().resolve("mods.json"));
+		ModPageDownloader dm = new ModPageDownloader(sm);
 		mm = new ModManager(sm, dm, config, null, downloader);  // FIXME: Implement CR
 		
 		// Initialize GUI
@@ -49,14 +50,16 @@ public class TinkerTime implements ListListener<Mod> {
 		sp.addControlPanel(true, new ModImageView());
 		sp.setListCellRenderer(new ModListCellRenderer());
 		StatusBar statusBar = new StatusBar();
-		TinkerMenuBar menuBar = new TinkerMenuBar(mm, sm);		
+		TinkerMenuBar menuBar = new TinkerMenuBar(mm, dm, sm);		
 		
 		// Add Listeners
+		dm.addListener(progressDialog);
+		dm.addListener(statusBar);
 		sp.addListener(this);
 		sp.addListener(menuBar);
 		downloader.addListener(statusBar);
-		downloader.addListener(new ProgressDialog<Path>("Downloading Mods"));
-		fileMover.addListener(new ProgressDialog<Path>("Moving Mods to Mod Directory"));
+		downloader.addListener(progressDialog);
+		fileMover.addListener(progressDialog);
 		sm.addListener(sp);
 
 		// Start Application

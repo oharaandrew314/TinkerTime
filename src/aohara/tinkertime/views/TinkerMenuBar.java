@@ -18,6 +18,7 @@ import aohara.tinkertime.controllers.ModManager.CannotAddModException;
 import aohara.tinkertime.controllers.ModManager.CannotDisableModException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyUpToDateException;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
+import aohara.tinkertime.controllers.ModPageDownloader;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;
 
@@ -26,10 +27,12 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private final ModManager mm;
 	private final ModStateManager sm;
+	private final ModPageDownloader mpd;
 	private Mod selectedMod;
 	
-	public TinkerMenuBar(ModManager mm, ModStateManager sm){
+	public TinkerMenuBar(ModManager mm, ModPageDownloader mpd, ModStateManager sm){
 		this.mm = mm;
+		this.mpd = mpd;
 		this.sm = sm;
 		
 		JMenu modMenu = new JMenu("Mod");
@@ -210,8 +213,11 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int numUpdates = mm.checkForUpdates();
-			successMessage(numUpdates + " mod(s) are ready to be updated.");
+			try {
+				mpd.checkForUpdates(mm, sm.getMods());
+			} catch (IOException e1) {
+				errorMessage("Error checking for updates.");
+			}
 		}
 	}
 	

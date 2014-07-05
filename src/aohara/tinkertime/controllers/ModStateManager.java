@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -35,16 +36,17 @@ public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 		this.modsPath = modsPath;
 	}
 	
+	private void updateListeners(Collection<Mod> mods){
+		for (SelectorInterface<Mod> l : getListeners()){
+			l.setDataSource(mods);
+		}
+	}
+	
 	private synchronized Set<Mod> loadMods(){
 		try(FileReader reader = new FileReader(modsPath.toFile())){
 			Set<Mod> mods = gson.fromJson(reader, modsType);
 			if (mods != null){
-				
-				// Update Listeners
-				for (SelectorInterface<Mod> l : getListeners()){
-					l.setDataSource(mods);
-				}
-				
+				updateListeners(mods);
 				return mods;
 			}
 		} catch (FileNotFoundException e){
@@ -58,6 +60,7 @@ public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 	private void saveMods(Set<Mod> mods){
 		try(FileWriter writer = new FileWriter(modsPath.toFile())){
 			gson.toJson(mods, modsType, writer);
+			updateListeners(mods);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
