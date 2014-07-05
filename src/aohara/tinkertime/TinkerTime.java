@@ -5,6 +5,8 @@ import java.nio.file.Path;
 import javax.swing.JOptionPane;
 
 import aohara.common.executors.Downloader;
+import aohara.common.executors.FileMover;
+import aohara.common.executors.TempDownloader;
 import aohara.common.progressDialog.ProgressDialog;
 import aohara.common.selectorPanel.ListListener;
 import aohara.common.selectorPanel.SelectorPanel;
@@ -38,8 +40,8 @@ public class TinkerTime implements ListListener<Mod> {
 		ModPageManager dm = new ModPageManager();
 		ModStateManager sm = new ModStateManager(config.getModsPath().resolve("mods.json"));
 		
-		Downloader downloader = new Downloader(ModManager.NUM_CONCURRENT_DOWNLOADS);
-		
+		FileMover fileMover = new FileMover();
+		Downloader downloader = new TempDownloader(ModManager.NUM_CONCURRENT_DOWNLOADS, fileMover);
 		mm = new ModManager(sm, dm, config, null, downloader);  // FIXME: Implement CR
 		
 		// Initialize GUI
@@ -53,7 +55,8 @@ public class TinkerTime implements ListListener<Mod> {
 		sp.addListener(this);
 		sp.addListener(menuBar);
 		downloader.addListener(statusBar);
-		downloader.addListener(new ProgressDialog<Path>("Mod Downloads"));
+		downloader.addListener(new ProgressDialog<Path>("Downloading Mods"));
+		fileMover.addListener(new ProgressDialog<Path>("Moving Mods to Mod Directory"));
 		sm.addListener(sp);
 
 		// Start Application

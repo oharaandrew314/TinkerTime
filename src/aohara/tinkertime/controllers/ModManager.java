@@ -42,7 +42,7 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	
 	// -- Listeners -----------------------
 	
-	private void notifyListeners(Mod mod, boolean deleted){
+	private void notifyModUpdated(Mod mod, boolean deleted){
 		for (ModUpdateListener l : getListeners()){
 			l.modUpdated(mod, deleted);
 		}
@@ -72,15 +72,15 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		}
 	}
 	
-	private void downloadMod(Mod mod){
-		downloader.download(mod.getDownloadLink(), config.getModZipPath(mod));
-	}
-	
 	public Mod addNewMod(ModPage modPage) throws CannotAddModException, CannotAddModException {
 		Mod mod = new Mod(modPage);
 		downloadMod(mod);
-		notifyListeners(mod, false);
+		notifyModUpdated(mod, false);
 		return mod;
+	}
+	
+	private void downloadMod(Mod mod){
+		downloader.download(mod.getDownloadLink(), config.getModZipPath(mod));
 	}
 	
 	public void enableMod(Mod mod)
@@ -116,7 +116,7 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		}
 		
 		mod.setEnabled(true);
-		notifyListeners(mod, false);
+		notifyModUpdated(mod, false);
 	}
 	
 	public void disableMod(Mod mod)
@@ -132,7 +132,7 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		}
 		
 		mod.setEnabled(false);
-		notifyListeners(mod, false);
+		notifyModUpdated(mod, false);
 	}
 	
 	private void enableModule(ModStructure structure, Module module)
@@ -178,13 +178,13 @@ public class ModManager extends Listenable<ModUpdateListener> {
 			throw new ModAlreadyUpToDateException();	
 		}
 		
-		notifyListeners(mod, false);
+		notifyModUpdated(mod, false);
 	}
 	
 	public void deleteMod(Mod mod) throws CannotDisableModException {
 		tryDisableMod(mod);
 		
-		notifyListeners(mod, true);
+		notifyModUpdated(mod, true);
 		FileUtils.deleteQuietly(config.getModZipPath(mod).toFile());
 	}
 	
@@ -195,7 +195,7 @@ public class ModManager extends Listenable<ModUpdateListener> {
 			if (isUpdateAvailable(mod)){
 				mod.setUpdateAvailable();
 				numAvailable++;
-				notifyListeners(mod, false);
+				notifyModUpdated(mod, false);
 			}
 		}
 		

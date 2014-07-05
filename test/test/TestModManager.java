@@ -15,6 +15,7 @@ import org.mockito.stubbing.Answer;
 
 import test.util.MockConfig;
 import test.util.ModLoader;
+import aohara.common.executors.Downloader;
 import aohara.tinkertime.config.Config;
 import aohara.tinkertime.controllers.ModPageManager;
 import aohara.tinkertime.controllers.ModManager;
@@ -41,6 +42,7 @@ public class TestModManager {
 	private Mod mod, testMod1, testMod2;
 	private MockCR cr;
 	private boolean allowUpdate;
+	private Downloader downloader;
 	
 	@BeforeClass
 	public static void setUpClass(){
@@ -55,7 +57,8 @@ public class TestModManager {
 			sm = mock(ModStateManager.class),
 			dm = getMockDM(),
 			config = MockConfig.getSpy(),
-			cr = spy(new MockCR(config, sm))
+			cr = spy(new MockCR(config, sm)),
+			downloader =mock(Downloader.class)
 		);
 		
 		mod = ModLoader.addMod(ModLoader.MECHJEB, config);
@@ -69,7 +72,7 @@ public class TestModManager {
 	public void testAddMod() throws Throwable {
 		Mod mod = manager.addNewMod(MECHJEB);
 	
-		verify(dm, times(1)).downloadMod(mod);
+		verify(downloader, times(1)).download(mod.getPageUrl(), config.getModZipPath(mod));
 		verify(sm, times(1)).modUpdated(mod, false);
 	}
 
@@ -163,7 +166,7 @@ public class TestModManager {
 	public void testUpdateDisabledMod() throws Throwable {
 		assertFalse(mod.isEnabled());
 		manager.updateMod(mod);
-		verify(dm, times(1)).downloadMod(mod);
+		verify(downloader, times(1)).download(mod.getPageUrl(), config.getModZipPath(mod));
 		assertFalse(mod.isEnabled());
 	}
 	
@@ -172,7 +175,7 @@ public class TestModManager {
 		mod.setEnabled(true);
 		assertTrue(mod.isEnabled());
 		manager.updateMod(mod);
-		verify(dm, times(1)).downloadMod(mod);
+		verify(downloader, times(1)).download(mod.getPageUrl(), config.getModZipPath(mod));
 		assertFalse(mod.isEnabled());
 	}
 	
