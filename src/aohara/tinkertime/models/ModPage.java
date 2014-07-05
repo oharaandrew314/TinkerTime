@@ -91,12 +91,16 @@ public class ModPage extends ModApi {
 	public URL getDownloadLink(){
 		Element ele = doc.select("#tab-other-downloads tr.even a").first();
 		Matcher m = ID_PATTERN.matcher(ele.attr("href"));
-
+		
+		// Get Mod ids
 		m.find();
+		int id1 = Integer.parseInt(m.group(1));
+		int id2 = Integer.parseInt(m.group(2));
+		
 		try {
 			return new URL(String.format(
 				"http://addons.curse.cursecdn.com/files/%s/%s/%s",
-				m.group(1), m.group(2),
+				id1, id2,
 				getNewestFile().replaceAll("_", " ").replaceAll(" ", "%20")
 			));
 		} catch (MalformedURLException | IndexOutOfBoundsException e) {
