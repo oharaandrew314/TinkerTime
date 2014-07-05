@@ -3,7 +3,7 @@ package aohara.tinkertime.models;
 import java.net.URL;
 import java.util.Date;
 
-public interface ModApi {
+public abstract class ModApi {
 
 	public abstract String getName();
 
@@ -18,5 +18,12 @@ public interface ModApi {
 	public abstract URL getImageUrl();
 
 	public abstract URL getPageUrl();
+	
+	public abstract String getDescription();
+	
+	@Override
+	public String toString(){
+		return getName();
+	}
 
 }

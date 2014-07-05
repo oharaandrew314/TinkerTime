@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
 
 import aohara.tinkertime.config.Config;
 import aohara.tinkertime.models.Mod;
@@ -46,13 +47,14 @@ public class ModLoader {
 
 	public static ModPage getPage(String name){
 		try {
-			return new ModPage(Jsoup.parse(
+			String url = PAGE_URLS.get(name);
+			
+			Element doc = Jsoup.parse(
 				ModLoader.class.getClassLoader().getResourceAsStream(
 					String.format("test/res/%s.html", name)
-				),
-				null,
-				PAGE_URLS.get(name)
-			));
+				), null, url);
+					
+			return new ModPage(doc, new URL(url));
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
@@ -83,7 +85,7 @@ public class ModLoader {
 		return null;
 	}
 	
-	public static Mod addMod(String name, Config config){
+	public static Mod addMod(String name, Config config) throws Throwable {
 		ModPage mod = getPage(name);
 		try {
 			FileUtils.copyURLToFile(

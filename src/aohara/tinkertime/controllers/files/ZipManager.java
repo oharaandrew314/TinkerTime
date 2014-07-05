@@ -21,39 +21,45 @@ public class ZipManager {
 	}
 
 	public Set<ZipEntry> getZipEntries() {
-		Set<ZipEntry> set = new HashSet<>();
-
-		try (ZipFile zipFile = new ZipFile(zipPath.toFile())) {
-			Enumeration<? extends ZipEntry> entries = zipFile.entries();
-			while (entries.hasMoreElements()) {
-				set.add(entries.nextElement());
+		synchronized(zipPath){
+			Set<ZipEntry> set = new HashSet<>();
+	
+			try (ZipFile zipFile = new ZipFile(zipPath.toFile())) {
+				Enumeration<? extends ZipEntry> entries = zipFile.entries();
+				while (entries.hasMoreElements()) {
+					set.add(entries.nextElement());
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
+			return set;
 		}
-		return set;
 	}
 
 	public void unzipModule(Set<ZipEntry> entries, Path gameDataPath)
 			throws IOException {
-		try (ZipFile zipFile = new ZipFile(zipPath.toFile())) {
-			for (ZipEntry entry : entries) {
-				FileUtils.copyInputStreamToFile(
-					zipFile.getInputStream(entry),
-					gameDataPath.resolve(entry.getName()).toFile());
+		synchronized(zipPath){
+			try (ZipFile zipFile = new ZipFile(zipPath.toFile())) {
+				for (ZipEntry entry : entries) {
+					FileUtils.copyInputStreamToFile(
+						zipFile.getInputStream(entry),
+						gameDataPath.resolve(entry.getName()).toFile());
+				}
 			}
 		}
 	}
 
 	public String getFileText(String fileName) {
-		try (ZipFile zipFile = new ZipFile(zipPath.toFile())) {
-			ZipEntry entry = zipFile.getEntry(fileName);
-
-			StringWriter writer = new StringWriter();
-			IOUtils.copy(zipFile.getInputStream(entry), writer);
-			return writer.toString();
-		} catch (IOException | NullPointerException e) {
-			return null;
+		synchronized(zipPath){
+			try (ZipFile zipFile = new ZipFile(zipPath.toFile())) {
+				ZipEntry entry = zipFile.getEntry(fileName);
+	
+				StringWriter writer = new StringWriter();
+				IOUtils.copy(zipFile.getInputStream(entry), writer);
+				return writer.toString();
+			} catch (IOException | NullPointerException e) {
+				return null;
+			}
 		}
 	}
 }

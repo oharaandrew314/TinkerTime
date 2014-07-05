@@ -3,6 +3,7 @@ package aohara.tinkertime.models;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,23 +14,44 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-public class ModPage implements ModApi {
+import aohara.tinkertime.controllers.ModManager.CannotAddModException;
+
+public class ModPage extends ModApi {
 	
 	private static Pattern ID_PATTERN = Pattern.compile("(\\d{4})(\\d{3})");
 	
-	private final Document doc;
+	private final Element doc;
+	private final URL pageUrl;
 	
-	public ModPage(String url) throws IOException {
-		this(Jsoup.connect(url).get());
+	public static ModPage createFromUrl(URL url)
+			throws CannotAddModException {
+		try {
+			Document doc = Jsoup.connect(url.toString()).get();
+			return new ModPage(doc, url);
+		} catch (IOException e) {
+			throw new CannotAddModException();
+		}
 	}
 	
-	public ModPage(URL url) throws IOException {
-		this(url.toString());
+	public static ModPage createFromFile(Path path, URL pageUrl) 
+			throws CannotAddModException{
+		try {
+			Element ele = Jsoup.parse(path.toFile(), "UTF-8");
+			return new ModPage(ele, pageUrl);
+		} catch (IOException e) {
+			throw new CannotAddModException();
+		}
 	}
 	
-	public ModPage(Document doc){
+	public static ModPage getLatestPage(Mod mod) throws CannotAddModException {
+		return createFromUrl(mod.getPageUrl());
+	}
+	
+	public ModPage(Element doc, URL pageUrl){
 		this.doc = doc;
+		this.pageUrl = pageUrl;
 	}
+
 	
 	@Override
 	public String getName(){
@@ -95,12 +117,16 @@ public class ModPage implements ModApi {
 	}
 	
 	@Override
-	public URL getPageUrl(){
-		try {
-			return new URL(doc.location());
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-			return null;
-		}
+	public String getDescription(){
+		Element ele = doc.select("div#tab-description").first();
+		return String.format("<html>%s</html>", ele.html());
 	}
+	
+	@Override
+	public URL getPageUrl(){
+		return pageUrl;
+	}
+	
+	@SuppressWarnings("serial")
+	public class CannotScrapeException extends Throwable {}
 }

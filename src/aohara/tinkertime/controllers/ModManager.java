@@ -2,11 +2,14 @@ package aohara.tinkertime.controllers;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
 
-import aoahara.common.Listenable;
+import aohara.common.Listenable;
+import aohara.common.executors.Downloader;
 import aohara.tinkertime.config.Config;
 import aohara.tinkertime.controllers.files.ConflictResolver;
 import aohara.tinkertime.controllers.files.ConflictResolver.Resolution;
@@ -18,16 +21,22 @@ import aohara.tinkertime.models.ModStructure.Module;
 
 public class ModManager extends Listenable<ModUpdateListener> {
 	
-	private final ModDownloadManager dm;
+	public static final int NUM_CONCURRENT_DOWNLOADS = 4;
+	
+	private final ModPageManager dm;
+	private final Downloader downloader;
 	private final Config config;
 	private final ConflictResolver cr;
+	private final ModStateManager sm;
 	
 	public ModManager(
-			ModStateManager sm, ModDownloadManager dm, Config config,
-			ConflictResolver cr){
+			ModStateManager sm, ModPageManager dm, Config config,
+			ConflictResolver cr, Downloader downloader){
 		this.dm = dm;
 		this.config = config;
 		this.cr = cr;
+		this.sm = sm;
+		this.downloader = downloader;
 		addListener(sm);
 	}
 	
@@ -41,19 +50,35 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	
 	// -- Accessors ------------------------
 	
-	public boolean isDownloaded(ModApi mod){
+	public static boolean isDownloaded(ModApi mod, Config config){
 		return config.getModZipPath(mod).toFile().exists();
 	}
 	
-	public boolean isUpdateAvailable(Mod mod){
+	public boolean isDownloaded(ModApi mod){
+		return isDownloaded(mod, config);
+	}
+	
+	private boolean isUpdateAvailable(Mod mod){
 		return dm.isUpdateAvailable(mod);
 	}
 	
 	// -- Modifiers ---------------------------------
 	
-	public Mod addNewMod(ModPage modPage) {
+	public Mod addNewMod(String url) throws CannotAddModException{
+		try {
+			return addNewMod(ModPage.createFromUrl(new URL(url)));
+		} catch (MalformedURLException e) {
+			throw new CannotAddModException();
+		}
+	}
+	
+	private void downloadMod(Mod mod){
+		downloader.download(mod.getDownloadLink(), config.getModZipPath(mod));
+	}
+	
+	public Mod addNewMod(ModPage modPage) throws CannotAddModException, CannotAddModException {
 		Mod mod = new Mod(modPage);
-		dm.downloadMod(mod);
+		downloadMod(mod);
 		notifyListeners(mod, false);
 		return mod;
 	}
@@ -143,16 +168,17 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	
 	public void updateMod(Mod mod) 
 		throws ModUpdateFailedException, ModAlreadyUpToDateException,
-		CannotDisableModException
+		CannotDisableModException, CannotAddModException
 	{
-		tryDisableMod(mod);
-		dm.tryUpdateData(mod); // Throws Exception if failure
-		dm.downloadMod(mod);
-		
-		// Notify listeners of mod update
-		for (ModUpdateListener l : getListeners()){
-			l.modUpdated(mod, false);
+		if (isUpdateAvailable(mod)){
+			tryDisableMod(mod);
+			dm.tryUpdateData(mod);
+			downloadMod(mod);
+		} else {
+			throw new ModAlreadyUpToDateException();	
 		}
+		
+		notifyListeners(mod, false);
 	}
 	
 	public void deleteMod(Mod mod) throws CannotDisableModException {
@@ -162,8 +188,24 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		FileUtils.deleteQuietly(config.getModZipPath(mod).toFile());
 	}
 	
+	public int checkForUpdates() {
+		// FIXME do in background
+		int numAvailable = 0;
+		for (Mod mod : sm.getMods()){
+			if (isUpdateAvailable(mod)){
+				mod.setUpdateAvailable();
+				numAvailable++;
+				notifyListeners(mod, false);
+			}
+		}
+		
+		return numAvailable;
+	}
+	
 	// -- Exceptions -----------------------
 	
+	@SuppressWarnings("serial")
+	public static class CannotAddModException extends Throwable {}
 	@SuppressWarnings("serial")
 	public static class ModAlreadyEnabledException extends Throwable {}
 	@SuppressWarnings("serial")

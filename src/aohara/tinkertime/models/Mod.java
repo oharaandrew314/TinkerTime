@@ -3,14 +3,17 @@ package aohara.tinkertime.models;
 import java.net.URL;
 import java.util.Date;
 
-public class Mod implements ModApi{
+import aohara.tinkertime.controllers.ModManager.CannotAddModException;
+
+public class Mod extends ModApi{
 	
-	private String name, creator, newestFile;
+	private String name, creator, currentFile, description;
 	private Date lastUpdated;
 	private URL downloadLink, imageUrl, pageUrl;
 	private boolean enabled = false;
+	private transient boolean updateAvailable = false;
 	
-	public Mod(ModApi page){
+	public Mod(ModApi page) throws CannotAddModException {
 		updateModData(page);
 	}
 
@@ -31,7 +34,7 @@ public class Mod implements ModApi{
 
 	@Override
 	public String getNewestFile() {
-		return newestFile;
+		return currentFile;
 	}
 
 	@Override
@@ -49,6 +52,11 @@ public class Mod implements ModApi{
 		return pageUrl;
 	}
 	
+	@Override
+	public String getDescription(){
+		return description;
+	}
+	
 	// -- Other Methods --------------------
 	
 	public boolean isEnabled(){
@@ -59,21 +67,31 @@ public class Mod implements ModApi{
 		this.enabled = enabled;
 	}
 	
-	public void updateModData(ModApi mod){
-		name = mod.getName();
-		creator = mod.getCreator();
-		newestFile = mod.getNewestFile();
-		
-		lastUpdated = mod.getUpdatedOn();
-		
-		downloadLink = mod.getDownloadLink();
-		imageUrl = mod.getImageUrl();
-		pageUrl = mod.getPageUrl();
+	public void updateModData(ModApi mod) throws CannotAddModException{
+		try{
+			name = mod.getName();
+			creator = mod.getCreator();
+			currentFile = mod.getNewestFile();
+			description = mod.getDescription();
+			
+			lastUpdated = mod.getUpdatedOn();
+			
+			downloadLink = mod.getDownloadLink();
+			imageUrl = mod.getImageUrl();
+			pageUrl = mod.getPageUrl();
+			
+			updateAvailable = false;
+		} catch(NullPointerException e){
+			throw new CannotAddModException();
+		}
 	}
 	
-	@Override
-	public int hashCode(){
-		return name.hashCode();
+	public void setUpdateAvailable(){
+		updateAvailable = true;
+	}
+	
+	public boolean isUpdateAvailable(){
+		return updateAvailable;
 	}
 	
 	@Override
@@ -83,5 +101,4 @@ public class Mod implements ModApi{
 		}
 		return false;
 	}
-	
 }

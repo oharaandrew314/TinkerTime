@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import aohara.common.Listenable;
+import aohara.common.selectorPanel.SelectorInterface;
 import aohara.tinkertime.config.Config;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
@@ -18,7 +20,8 @@ import aohara.tinkertime.models.ModStructure;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-public class ModStateManager implements ModUpdateListener {
+public class ModStateManager extends Listenable<SelectorInterface<Mod>>
+		implements ModUpdateListener {
 	
 	private final Gson gson;
 	private final Path modsPath;
@@ -32,10 +35,16 @@ public class ModStateManager implements ModUpdateListener {
 		this.modsPath = modsPath;
 	}
 	
-	private Set<Mod> loadMods(){
+	private synchronized Set<Mod> loadMods(){
 		try(FileReader reader = new FileReader(modsPath.toFile())){
 			Set<Mod> mods = gson.fromJson(reader, modsType);
 			if (mods != null){
+				
+				// Update Listeners
+				for (SelectorInterface<Mod> l : getListeners()){
+					l.setDataSource(mods);
+				}
+				
 				return mods;
 			}
 		} catch (FileNotFoundException e){
@@ -54,14 +63,14 @@ public class ModStateManager implements ModUpdateListener {
 		}
 	}
 	
-	public Set<Mod> getMods(){
+	public synchronized Set<Mod> getMods(){
 		if (modCache.isEmpty()){
 			modCache.addAll(loadMods());
 		}
 		return new HashSet<Mod>(modCache);
 	}
 	
-	public Map<Mod, ModStructure> getModStructures(Config config){
+	public synchronized Map<Mod, ModStructure> getModStructures(Config config){
 		if (structureCache.isEmpty()){
 			for (Mod mod : getMods()){
 				structureCache.put(mod, new ModStructure(mod, config));
@@ -70,26 +79,31 @@ public class ModStateManager implements ModUpdateListener {
 		return new HashMap<Mod, ModStructure>(structureCache);
 	}
 	
-	public Set<ModStructure> getStructures(Config config){
+	public synchronized Set<ModStructure> getStructures(Config config){
 		return new HashSet<ModStructure>(getModStructures(config).values());
 	}
 
 	@Override
-	public void modUpdated(Mod mod, boolean deleted) {
+	public synchronized void modUpdated(Mod mod, boolean deleted) {
 		modCache.clear();
 		structureCache.clear();
 		
 		Set<Mod> mods = loadMods();
-		if (mods.contains(mod)){
-			mods.remove(mod);
+		
+		// Remove the old mod
+		Set<Mod> toRemove = new HashSet<>();
+		for (Mod m : mods){
+			if (m.getName().equals(mod.getName())){
+				toRemove.add(m);
+			}
 		}
+		mods.removeAll(toRemove);
+		
+		// If the mod is being updated, add the new data
 		if (!deleted){
 			mods.add(mod);
 		}
 		
 		saveMods(mods);
-		
-		modCache.addAll(mods);
-	}	
-
+	}
 }
