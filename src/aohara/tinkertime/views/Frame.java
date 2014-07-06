@@ -1,6 +1,5 @@
 package aohara.tinkertime.views;
 
-import java.awt.BorderLayout;
 import java.awt.Image;
 import java.io.IOException;
 import java.net.URL;
@@ -17,10 +16,10 @@ import aohara.tinkertime.controllers.ModManager;
 @SuppressWarnings("serial")
 public class Frame extends JFrame {
 	
-	public Frame(ModManager mm, DecoratedComponent<?> selectorPanel,
-			DecoratedComponent<?> statusBar, JMenuBar menuBar){
+	public Frame(
+			ModManager mm, DecoratedComponent<?> selectorPanel,
+			JMenuBar menuBar) {
 		setTitle(TinkerTime.NAME);
-		setLayout(new BorderLayout());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(800, 600);
 		setJMenuBar(menuBar);
@@ -33,8 +32,7 @@ public class Frame extends JFrame {
 		imageList.add(loadIcon("icon 16x16.png"));
 		setIconImages(imageList);
 		
-		add(selectorPanel.getComponent(), BorderLayout.CENTER);
-		add(statusBar.getComponent(), BorderLayout.SOUTH);
+		add(selectorPanel.getComponent());
 		setVisible(true);
 	}
 	

@@ -26,7 +26,6 @@ import aohara.tinkertime.views.Frame;
 import aohara.tinkertime.views.ModImageView;
 import aohara.tinkertime.views.ModListCellRenderer;
 import aohara.tinkertime.views.ModView;
-import aohara.tinkertime.views.StatusBar;
 import aohara.tinkertime.views.TinkerMenuBar;
 
 public class TinkerTime implements ListListener<Mod> {
@@ -49,7 +48,6 @@ public class TinkerTime implements ListListener<Mod> {
 		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new ModView());
 		sp.addControlPanel(true, new ModImageView());
 		sp.setListCellRenderer(new ModListCellRenderer());
-		StatusBar<FileTransferContext> statusBar = new StatusBar<>();
 		TinkerMenuBar menuBar = new TinkerMenuBar(mm, dm, sm);		
 		
 		// Add Listeners
@@ -57,7 +55,6 @@ public class TinkerTime implements ListListener<Mod> {
 		ProgressDialog<ModEnableContext> enableProgress = new ProgressDialog<>("Processing Mods");
 		sp.addListener(this);
 		sp.addListener(menuBar);
-		downloader.addListener(statusBar);
 		downloader.addListener(downloadProgress);
 		//enabler.addListener(statusBar);
 		enabler.addListener(enableProgress);
@@ -65,7 +62,7 @@ public class TinkerTime implements ListListener<Mod> {
 
 		// Start Application
 		sm.getMods();  // Load mods (will notify selector panel)
-		new Frame(mm, sp, statusBar, menuBar);
+		new Frame(mm, sp, menuBar);
 	}
 	
 	public static void main(String[] args) {
