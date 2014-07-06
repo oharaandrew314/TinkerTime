@@ -1,6 +1,5 @@
 package aohara.tinkertime.models;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -15,12 +14,14 @@ public class ModStructure {
 	private String readmeName;
 	private Set<Module> modules = new HashSet<>();
 	private final ZipManager zipManager;
+	public final Path zipPath;
 	
 	public ModStructure(Mod mod, Config config){
 		this(config.getModZipPath(mod));
 	}
 	
 	public ModStructure(Path zipPath){
+		this.zipPath = zipPath;
 		zipManager = new ZipManager(zipPath);
 		
 		Path gameDataPath = null;
@@ -48,7 +49,7 @@ public class ModStructure {
 				if (!entryPath.equals(gameDataPath)){
 					Path rel = gameDataPath != null ? gameDataPath.relativize(entryPath) : entryPath;
 					if (rel.getNameCount() == 1){
-						modules.add(new Module(entryPath));
+						modules.add(new Module(zipPath, entryPath));
 					}
 				}
 			}
@@ -87,11 +88,11 @@ public class ModStructure {
 		private final Path pathWithinZip;
 		private final Set<ZipEntry> entries = new HashSet<>();
 
-		public Module(Path path) {
-			this.pathWithinZip = path;
+		public Module(Path zipPath, Path pathWithinZip) {
+			this.pathWithinZip = pathWithinZip;
 
 			for (ZipEntry entry : getZipManager().getZipEntries()) {
-				if (!entry.isDirectory() && toPath(entry).startsWith(path)){
+				if (!entry.isDirectory() && toPath(entry).startsWith(pathWithinZip)){
 					entries.add(entry);		
 				}
 			}
@@ -112,15 +113,6 @@ public class ModStructure {
 		
 		public String getName(){
 			return pathWithinZip.getFileName().toString();
-		}
-		
-		public File getConflict(Config config){
-			for (File file : config.getGameDataPath().toFile().listFiles()){
-				if (file.isDirectory() && file.getName().equals(getName())){
-					return file;
-				}
-			}
-			return null;
 		}
 	}
 }
