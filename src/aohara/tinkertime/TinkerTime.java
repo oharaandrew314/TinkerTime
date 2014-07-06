@@ -1,25 +1,25 @@
 package aohara.tinkertime;
 
-import java.nio.file.Path;
-
 import javax.swing.JOptionPane;
 
 import aohara.common.executors.Downloader;
-import aohara.common.executors.FileMover;
+import aohara.common.executors.FileTransferExecutor.FileConflictResolver;
 import aohara.common.executors.TempDownloader;
+import aohara.common.executors.context.FileTransferContext;
 import aohara.common.progressDialog.ProgressDialog;
 import aohara.common.selectorPanel.ListListener;
 import aohara.common.selectorPanel.SelectorPanel;
 import aohara.tinkertime.config.Config;
-import aohara.tinkertime.controllers.ModPageDownloader;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.CannotDisableModException;
 import aohara.tinkertime.controllers.ModManager.CannotEnableModException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledException;
 import aohara.tinkertime.controllers.ModManager.ModNotDownloadedException;
+import aohara.tinkertime.controllers.DownloaderManager;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;
+import aohara.tinkertime.views.DialogConflictResolver;
 import aohara.tinkertime.views.Frame;
 import aohara.tinkertime.views.ModImageView;
 import aohara.tinkertime.views.ModListCellRenderer;
@@ -36,30 +36,26 @@ public class TinkerTime implements ListListener<Mod> {
 		Config.verifyConfig();
 		
 		// Initialize Controllers
-		FileMover fileMover = new FileMover();
-		Downloader downloader = new TempDownloader(ModManager.NUM_CONCURRENT_DOWNLOADS, fileMover);
-		ProgressDialog<Path> progressDialog = new ProgressDialog<>("Downloads Mods");
+		Downloader downloader = new TempDownloader(ModManager.NUM_CONCURRENT_DOWNLOADS, FileConflictResolver.Overwrite);
+		ProgressDialog<FileTransferContext> progressDialog = new ProgressDialog<>("Downloads Mods");
 		
 		Config config = new Config();
 		ModStateManager sm = new ModStateManager(config.getModsPath().resolve("mods.json"));
-		ModPageDownloader dm = new ModPageDownloader(sm);
-		mm = new ModManager(sm, dm, config, null, downloader);  // FIXME: Implement CR
+		DownloaderManager dm = new DownloaderManager(sm, downloader, config);
+		mm = new ModManager(sm, config, new DialogConflictResolver(config, sm), downloader);
 		
 		// Initialize GUI
 		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new ModView());
 		sp.addControlPanel(true, new ModImageView());
 		sp.setListCellRenderer(new ModListCellRenderer());
-		StatusBar statusBar = new StatusBar();
+		StatusBar<FileTransferContext> statusBar = new StatusBar<>();
 		TinkerMenuBar menuBar = new TinkerMenuBar(mm, dm, sm);		
 		
 		// Add Listeners
-		dm.addListener(progressDialog);
-		dm.addListener(statusBar);
 		sp.addListener(this);
 		sp.addListener(menuBar);
 		downloader.addListener(statusBar);
 		downloader.addListener(progressDialog);
-		fileMover.addListener(progressDialog);
 		sm.addListener(sp);
 
 		// Start Application

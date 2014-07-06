@@ -76,7 +76,9 @@ public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 	public synchronized Map<Mod, ModStructure> getModStructures(Config config){
 		if (structureCache.isEmpty()){
 			for (Mod mod : getMods()){
-				structureCache.put(mod, new ModStructure(mod, config));
+				if (config.getModZipPath(mod).toFile().exists()){
+					structureCache.put(mod, new ModStructure(mod, config));
+				}
 			}
 		}
 		return new HashMap<Mod, ModStructure>(structureCache);

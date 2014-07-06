@@ -16,9 +16,8 @@ import aohara.tinkertime.config.Config;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.CannotAddModException;
 import aohara.tinkertime.controllers.ModManager.CannotDisableModException;
-import aohara.tinkertime.controllers.ModManager.ModAlreadyUpToDateException;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
-import aohara.tinkertime.controllers.ModPageDownloader;
+import aohara.tinkertime.controllers.DownloaderManager;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;
 
@@ -27,10 +26,10 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private final ModManager mm;
 	private final ModStateManager sm;
-	private final ModPageDownloader mpd;
+	private final DownloaderManager mpd;
 	private Mod selectedMod;
 	
-	public TinkerMenuBar(ModManager mm, ModPageDownloader mpd, ModStateManager sm){
+	public TinkerMenuBar(ModManager mm, DownloaderManager mpd, ModStateManager sm){
 		this.mm = mm;
 		this.mpd = mpd;
 		this.sm = sm;
@@ -55,10 +54,12 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 			getParent(), message, "Error", JOptionPane.ERROR_MESSAGE);
 	}
 	
+	/*
 	private void successMessage(String message){
 		JOptionPane.showMessageDialog(
 			getParent(), message, "Success", JOptionPane.INFORMATION_MESSAGE);	
 	}
+	*/
 	
 	// -- Listeners --------------------------------------------------
 
@@ -154,32 +155,17 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (selectedMod != null){
-				try {
-					updateMod(selectedMod);
-					successMessage(
-						"New Mod Data retrieved.  Downloading "
-						+ selectedMod.getName() + "...");
-				} catch (ModAlreadyUpToDateException e1) {
-					errorMessage(selectedMod.getName() + " is already up to date.");
-				}
+				updateMod(selectedMod);
 			}
 		}
 		
-		protected boolean updateMod(Mod mod) throws ModAlreadyUpToDateException{
+		protected void updateMod(Mod mod) {
 			try {
-				mm.updateMod(selectedMod);
-				return true;
+				mpd.updateMod(selectedMod);
 			} catch (ModUpdateFailedException e1) {
-				errorMessage("There was an error updating the mod");
-				e1.printStackTrace();
-			} catch (CannotDisableModException e1) {
-				errorMessage("The mod could not be disabled before updating.");
-				e1.printStackTrace();
-			} catch (CannotAddModException e1) {
-				errorMessage("Updated mod information could not be retrieved");
+				errorMessage("There was an error updating " + mod.getName());
 				e1.printStackTrace();
 			}
-			return false;
 		}
 	}
 	
@@ -191,17 +177,9 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int numUpdated = 0;
 			for (Mod mod : sm.getMods()){
-				try {
-					if (updateMod(mod)){
-						numUpdated++;
-					}
-				} catch (ModAlreadyUpToDateException ex){
-					// Do nothing
-				}
+				updateMod(mod);
 			}
-			successMessage(numUpdated + " mods were updated.");
 		}
 	}
 	
@@ -215,7 +193,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		public void actionPerformed(ActionEvent e) {
 			try {
 				mpd.checkForUpdates(mm, sm.getMods());
-			} catch (IOException e1) {
+			} catch (ModUpdateFailedException e1) {
 				errorMessage("Error checking for updates.");
 			}
 		}

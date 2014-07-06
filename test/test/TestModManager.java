@@ -2,7 +2,12 @@ package test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -10,20 +15,14 @@ import java.nio.file.Path;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import test.util.MockConfig;
 import test.util.ModLoader;
 import aohara.common.executors.Downloader;
 import aohara.tinkertime.config.Config;
-import aohara.tinkertime.controllers.ModPageDownloader;
 import aohara.tinkertime.controllers.ModManager;
-import aohara.tinkertime.controllers.ModManager.CannotAddModException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledException;
-import aohara.tinkertime.controllers.ModManager.ModAlreadyUpToDateException;
-import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.controllers.files.ConflictResolver;
 import aohara.tinkertime.controllers.files.ConflictResolver.Resolution;
@@ -34,14 +33,12 @@ import aohara.tinkertime.models.ModStructure.Module;
 
 public class TestModManager {
 	
-	private ModPageDownloader dm;
 	private ModStateManager sm;
 	private Config config;
 	private ModManager manager;
 	private static ModPage MECHJEB;
 	private Mod mod, testMod1, testMod2;
 	private MockCR cr;
-	private boolean allowUpdate;
 	private Downloader downloader;
 	
 	@BeforeClass
@@ -50,12 +47,9 @@ public class TestModManager {
 	}
 	
 	@Before
-	public void setUp() throws Throwable {
-		allowUpdate = true;
-		
+	public void setUp() throws Throwable {		
 		manager = new ModManager(
 			sm = mock(ModStateManager.class),
-			dm = getMockDM(),
 			config = MockConfig.getSpy(),
 			cr = spy(new MockCR(config, sm)),
 			downloader =mock(Downloader.class)
@@ -154,31 +148,6 @@ public class TestModManager {
 		manager.disableMod(mod);
 	}
 	
-	// -- Update Tests --------------------------------
-	
-	@Test(expected = ModAlreadyUpToDateException.class)
-	public void testModAlreadyUpToDate() throws Throwable {
-		allowUpdate = false;
-		manager.updateMod(mod);
-	}
-	
-	@Test
-	public void testUpdateDisabledMod() throws Throwable {
-		assertFalse(mod.isEnabled());
-		manager.updateMod(mod);
-		verify(downloader, times(1)).download(mod.getPageUrl(), config.getModZipPath(mod));
-		assertFalse(mod.isEnabled());
-	}
-	
-	@Test
-	public void testUpdateEnabledMod() throws Throwable {
-		mod.setEnabled(true);
-		assertTrue(mod.isEnabled());
-		manager.updateMod(mod);
-		verify(downloader, times(1)).download(mod.getPageUrl(), config.getModZipPath(mod));
-		assertFalse(mod.isEnabled());
-	}
-	
 	// -- Mock Objects -------------------------------------
 	
 	public static class MockCR extends ConflictResolver {
@@ -193,18 +162,5 @@ public class TestModManager {
 		public Resolution getResolution(Module module, Mod mod) {
 			return res;
 		}
-	}
-	
-	private ModPageDownloader getMockDM() throws ModAlreadyUpToDateException, ModUpdateFailedException, CannotAddModException{
-		ModPageDownloader dm = mock(ModPageDownloader.class);
-		
-		when(dm.tryUpdateData(any(Mod.class))).then(new Answer<Boolean>(){
-			@Override
-			public Boolean answer(InvocationOnMock invocation) throws Throwable {
-				return allowUpdate;
-			}
-		});
-		
-		return dm;
 	}
 }

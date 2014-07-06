@@ -22,7 +22,7 @@ public class Frame extends JFrame {
 		setTitle(TinkerTime.NAME);
 		setLayout(new BorderLayout());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(600, 600);
+		setSize(800, 600);
 		setJMenuBar(menuBar);
 		
 		// Add App icons

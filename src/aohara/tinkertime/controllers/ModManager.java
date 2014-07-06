@@ -23,15 +23,13 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	
 	public static final int NUM_CONCURRENT_DOWNLOADS = 4;
 	
-	private final ModPageDownloader dm;
 	private final Downloader downloader;
 	private final Config config;
 	private final ConflictResolver cr;
 	
 	public ModManager(
-			ModStateManager sm, ModPageDownloader dm, Config config,
-			ConflictResolver cr, Downloader downloader){
-		this.dm = dm;
+			ModStateManager sm, Config config, ConflictResolver cr,
+			Downloader downloader){
 		this.config = config;
 		this.cr = cr;
 		this.downloader = downloader;
@@ -54,10 +52,6 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	
 	public boolean isDownloaded(ModApi mod){
 		return isDownloaded(mod, config);
-	}
-	
-	private boolean isUpdateAvailable(Mod mod){
-		return dm.isUpdateAvailable(mod);
 	}
 	
 	// -- Modifiers ---------------------------------
@@ -162,21 +156,6 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		} catch (ModAlreadyDisabledException e) {
 			// Do Nothing
 		}
-	}
-	
-	public void updateMod(Mod mod) 
-		throws ModUpdateFailedException, ModAlreadyUpToDateException,
-		CannotDisableModException, CannotAddModException
-	{
-		if (isUpdateAvailable(mod)){
-			tryDisableMod(mod);
-			dm.tryUpdateData(mod);
-			downloadMod(mod);
-		} else {
-			throw new ModAlreadyUpToDateException();	
-		}
-		
-		notifyModUpdated(mod, false);
 	}
 	
 	public void deleteMod(Mod mod) throws CannotDisableModException {

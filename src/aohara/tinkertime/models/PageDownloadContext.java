@@ -9,17 +9,19 @@ import aohara.tinkertime.controllers.ModManager.CannotAddModException;
 public class PageDownloadContext extends FileTransferContext {
 	
 	public final Mod mod;
+	public final boolean updateAfter;
 
-	public PageDownloadContext(Mod mod, Path tempPath) {
+	public PageDownloadContext(Mod mod, Path tempPath, boolean updateAfter) {
 		super(mod.getPageUrl(), tempPath);
 		this.mod = mod;
+		this.updateAfter = updateAfter;
 		tempPath.toFile().deleteOnExit();
 	}
 
 	@Override
 	public int getTotalProgress() {
 		try {
-			return mod.getDownloadLink().openConnection().getContentLength();
+			return mod.getPageUrl().openConnection().getContentLength();
 		} catch (IOException e) {
 			return -1;
 		}
@@ -31,7 +33,7 @@ public class PageDownloadContext extends FileTransferContext {
 	}
 	
 	public ModPage getPage() throws CannotAddModException{
-		return ModPage.createFromFile(getResult(), getSubject());
+		return ModPage.createFromFile(getDest(), getSource());
 	}
 	
 	public boolean isUpdateAvailable(){
