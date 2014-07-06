@@ -4,7 +4,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -20,6 +19,7 @@ import test.util.MockConfig;
 import test.util.ModLoader;
 import aohara.common.executors.Downloader;
 import aohara.tinkertime.config.Config;
+import aohara.tinkertime.controllers.ModEnabler;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledException;
@@ -51,8 +51,8 @@ public class TestModManager {
 		manager = new ModManager(
 			sm = mock(ModStateManager.class),
 			config = MockConfig.getSpy(),
-			cr = spy(new MockCR(config, sm)),
-			downloader =mock(Downloader.class)
+			downloader = mock(Downloader.class),
+			mock(ModEnabler.class)
 		);
 		
 		mod = ModLoader.addMod(ModLoader.MECHJEB, config);
