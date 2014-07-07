@@ -4,9 +4,7 @@ import javax.swing.JOptionPane;
 
 import aohara.common.executors.Downloader;
 import aohara.common.executors.FileTransferExecutor.FileConflictResolver;
-import aohara.common.executors.TempDownloader;
-import aohara.common.executors.context.FileTransferContext;
-import aohara.common.progressDialog.ProgressDialog;
+import aohara.common.executors.progress.ProgressDialog;
 import aohara.common.selectorPanel.ListListener;
 import aohara.common.selectorPanel.SelectorPanel;
 import aohara.tinkertime.config.Config;
@@ -17,10 +15,8 @@ import aohara.tinkertime.controllers.ModManager.CannotEnableModException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledException;
 import aohara.tinkertime.controllers.ModManager.ModNotDownloadedException;
-import aohara.tinkertime.controllers.DownloaderManager;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.models.ModEnableContext;
 import aohara.tinkertime.views.DialogConflictResolver;
 import aohara.tinkertime.views.Frame;
 import aohara.tinkertime.views.ModImageView;
@@ -37,10 +33,9 @@ public class TinkerTime implements ListListener<Mod> {
 		Config.verifyConfig();
 		
 		// Initialize Controllers
-		Config config = new Config();
-		Downloader downloader = new TempDownloader(ModManager.NUM_CONCURRENT_DOWNLOADS, FileConflictResolver.Overwrite);		
+		Config config = new Config();	
+		Downloader downloader = new Downloader(ModManager.NUM_CONCURRENT_DOWNLOADS, FileConflictResolver.Overwrite);
 		ModStateManager sm = new ModStateManager(config.getModsPath().resolve("mods.json"));
-		DownloaderManager dm = new DownloaderManager(sm, downloader, config);
 		ModEnabler enabler = new ModEnabler(new DialogConflictResolver(config, sm));
 		mm = new ModManager(sm, config, downloader, enabler);
 		
@@ -48,15 +43,14 @@ public class TinkerTime implements ListListener<Mod> {
 		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new ModView());
 		sp.addControlPanel(true, new ModImageView());
 		sp.setListCellRenderer(new ModListCellRenderer());
-		TinkerMenuBar menuBar = new TinkerMenuBar(mm, dm, sm);		
+		TinkerMenuBar menuBar = new TinkerMenuBar(mm);		
 		
 		// Add Listeners
-		ProgressDialog<FileTransferContext> downloadProgress = new ProgressDialog<>("Downloads Mods");
-		ProgressDialog<ModEnableContext> enableProgress = new ProgressDialog<>("Processing Mods");
+		ProgressDialog downloadProgress = new ProgressDialog("Downloads Mods");
+		ProgressDialog enableProgress = new ProgressDialog("Processing Mods");
 		sp.addListener(this);
 		sp.addListener(menuBar);
 		downloader.addListener(downloadProgress);
-		//enabler.addListener(statusBar);
 		enabler.addListener(enableProgress);
 		sm.addListener(sp);
 

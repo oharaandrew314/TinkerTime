@@ -17,22 +17,16 @@ import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.CannotAddModException;
 import aohara.tinkertime.controllers.ModManager.CannotDisableModException;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
-import aohara.tinkertime.controllers.DownloaderManager;
-import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;
 
 @SuppressWarnings("serial")
 public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private final ModManager mm;
-	private final ModStateManager sm;
-	private final DownloaderManager mpd;
 	private Mod selectedMod;
 	
-	public TinkerMenuBar(ModManager mm, DownloaderManager mpd, ModStateManager sm){
+	public TinkerMenuBar(ModManager mm){
 		this.mm = mm;
-		this.mpd = mpd;
-		this.sm = sm;
 		
 		JMenu modMenu = new JMenu("Mod");
 		modMenu.add(new JMenuItem(new AddModAction()));
@@ -161,7 +155,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		
 		protected void updateMod(Mod mod) {
 			try {
-				mpd.updateMod(selectedMod);
+				mm.updateMod(selectedMod);
 			} catch (ModUpdateFailedException e1) {
 				errorMessage("There was an error updating " + mod.getName());
 				e1.printStackTrace();
@@ -177,8 +171,10 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			for (Mod mod : sm.getMods()){
-				updateMod(mod);
+			try {
+				mm.updateMods();
+			} catch (ModUpdateFailedException e1) {
+				errorMessage("One or more mods failed to update");
 			}
 		}
 	}
@@ -192,7 +188,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				mpd.checkForUpdates(mm, sm.getMods());
+				mm.checkForUpdates();
 			} catch (ModUpdateFailedException e1) {
 				errorMessage("Error checking for updates.");
 			}

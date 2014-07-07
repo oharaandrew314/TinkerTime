@@ -1,35 +1,44 @@
 package aohara.tinkertime.controllers;
 
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import aohara.common.Listenable;
 import aohara.common.executors.Downloader;
-import aohara.common.progressDialog.ProgressListener;
+import aohara.common.executors.context.ExecutorContext;
+import aohara.common.executors.progress.ProgressListener;
 import aohara.tinkertime.config.Config;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModApi;
 import aohara.tinkertime.models.ModEnableContext;
 import aohara.tinkertime.models.ModEnableContext.EnableAction;
+import aohara.tinkertime.models.context.NewModPageContext;
+import aohara.tinkertime.models.context.PageUpdateContext;
 import aohara.tinkertime.models.ModPage;
 
-public class ModManager extends Listenable<ModUpdateListener> implements ProgressListener<ModEnableContext> {
+public class ModManager extends Listenable<ModUpdateListener>
+		implements ProgressListener {
 	
 	public static final int NUM_CONCURRENT_DOWNLOADS = 4;
 	
 	private final Downloader downloader;
 	private final ModEnabler enabler;
 	private final Config config;
+	private final ModStateManager sm;
 	
 	public ModManager(
 			ModStateManager sm, Config config, Downloader downloader,
 			ModEnabler enabler){
+		this.sm = sm;
 		this.config = config;
 		this.downloader = downloader;
 		this.enabler = enabler;
 		
-		addListener(sm);
+		this.addListener(sm);
 		enabler.addListener(this);
+		downloader.addListener(this);
 	}
 	
 	// -- Listeners -----------------------
@@ -46,25 +55,45 @@ public class ModManager extends Listenable<ModUpdateListener> implements Progres
 		return config.getModZipPath(mod).toFile().exists();
 	}
 	
-	public boolean isDownloaded(ModApi mod){
+	private boolean isDownloaded(ModApi mod){
 		return isDownloaded(mod, config);
+	}
+	
+	private Path createTempFile() throws IOException{
+		return Files.createTempFile("download", ".temp");
 	}
 	
 	// -- Modifiers ---------------------------------
 	
-	public Mod addNewMod(String url) throws CannotAddModException{
+	public void addNewMod(String url) throws CannotAddModException {
 		try {
-			return addNewMod(ModPage.createFromUrl(new URL(url)));
-		} catch (MalformedURLException e) {
+			downloader.submit(new NewModPageContext(new URL(url), createTempFile()));
+		} catch (IOException e) {
 			throw new CannotAddModException();
 		}
 	}
 	
-	public Mod addNewMod(ModPage modPage) throws CannotAddModException, CannotAddModException {
-		Mod mod = new Mod(modPage);
-		downloader.download(mod.getDownloadLink(), config.getModZipPath(mod));
-		notifyModUpdated(mod, false);
-		return mod;
+	public void updateMod(Mod mod) throws ModUpdateFailedException {
+		try {
+			downloader.submit(new PageUpdateContext(mod, createTempFile(), true));
+		} catch (IOException e) {
+			throw new ModUpdateFailedException();
+		}
+	}
+	
+	public void updateMods() throws ModUpdateFailedException{
+		boolean error = false;
+		for (Mod mod : sm.getMods()){
+			try {
+				updateMod(mod);
+			} catch (ModUpdateFailedException e) {
+				error = true;
+			}
+		}
+		
+		if (error){
+			throw new ModUpdateFailedException();
+		}
 	}
 	
 	public void enableMod(Mod mod)
@@ -93,21 +122,74 @@ public class ModManager extends Listenable<ModUpdateListener> implements Progres
 		enabler.delete(mod, config);
 	}
 	
+	public void checkForUpdates() throws ModUpdateFailedException {	
+		boolean error = false;
+		for (Mod mod : sm.getMods()){
+			try {
+				Path tempFile = Files.createTempFile("download", ".temp");
+				downloader.submit(new PageUpdateContext(mod, tempFile, false));
+			} catch (IOException e) {
+				error = true;
+			}
+		}
+		
+		// If an error occured during execution, re-throw exception
+		if (error){
+			throw new ModUpdateFailedException();
+		}
+	}
+	
 	// -- Listeners ------------------------------------------------------
 	
 	@Override
-	public void progressStarted(ModEnableContext object, int target,
+	public void progressStarted(ExecutorContext object, int target,
 			int tasksRunning) { /* */}
 	@Override
-	public void progressMade(ModEnableContext object, int current) { /* */}
+	public void progressMade(ExecutorContext object, int current) { /* */}
 	@Override
-	public void progressError(ModEnableContext object, int tasksRunning) { /* */}
+	public void progressError(ExecutorContext object, int tasksRunning) { /* */}
 	
 	@Override
-	public void progressComplete(ModEnableContext context, int tasksRunning) {
-		if (context.isSuccessful()){
-			context.mod.setEnabled(context.action == EnableAction.Enable);
-			notifyModUpdated(context.mod, context.action == EnableAction.Delete);
+	public void progressComplete(ExecutorContext ctx, int tasksRunning) {
+		if (ctx instanceof ModEnableContext){
+			ModEnableContext context = (ModEnableContext) ctx;
+			if (ctx.isSuccessful()){
+				EnableAction action = context.action;
+				context.mod.setEnabled(action == EnableAction.Enable);
+				notifyModUpdated(context.mod, action == EnableAction.Delete);
+			}
+		}
+		else if (ctx instanceof NewModPageContext){
+			NewModPageContext context = (NewModPageContext) ctx;
+			try {
+				Mod mod = new Mod(context.getPage());
+				downloader.download(mod.getDownloadLink(), config.getModZipPath(mod));
+				notifyModUpdated(mod, false);
+			} catch (CannotAddModException e) {
+				// TODO Send Result back to GUI
+				e.printStackTrace();
+			}
+			
+		}
+		else if (ctx instanceof PageUpdateContext){
+			PageUpdateContext context = (PageUpdateContext) ctx;
+			Mod mod = context.mod;
+			if (context.isUpdateAvailable() || !isDownloaded(mod, config)){
+				mod.setUpdateAvailable();
+				notifyModUpdated(mod, false);
+				
+				// If download requested, download mod
+				if (context.downloadIfAvailable()){
+					try {
+						ModPage page = context.getPage();
+						mod.updateModData(page);
+						downloader.download(page.getDownloadLink(), config.getModZipPath(page));
+					} catch (CannotAddModException e) {
+						// TODO Send result back to GUI
+						e.printStackTrace();
+					}
+				}
+			}
 		}
 	}
 	

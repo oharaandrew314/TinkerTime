@@ -11,7 +11,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import aohara.tinkertime.controllers.ModManager.CannotAddModException;
@@ -23,16 +22,6 @@ public class ModPage extends ModApi {
 	private final Element doc;
 	private final URL pageUrl;
 	
-	public static ModPage createFromUrl(URL url)
-			throws CannotAddModException {
-		try {
-			Document doc = Jsoup.connect(url.toString()).get();
-			return new ModPage(doc, url);
-		} catch (IOException e) {
-			throw new CannotAddModException();
-		}
-	}
-	
 	public static ModPage createFromFile(Path path, URL pageUrl) 
 			throws CannotAddModException{
 		try {
@@ -41,10 +30,6 @@ public class ModPage extends ModApi {
 		} catch (IOException e) {
 			throw new CannotAddModException();
 		}
-	}
-	
-	public static ModPage getLatestPage(Mod mod) throws CannotAddModException {
-		return createFromUrl(mod.getPageUrl());
 	}
 	
 	public ModPage(Element doc, URL pageUrl){
