@@ -39,7 +39,7 @@ public class TestModManager {
 	private static ModPage MECHJEB;
 	private Mod mod, testMod1, testMod2;
 	private MockCR cr;
-	private Downloader downloader;
+	private Downloader downloader, modDownloader;
 	
 	@BeforeClass
 	public static void setUpClass(){
@@ -52,6 +52,7 @@ public class TestModManager {
 			sm = mock(ModStateManager.class),
 			config = MockConfig.getSpy(),
 			downloader = mock(Downloader.class),
+			modDownloader = mock(Downloader.class),
 			mock(ModEnabler.class)
 		);
 		

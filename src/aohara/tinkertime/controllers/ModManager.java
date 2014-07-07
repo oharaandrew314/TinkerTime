@@ -14,31 +14,33 @@ import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModApi;
 import aohara.tinkertime.models.ModEnableContext;
 import aohara.tinkertime.models.ModEnableContext.EnableAction;
+import aohara.tinkertime.models.ModPage;
+import aohara.tinkertime.models.context.DownloadModContext;
 import aohara.tinkertime.models.context.NewModPageContext;
 import aohara.tinkertime.models.context.PageUpdateContext;
-import aohara.tinkertime.models.ModPage;
 
 public class ModManager extends Listenable<ModUpdateListener>
 		implements ProgressListener {
 	
 	public static final int NUM_CONCURRENT_DOWNLOADS = 4;
 	
-	private final Downloader downloader;
+	private final Downloader pageDownloader, modDownloader;
 	private final ModEnabler enabler;
 	private final Config config;
 	private final ModStateManager sm;
 	
 	public ModManager(
-			ModStateManager sm, Config config, Downloader downloader,
-			ModEnabler enabler){
+			ModStateManager sm, Config config, Downloader pageDownloader,
+			Downloader modDownloader, ModEnabler enabler){
 		this.sm = sm;
 		this.config = config;
-		this.downloader = downloader;
+		this.pageDownloader = pageDownloader;
+		this.modDownloader = modDownloader;
 		this.enabler = enabler;
 		
 		this.addListener(sm);
 		enabler.addListener(this);
-		downloader.addListener(this);
+		pageDownloader.addListener(this);
 	}
 	
 	// -- Listeners -----------------------
@@ -67,7 +69,7 @@ public class ModManager extends Listenable<ModUpdateListener>
 	
 	public void addNewMod(String url) throws CannotAddModException {
 		try {
-			downloader.submit(new NewModPageContext(new URL(url), createTempFile()));
+			modDownloader.submit(new NewModPageContext(new URL(url), createTempFile()));
 		} catch (IOException e) {
 			throw new CannotAddModException();
 		}
@@ -75,7 +77,7 @@ public class ModManager extends Listenable<ModUpdateListener>
 	
 	public void updateMod(Mod mod) throws ModUpdateFailedException {
 		try {
-			downloader.submit(new PageUpdateContext(mod, createTempFile(), true));
+			pageDownloader.submit(new PageUpdateContext(mod, createTempFile(), true));
 		} catch (IOException e) {
 			throw new ModUpdateFailedException();
 		}
@@ -127,7 +129,7 @@ public class ModManager extends Listenable<ModUpdateListener>
 		for (Mod mod : sm.getMods()){
 			try {
 				Path tempFile = Files.createTempFile("download", ".temp");
-				downloader.submit(new PageUpdateContext(mod, tempFile, false));
+				pageDownloader.submit(new PageUpdateContext(mod, tempFile, false));
 			} catch (IOException e) {
 				error = true;
 			}
@@ -151,6 +153,10 @@ public class ModManager extends Listenable<ModUpdateListener>
 	
 	@Override
 	public void progressComplete(ExecutorContext ctx, int tasksRunning) {
+		if (ctx instanceof DownloadModContext){
+			DownloadModContext context = (DownloadModContext) ctx;
+			notifyModUpdated(context.mod, false);
+		}
 		if (ctx instanceof ModEnableContext){
 			ModEnableContext context = (ModEnableContext) ctx;
 			if (ctx.isSuccessful()){
@@ -163,7 +169,7 @@ public class ModManager extends Listenable<ModUpdateListener>
 			NewModPageContext context = (NewModPageContext) ctx;
 			try {
 				Mod mod = new Mod(context.getPage());
-				downloader.download(mod.getDownloadLink(), config.getModZipPath(mod));
+				pageDownloader.download(mod.getDownloadLink(), config.getModZipPath(mod));
 				notifyModUpdated(mod, false);
 			} catch (CannotAddModException e) {
 				// TODO Send Result back to GUI
@@ -183,7 +189,7 @@ public class ModManager extends Listenable<ModUpdateListener>
 					try {
 						ModPage page = context.getPage();
 						mod.updateModData(page);
-						downloader.download(page.getDownloadLink(), config.getModZipPath(page));
+						modDownloader.submit(new DownloadModContext(mod, config));
 					} catch (CannotAddModException e) {
 						// TODO Send result back to GUI
 						e.printStackTrace();

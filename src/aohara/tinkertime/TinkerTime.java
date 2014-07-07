@@ -1,9 +1,8 @@
 package aohara.tinkertime;
 
-import javax.swing.JOptionPane;
-
 import aohara.common.executors.Downloader;
 import aohara.common.executors.FileTransferExecutor.FileConflictResolver;
+import aohara.common.executors.TempDownloader;
 import aohara.common.executors.progress.ProgressDialog;
 import aohara.common.selectorPanel.ListListener;
 import aohara.common.selectorPanel.SelectorPanel;
@@ -34,10 +33,11 @@ public class TinkerTime implements ListListener<Mod> {
 		
 		// Initialize Controllers
 		Config config = new Config();	
-		Downloader downloader = new Downloader(ModManager.NUM_CONCURRENT_DOWNLOADS, FileConflictResolver.Overwrite);
+		Downloader pageDownloader = new Downloader(ModManager.NUM_CONCURRENT_DOWNLOADS, FileConflictResolver.Overwrite);
+		Downloader modDownloader = new TempDownloader(ModManager.NUM_CONCURRENT_DOWNLOADS, FileConflictResolver.Overwrite);
 		ModStateManager sm = new ModStateManager(config.getModsPath().resolve("mods.json"));
 		ModEnabler enabler = new ModEnabler(new DialogConflictResolver(config, sm));
-		mm = new ModManager(sm, config, downloader, enabler);
+		mm = new ModManager(sm, config, pageDownloader, modDownloader, enabler);
 		
 		// Initialize GUI
 		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new ModView());
@@ -46,12 +46,11 @@ public class TinkerTime implements ListListener<Mod> {
 		TinkerMenuBar menuBar = new TinkerMenuBar(mm);		
 		
 		// Add Listeners
-		ProgressDialog downloadProgress = new ProgressDialog("Downloads Mods");
-		ProgressDialog enableProgress = new ProgressDialog("Processing Mods");
 		sp.addListener(this);
 		sp.addListener(menuBar);
-		downloader.addListener(downloadProgress);
-		enabler.addListener(enableProgress);
+		pageDownloader.addListener(new ProgressDialog("Downloading Mod Pages"));
+		enabler.addListener(new ProgressDialog("Processing Mods"));
+		modDownloader.addListener(new ProgressDialog("Downloading Mods"));
 		sm.addListener(sp);
 
 		// Start Application
@@ -64,35 +63,28 @@ public class TinkerTime implements ListListener<Mod> {
 	}
 
 	@Override
-	public void elementClicked(Mod mod, int numTimes) {
+	public void elementClicked(Mod mod, int numTimes) throws Exception{
 		if (numTimes == 2){
 			if (mod.isEnabled()){
 				try {
 					mm.disableMod(mod);
 				} catch (ModAlreadyDisabledException
 						| CannotDisableModException e) {
-					errorMessage("Could not disable " + mod.getName());
+					throw new Exception("Could not disable " + mod.getName());
 				}
 			} else {
 				try {
 					mm.enableMod(mod);
 				} catch (ModAlreadyEnabledException | ModNotDownloadedException
 						| CannotEnableModException | CannotDisableModException e) {
-					errorMessage("Could not enable " + mod.getName());
+					throw new Exception("Could not enable " + mod.getName());
 				}
 			}
 		}
-		
-	}
-	
-	private void errorMessage(String message){
-		JOptionPane.showMessageDialog(
-			null, message, "Error!", JOptionPane.ERROR_MESSAGE);
 	}
 
 	@Override
 	public void elementSelected(Mod element) {
 		// Do Nothing
 	}
-
 }
