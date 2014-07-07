@@ -73,7 +73,7 @@ public class ModPage extends ModApi {
 	}
 	
 	@Override
-	public URL getDownloadLink(){
+	public URL getDownloadLink() {
 		Element ele = doc.select("#tab-other-downloads tr.even a").first();
 		Matcher m = ID_PATTERN.matcher(ele.attr("href"));
 		
@@ -82,16 +82,31 @@ public class ModPage extends ModApi {
 		int id1 = Integer.parseInt(m.group(1));
 		int id2 = Integer.parseInt(m.group(2));
 		
+		URL url = null;
 		try {
-			return new URL(String.format(
+			String urlString = String.format(
 				"http://addons.curse.cursecdn.com/files/%s/%s/%s",
 				id1, id2,
-				getNewestFile().replaceAll("_", " ").replaceAll(" ", "%20")
-			));
-		} catch (MalformedURLException | IndexOutOfBoundsException e) {
+				getNewestFile().replaceAll(" ", "%20")
+			);
+			
+			url = testUrl(urlString);
+			if (url == null){
+				url = testUrl(urlString.replaceAll("_", "%20"));
+			}			
+			
+		} catch (IOException | IndexOutOfBoundsException e) {
 			e.printStackTrace();
-			return null;
 		}
+		return url;
+	}
+	
+	private URL testUrl(String urlString) throws IOException{
+		URL url = new URL(urlString);
+		if (url.openConnection().getContentLength() > 0){
+			return url;
+		}
+		return null;
 	}
 	
 	@Override
