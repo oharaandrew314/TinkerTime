@@ -41,6 +41,7 @@ public class ModManager extends Listenable<ModUpdateListener>
 		this.addListener(sm);
 		enabler.addListener(this);
 		pageDownloader.addListener(this);
+		modDownloader.addListener(this);
 	}
 	
 	// -- Listeners -----------------------
@@ -153,6 +154,7 @@ public class ModManager extends Listenable<ModUpdateListener>
 	
 	@Override
 	public void progressComplete(ExecutorContext ctx, int tasksRunning) {
+		
 		if (ctx instanceof DownloadModContext){
 			DownloadModContext context = (DownloadModContext) ctx;
 			notifyModUpdated(context.mod, false);
@@ -170,7 +172,7 @@ public class ModManager extends Listenable<ModUpdateListener>
 			try {
 				Mod mod = new Mod(context.getPage());
 				pageDownloader.download(mod.getDownloadLink(), config.getModZipPath(mod));
-				notifyModUpdated(mod, false);
+				notifyModUpdated(mod, false); // Add the new Mod
 			} catch (CannotAddModException e) {
 				// TODO Send Result back to GUI
 				e.printStackTrace();
