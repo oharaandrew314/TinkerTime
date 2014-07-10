@@ -30,15 +30,6 @@ public class ModEnableContext extends ExecutorContext {
 	public String toString() {
 		return "Enabling " + mod.getName();
 	}
-
-	@Override
-	public int getTotalProgress() {
-		int total = 0;
-		for (Module module : struct.getModules()){
-			total += getModuleSize(module);
-		}
-		return total;
-	}
 	
 	public int getModuleSize(Module module){
 		int total = 0;

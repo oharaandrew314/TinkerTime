@@ -146,5 +146,14 @@ public class ModEnabler extends ProgressExecutor<ModEnableContext> {
 				throw new CannotDisableModException();
 			}
 		}
+
+		@Override
+		protected int getTotalProgress(ModEnableContext context) {
+			int total = 0;
+			for (Module module : context.struct.getModules()){
+				total += context.getModuleSize(module);
+			}
+			return total;
+		}
 	}
 }
