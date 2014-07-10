@@ -24,8 +24,8 @@ import aohara.tinkertime.config.Config.IllegalPathException;
 public class DirectoryChooser extends JDialog {
 	
 	private static final String
-		KERBAL_PATH = "Kerbal Path",
-		MODS_PATH = "Mods Directory";
+		GAMEDATA_PATH = "Game Data Path",
+		MODS_PATH = "Mods Path";
 	
 	private final HashMap<String, Path> paths = new HashMap<>();
 	
@@ -37,8 +37,8 @@ public class DirectoryChooser extends JDialog {
 		setLayout(new VerticalLayout());
 		
 		add(new InnerPanel(
-			KERBAL_PATH,
-			"Please choose the path to the KSP executable",
+			GAMEDATA_PATH,
+			"Please choose the path to the KSP GameData folder",
 			JFileChooser.FILES_AND_DIRECTORIES
 		));
 		
@@ -142,7 +142,7 @@ public class DirectoryChooser extends JDialog {
 			Config config = new Config();
 			try {
 				config.setModsPath(paths.get(MODS_PATH));
-				config.setKerbalPath(paths.get(KERBAL_PATH));
+				config.setGameDataPath(paths.get(GAMEDATA_PATH));
 				dialog.setVisible(false);
 			} catch (IllegalPathException e1) {
 				JOptionPane.showMessageDialog(dialog, e1.getMessage());
