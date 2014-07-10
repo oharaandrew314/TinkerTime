@@ -154,10 +154,14 @@ public class ModManager extends Listenable<ModUpdateListener>
 	
 	@Override
 	public void progressComplete(ExecutorContext ctx, int tasksRunning) {
-		
 		if (ctx instanceof DownloadModContext){
 			DownloadModContext context = (DownloadModContext) ctx;
-			notifyModUpdated(context.mod, false);
+			try {
+				notifyModUpdated(new Mod(context.modApi), false);
+			} catch (CannotAddModException e) {
+				// TODO Send result back to GUI
+				e.printStackTrace();
+			}
 		}
 		if (ctx instanceof ModEnableContext){
 			ModEnableContext context = (ModEnableContext) ctx;
@@ -170,9 +174,7 @@ public class ModManager extends Listenable<ModUpdateListener>
 		else if (ctx instanceof NewModPageContext){
 			NewModPageContext context = (NewModPageContext) ctx;
 			try {
-				Mod mod = new Mod(context.getPage());
-				pageDownloader.download(mod.getDownloadLink(), config.getModZipPath(mod));
-				notifyModUpdated(mod, false); // Add the new Mod
+				modDownloader.submit(new DownloadModContext(context.getPage(), config));
 			} catch (CannotAddModException e) {
 				// TODO Send Result back to GUI
 				e.printStackTrace();
