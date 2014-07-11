@@ -11,7 +11,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import aohara.tinkertime.controllers.ModManager.CannotAddModException;
@@ -23,16 +22,6 @@ public class ModPage extends ModApi {
 	private final Element doc;
 	private final URL pageUrl;
 	
-	public static ModPage createFromUrl(URL url)
-			throws CannotAddModException {
-		try {
-			Document doc = Jsoup.connect(url.toString()).get();
-			return new ModPage(doc, url);
-		} catch (IOException e) {
-			throw new CannotAddModException();
-		}
-	}
-	
 	public static ModPage createFromFile(Path path, URL pageUrl) 
 			throws CannotAddModException{
 		try {
@@ -41,10 +30,6 @@ public class ModPage extends ModApi {
 		} catch (IOException e) {
 			throw new CannotAddModException();
 		}
-	}
-	
-	public static ModPage getLatestPage(Mod mod) throws CannotAddModException {
-		return createFromUrl(mod.getPageUrl());
 	}
 	
 	public ModPage(Element doc, URL pageUrl){
@@ -88,21 +73,40 @@ public class ModPage extends ModApi {
 	}
 	
 	@Override
-	public URL getDownloadLink(){
+	public URL getDownloadLink() {
 		Element ele = doc.select("#tab-other-downloads tr.even a").first();
 		Matcher m = ID_PATTERN.matcher(ele.attr("href"));
-
+		
+		// Get Mod ids
 		m.find();
+		int id1 = Integer.parseInt(m.group(1));
+		int id2 = Integer.parseInt(m.group(2));
+		
+		URL url = null;
 		try {
-			return new URL(String.format(
+			String urlString = String.format(
 				"http://addons.curse.cursecdn.com/files/%s/%s/%s",
-				m.group(1), m.group(2),
-				getNewestFile().replaceAll("_", " ").replaceAll(" ", "%20")
-			));
-		} catch (MalformedURLException | IndexOutOfBoundsException e) {
+				id1, id2,
+				getNewestFile().replaceAll(" ", "%20")
+			);
+			
+			url = testUrl(urlString);
+			if (url == null){
+				url = testUrl(urlString.replaceAll("_", "%20"));
+			}			
+			
+		} catch (IOException | IndexOutOfBoundsException e) {
 			e.printStackTrace();
-			return null;
 		}
+		return url;
+	}
+	
+	private URL testUrl(String urlString) throws IOException{
+		URL url = new URL(urlString);
+		if (url.openConnection().getContentLength() > 0){
+			return url;
+		}
+		return null;
 	}
 	
 	@Override

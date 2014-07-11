@@ -62,17 +62,21 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 			panel.add(descrip);
 			
 			// Readme
-			ModStructure struct = new ModStructure(mod, new Config());
-			String readmeText = struct.getReadmeText();
-			
-			if (readmeText != null && !readmeText.trim().isEmpty()){
-				panel.add(new JLabel("<html><b>Readme:</b></html"));
-				JTextArea readmeArea = new JTextArea(readmeText);
-				readmeArea.setLineWrap(true);
-				readmeArea.setWrapStyleWord(true);
-				readmeArea.setEditable(false);
-				panel.add(readmeArea);
+			Config config = new Config();
+			if (config.getModZipPath(mod).toFile().exists()){
+				ModStructure struct = new ModStructure(mod, config);
+				String readmeText = struct.getReadmeText();
+				
+				if (readmeText != null && !readmeText.trim().isEmpty()){
+					panel.add(new JLabel("<html><b>Readme:</b></html"));
+					JTextArea readmeArea = new JTextArea(readmeText);
+					readmeArea.setLineWrap(true);
+					readmeArea.setWrapStyleWord(true);
+					readmeArea.setEditable(false);
+					panel.add(readmeArea);
+				}
 			}
+			
 		}
 	}
 

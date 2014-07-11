@@ -1,7 +1,6 @@
 package aohara.tinkertime.views;
 
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -12,25 +11,20 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import aohara.common.selectorPanel.ListListener;
-import aohara.tinkertime.config.Config;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.CannotAddModException;
 import aohara.tinkertime.controllers.ModManager.CannotDisableModException;
-import aohara.tinkertime.controllers.ModManager.ModAlreadyUpToDateException;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
-import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;
 
 @SuppressWarnings("serial")
 public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private final ModManager mm;
-	private final ModStateManager sm;
 	private Mod selectedMod;
 	
-	public TinkerMenuBar(ModManager mm, ModStateManager sm){
+	public TinkerMenuBar(ModManager mm){
 		this.mm = mm;
-		this.sm = sm;
 		
 		JMenu modMenu = new JMenu("Mod");
 		modMenu.add(new JMenuItem(new AddModAction()));
@@ -42,9 +36,6 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		updateMenu.add(new JMenuItem(new UpdateAllAction()));
 		updateMenu.add(new JMenuItem(new CheckforUpdatesAction()));
 		add(updateMenu);
-		
-		JMenuItem launchItem = new JMenuItem(new LaunchKspAction());
-		add(launchItem);
 	}
 	
 	private void errorMessage(String message){
@@ -52,10 +43,12 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 			getParent(), message, "Error", JOptionPane.ERROR_MESSAGE);
 	}
 	
+	/*
 	private void successMessage(String message){
 		JOptionPane.showMessageDialog(
 			getParent(), message, "Success", JOptionPane.INFORMATION_MESSAGE);	
 	}
+	*/
 	
 	// -- Listeners --------------------------------------------------
 
@@ -151,32 +144,17 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (selectedMod != null){
-				try {
-					updateMod(selectedMod);
-					successMessage(
-						"New Mod Data retrieved.  Downloading "
-						+ selectedMod.getName() + "...");
-				} catch (ModAlreadyUpToDateException e1) {
-					errorMessage(selectedMod.getName() + " is already up to date.");
-				}
+				updateMod(selectedMod);
 			}
 		}
 		
-		protected boolean updateMod(Mod mod) throws ModAlreadyUpToDateException{
+		protected void updateMod(Mod mod) {
 			try {
 				mm.updateMod(selectedMod);
-				return true;
 			} catch (ModUpdateFailedException e1) {
-				errorMessage("There was an error updating the mod");
-				e1.printStackTrace();
-			} catch (CannotDisableModException e1) {
-				errorMessage("The mod could not be disabled before updating.");
-				e1.printStackTrace();
-			} catch (CannotAddModException e1) {
-				errorMessage("Updated mod information could not be retrieved");
+				errorMessage("There was an error updating " + mod.getName());
 				e1.printStackTrace();
 			}
-			return false;
 		}
 	}
 	
@@ -188,17 +166,11 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int numUpdated = 0;
-			for (Mod mod : sm.getMods()){
-				try {
-					if (updateMod(mod)){
-						numUpdated++;
-					}
-				} catch (ModAlreadyUpToDateException ex){
-					// Do nothing
-				}
+			try {
+				mm.updateMods();
+			} catch (ModUpdateFailedException e1) {
+				errorMessage("One or more mods failed to update");
 			}
-			successMessage(numUpdated + " mods were updated.");
 		}
 	}
 	
@@ -210,26 +182,11 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int numUpdates = mm.checkForUpdates();
-			successMessage(numUpdates + " mod(s) are ready to be updated.");
-		}
-	}
-	
-	private class LaunchKspAction extends AbstractAction {
-		
-		public LaunchKspAction(){
-			super("Launch KSP");
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
 			try {
-				Runtime.getRuntime().exec(new Config().getKerbalExePath().toString());
-			} catch (IOException e1) {
-				errorMessage("Could not launch KSP!\n" + e1.getMessage());
-				e1.printStackTrace();
+				mm.checkForUpdates();
+			} catch (ModUpdateFailedException e1) {
+				errorMessage("Error checking for updates.");
 			}
 		}
-		
 	}
 }
