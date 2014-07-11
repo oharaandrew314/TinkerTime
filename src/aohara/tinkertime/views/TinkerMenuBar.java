@@ -123,7 +123,15 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		public void actionPerformed(ActionEvent e) {
 			if (selectedMod != null){
 				try {
-					mm.deleteMod(selectedMod);
+					if (JOptionPane.showConfirmDialog(
+						getParent(),
+						"Are you sure you want to delete "
+						+ selectedMod.getName() + "?",
+						"Delete?",
+						JOptionPane.YES_NO_OPTION
+					) == JOptionPane.YES_OPTION){
+						mm.deleteMod(selectedMod);
+					}
 				} catch (CannotDisableModException e1) {
 					errorMessage(selectedMod.getName() + " could not be disabled.");
 				}
