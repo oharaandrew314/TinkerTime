@@ -58,7 +58,7 @@ public class ModManager extends Listenable<ModUpdateListener>
 		return config.getModZipPath(mod).toFile().exists();
 	}
 	
-	private boolean isDownloaded(ModApi mod){
+	public boolean isDownloaded(ModApi mod){
 		return isDownloaded(mod, config);
 	}
 	

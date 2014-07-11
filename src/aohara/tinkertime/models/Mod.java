@@ -82,6 +82,7 @@ public class Mod extends ModApi{
 			
 			updateAvailable = false;
 		} catch(NullPointerException e){
+			e.printStackTrace();
 			throw new CannotAddModException();
 		}
 	}
