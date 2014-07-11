@@ -11,6 +11,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import aohara.common.selectorPanel.ListListener;
+import aohara.tinkertime.config.Config;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.CannotAddModException;
 import aohara.tinkertime.controllers.ModManager.CannotDisableModException;
@@ -25,6 +26,11 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	public TinkerMenuBar(ModManager mm){
 		this.mm = mm;
+		
+		JMenu fileMenu = new JMenu("File");
+		fileMenu.add(new JMenuItem(new UpdatePathsAction()));
+		fileMenu.add(new JMenuItem(new ExitAction()));
+		add(fileMenu);
 		
 		JMenu modMenu = new JMenu("Mod");
 		modMenu.add(new JMenuItem(new AddModAction()));
@@ -42,13 +48,6 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		JOptionPane.showMessageDialog(
 			getParent(), message, "Error", JOptionPane.ERROR_MESSAGE);
 	}
-	
-	/*
-	private void successMessage(String message){
-		JOptionPane.showMessageDialog(
-			getParent(), message, "Success", JOptionPane.INFORMATION_MESSAGE);	
-	}
-	*/
 	
 	// -- Listeners --------------------------------------------------
 
@@ -195,6 +194,30 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 			} catch (ModUpdateFailedException e1) {
 				errorMessage("Error checking for updates.");
 			}
+		}
+	}
+	
+	private class UpdatePathsAction extends AbstractAction {
+		
+		public UpdatePathsAction(){
+			super("Update Paths");
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Config.updateConfig(false);
+		}
+	}
+	
+	private class ExitAction extends AbstractAction {
+		
+		public ExitAction(){
+			super("Exit");
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			System.exit(0);
 		}
 	}
 }
