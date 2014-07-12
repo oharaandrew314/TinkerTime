@@ -27,25 +27,36 @@ public class DirectoryChooser extends JDialog {
 		GAMEDATA_PATH = "Game Data Path",
 		MODS_PATH = "Mods Path";
 	
+	private final boolean exitOnClose;
+	private final Config config;
+	
 	private final HashMap<String, Path> paths = new HashMap<>();
 	
-	public DirectoryChooser(){
+	public DirectoryChooser(Config config, boolean exitOnClose){
+		this.exitOnClose = exitOnClose;
+		this.config = config;
+		
 		setTitle(TinkerTime.NAME + " setup");
 		setModal(true);
 		setResizable(false);
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		setLayout(new VerticalLayout());
 		
+		Path gameDataPath = config.getGameDataPath();
+		Path modsPath = config.getModsPath();
+		
 		add(new InnerPanel(
 			GAMEDATA_PATH,
 			"Please choose the path to the KSP GameData folder",
-			JFileChooser.FILES_AND_DIRECTORIES
+			JFileChooser.FILES_AND_DIRECTORIES,
+			gameDataPath != null ? gameDataPath.toString() : null 
 		));
 		
 		add(new InnerPanel(
 			MODS_PATH,
 			"Please select a directory to store your mods in",
-			JFileChooser.DIRECTORIES_ONLY
+			JFileChooser.DIRECTORIES_ONLY,
+			modsPath != null ? modsPath.toString() : null 
 		));
 		
 		// South Controls
@@ -61,7 +72,7 @@ public class DirectoryChooser extends JDialog {
 	
 	private class InnerPanel extends JPanel {
 		
-		public InnerPanel(String label, String description, int selectionType){
+		public InnerPanel(String label, String description, int selectionType, String defaultText){
 			super(new VerticalLayout());
 			add(new JLabel(description));
 			
@@ -74,6 +85,7 @@ public class DirectoryChooser extends JDialog {
 			
 			// Add Path Field
 			JTextField textField = new JTextField(30);
+			textField.setText(defaultText);
 			selectorPanel.add(textField, BorderLayout.CENTER);
 			
 			// Add Selector Button
@@ -124,7 +136,11 @@ public class DirectoryChooser extends JDialog {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			System.exit(0);
+			if (exitOnClose){
+				System.exit(0);
+			} else {
+				setVisible(false);
+			}
 		}
 	}
 	
@@ -139,7 +155,6 @@ public class DirectoryChooser extends JDialog {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			Config config = new Config();
 			try {
 				config.setModsPath(paths.get(MODS_PATH));
 				config.setGameDataPath(paths.get(GAMEDATA_PATH));

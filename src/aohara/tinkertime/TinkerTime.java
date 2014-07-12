@@ -1,5 +1,7 @@
 package aohara.tinkertime;
 
+import java.awt.event.MouseEvent;
+
 import aohara.common.executors.Downloader;
 import aohara.common.executors.FileTransferExecutor.FileConflictResolver;
 import aohara.common.executors.TempDownloader;
@@ -9,11 +11,6 @@ import aohara.common.selectorPanel.SelectorPanel;
 import aohara.tinkertime.config.Config;
 import aohara.tinkertime.controllers.ModEnabler;
 import aohara.tinkertime.controllers.ModManager;
-import aohara.tinkertime.controllers.ModManager.CannotDisableModException;
-import aohara.tinkertime.controllers.ModManager.CannotEnableModException;
-import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledException;
-import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledException;
-import aohara.tinkertime.controllers.ModManager.ModNotDownloadedException;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.views.DialogConflictResolver;
@@ -25,7 +22,10 @@ import aohara.tinkertime.views.TinkerMenuBar;
 
 public class TinkerTime implements ListListener<Mod> {
 	
-	public static final String NAME = "Tinker Time";
+	public static final String
+		NAME = "Tinker Time",
+		VERSION = "0.4",
+		AUTHOR = "Andrew O'Hara";
 	private final ModManager mm;
 	
 	public TinkerTime(){
@@ -66,25 +66,20 @@ public class TinkerTime implements ListListener<Mod> {
 	public void elementClicked(Mod mod, int numTimes) throws Exception{
 		if (numTimes == 2){
 			if (mod.isEnabled()){
-				try {
-					mm.disableMod(mod);
-				} catch (ModAlreadyDisabledException
-						| CannotDisableModException e) {
-					throw new Exception("Could not disable " + mod.getName());
-				}
+				mm.disableMod(mod);
 			} else {
-				try {
-					mm.enableMod(mod);
-				} catch (ModAlreadyEnabledException | ModNotDownloadedException
-						| CannotEnableModException | CannotDisableModException e) {
-					throw new Exception("Could not enable " + mod.getName());
-				}
+				mm.enableMod(mod);
 			}
 		}
 	}
 
 	@Override
 	public void elementSelected(Mod element) {
+		// Do Nothing
+	}
+
+	@Override
+	public void elementRightClicked(MouseEvent evt, Mod mod) throws Exception {
 		// Do Nothing
 	}
 }
