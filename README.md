@@ -4,7 +4,7 @@ TinkerTime
 Self-Updating Mod Manager for Kerbal Space Program
  
 ### Development Status
-Pre-Alpha (not quite ready for people to try out yet)
+Alpha (ready for initial feedback)
 
 ### Description
 Tinker Time is a Mod Manager for Kerbal Space Program that will allow you to automatically update, enable, and disable all of your Curse.com mods.  All you have to do is enter the URL to the Curse.com mod webpage, and TinkerTime will do the rest of the work for you.
