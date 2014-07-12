@@ -1,20 +1,31 @@
 package aohara.tinkertime.views;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 
+import aohara.common.Util;
 import aohara.common.selectorPanel.ListListener;
+import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.config.Config;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.CannotAddModException;
 import aohara.tinkertime.controllers.ModManager.CannotDisableModException;
+import aohara.tinkertime.controllers.ModManager.CannotEnableModException;
+import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledException;
+import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledException;
+import aohara.tinkertime.controllers.ModManager.ModNotDownloadedException;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
 import aohara.tinkertime.models.Mod;
 
@@ -23,6 +34,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private final ModManager mm;
 	private Mod selectedMod;
+	private final JPopupMenu popupMenu;
 	
 	public TinkerMenuBar(ModManager mm){
 		this.mm = mm;
@@ -42,6 +54,15 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		updateMenu.add(new JMenuItem(new UpdateAllAction()));
 		updateMenu.add(new JMenuItem(new CheckforUpdatesAction()));
 		add(updateMenu);
+		
+		JMenu helpMenu = new JMenu("Help");
+		helpMenu.add(new JMenuItem(new AboutAction()));
+		helpMenu.add(new JMenuItem(new HelpAction()));
+		add(helpMenu);
+		
+		popupMenu = new JPopupMenu();
+		popupMenu.add(new EnableDisableModAction());
+		popupMenu.add(new DeleteModAction());
 	}
 	
 	private void errorMessage(String message){
@@ -59,6 +80,11 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		@Override
 		public void elementSelected(Mod element) {
 			selectedMod = element;
+		}
+		
+		@Override
+		public void elementRightClicked(MouseEvent evt, Mod element) throws Exception {
+			popupMenu.show((Component) evt.getSource(), evt.getX(), evt.getY());
 		}
 		
 	// -- Actions ---------------------------------------------------
@@ -197,6 +223,34 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		}
 	}
 	
+	private class EnableDisableModAction extends AbstractAction {
+		
+		public EnableDisableModAction(){
+			super("Enable/Disable");
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (selectedMod != null && selectedMod.isEnabled()){
+				try {
+					mm.disableMod(selectedMod);
+				} catch (ModAlreadyDisabledException
+						| CannotDisableModException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			} else if (selectedMod != null){
+				try {
+					mm.enableMod(selectedMod);
+				} catch (ModAlreadyEnabledException | ModNotDownloadedException
+						| CannotEnableModException | CannotDisableModException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		}
+	}
+	
 	private class UpdatePathsAction extends AbstractAction {
 		
 		public UpdatePathsAction(){
@@ -218,6 +272,61 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			System.exit(0);
+		}
+	}
+	
+	private class HelpAction extends AbstractAction {
+		
+		public HelpAction(){
+			super("Help");
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			try {
+				Util.goToHyperlink(new URL("https://github.com/oharaandrew314/TinkerTime/blob/master/README.md"));
+			} catch (IOException e1) {
+				errorMessage("Error opening help");
+			}
+		}
+	}
+	
+	private class AboutAction extends AbstractAction {
+		
+		public AboutAction(){
+			super("About");
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String aboutText = String.format(
+				"<html>%s v%s - by %s\n",
+				TinkerTime.NAME,
+				TinkerTime.VERSION,
+				TinkerTime.AUTHOR
+			);
+			
+			String licenseText = (
+				"This work is licensed under the Creative Commons \n"
+				+ "Attribution-ShareAlike 4.0 International License. \n"
+			);
+			
+			try {
+				Object[] message = {
+					aboutText,
+					"\n",
+					licenseText,
+					new UrlPanel("View a copy of this license", new URL("http://creativecommons.org/licenses/by-sa/4.0/")).getComponent()
+				};
+				JOptionPane.showMessageDialog(
+						getParent(),
+						message,
+						"About " + TinkerTime.NAME,
+						JOptionPane.INFORMATION_MESSAGE
+					);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		}
 	}
 }

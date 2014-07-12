@@ -121,12 +121,6 @@ public class ModPage extends ModApi {
 	}
 	
 	@Override
-	public String getDescription(){
-		Element ele = doc.select("div#tab-description").first();
-		return String.format("<html>%s</html>", ele.html());
-	}
-	
-	@Override
 	public URL getPageUrl(){
 		return pageUrl;
 	}
