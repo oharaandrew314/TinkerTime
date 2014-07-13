@@ -11,6 +11,10 @@ Tinker Time is a Mod Manager for Kerbal Space Program that will allow you to aut
 
 At this time, only mods hosted on Curse.com are supported.  Curse.com is the official mod repository chosen by Squad, and thus, it is the priority to establish support for.
 
+### Downloads
+See the "Releases" section on the Tinker Time repository
+https://github.com/oharaandrew314/TinkerTime/releases
+
 ### Requirements
 - Windows, Linux, or OSX
 - Java 7 or better
