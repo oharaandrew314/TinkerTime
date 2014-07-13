@@ -22,7 +22,7 @@ https://github.com/oharaandrew314/TinkerTime/releases
 
 
 ### Report an Issue
-If you would like to report an issue with Tinker Time, then please contact me on <a href="http://tinkertime.uservoice.com/">Tinker Timer's UserVoice </a>.  I will happily respond to your issues regarding:
+If you would like to report an issue with Tinker Time, then please contact me on <a href="http://tinkertime.uservoice.com/">Tinker Time's UserVoice </a>.  I will happily respond to your issues regarding:
 - Mod Incompatability
 - Application Bug
 - Feature Requests
