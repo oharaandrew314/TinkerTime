@@ -95,5 +95,4 @@ public class TestModStructure {
 		
 		assertEquals(paths, commonModule.getFilePaths());
 	}
-
 }

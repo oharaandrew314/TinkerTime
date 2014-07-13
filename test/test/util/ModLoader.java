@@ -24,24 +24,34 @@ public class ModLoader {
 		ENGINEER = "Kerbal Engineer Redux",
 		MECHJEB = "MechJeb",
 		TESTMOD1 = "TestMod",
-		TESTMOD2 = "TestMod2";
+		TESTMOD2 = "TestMod2",
+		ALARMCLOCK = "Kerbal Alarm Clock",
+		NAVBALL = "Enhanced Navball";
 	
 	static {
 		PAGE_URLS.put(
-			"Kerbal Engineer Redux",
+			ENGINEER,
 			"http://www.curse.com/ksp-mods/kerbal/220285-kerbal-engineer-redux"
 		);
 		PAGE_URLS.put(
-			"MechJeb",
+			MECHJEB,
 			"http://www.curse.com/ksp-mods/kerbal/220221-mechjeb"
 		);
 		PAGE_URLS.put(
-			"TestMod",
+			TESTMOD1,
 			"http://www.curse.com/ksp-mods/kerbal/220285-kerbal-engineer-redux"
 		);
 		PAGE_URLS.put(
-			"TestMod2",
+			TESTMOD2,
 			"http://www.curse.com/ksp-mods/kerbal/220285-kerbal-engineer-redux"
+		);
+		PAGE_URLS.put(
+			ALARMCLOCK,
+			"http://www.curse.com/ksp-mods/kerbal/220289-kerbal-alarm-clock"
+		);
+		PAGE_URLS.put(
+			NAVBALL,
+			"http://www.curse.com/ksp-mods/kerbal/220469-enhanced-navball-v1-2"
 		);
 	}
 
@@ -61,7 +71,7 @@ public class ModLoader {
 		}
 	}
 	
-	private static URL getZipUrl(String name){
+	public static URL getZipUrl(String name){
 		return ModLoader.class.getClassLoader().getResource(
 			String.format("test/res/%s.zip", name)
 		);

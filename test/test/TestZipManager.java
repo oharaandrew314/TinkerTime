@@ -79,5 +79,4 @@ public class TestZipManager {
 			zipManager.getFileText("readme.txt")
 		);
 	}
-
 }

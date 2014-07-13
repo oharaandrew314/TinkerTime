@@ -46,6 +46,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		
 		JMenu modMenu = new JMenu("Mod");
 		modMenu.add(new JMenuItem(new AddModAction()));
+		modMenu.add(new JMenuItem(new EnableDisableModAction()));
 		modMenu.add(new JMenuItem(new DeleteModAction()));
 		add(modMenu);
 		

@@ -3,7 +3,7 @@ package aohara.tinkertime.controllers.files;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.file.Path;
-import java.util.Enumeration;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -23,15 +23,13 @@ public class ZipManager {
 	public Set<ZipEntry> getZipEntries() {
 		synchronized(zipPath){
 			Set<ZipEntry> set = new HashSet<>();
-	
-			try (ZipFile zipFile = new ZipFile(zipPath.toFile())) {
-				Enumeration<? extends ZipEntry> entries = zipFile.entries();
-				while (entries.hasMoreElements()) {
-					set.add(entries.nextElement());
-				}
+			
+			try (ZipFile zipFile = new ZipFile(zipPath.toFile())){
+				set.addAll(Collections.list(zipFile.entries()));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			
 			return set;
 		}
 	}

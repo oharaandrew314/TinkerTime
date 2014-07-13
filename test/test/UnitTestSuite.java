@@ -8,6 +8,12 @@ import org.apache.commons.io.FileUtils;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
+import test.TestModManager;
+import test.TestModPage;
+import test.TestModStateManager;
+import test.TestModStructure;
+import test.TestZipManager;
+
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({

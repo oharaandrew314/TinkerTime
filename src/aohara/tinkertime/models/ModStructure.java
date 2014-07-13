@@ -43,16 +43,23 @@ public class ModStructure {
 		}
 		
 		// Search for Modules
+		Set<Path> modulePaths = new HashSet<>();
 		for (ZipEntry entry : entries){
 			if (entry.isDirectory()){
 				Path entryPath = toPath(entry);
-				if (!entryPath.equals(gameDataPath)){
-					Path rel = gameDataPath != null ? gameDataPath.relativize(entryPath) : entryPath;
+				if (gameDataPath == null){
+					modulePaths.add(entryPath.subpath(0, 1));
+				} else if (entryPath.startsWith(gameDataPath) && !entryPath.equals(gameDataPath)){
+					Path rel = gameDataPath.relativize(entryPath);
 					if (rel.getNameCount() == 1){
-						modules.add(new Module(zipPath, entryPath));
-					}
+						modulePaths.add(rel);
+					}					
 				}
 			}
+		}
+		
+		for (Path modulePath : modulePaths){
+			modules.add(new Module(zipPath, modulePath));
 		}
 	}
 	
