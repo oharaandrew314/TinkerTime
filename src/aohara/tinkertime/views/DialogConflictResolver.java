@@ -20,7 +20,7 @@ public class DialogConflictResolver extends ConflictResolver {
 			null,
 			String.format(
 				"The %s module alrerady exists while enabling %s.\n"
-				+ "What should be done?", module, mod),
+				+ "What should be done?", module.getName(), mod.getName()),
 			"Module Conflict",
 			JOptionPane.QUESTION_MESSAGE,
 			null,

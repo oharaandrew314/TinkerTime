@@ -140,11 +140,7 @@ public class ModEnabler extends ProgressExecutor<ModEnableContext> {
 		}
 		
 		private void forceDisableModule(ModEnableContext context, Module module) throws CannotDisableModException{			
-			try {
-				FileUtils.deleteDirectory(getDestPath(context, module).toFile());
-			} catch (IOException e) {
-				throw new CannotDisableModException();
-			}
+			FileUtils.deleteQuietly(getDestPath(context, module).toFile());
 		}
 
 		@Override
