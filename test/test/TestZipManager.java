@@ -62,7 +62,7 @@ public class TestZipManager {
 		try {
 			for (Module module : STRUCT.getModules()) {
 				zipManager.unzipModule(module.getEntries(), gameDataPath);
-				for (Path filePath : module.getFilePaths()) {
+				for (Path filePath : module.getOutput().values()) {
 					Path expectedPath = gameDataPath.resolve(filePath);
 					assertTrue(expectedPath.toFile().exists());
 				}

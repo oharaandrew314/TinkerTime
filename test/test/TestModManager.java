@@ -21,13 +21,13 @@ import org.junit.Test;
 import test.util.ModLoader;
 import aohara.common.executors.Downloader;
 import aohara.tinkertime.config.Config;
-import aohara.tinkertime.controllers.ModEnabler;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledException;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.controllers.files.ConflictResolver;
+import aohara.tinkertime.controllers.files.ModEnabler;
 import aohara.tinkertime.controllers.files.ConflictResolver.Resolution;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModApi;
@@ -54,7 +54,7 @@ public class TestModManager {
 	}
 	
 	@Before
-	public void setUp() throws Throwable {		
+	public void setUp() throws Throwable {
 		manager = new ModManager(
 			sm = mock(ModStateManager.class),
 			config,

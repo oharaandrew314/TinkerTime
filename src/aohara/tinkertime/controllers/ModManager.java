@@ -10,6 +10,7 @@ import aohara.common.executors.Downloader;
 import aohara.common.executors.context.ExecutorContext;
 import aohara.common.executors.progress.ProgressListener;
 import aohara.tinkertime.config.Config;
+import aohara.tinkertime.controllers.files.ModEnabler;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModApi;
 import aohara.tinkertime.models.ModEnableContext;

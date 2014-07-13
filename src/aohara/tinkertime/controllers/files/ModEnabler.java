@@ -1,10 +1,11 @@
-package aohara.tinkertime.controllers;
+package aohara.tinkertime.controllers.files;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
+import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -14,7 +15,6 @@ import aohara.common.executors.ProgressExecutor;
 import aohara.tinkertime.config.Config;
 import aohara.tinkertime.controllers.ModManager.CannotDisableModException;
 import aohara.tinkertime.controllers.ModManager.CannotEnableModException;
-import aohara.tinkertime.controllers.files.ConflictResolver;
 import aohara.tinkertime.controllers.files.ConflictResolver.Resolution;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModEnableContext;
@@ -110,10 +110,10 @@ public class ModEnabler extends ProgressExecutor<ModEnableContext> {
 				throws CannotEnableModException{
 			try {
 				try (ZipFile zipFile = new ZipFile(context.struct.zipPath.toFile())) {
-					for (ZipEntry entry : module.getEntries()) {
+					for (Entry<ZipEntry, Path> entry : module.getOutput().entrySet()) {
 						transfer(
-							zipFile.getInputStream(entry),
-							context.getGameDataPath().resolve(entry.getName())
+							zipFile.getInputStream(entry.getKey()),
+							context.getGameDataPath().resolve(entry.getValue())
 						);
 					}
 				}

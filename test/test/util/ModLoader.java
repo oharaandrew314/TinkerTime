@@ -26,7 +26,8 @@ public class ModLoader {
 		TESTMOD1 = "TestMod",
 		TESTMOD2 = "TestMod2",
 		ALARMCLOCK = "Kerbal Alarm Clock",
-		NAVBALL = "Enhanced Navball";
+		NAVBALL = "Enhanced Navball",
+		HOTROCKETS = "HotRockets";
 	
 	static {
 		PAGE_URLS.put(
@@ -52,6 +53,10 @@ public class ModLoader {
 		PAGE_URLS.put(
 			NAVBALL,
 			"http://www.curse.com/ksp-mods/kerbal/220469-enhanced-navball-v1-2"
+		);
+		PAGE_URLS.put(
+			HOTROCKETS,
+			"http://www.curse.com/ksp-mods/kerbal/220207-hotrockets-particle-fx-replacement"
 		);
 	}
 
