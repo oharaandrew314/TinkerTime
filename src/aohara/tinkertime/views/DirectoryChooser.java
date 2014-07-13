@@ -4,7 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.nio.file.Path;
-import java.util.HashMap;
+import java.nio.file.Paths;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -27,13 +27,13 @@ public class DirectoryChooser extends JDialog {
 		GAMEDATA_PATH = "Game Data Path",
 		MODS_PATH = "Mods Path";
 	
-	private final boolean exitOnClose;
+	private final boolean restartOnSuccess, exitOnCancel;
 	private final Config config;
+	private final PathPanel gameDataPanel, modsPanel;
 	
-	private final HashMap<String, Path> paths = new HashMap<>();
-	
-	public DirectoryChooser(Config config, boolean exitOnClose){
-		this.exitOnClose = exitOnClose;
+	public DirectoryChooser(Config config, boolean restartOnSuccess, boolean exitOnCancel){
+		this.restartOnSuccess = restartOnSuccess;
+		this.exitOnCancel = exitOnCancel;
 		this.config = config;
 		
 		setTitle(TinkerTime.NAME + " setup");
@@ -45,19 +45,21 @@ public class DirectoryChooser extends JDialog {
 		Path gameDataPath = config.getGameDataPath();
 		Path modsPath = config.getModsPath();
 		
-		add(new InnerPanel(
+		gameDataPanel = new PathPanel(
 			GAMEDATA_PATH,
 			"Please choose the path to the KSP GameData folder",
 			JFileChooser.FILES_AND_DIRECTORIES,
 			gameDataPath != null ? gameDataPath.toString() : null 
-		));
+		);
+		add(gameDataPanel);
 		
-		add(new InnerPanel(
+		modsPanel = new PathPanel(
 			MODS_PATH,
 			"Please select a directory to store your mods in",
 			JFileChooser.DIRECTORIES_ONLY,
 			modsPath != null ? modsPath.toString() : null 
-		));
+		);
+		add(modsPanel);
 		
 		// South Controls
 		JPanel controlPanel = new JPanel(new FlowLayout());
@@ -70,9 +72,11 @@ public class DirectoryChooser extends JDialog {
 	
 	// -- Panels -------------------------
 	
-	private class InnerPanel extends JPanel {
+	private class PathPanel extends JPanel {
 		
-		public InnerPanel(String label, String description, int selectionType, String defaultText){
+		private final JTextField pathField;
+		
+		public PathPanel(String label, String description, int selectionType, String defaultText){
 			super(new VerticalLayout());
 			add(new JLabel(description));
 			
@@ -89,12 +93,15 @@ public class DirectoryChooser extends JDialog {
 			selectorPanel.add(textField, BorderLayout.CENTER);
 			
 			// Add Selector Button
-			selectorPanel.add(
-				new JButton(new ChooseAction(
-					label, description, textField, selectionType
-				)),
-				BorderLayout.EAST
-			);
+			ChooseAction action = new ChooseAction(
+				label, description, textField, selectionType);
+			pathField = action.pathField;
+			selectorPanel.add(new JButton(action), BorderLayout.EAST);
+		}
+		
+		public Path getPath(){
+			String text = pathField.getText();
+			return Paths.get(text != null ? text : "");
 		}
 	}
 	
@@ -103,8 +110,7 @@ public class DirectoryChooser extends JDialog {
 	private class ChooseAction extends AbstractAction {
 		
 		private final JFileChooser chooser = new JFileChooser();
-		private final JTextField pathField;
-		private final String label;
+		public final JTextField pathField;
 		
 		public ChooseAction(
 			String label, String description, JTextField pathField,
@@ -115,7 +121,6 @@ public class DirectoryChooser extends JDialog {
 			chooser.setApproveButtonText("Select " + label);
 			chooser.setFileSelectionMode(selectionType);
 			
-			this.label = label;
 			this.pathField = pathField;
 		}
 
@@ -123,7 +128,6 @@ public class DirectoryChooser extends JDialog {
 		public void actionPerformed(ActionEvent e) {
 			if (chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION){
 				pathField.setText(chooser.getSelectedFile().getPath());
-				paths.put(label, chooser.getSelectedFile().toPath());
 			}
 		}
 	}
@@ -136,7 +140,7 @@ public class DirectoryChooser extends JDialog {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (exitOnClose){
+			if (exitOnCancel){
 				System.exit(0);
 			} else {
 				setVisible(false);
@@ -156,9 +160,16 @@ public class DirectoryChooser extends JDialog {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				config.setModsPath(paths.get(MODS_PATH));
-				config.setGameDataPath(paths.get(GAMEDATA_PATH));
+				config.setModsPath(modsPanel.getPath());
+				config.setGameDataPath(gameDataPanel.getPath());
 				dialog.setVisible(false);
+				if (restartOnSuccess){
+					JOptionPane.showMessageDialog(
+						dialog,
+						"Please restart the application for changes to come into effect."
+					);
+					System.exit(0);
+				}
 			} catch (IllegalPathException e1) {
 				JOptionPane.showMessageDialog(dialog, e1.getMessage());
 			}

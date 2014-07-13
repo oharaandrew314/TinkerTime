@@ -66,12 +66,12 @@ public class Config extends AbstractConfig {
 	public static void verifyConfig(){
 		Config config = new Config();
 		if (config.getModsPath() == null || config.getGameDataPath() == null){
-			updateConfig(true);
+			updateConfig(false, true);
 		}
 	}
 	
-	public static void updateConfig(boolean exitOnClose){
-		new DirectoryChooser(new Config(), exitOnClose).setVisible(true);
+	public static void updateConfig(boolean restartOnSuccess, boolean exitOnCancel){
+		new DirectoryChooser(new Config(), restartOnSuccess, exitOnCancel).setVisible(true);
 	}
 
 }
