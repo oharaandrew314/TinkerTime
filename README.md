@@ -23,6 +23,10 @@ If you would like to report an issue with Tinker Time, then please contact me on
 - Feature Requests
 
 
+### Known Incompatible Mods
+- Astronomer's Visual Pack V3 BETA (Due to non-standard file layout)
+
+
 ## Installation
 Simply download the JAR file and place it somewhere easily accessible
 Double-click the JAR file to run the application
