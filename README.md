@@ -15,6 +15,14 @@ At this time, only mods hosted on Curse.com are supported.  Curse.com is the off
 - Java 7 or better
 - An Active Internet Connection for Mod Downloads and Updates
 
+
+### Report an Issue
+If you would like to report an issue with Tinker Time, then please contact me on <a href="http://tinkertime.uservoice.com/">Tinker Timer's UserVoice </a>.  I will happily respond to your issues regarding:
+- Mod Incompatability
+- Application Bug
+- Feature Requests
+
+
 ## Installation
 Simply download the JAR file and place it somewhere easily accessible
 Double-click the JAR file to run the application
