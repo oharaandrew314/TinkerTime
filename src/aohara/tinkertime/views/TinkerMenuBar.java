@@ -59,6 +59,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		JMenu helpMenu = new JMenu("Help");
 		helpMenu.add(new JMenuItem(new AboutAction()));
 		helpMenu.add(new JMenuItem(new HelpAction()));
+		helpMenu.add(new JMenuItem(new ContactAction()));
 		add(helpMenu);
 		
 		popupMenu = new JPopupMenu();
@@ -327,6 +328,22 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 					);
 			} catch (IOException e1) {
 				e1.printStackTrace();
+			}
+		}
+	}
+	
+	private class ContactAction extends AbstractAction {
+		
+		public ContactAction(){
+			super("Contact Me");
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			try {
+				Util.goToHyperlink(new URL("http://tinkertime.uservoice.com"));
+			} catch (IOException e1) {
+				errorMessage(e1.getMessage());
 			}
 		}
 	}
