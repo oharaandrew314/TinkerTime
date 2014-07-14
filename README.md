@@ -1,7 +1,7 @@
 TinkerTime
 ==========
 
-Self-Updating Mod Manager for Kerbal Space Program
+Automatically Updating Mod Manager for Kerbal Space Program
  
 ### Development Status
 Alpha (ready for initial feedback)
