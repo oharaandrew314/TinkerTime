@@ -5,7 +5,7 @@ import java.nio.file.Paths;
 
 import aohara.common.AbstractConfig;
 import aohara.tinkertime.TinkerTime;
-import aohara.tinkertime.models.ModApi;
+import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.views.DirectoryChooser;
 
 public class Config extends AbstractConfig {
@@ -40,8 +40,8 @@ public class Config extends AbstractConfig {
 		return null;
 	}
 	
-	public Path getModZipPath(ModApi mod){
-		return new Config().getModsPath().resolve(mod.getNewestFile());
+	public Path getModZipPath(Mod mod){
+		return new Config().getModsPath().resolve(mod.getNewestFileName());
 	}
 	
 	public Path getModsPath(){

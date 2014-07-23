@@ -1,55 +1,37 @@
 package aohara.tinkertime.models;
 
 import java.net.URL;
-import java.util.Date;
 
 import aohara.tinkertime.controllers.ModManager.CannotAddModException;
+import aohara.tinkertime.models.pages.FilePage;
+import aohara.tinkertime.models.pages.ModPage;
 
-public class Mod extends ModApi{
+public class Mod extends DownloadedFile {
 	
-	private String name, creator, currentFile;
-	private Date lastUpdated;
-	private URL downloadLink, imageUrl, pageUrl;
+	private String creator, currentFile, name;
+	private URL imageUrl;
 	private boolean enabled = false;
 	private transient boolean updateAvailable = false;
 	
-	public Mod(ModApi page) throws CannotAddModException {
+	public Mod(ModPage page) throws CannotAddModException {
+		super(page);
 		updateModData(page);
 	}
-
-	@Override
-	public String getName() {
+	
+	public String getName(){
 		return name;
 	}
 
-	@Override
-	public Date getUpdatedOn() {
-		return lastUpdated;
-	}
-
-	@Override
 	public String getCreator() {
 		return creator;
 	}
 
-	@Override
-	public String getNewestFile() {
+	public String getNewestFileName() {
 		return currentFile;
 	}
 
-	@Override
-	public URL getDownloadLink() {
-		return downloadLink;
-	}
-
-	@Override
 	public URL getImageUrl() {
 		return imageUrl;
-	}
-
-	@Override
-	public URL getPageUrl() {
-		return pageUrl;
 	}
 	
 	// -- Other Methods --------------------
@@ -62,18 +44,13 @@ public class Mod extends ModApi{
 		this.enabled = enabled;
 	}
 	
-	public void updateModData(ModApi mod) throws CannotAddModException{
+	public void updateModData(ModPage page) throws CannotAddModException{
+		super.update(page);
 		try{
-			name = mod.getName();
-			creator = mod.getCreator();
-			currentFile = mod.getNewestFile();
-			
-			lastUpdated = mod.getUpdatedOn();
-			
-			downloadLink = mod.getDownloadLink();
-			imageUrl = mod.getImageUrl();
-			pageUrl = mod.getPageUrl();
-			
+			name = page.getName();
+			creator = page.getCreator();
+			currentFile = page.getNewestFileName();
+			imageUrl = page.getImageUrl();
 			updateAvailable = false;
 		} catch(NullPointerException e){
 			e.printStackTrace();
@@ -94,6 +71,17 @@ public class Mod extends ModApi{
 		if (o instanceof Mod){
 			return ((Mod)o).getName().equals(getName());
 		}
+		return false;
+	}
+	
+	@Override
+	public String toString(){
+		return getName();
+	}
+
+	@Override
+	public boolean isUpdateAvailable(FilePage page) {
+		// TODO Auto-generated method stub
 		return false;
 	}
 }

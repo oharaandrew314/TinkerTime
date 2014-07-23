@@ -12,13 +12,12 @@ import aohara.common.executors.progress.ProgressListener;
 import aohara.tinkertime.config.Config;
 import aohara.tinkertime.controllers.files.ModEnabler;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.models.ModApi;
-import aohara.tinkertime.models.ModEnableContext;
-import aohara.tinkertime.models.ModEnableContext.EnableAction;
-import aohara.tinkertime.models.ModPage;
 import aohara.tinkertime.models.context.DownloadModContext;
+import aohara.tinkertime.models.context.ModEnableContext;
+import aohara.tinkertime.models.context.ModEnableContext.EnableAction;
 import aohara.tinkertime.models.context.NewModPageContext;
 import aohara.tinkertime.models.context.PageUpdateContext;
+import aohara.tinkertime.models.pages.CurseModPage;
 
 public class ModManager extends Listenable<ModUpdateListener>
 		implements ProgressListener {
@@ -55,11 +54,11 @@ public class ModManager extends Listenable<ModUpdateListener>
 	
 	// -- Accessors ------------------------
 	
-	public static boolean isDownloaded(ModApi mod, Config config){
+	public static boolean isDownloaded(Mod mod, Config config){
 		return config.getModZipPath(mod).toFile().exists();
 	}
 	
-	public boolean isDownloaded(ModApi mod){
+	public boolean isDownloaded(Mod mod){
 		return isDownloaded(mod, config);
 	}
 	
@@ -157,12 +156,7 @@ public class ModManager extends Listenable<ModUpdateListener>
 	public void progressComplete(ExecutorContext ctx, int tasksRunning) {
 		if (ctx instanceof DownloadModContext){
 			DownloadModContext context = (DownloadModContext) ctx;
-			try {
-				notifyModUpdated(new Mod(context.modApi), false);
-			} catch (CannotAddModException e) {
-				// TODO Send result back to GUI
-				e.printStackTrace();
-			}
+			notifyModUpdated(context.mod, false);
 		}
 		if (ctx instanceof ModEnableContext){
 			ModEnableContext context = (ModEnableContext) ctx;
@@ -175,7 +169,7 @@ public class ModManager extends Listenable<ModUpdateListener>
 		else if (ctx instanceof NewModPageContext){
 			NewModPageContext context = (NewModPageContext) ctx;
 			try {
-				modDownloader.submit(new DownloadModContext(context.getPage(), config));
+				modDownloader.submit(new DownloadModContext(new Mod(context.getPage()), config));
 			} catch (CannotAddModException e) {
 				// TODO Send Result back to GUI
 				e.printStackTrace();
@@ -184,7 +178,13 @@ public class ModManager extends Listenable<ModUpdateListener>
 		}
 		else if (ctx instanceof PageUpdateContext){
 			PageUpdateContext context = (PageUpdateContext) ctx;
-			Mod mod = context.mod;
+			Mod mod;
+			try {
+				mod = new Mod(context.getPage());
+			} catch (CannotAddModException e1) {
+				e1.printStackTrace();
+				return;
+			}
 			if (context.isUpdateAvailable() || !isDownloaded(mod, config)){
 				mod.setUpdateAvailable();
 				notifyModUpdated(mod, false);
@@ -192,7 +192,7 @@ public class ModManager extends Listenable<ModUpdateListener>
 				// If download requested, download mod
 				if (context.downloadIfAvailable()){
 					try {
-						ModPage page = context.getPage();
+						CurseModPage page = context.getPage();
 						mod.updateModData(page);
 						modDownloader.submit(new DownloadModContext(mod, config));
 					} catch (CannotAddModException e) {

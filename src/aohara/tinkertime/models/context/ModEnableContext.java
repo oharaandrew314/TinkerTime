@@ -1,4 +1,4 @@
-package aohara.tinkertime.models;
+package aohara.tinkertime.models.context;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -8,6 +8,8 @@ import java.util.zip.ZipFile;
 
 import aohara.common.executors.context.ExecutorContext;
 import aohara.tinkertime.config.Config;
+import aohara.tinkertime.models.Mod;
+import aohara.tinkertime.models.ModStructure;
 import aohara.tinkertime.models.ModStructure.Module;
 
 public class ModEnableContext extends ExecutorContext {

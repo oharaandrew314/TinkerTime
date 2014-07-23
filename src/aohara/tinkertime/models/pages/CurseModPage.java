@@ -1,4 +1,4 @@
-package aohara.tinkertime.models;
+package aohara.tinkertime.models.pages;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -15,26 +15,22 @@ import org.jsoup.nodes.Element;
 
 import aohara.tinkertime.controllers.ModManager.CannotAddModException;
 
-public class ModPage extends ModApi {
+public class CurseModPage extends ModPage {
 	
 	private static Pattern ID_PATTERN = Pattern.compile("(\\d{4})(\\d{3})");
 	
-	private final Element doc;
-	private final URL pageUrl;
-	
-	public static ModPage createFromFile(Path path, URL pageUrl) 
+	public static CurseModPage createFromFile(Path path, URL pageUrl) 
 			throws CannotAddModException{
 		try {
 			Element ele = Jsoup.parse(path.toFile(), "UTF-8");
-			return new ModPage(ele, pageUrl);
+			return new CurseModPage(ele, pageUrl);
 		} catch (IOException e) {
 			throw new CannotAddModException();
 		}
 	}
 	
-	public ModPage(Element doc, URL pageUrl){
-		this.doc = doc;
-		this.pageUrl = pageUrl;
+	public CurseModPage(Element doc, URL pageUrl){
+		super(pageUrl, doc);
 	}
 
 	
@@ -66,7 +62,7 @@ public class ModPage extends ModApi {
 	}
 	
 	@Override
-	public String getNewestFile(){
+	public String getNewestFileName(){
 		Element ele = doc.getElementById("project-overview");
 		ele = ele.getElementsContainingOwnText("Newest File").first();
 		return ele.text().split(":")[1].trim();
@@ -87,7 +83,7 @@ public class ModPage extends ModApi {
 			String urlString = String.format(
 				"http://addons.curse.cursecdn.com/files/%s/%s/%s",
 				id1, id2,
-				getNewestFile().replaceAll(" ", "%20")
+				getNewestFileName().replaceAll(" ", "%20")
 			);
 			
 			url = testUrl(urlString);
@@ -119,12 +115,10 @@ public class ModPage extends ModApi {
 			return null;
 		}
 	}
-	
+
 	@Override
-	public URL getPageUrl(){
-		return pageUrl;
+	public boolean isUpdateAvailable(Date lastUpdated) {
+		// TODO Auto-generated method stub
+		return false;
 	}
-	
-	@SuppressWarnings("serial")
-	public class CannotScrapeException extends Throwable {}
 }

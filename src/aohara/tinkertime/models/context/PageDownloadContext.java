@@ -5,7 +5,7 @@ import java.nio.file.Path;
 
 import aohara.common.executors.context.FileTransferContext;
 import aohara.tinkertime.controllers.ModManager.CannotAddModException;
-import aohara.tinkertime.models.ModPage;
+import aohara.tinkertime.models.pages.ModPage;
 
 public abstract class PageDownloadContext extends FileTransferContext {
 

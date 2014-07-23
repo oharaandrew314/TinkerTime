@@ -4,7 +4,7 @@ import java.net.URL;
 import java.nio.file.Path;
 
 import aohara.tinkertime.controllers.ModManager.CannotAddModException;
-import aohara.tinkertime.models.ModPage;
+import aohara.tinkertime.models.pages.CurseModPage;
 
 public class NewModPageContext extends PageDownloadContext {
 	
@@ -17,8 +17,8 @@ public class NewModPageContext extends PageDownloadContext {
 		return getSource().toString();
 	}
 	
-	public ModPage getPage() throws CannotAddModException{
-		return ModPage.createFromFile(getDest(), getSource());
+	public CurseModPage getPage() throws CannotAddModException{
+		return CurseModPage.createFromFile(getDest(), getSource());
 	}
 	
 	public boolean isUpdateAvailable(){

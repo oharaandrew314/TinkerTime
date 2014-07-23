@@ -70,6 +70,7 @@ public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 		if (modCache.isEmpty()){
 			modCache.addAll(loadMods());
 		}
+		
 		return new HashSet<Mod>(modCache);
 	}
 	

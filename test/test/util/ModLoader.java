@@ -13,9 +13,9 @@ import org.jsoup.nodes.Element;
 
 import aohara.tinkertime.config.Config;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.models.ModPage;
 import aohara.tinkertime.models.ModStructure;
 import aohara.tinkertime.models.ModStructure.Module;
+import aohara.tinkertime.models.pages.CurseModPage;
 
 public class ModLoader {
 	
@@ -60,7 +60,7 @@ public class ModLoader {
 		);
 	}
 
-	public static ModPage getPage(String name){
+	public static CurseModPage getHtmlPage(String name){
 		try {
 			String url = PAGE_URLS.get(name);
 			
@@ -69,7 +69,7 @@ public class ModLoader {
 					String.format("test/res/%s.html", name)
 				), null, url);
 					
-			return new ModPage(doc, new URL(url));
+			return new CurseModPage(doc, new URL(url));
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
@@ -101,7 +101,7 @@ public class ModLoader {
 	}
 	
 	public static Mod addMod(String name, Config config) throws Throwable {
-		ModPage mod = getPage(name);
+		CurseModPage mod = getHtmlPage(name);
 		try {
 			FileUtils.copyURLToFile(
 				getZipUrl(name),

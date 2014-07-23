@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 import test.TestModManager;
-import test.TestModPage;
+import test.TestCurseModPage;
 import test.TestModStateManager;
 import test.TestModStructure;
 import test.TestZipManager;
@@ -17,11 +17,12 @@ import test.TestZipManager;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-   TestModPage.class,
+   TestCurseModPage.class,
    TestZipManager.class,
    TestModManager.class,
    TestModStateManager.class,
    TestModStructure.class,
+   TestModuleManagerPage.class,
 })
 
 public class UnitTestSuite {

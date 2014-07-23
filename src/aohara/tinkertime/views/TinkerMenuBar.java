@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.swing.AbstractAction;
+import javax.swing.JDialog;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -54,6 +55,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		updateMenu.add(new JMenuItem(new UpdateModAction()));
 		updateMenu.add(new JMenuItem(new UpdateAllAction()));
 		updateMenu.add(new JMenuItem(new CheckforUpdatesAction()));
+		updateMenu.add(new JMenuItem(new UpdateModuleManagerAction()));
 		add(updateMenu);
 		
 		JMenu helpMenu = new JMenu("Help");
@@ -345,6 +347,20 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 			} catch (IOException e1) {
 				errorMessage(e1.getMessage());
 			}
+		}
+	}
+	
+	private class UpdateModuleManagerAction extends AbstractAction {
+		
+		public UpdateModuleManagerAction(){
+			super("Update Module Manager");
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			JDialog dialog = new FileUpdateDialog("Module Manager", new Config());
+			dialog.setVisible(true);
+			
 		}
 	}
 }

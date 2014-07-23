@@ -30,13 +30,13 @@ public class TestModStateManager {
 
 	@BeforeClass
 	public static void setUpClass() throws Throwable {
-		MOD1 = new Mod(ModLoader.getPage(ModLoader.MECHJEB));
-		MOD2 = new Mod(ModLoader.getPage(ModLoader.ENGINEER));
+		MOD1 = new Mod(ModLoader.getHtmlPage(ModLoader.MECHJEB));
+		MOD2 = new Mod(ModLoader.getHtmlPage(ModLoader.ENGINEER));
 	}
 
 	private static Mod getUpdatedMod(final Mod mod, final String newestFile) throws Throwable {
 		Mod mocked = spy(mod);
-		when(mocked.getNewestFile()).thenAnswer(new Answer<String>() {
+		when(mocked.getNewestFileName()).thenAnswer(new Answer<String>() {
 			@Override
 			public String answer(InvocationOnMock invocation) throws Throwable {
 				return newestFile;
@@ -89,15 +89,15 @@ public class TestModStateManager {
 	public void testSaveUpdatedMod() throws Throwable {	
 		testSaveOne();
 		
-		String newestFile = mod1.getNewestFile() + "-updated";
+		String newestFile = mod1.getNewestFileName() + "-updated";
 		Mod newer = getUpdatedMod(mod1, newestFile);
-		assertEquals(newestFile, newer.getNewestFile());
+		assertEquals(newestFile, newer.getNewestFileName());
 		
 		update(newer, false);
 		
 		assertEquals(1, mods.size());
 		assertTrue(mods.contains(newer));
-		assertEquals(newestFile, mods.get(0).getNewestFile());
+		assertEquals(newestFile, mods.get(0).getNewestFileName());
 	}
 	
 	@Test

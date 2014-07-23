@@ -11,13 +11,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import test.util.MockConfig;
 import test.util.ModLoader;
 import aohara.common.executors.Downloader;
 import aohara.tinkertime.config.Config;
@@ -27,8 +26,8 @@ import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledException;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.controllers.files.ConflictResolver;
-import aohara.tinkertime.controllers.files.ModEnabler;
 import aohara.tinkertime.controllers.files.ConflictResolver.Resolution;
+import aohara.tinkertime.controllers.files.ModEnabler;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModApi;
 import aohara.tinkertime.models.ModStructure.Module;
@@ -80,7 +79,7 @@ public class TestModManager {
 
 	@Test
 	public void testIsDownloaded() throws IOException {
-		ModApi mod = ModLoader.getPage(ModLoader.ENGINEER);		
+		ModApi mod = ModLoader.getHtmlPage(ModLoader.ENGINEER);		
 		assertTrue(manager.isDownloaded(mod));
 	}
 	
@@ -169,19 +168,6 @@ public class TestModManager {
 		@Override
 		public Resolution getResolution(Module module, Mod mod) {
 			return res;
-		}
-	}
-	
-	private static class MockConfig extends Config {
-		
-		@Override
-		public Path getGameDataPath(){
-			return Paths.get("/");
-		}
-		
-		@Override
-		public Path getModsPath(){
-			return Paths.get("/");
 		}
 	}
 }

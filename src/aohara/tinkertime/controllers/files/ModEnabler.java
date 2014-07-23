@@ -17,10 +17,10 @@ import aohara.tinkertime.controllers.ModManager.CannotDisableModException;
 import aohara.tinkertime.controllers.ModManager.CannotEnableModException;
 import aohara.tinkertime.controllers.files.ConflictResolver.Resolution;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.models.ModEnableContext;
-import aohara.tinkertime.models.ModEnableContext.EnableAction;
 import aohara.tinkertime.models.ModStructure;
 import aohara.tinkertime.models.ModStructure.Module;
+import aohara.tinkertime.models.context.ModEnableContext;
+import aohara.tinkertime.models.context.ModEnableContext.EnableAction;
 
 public class ModEnabler extends ProgressExecutor<ModEnableContext> {
 	
