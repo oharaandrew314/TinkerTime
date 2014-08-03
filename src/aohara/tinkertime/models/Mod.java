@@ -66,14 +66,6 @@ public class Mod extends DownloadedFile {
 	}
 	
 	@Override
-	public boolean equals(Object o){
-		if (o instanceof Mod){
-			return ((Mod)o).getName().equals(getName());
-		}
-		return false;
-	}
-	
-	@Override
 	public String toString(){
 		return getName();
 	}

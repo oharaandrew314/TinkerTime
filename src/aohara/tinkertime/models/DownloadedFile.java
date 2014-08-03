@@ -41,4 +41,12 @@ public class DownloadedFile {
 		downloadLink = page.getDownloadLink();
 		pageUrl = page.getPageUrl();
 	}
+	
+	@Override
+	public boolean equals(Object o){
+		return (
+			o instanceof DownloadedFile
+			&& ((DownloadedFile)o).getPageUrl().equals(getPageUrl())
+		);
+	}
 }

@@ -20,7 +20,8 @@ public class EnableModWorkflow extends Workflow {
 			addTask(new UnzipTask(
 				this, structure.zipPath,
 				config.getGameDataPath().resolve(module.getName()),
-				module.getEntries(), cr));
+				module.getOutput(),
+				cr));
 		}
 		addTask(new MarkModEnabledTask(this, mod, sm, true));
 	}

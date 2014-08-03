@@ -12,13 +12,11 @@ import test.TestModManager;
 import test.TestCurseModPage;
 import test.TestModStateManager;
 import test.TestModStructure;
-import test.TestZipManager;
 
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
    TestCurseModPage.class,
-   TestZipManager.class,
    TestModManager.class,
    TestModStateManager.class,
    TestModStructure.class,

@@ -1,8 +1,10 @@
 package aohara.tinkertime.models;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -10,14 +12,14 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.io.IOUtils;
+
 import aohara.tinkertime.Config;
-import aohara.tinkertime.controllers.ZipManager;
 
 public class ModStructure {
 	
 	private String readmeName;
 	private Set<Module> modules = new HashSet<>();
-	private final ZipManager zipManager;
 	public final Path zipPath;
 	
 	public ModStructure(Mod mod, Config config){
@@ -26,10 +28,9 @@ public class ModStructure {
 	
 	public ModStructure(Path zipPath){
 		this.zipPath = zipPath;
-		zipManager = new ZipManager(zipPath);
 		
 		Path gameDataPath = null;
-		Set<ZipEntry> entries = getZipManager().getZipEntries();
+		Set<ZipEntry> entries = getZipEntries();
 		
 		// Search for Key Zip Entries
 		for (ZipEntry entry : entries){
@@ -67,6 +68,18 @@ public class ModStructure {
 		}
 	}
 	
+	private Set<ZipEntry> getZipEntries() {
+		Set<ZipEntry> set = new HashSet<>();
+		
+		try (ZipFile zipFile = new ZipFile(zipPath.toFile())){
+			set.addAll(Collections.list(zipFile.entries()));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return set;
+	}
+	
 	public boolean usesModule(Module module){
 		for (Module m : modules){
 			if (m.getName().equals(module.getName())){
@@ -77,7 +90,15 @@ public class ModStructure {
 	}
 	
 	public String getReadmeText(){
-		return getZipManager().getFileText(readmeName);
+		try (ZipFile zipFile = new ZipFile(zipPath.toFile())) {
+			ZipEntry entry = zipFile.getEntry(readmeName);
+
+			StringWriter writer = new StringWriter();
+			IOUtils.copy(zipFile.getInputStream(entry), writer);
+			return writer.toString();
+		} catch (IOException | NullPointerException e) {
+			return null;
+		}
 	}
 	
 	public Set<Module> getModules(){
@@ -86,10 +107,6 @@ public class ModStructure {
 	
 	private Path toPath(ZipEntry entry){
 		return Paths.get(entry.getName());
-	}
-	
-	public ZipManager getZipManager(){
-		return zipManager;
 	}
 	
 	// -- Module Class ------------------
@@ -102,15 +119,11 @@ public class ModStructure {
 		private Module(Path zipPath, Path pathWithinZip) {
 			this.pathWithinZip = pathWithinZip;
 
-			for (ZipEntry entry : getZipManager().getZipEntries()) {
+			for (ZipEntry entry : getZipEntries()) {
 				if (!entry.isDirectory() && toPath(entry).startsWith(pathWithinZip)){
 					entries.add(entry);
 				}
 			}
-		}
-		
-		public Set<ZipEntry> getEntries(){
-			return new HashSet<ZipEntry>(entries);		
 		}
 		
 		public Map<ZipEntry, Path> getOutput(){

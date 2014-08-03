@@ -3,6 +3,7 @@ package aohara.tinkertime.controllers;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import aohara.common.Listenable;
 import aohara.common.workflows.ConflictResolver;
@@ -10,6 +11,7 @@ import aohara.common.workflows.ProgressPanel;
 import aohara.common.workflows.Workflow;
 import aohara.tinkertime.Config;
 import aohara.tinkertime.models.Mod;
+import aohara.tinkertime.views.DialogConflictResolver;
 import aohara.tinkertime.workflows.CheckForUpdateWorkflow;
 import aohara.tinkertime.workflows.DeleteModWorkflow;
 import aohara.tinkertime.workflows.DisableModWorkflow;
@@ -20,20 +22,36 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	
 	public static final int NUM_CONCURRENT_DOWNLOADS = 4;
 	
-	private final Executor executor;
+	private final Executor downloadExecutor, enablerExecutor;
 	private final Config config;
 	private final ModStateManager sm;
 	private final ProgressPanel progressPanel;
 	private final ConflictResolver cr;
 	
+	public static ModManager createDefaultModManager(ModStateManager sm){
+		
+		final ProgressPanel pp = new ProgressPanel();
+		
+		ModManager mm =  new ModManager(
+			sm, new Config(), pp, new DialogConflictResolver(),
+			Executors.newFixedThreadPool(NUM_CONCURRENT_DOWNLOADS),
+			Executors.newSingleThreadExecutor());
+		
+		pp.toDialog("Processing Mods");
+		
+		return mm;
+	}
+	
 	public ModManager(
 			ModStateManager sm, Config config, ProgressPanel progressPanel,
-			ConflictResolver cr, Executor executor){
+			ConflictResolver cr, Executor downloadExecutor,
+			Executor enablerExecutor){
 		this.sm = sm;
 		this.config = config;
 		this.progressPanel = progressPanel;
 		this.cr = cr;
-		this.executor = executor;
+		this.downloadExecutor = downloadExecutor;
+		this.enablerExecutor = enablerExecutor;
 		
 		addListener(sm);
 	}
@@ -58,9 +76,14 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	
 	// -- Modifiers ---------------------------------
 	
-	private void submitWorkflow(Workflow workflow){
+	private void submitDownloadWorkflow(Workflow workflow){
 		workflow.addListener(progressPanel);
-		executor.execute(workflow);
+		downloadExecutor.execute(workflow);
+	}
+	
+	private void submitEnablerWorkflow(Workflow workflow){
+		workflow.addListener(progressPanel);
+		enablerExecutor.execute(workflow);
 	}
 	
 	public void addNewMod(String url) throws CannotAddModException {
@@ -76,7 +99,7 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	}
 	
 	private void downloadMod(URL url){
-		submitWorkflow(new UpdateModWorkflow(url, config, sm));
+		submitDownloadWorkflow(new UpdateModWorkflow(url, config, sm));
 	}
 	
 	public void updateMods() throws ModUpdateFailedException{
@@ -95,7 +118,7 @@ public class ModManager extends Listenable<ModUpdateListener> {
 			throw new ModNotDownloadedException();
 		}
 		
-		submitWorkflow(new EnableModWorkflow(mod, config, sm, cr));
+		submitEnablerWorkflow(new EnableModWorkflow(mod, config, sm, cr));
 	}
 	
 	public void disableMod(Mod mod)
@@ -104,16 +127,16 @@ public class ModManager extends Listenable<ModUpdateListener> {
 			throw new ModAlreadyDisabledException();
 		}
 		
-		submitWorkflow(new DisableModWorkflow(mod, config, sm));
+		submitEnablerWorkflow(new DisableModWorkflow(mod, config, sm));
 	}
 	
 	public void deleteMod(Mod mod) throws CannotDisableModException {
-		submitWorkflow(new DeleteModWorkflow(mod, config, sm));
+		submitEnablerWorkflow(new DeleteModWorkflow(mod, config, sm));
 	}
 	
 	public void checkForUpdates() throws ModUpdateFailedException {	
 		for (Mod mod : sm.getMods()){
-			submitWorkflow(new CheckForUpdateWorkflow(mod, sm));
+			submitDownloadWorkflow(new CheckForUpdateWorkflow(mod, sm));
 		}
 	}
 	

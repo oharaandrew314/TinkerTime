@@ -1,15 +1,12 @@
 package aohara.tinkertime;
 
 import java.awt.event.MouseEvent;
-import java.util.concurrent.Executors;
 
 import aohara.common.selectorPanel.ListListener;
 import aohara.common.selectorPanel.SelectorPanel;
-import aohara.common.workflows.ProgressPanel;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.views.DialogConflictResolver;
 import aohara.tinkertime.views.Frame;
 import aohara.tinkertime.views.ModImageView;
 import aohara.tinkertime.views.ModListCellRenderer;
@@ -28,13 +25,8 @@ public class TinkerTime implements ListListener<Mod> {
 		Config.verifyConfig();
 		
 		// Initialize Controllers
-		Config config = new Config();
-		ModStateManager sm = new ModStateManager(config.getModsPath().resolve("mods.json"));
-		ProgressPanel progressPanel = new ProgressPanel();
-		mm = new ModManager(
-			sm, config, progressPanel, new DialogConflictResolver(),
-			Executors.newFixedThreadPool(ModManager.NUM_CONCURRENT_DOWNLOADS)
-		);
+		ModStateManager sm = new ModStateManager(new Config().getModsPath().resolve("mods.json"));
+		mm = ModManager.createDefaultModManager(sm);
 		
 		// Initialize GUI
 		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new ModView());
@@ -50,7 +42,6 @@ public class TinkerTime implements ListListener<Mod> {
 		// Start Application
 		sm.getMods();  // Load mods (will notify selector panel)
 		new Frame(mm, sp, menuBar);
-		progressPanel.toDialog("Processing Mods");
 	}
 	
 	public static void main(String[] args) {

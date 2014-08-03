@@ -41,7 +41,7 @@ public class TestModManager {
 	private ModManager manager;
 	private static Mod mod, testMod1, testMod2;
 	private MockCR cr;
-	private Executor exec;
+	private Executor downloedExecutor, enablerExecutor;
 	
 	@BeforeClass
 	public static void setUpClass() throws Throwable{
@@ -58,7 +58,8 @@ public class TestModManager {
 			config,
 			mock(ProgressPanel.class),
 			cr = spy(new MockCR()),
-			exec = mock(Executor.class)
+			downloedExecutor = mock(Executor.class),
+			enablerExecutor = mock(Executor.class)
 		);
 		
 		mod.setEnabled(false);
@@ -71,7 +72,7 @@ public class TestModManager {
 	@Test
 	public void testAddMod() throws Throwable {
 		manager.addNewMod(mod.getPageUrl().toString());
-		verify(exec, times(1)).execute(any(UpdateModWorkflow.class));
+		verify(downloedExecutor, times(1)).execute(any(UpdateModWorkflow.class));
 	}
 
 	@Test
@@ -83,13 +84,13 @@ public class TestModManager {
 	// -- Enable Tests ------------------------------------
 	
 	private void enableMod(Mod mod) throws Throwable {
-			reset(exec);
+			reset(downloedExecutor);
 			assertTrue(ModManager.isDownloaded(mod, config));
 			
 			manager.enableMod(mod);
 			
 			verifyZeroInteractions(cr);
-			verify(exec, times(1)).execute(any(EnableModWorkflow.class));
+			verify(enablerExecutor, times(1)).execute(any(EnableModWorkflow.class));
 		}
 	
 	@Test
@@ -132,7 +133,7 @@ public class TestModManager {
 	public void testDisableMod() throws Throwable {
 		mod.setEnabled(true);
 		manager.disableMod(mod);
-		verify(exec, times(1)).execute(any(DisableModWorkflow.class));
+		verify(enablerExecutor, times(1)).execute(any(DisableModWorkflow.class));
 	}
 	
 	@Test(expected = ModAlreadyDisabledException.class)
@@ -147,7 +148,7 @@ public class TestModManager {
 	@Test
 	public void testUpdate() throws ModUpdateFailedException{
 		manager.updateMod(mod);
-		verify(exec, times(1)).execute(any(UpdateModWorkflow.class));
+		verify(downloedExecutor, times(1)).execute(any(UpdateModWorkflow.class));
 	}
 	
 	// -- Mock Objects -------------------------------------
