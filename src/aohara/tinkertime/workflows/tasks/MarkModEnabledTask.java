@@ -1,7 +1,7 @@
 package aohara.tinkertime.workflows.tasks;
 
 import aohara.common.workflows.Workflow;
-import aohara.common.workflows.WorkflowTask;
+import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;
 
@@ -26,7 +26,7 @@ public class MarkModEnabledTask extends WorkflowTask {
 	}
 
 	@Override
-	protected int getTargetProgress() throws InvalidContentException {
+	public int getTargetProgress() throws InvalidContentException {
 		return 1;
 	}
 

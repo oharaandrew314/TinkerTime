@@ -8,9 +8,9 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Path;
 
-import aohara.common.workflows.FileTransferTask;
 import aohara.common.workflows.Workflow;
-import aohara.common.workflows.WorkflowTask;
+import aohara.common.workflows.tasks.FileTransferTask;
+import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.Config;
 import aohara.tinkertime.controllers.ModManager.CannotAddModException;
 import aohara.tinkertime.controllers.ModStateManager;
@@ -59,7 +59,7 @@ public class DownloadModFromPageTask extends WorkflowTask {
 	}
 
 	@Override
-	protected int getTargetProgress() throws InvalidContentException {
+	public int getTargetProgress() throws InvalidContentException {
 		try {
 			return getPage().getDownloadLink().openConnection().getContentLength();
 		} catch (IOException | CannotAddModException e) {

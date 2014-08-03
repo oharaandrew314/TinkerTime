@@ -1,8 +1,8 @@
 package aohara.tinkertime.workflows;
 
 import aohara.common.workflows.ConflictResolver;
-import aohara.common.workflows.UnzipTask;
 import aohara.common.workflows.Workflow;
+import aohara.common.workflows.tasks.UnzipTask;
 import aohara.tinkertime.Config;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;

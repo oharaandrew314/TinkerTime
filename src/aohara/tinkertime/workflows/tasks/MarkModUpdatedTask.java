@@ -3,7 +3,7 @@ package aohara.tinkertime.workflows.tasks;
 import java.nio.file.Path;
 
 import aohara.common.workflows.Workflow;
-import aohara.common.workflows.WorkflowTask;
+import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.pages.ModPage;
@@ -33,7 +33,7 @@ public class MarkModUpdatedTask extends WorkflowTask {
 	}
 
 	@Override
-	protected int getTargetProgress() throws InvalidContentException {
+	public int getTargetProgress() throws InvalidContentException {
 		return 1;
 	}
 

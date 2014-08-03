@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import org.apache.commons.io.FileUtils;
 
 import aohara.common.workflows.Workflow;
-import aohara.common.workflows.WorkflowTask;
+import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.Config;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;
@@ -31,7 +31,7 @@ public class DeleteModTask extends WorkflowTask {
 	}
 
 	@Override
-	protected int getTargetProgress() throws InvalidContentException {
+	public int getTargetProgress() throws InvalidContentException {
 		return 1;
 	}
 }
