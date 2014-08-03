@@ -1,4 +1,4 @@
-package aohara.tinkertime.workflows;
+package aohara.tinkertime.workflows.tasks;
 
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
@@ -25,7 +25,7 @@ public class DownloadModFromPageTask extends WorkflowTask {
 	private ModPage cachedPage;
 	private final ModStateManager sm;
 
-	protected DownloadModFromPageTask(Workflow workflow, Config config, Path pagePath, URL pageUrl, ModStateManager sm) {
+	public DownloadModFromPageTask(Workflow workflow, Config config, Path pagePath, URL pageUrl, ModStateManager sm) {
 		super(workflow);
 		this.pagePath = pagePath;
 		this.pageUrl = pageUrl;
