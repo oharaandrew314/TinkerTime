@@ -16,9 +16,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import thirdParty.VerticalLayout;
+import aohara.tinkertime.Config;
 import aohara.tinkertime.TinkerTime;
-import aohara.tinkertime.config.Config;
-import aohara.tinkertime.config.Config.IllegalPathException;
+import aohara.tinkertime.Config.IllegalPathException;
 
 @SuppressWarnings("serial")
 public class DirectoryChooser extends JDialog {

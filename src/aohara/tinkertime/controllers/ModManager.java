@@ -1,48 +1,59 @@
 package aohara.tinkertime.controllers;
 
-import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import aohara.common.Listenable;
-import aohara.common.executors.Downloader;
-import aohara.common.executors.context.ExecutorContext;
-import aohara.common.executors.progress.ProgressListener;
-import aohara.tinkertime.config.Config;
-import aohara.tinkertime.controllers.files.ModEnabler;
+import aohara.common.workflows.ConflictResolver;
+import aohara.common.workflows.ProgressPanel;
+import aohara.common.workflows.Workflow;
+import aohara.tinkertime.Config;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.models.ModApi;
-import aohara.tinkertime.models.ModEnableContext;
-import aohara.tinkertime.models.ModEnableContext.EnableAction;
-import aohara.tinkertime.models.ModPage;
-import aohara.tinkertime.models.context.DownloadModContext;
-import aohara.tinkertime.models.context.NewModPageContext;
-import aohara.tinkertime.models.context.PageUpdateContext;
+import aohara.tinkertime.views.DialogConflictResolver;
+import aohara.tinkertime.workflows.CheckForUpdateWorkflow;
+import aohara.tinkertime.workflows.DeleteModWorkflow;
+import aohara.tinkertime.workflows.DisableModWorkflow;
+import aohara.tinkertime.workflows.EnableModWorkflow;
+import aohara.tinkertime.workflows.UpdateModWorkflow;
 
-public class ModManager extends Listenable<ModUpdateListener>
-		implements ProgressListener {
+public class ModManager extends Listenable<ModUpdateListener> {
 	
 	public static final int NUM_CONCURRENT_DOWNLOADS = 4;
 	
-	private final Downloader pageDownloader, modDownloader;
-	private final ModEnabler enabler;
+	private final Executor downloadExecutor, enablerExecutor;
 	private final Config config;
 	private final ModStateManager sm;
+	private final ProgressPanel progressPanel;
+	private final ConflictResolver cr;
+	
+	public static ModManager createDefaultModManager(ModStateManager sm){
+		
+		final ProgressPanel pp = new ProgressPanel();
+		
+		ModManager mm =  new ModManager(
+			sm, new Config(), pp, new DialogConflictResolver(),
+			Executors.newFixedThreadPool(NUM_CONCURRENT_DOWNLOADS),
+			Executors.newSingleThreadExecutor());
+		
+		pp.toDialog("Processing Mods");
+		
+		return mm;
+	}
 	
 	public ModManager(
-			ModStateManager sm, Config config, Downloader pageDownloader,
-			Downloader modDownloader, ModEnabler enabler){
+			ModStateManager sm, Config config, ProgressPanel progressPanel,
+			ConflictResolver cr, Executor downloadExecutor,
+			Executor enablerExecutor){
 		this.sm = sm;
 		this.config = config;
-		this.pageDownloader = pageDownloader;
-		this.modDownloader = modDownloader;
-		this.enabler = enabler;
+		this.progressPanel = progressPanel;
+		this.cr = cr;
+		this.downloadExecutor = downloadExecutor;
+		this.enablerExecutor = enablerExecutor;
 		
-		this.addListener(sm);
-		enabler.addListener(this);
-		pageDownloader.addListener(this);
-		modDownloader.addListener(this);
+		addListener(sm);
 	}
 	
 	// -- Listeners -----------------------
@@ -55,48 +66,45 @@ public class ModManager extends Listenable<ModUpdateListener>
 	
 	// -- Accessors ------------------------
 	
-	public static boolean isDownloaded(ModApi mod, Config config){
+	public static boolean isDownloaded(Mod mod, Config config){
 		return config.getModZipPath(mod).toFile().exists();
 	}
 	
-	public boolean isDownloaded(ModApi mod){
+	public boolean isDownloaded(Mod mod){
 		return isDownloaded(mod, config);
-	}
-	
-	private Path createTempFile() throws IOException{
-		return Files.createTempFile("download", ".temp");
 	}
 	
 	// -- Modifiers ---------------------------------
 	
+	private void submitDownloadWorkflow(Workflow workflow){
+		workflow.addListener(progressPanel);
+		downloadExecutor.execute(workflow);
+	}
+	
+	private void submitEnablerWorkflow(Workflow workflow){
+		workflow.addListener(progressPanel);
+		enablerExecutor.execute(workflow);
+	}
+	
 	public void addNewMod(String url) throws CannotAddModException {
 		try {
-			modDownloader.submit(new NewModPageContext(new URL(url), createTempFile()));
-		} catch (IOException e) {
+			downloadMod(new URL(url));
+		} catch (MalformedURLException e1) {
 			throw new CannotAddModException();
 		}
 	}
 	
-	public void updateMod(Mod mod) throws ModUpdateFailedException {
-		try {
-			pageDownloader.submit(new PageUpdateContext(mod, createTempFile(), true));
-		} catch (IOException e) {
-			throw new ModUpdateFailedException();
-		}
+	public void updateMod(Mod mod) {
+		downloadMod(mod.getPageUrl());
+	}
+	
+	private void downloadMod(URL url){
+		submitDownloadWorkflow(new UpdateModWorkflow(url, config, sm));
 	}
 	
 	public void updateMods() throws ModUpdateFailedException{
-		boolean error = false;
 		for (Mod mod : sm.getMods()){
-			try {
-				updateMod(mod);
-			} catch (ModUpdateFailedException e) {
-				error = true;
-			}
-		}
-		
-		if (error){
-			throw new ModUpdateFailedException();
+			updateMod(mod);
 		}
 	}
 	
@@ -110,7 +118,7 @@ public class ModManager extends Listenable<ModUpdateListener>
 			throw new ModNotDownloadedException();
 		}
 		
-		enabler.enable(mod, config);
+		submitEnablerWorkflow(new EnableModWorkflow(mod, config, sm, cr));
 	}
 	
 	public void disableMod(Mod mod)
@@ -119,88 +127,16 @@ public class ModManager extends Listenable<ModUpdateListener>
 			throw new ModAlreadyDisabledException();
 		}
 		
-		enabler.disable(mod, config);
+		submitEnablerWorkflow(new DisableModWorkflow(mod, config, sm));
 	}
 	
 	public void deleteMod(Mod mod) throws CannotDisableModException {
-		enabler.delete(mod, config);
+		submitEnablerWorkflow(new DeleteModWorkflow(mod, config, sm));
 	}
 	
 	public void checkForUpdates() throws ModUpdateFailedException {	
-		boolean error = false;
 		for (Mod mod : sm.getMods()){
-			try {
-				Path tempFile = Files.createTempFile("download", ".temp");
-				pageDownloader.submit(new PageUpdateContext(mod, tempFile, false));
-			} catch (IOException e) {
-				error = true;
-			}
-		}
-		
-		// If an error occured during execution, re-throw exception
-		if (error){
-			throw new ModUpdateFailedException();
-		}
-	}
-	
-	// -- Listeners ------------------------------------------------------
-	
-	@Override
-	public void progressStarted(ExecutorContext object, int target,
-			int tasksRunning) { /* */}
-	@Override
-	public void progressMade(ExecutorContext object, int current) { /* */}
-	@Override
-	public void progressError(ExecutorContext object, int tasksRunning) { /* */}
-	
-	@Override
-	public void progressComplete(ExecutorContext ctx, int tasksRunning) {
-		if (ctx instanceof DownloadModContext){
-			DownloadModContext context = (DownloadModContext) ctx;
-			try {
-				notifyModUpdated(new Mod(context.modApi), false);
-			} catch (CannotAddModException e) {
-				// TODO Send result back to GUI
-				e.printStackTrace();
-			}
-		}
-		if (ctx instanceof ModEnableContext){
-			ModEnableContext context = (ModEnableContext) ctx;
-			if (ctx.isSuccessful()){
-				EnableAction action = context.action;
-				context.mod.setEnabled(action == EnableAction.Enable);
-				notifyModUpdated(context.mod, action == EnableAction.Delete);
-			}
-		}
-		else if (ctx instanceof NewModPageContext){
-			NewModPageContext context = (NewModPageContext) ctx;
-			try {
-				modDownloader.submit(new DownloadModContext(context.getPage(), config));
-			} catch (CannotAddModException e) {
-				// TODO Send Result back to GUI
-				e.printStackTrace();
-			}
-			
-		}
-		else if (ctx instanceof PageUpdateContext){
-			PageUpdateContext context = (PageUpdateContext) ctx;
-			Mod mod = context.mod;
-			if (context.isUpdateAvailable() || !isDownloaded(mod, config)){
-				mod.setUpdateAvailable();
-				notifyModUpdated(mod, false);
-				
-				// If download requested, download mod
-				if (context.downloadIfAvailable()){
-					try {
-						ModPage page = context.getPage();
-						mod.updateModData(page);
-						modDownloader.submit(new DownloadModContext(mod, config));
-					} catch (CannotAddModException e) {
-						// TODO Send result back to GUI
-						e.printStackTrace();
-					}
-				}
-			}
+			submitDownloadWorkflow(new CheckForUpdateWorkflow(mod, sm));
 		}
 	}
 	
@@ -220,6 +156,4 @@ public class ModManager extends Listenable<ModUpdateListener>
 	public static class CannotEnableModException extends Exception {}
 	@SuppressWarnings("serial")
 	public static class ModUpdateFailedException extends Exception {}
-	@SuppressWarnings("serial")
-	public static class ModAlreadyUpToDateException extends Exception {}
 }

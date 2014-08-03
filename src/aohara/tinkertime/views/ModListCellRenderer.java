@@ -11,7 +11,7 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
 import thirdParty.CompoundIcon;
-import aohara.tinkertime.config.Config;
+import aohara.tinkertime.Config;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.models.Mod;
 

@@ -15,7 +15,7 @@ import javax.swing.event.HyperlinkListener;
 import thirdParty.VerticalLayout;
 import aohara.common.Util;
 import aohara.common.selectorPanel.SelectorView;
-import aohara.tinkertime.config.Config;
+import aohara.tinkertime.Config;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
 

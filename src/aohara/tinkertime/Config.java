@@ -1,11 +1,10 @@
-package aohara.tinkertime.config;
+package aohara.tinkertime;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import aohara.common.AbstractConfig;
-import aohara.tinkertime.TinkerTime;
-import aohara.tinkertime.models.ModApi;
+import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.views.DirectoryChooser;
 
 public class Config extends AbstractConfig {
@@ -17,7 +16,7 @@ public class Config extends AbstractConfig {
 	
 	public void setGameDataPath(Path path) throws IllegalPathException {
 		if (path != null && path.endsWith("GameData")){
-			set("gameDataPath", path.toString());
+			setProperty("gameDataPath", path.toString());
 		} else if (path != null && path.resolve("GameData").toFile().exists()){
 			setGameDataPath(path.resolve("GameData"));
 		} else {
@@ -27,7 +26,7 @@ public class Config extends AbstractConfig {
 	
 	public void setModsPath(Path path) throws IllegalPathException {
 		if (path != null && path.toFile().isDirectory()){
-			set("modsPath", path.toFile().getPath());
+			setProperty("modsPath", path.toFile().getPath());
 		} else {
 			throw new IllegalPathException("Mods Path must be a directory");
 		}
@@ -40,8 +39,8 @@ public class Config extends AbstractConfig {
 		return null;
 	}
 	
-	public Path getModZipPath(ModApi mod){
-		return new Config().getModsPath().resolve(mod.getNewestFile());
+	public Path getModZipPath(Mod mod){
+		return new Config().getModsPath().resolve(mod.getNewestFileName());
 	}
 	
 	public Path getModsPath(){
@@ -51,19 +50,20 @@ public class Config extends AbstractConfig {
 		return null;
 	}
 	
-	public void set(String key, String value){
-		setProperty(key, value);
+	@Override
+	public void setProperty(String key, String value){
+		super.setProperty(key, value);
 		save();
 	}
 	
 	@SuppressWarnings("serial")
 	public class IllegalPathException extends Exception {
-		public IllegalPathException(String message){
+		private IllegalPathException(String message){
 			super(message);
 		}
 	}
 	
-	public static void verifyConfig(){
+	static void verifyConfig(){
 		Config config = new Config();
 		if (config.getModsPath() == null || config.getGameDataPath() == null){
 			updateConfig(false, true);

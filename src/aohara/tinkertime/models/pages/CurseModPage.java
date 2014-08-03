@@ -1,42 +1,23 @@
-package aohara.tinkertime.models;
+package aohara.tinkertime.models.pages;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 
-import aohara.tinkertime.controllers.ModManager.CannotAddModException;
-
-public class ModPage extends ModApi {
+public class CurseModPage extends ModPage {
 	
 	private static Pattern ID_PATTERN = Pattern.compile("(\\d{4})(\\d{3})");
 	
-	private final Element doc;
-	private final URL pageUrl;
-	
-	public static ModPage createFromFile(Path path, URL pageUrl) 
-			throws CannotAddModException{
-		try {
-			Element ele = Jsoup.parse(path.toFile(), "UTF-8");
-			return new ModPage(ele, pageUrl);
-		} catch (IOException e) {
-			throw new CannotAddModException();
-		}
+	public CurseModPage(Element doc, URL pageUrl){
+		super(pageUrl, doc);
 	}
-	
-	public ModPage(Element doc, URL pageUrl){
-		this.doc = doc;
-		this.pageUrl = pageUrl;
-	}
-
 	
 	@Override
 	public String getName(){
@@ -66,7 +47,7 @@ public class ModPage extends ModApi {
 	}
 	
 	@Override
-	public String getNewestFile(){
+	public String getNewestFileName(){
 		Element ele = doc.getElementById("project-overview");
 		ele = ele.getElementsContainingOwnText("Newest File").first();
 		return ele.text().split(":")[1].trim();
@@ -87,7 +68,7 @@ public class ModPage extends ModApi {
 			String urlString = String.format(
 				"http://addons.curse.cursecdn.com/files/%s/%s/%s",
 				id1, id2,
-				getNewestFile().replaceAll(" ", "%20")
+				getNewestFileName().replaceAll(" ", "%20")
 			);
 			
 			url = testUrl(urlString);
@@ -119,12 +100,9 @@ public class ModPage extends ModApi {
 			return null;
 		}
 	}
-	
+
 	@Override
-	public URL getPageUrl(){
-		return pageUrl;
+	public boolean isUpdateAvailable(Date lastUpdated) {
+		return getUpdatedOn().compareTo(lastUpdated) > 0;
 	}
-	
-	@SuppressWarnings("serial")
-	public class CannotScrapeException extends Throwable {}
 }

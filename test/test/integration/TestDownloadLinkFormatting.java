@@ -9,7 +9,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
 
-import aohara.tinkertime.models.ModPage;
+import aohara.tinkertime.models.pages.CurseModPage;
 
 /**
  * WARNING! THIS TEST REQUIRES AN INTERNET CONNECTION!
@@ -42,7 +42,7 @@ public class TestDownloadLinkFormatting {
 	
 	private void test(String modUrl) throws IOException{
 		Document doc = Jsoup.connect(modUrl).get();
-		ModPage page =  new ModPage(doc, new URL(modUrl));
+		CurseModPage page =  new CurseModPage(doc, new URL(modUrl));
 		
 		assertTrue(page.getDownloadLink().openConnection().getContentLength() > 0);
 	}

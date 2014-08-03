@@ -2,18 +2,11 @@ package aohara.tinkertime;
 
 import java.awt.event.MouseEvent;
 
-import aohara.common.executors.Downloader;
-import aohara.common.executors.FileTransferExecutor.FileConflictResolver;
-import aohara.common.executors.TempDownloader;
-import aohara.common.executors.progress.ProgressDialog;
 import aohara.common.selectorPanel.ListListener;
 import aohara.common.selectorPanel.SelectorPanel;
-import aohara.tinkertime.config.Config;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModStateManager;
-import aohara.tinkertime.controllers.files.ModEnabler;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.views.DialogConflictResolver;
 import aohara.tinkertime.views.Frame;
 import aohara.tinkertime.views.ModImageView;
 import aohara.tinkertime.views.ModListCellRenderer;
@@ -32,12 +25,8 @@ public class TinkerTime implements ListListener<Mod> {
 		Config.verifyConfig();
 		
 		// Initialize Controllers
-		Config config = new Config();	
-		Downloader pageDownloader = new Downloader(ModManager.NUM_CONCURRENT_DOWNLOADS, FileConflictResolver.Overwrite);
-		Downloader modDownloader = new TempDownloader(ModManager.NUM_CONCURRENT_DOWNLOADS, FileConflictResolver.Overwrite);
-		ModStateManager sm = new ModStateManager(config.getModsPath().resolve("mods.json"));
-		ModEnabler enabler = new ModEnabler(new DialogConflictResolver(config, sm));
-		mm = new ModManager(sm, config, pageDownloader, modDownloader, enabler);
+		ModStateManager sm = new ModStateManager(new Config().getModsPath().resolve("mods.json"));
+		mm = ModManager.createDefaultModManager(sm);
 		
 		// Initialize GUI
 		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new ModView());
@@ -48,9 +37,6 @@ public class TinkerTime implements ListListener<Mod> {
 		// Add Listeners
 		sp.addListener(this);
 		sp.addListener(menuBar);
-		pageDownloader.addListener(new ProgressDialog("Downloading Mod Pages"));
-		enabler.addListener(new ProgressDialog("Processing Mods"));
-		modDownloader.addListener(new ProgressDialog("Downloading Mods"));
 		sm.addListener(sp);
 
 		// Start Application
