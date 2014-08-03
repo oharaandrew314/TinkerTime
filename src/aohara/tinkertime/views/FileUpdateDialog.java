@@ -50,7 +50,7 @@ public class FileUpdateDialog extends JDialog {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			PageUpdateContext context = new PageUpdateContext
+			//PageUpdateContext context = new PageUpdateContext
 		}
 
 		@Override

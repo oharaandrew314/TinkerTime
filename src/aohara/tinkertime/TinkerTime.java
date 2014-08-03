@@ -2,12 +2,10 @@ package aohara.tinkertime;
 
 import java.awt.event.MouseEvent;
 
-import aohara.common.executors.Downloader;
-import aohara.common.executors.FileTransferExecutor.FileConflictResolver;
-import aohara.common.executors.TempDownloader;
 import aohara.common.executors.progress.ProgressDialog;
 import aohara.common.selectorPanel.ListListener;
 import aohara.common.selectorPanel.SelectorPanel;
+import aohara.common.workflows.ProgressPanel;
 import aohara.tinkertime.config.Config;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModStateManager;
@@ -32,12 +30,11 @@ public class TinkerTime implements ListListener<Mod> {
 		Config.verifyConfig();
 		
 		// Initialize Controllers
-		Config config = new Config();	
-		Downloader pageDownloader = new Downloader(ModManager.NUM_CONCURRENT_DOWNLOADS, FileConflictResolver.Overwrite);
-		Downloader modDownloader = new TempDownloader(ModManager.NUM_CONCURRENT_DOWNLOADS, FileConflictResolver.Overwrite);
+		Config config = new Config();
 		ModStateManager sm = new ModStateManager(config.getModsPath().resolve("mods.json"));
 		ModEnabler enabler = new ModEnabler(new DialogConflictResolver(config, sm));
-		mm = new ModManager(sm, config, pageDownloader, modDownloader, enabler);
+		ProgressPanel progressPanel = new ProgressPanel();
+		mm = new ModManager(sm, config, enabler, progressPanel);
 		
 		// Initialize GUI
 		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new ModView());
@@ -48,14 +45,13 @@ public class TinkerTime implements ListListener<Mod> {
 		// Add Listeners
 		sp.addListener(this);
 		sp.addListener(menuBar);
-		pageDownloader.addListener(new ProgressDialog("Downloading Mod Pages"));
 		enabler.addListener(new ProgressDialog("Processing Mods"));
-		modDownloader.addListener(new ProgressDialog("Downloading Mods"));
 		sm.addListener(sp);
 
 		// Start Application
 		sm.getMods();  // Load mods (will notify selector panel)
 		new Frame(mm, sp, menuBar);
+		progressPanel.toDialog("Processing Mods");
 	}
 	
 	public static void main(String[] args) {
