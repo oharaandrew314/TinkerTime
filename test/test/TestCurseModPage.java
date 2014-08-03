@@ -8,20 +8,20 @@ import java.util.Date;
 import org.junit.Test;
 
 import test.util.ModLoader;
-import aohara.tinkertime.models.ModPage;
+import aohara.tinkertime.models.pages.CurseModPage;
 
-public class TestModPage {
+public class TestCurseModPage {
 	
 	private void compare(
 		String modName, String modUrl, Date updatedOn, String creator,
 		String newestFile, String downloadLink, String imageLink
 	){
-		ModPage page = ModLoader.getPage(modName);
+		CurseModPage page = ModLoader.getHtmlPage(modName);
 		
 		assertEquals(modName, page.getName());
 		assertEquals(updatedOn.toString(), page.getUpdatedOn().toString());
 		assertEquals(creator, page.getCreator());
-		assertEquals(newestFile, page.getNewestFile());
+		assertEquals(newestFile, page.getNewestFileName());
 		assertEquals(downloadLink, page.getDownloadLink().toString());
 		assertEquals(imageLink, page.getImageUrl().toString());
 		assertEquals(modUrl, page.getPageUrl().toString());
