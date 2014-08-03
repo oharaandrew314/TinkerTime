@@ -84,7 +84,7 @@ public class ModStructure {
 		return new HashSet<Module>(modules);
 	}
 	
-	public Path toPath(ZipEntry entry){
+	private Path toPath(ZipEntry entry){
 		return Paths.get(entry.getName());
 	}
 	
@@ -99,7 +99,7 @@ public class ModStructure {
 		private final Path pathWithinZip;
 		private final Set<ZipEntry> entries = new HashSet<>();
 
-		public Module(Path zipPath, Path pathWithinZip) {
+		private Module(Path zipPath, Path pathWithinZip) {
 			this.pathWithinZip = pathWithinZip;
 
 			for (ZipEntry entry : getZipManager().getZipEntries()) {

@@ -4,7 +4,7 @@ import java.net.URL;
 
 public abstract class Page {
 	
-	protected final URL pageUrl;
+	private final URL pageUrl;
 	
 	protected Page(URL pageUrl){
 		this.pageUrl = pageUrl;

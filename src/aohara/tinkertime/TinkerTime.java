@@ -1,6 +1,7 @@
 package aohara.tinkertime;
 
 import java.awt.event.MouseEvent;
+import java.util.concurrent.Executors;
 
 import aohara.common.selectorPanel.ListListener;
 import aohara.common.selectorPanel.SelectorPanel;
@@ -30,7 +31,10 @@ public class TinkerTime implements ListListener<Mod> {
 		Config config = new Config();
 		ModStateManager sm = new ModStateManager(config.getModsPath().resolve("mods.json"));
 		ProgressPanel progressPanel = new ProgressPanel();
-		mm = new ModManager(sm, config, progressPanel, new DialogConflictResolver());
+		mm = new ModManager(
+			sm, config, progressPanel, new DialogConflictResolver(),
+			Executors.newFixedThreadPool(ModManager.NUM_CONCURRENT_DOWNLOADS)
+		);
 		
 		// Initialize GUI
 		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new ModView());

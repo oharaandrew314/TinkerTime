@@ -3,7 +3,6 @@ package aohara.tinkertime.controllers;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import aohara.common.Listenable;
 import aohara.common.workflows.ConflictResolver;
@@ -21,7 +20,7 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	
 	public static final int NUM_CONCURRENT_DOWNLOADS = 4;
 	
-	private final Executor executor = Executors.newFixedThreadPool(NUM_CONCURRENT_DOWNLOADS);
+	private final Executor executor;
 	private final Config config;
 	private final ModStateManager sm;
 	private final ProgressPanel progressPanel;
@@ -29,13 +28,14 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	
 	public ModManager(
 			ModStateManager sm, Config config, ProgressPanel progressPanel,
-			ConflictResolver cr){
+			ConflictResolver cr, Executor executor){
 		this.sm = sm;
 		this.config = config;
 		this.progressPanel = progressPanel;
 		this.cr = cr;
+		this.executor = executor;
 		
-		this.addListener(sm);
+		addListener(sm);
 	}
 	
 	// -- Listeners -----------------------
@@ -65,33 +65,23 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	
 	public void addNewMod(String url) throws CannotAddModException {
 		try {
-			submitWorkflow(new UpdateModWorkflow(new URL(url), config, sm));
-		} catch (MalformedURLException e) {
+			downloadMod(new URL(url));
+		} catch (MalformedURLException e1) {
 			throw new CannotAddModException();
 		}
 	}
 	
-	public void updateMod(Mod mod) throws ModUpdateFailedException {
-		// TODO Merge with addNewMod
-		try {
-			addNewMod(mod.getPageUrl().toString());
-		} catch (CannotAddModException e) {
-			throw new ModUpdateFailedException();
-		}
+	public void updateMod(Mod mod) {
+		downloadMod(mod.getPageUrl());
+	}
+	
+	private void downloadMod(URL url){
+		submitWorkflow(new UpdateModWorkflow(url, config, sm));
 	}
 	
 	public void updateMods() throws ModUpdateFailedException{
-		boolean error = false;
 		for (Mod mod : sm.getMods()){
-			try {
-				updateMod(mod);
-			} catch (ModUpdateFailedException e) {
-				error = true;
-			}
-		}
-		
-		if (error){
-			throw new ModUpdateFailedException();
+			updateMod(mod);
 		}
 	}
 	
@@ -143,6 +133,4 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	public static class CannotEnableModException extends Exception {}
 	@SuppressWarnings("serial")
 	public static class ModUpdateFailedException extends Exception {}
-	@SuppressWarnings("serial")
-	public static class ModAlreadyUpToDateException extends Exception {}
 }

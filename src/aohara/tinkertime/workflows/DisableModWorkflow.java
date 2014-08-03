@@ -1,7 +1,5 @@
 package aohara.tinkertime.workflows;
 
-import java.util.Collection;
-
 import aohara.common.workflows.Workflow;
 import aohara.tinkertime.Config;
 import aohara.tinkertime.controllers.ModStateManager;
@@ -26,11 +24,9 @@ public class DisableModWorkflow extends Workflow {
 	}
 	
 	private boolean isDependency(ModStructure struct, Module module, Config config, ModStateManager sm){
-		Collection<ModStructure> structs = sm.getModStructures(config).values();
-		
 		int numDependencies = 0;
-		for (ModStructure s: structs){
-			if (s.usesModule(module)){
+		for (Mod mod : sm.getMods()){
+			if (new ModStructure(mod, config).usesModule(module)){
 				numDependencies++;
 			}
 		}

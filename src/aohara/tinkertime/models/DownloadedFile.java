@@ -41,6 +41,4 @@ public class DownloadedFile {
 		downloadLink = page.getDownloadLink();
 		pageUrl = page.getPageUrl();
 	}
-	
-
 }

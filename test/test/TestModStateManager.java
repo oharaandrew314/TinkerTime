@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -22,17 +21,10 @@ import aohara.tinkertime.models.Mod;
 
 public class TestModStateManager {
 
-	private static Mod MOD1, MOD2;
 	private Mod mod1, mod2;
 	private ModStateManager stateManager;
 	private Path path;
 	private List<Mod> mods;
-
-	@BeforeClass
-	public static void setUpClass() throws Throwable {
-		MOD1 = new Mod(ModLoader.getHtmlPage(ModLoader.MECHJEB));
-		MOD2 = new Mod(ModLoader.getHtmlPage(ModLoader.ENGINEER));
-	}
 
 	private static Mod getUpdatedMod(final Mod mod, final String newestFile) throws Throwable {
 		Mod mocked = spy(mod);
@@ -43,7 +35,7 @@ public class TestModStateManager {
 			}
 		});
 
-		return new Mod(mocked);
+		return mocked;
 	}
 	
 	private void update(Mod mod, boolean deleted){
@@ -55,8 +47,8 @@ public class TestModStateManager {
 	public void setUp() throws Throwable {
 		path = UnitTestSuite.getTempFile("mods", ".json");
 
-		mod1 = new Mod(MOD1);
-		mod2 = new Mod(MOD2);
+		mod1 = new Mod(ModLoader.getHtmlPage(ModLoader.MECHJEB));
+		mod2 = new Mod(ModLoader.getHtmlPage(ModLoader.ENGINEER));
 
 		stateManager = new ModStateManager(path);
 	}
