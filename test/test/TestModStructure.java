@@ -80,6 +80,9 @@ public class TestModStructure {
 		paths.add(Paths.get("Dependency/Dependency.txt"));
 		paths.add(Paths.get("Dependency/part1.txt"));
 		
-		assertEquals(paths, commonModule.getOutput());
+		assertEquals(
+			paths,
+			new HashSet<Path>(commonModule.getOutput().values())
+		);
 	}
 }
