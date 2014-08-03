@@ -1,18 +1,13 @@
 package aohara.tinkertime.views;
 
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
 import java.io.File;
 
-import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 
-import aohara.common.executors.Downloader;
-import aohara.common.executors.context.ExecutorContext;
-import aohara.common.executors.progress.ProgressListener;
-import aohara.tinkertime.config.Config;
+import aohara.tinkertime.Config;
 
 @SuppressWarnings("serial")
 public class FileUpdateDialog extends JDialog {
@@ -38,46 +33,4 @@ public class FileUpdateDialog extends JDialog {
 		}
 		return null;
 	}
-	
-	private class CheckForUpdatesAction extends AbstractAction
-			implements ProgressListener {
-		
-		private final Downloader downloader;
-		
-		public CheckForUpdatesAction(Downloader downloader){
-			this.downloader = downloader;
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			//PageUpdateContext context = new PageUpdateContext
-		}
-
-		@Override
-		public void progressStarted(ExecutorContext context, int target,
-				int tasksRunning) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void progressMade(ExecutorContext context, int current) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void progressComplete(ExecutorContext context, int tasksRunning) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void progressError(ExecutorContext context, int tasksRunning) {
-			// TODO Auto-generated method stub
-			
-		}
-		
-	}
-
 }

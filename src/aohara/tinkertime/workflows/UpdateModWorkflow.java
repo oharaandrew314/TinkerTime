@@ -6,7 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import aohara.common.workflows.Workflow;
-import aohara.tinkertime.config.Config;
+import aohara.tinkertime.Config;
 import aohara.tinkertime.controllers.ModStateManager;
 
 public class UpdateModWorkflow extends Workflow {

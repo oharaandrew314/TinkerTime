@@ -10,8 +10,8 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import aohara.tinkertime.config.Config;
-import aohara.tinkertime.controllers.files.ZipManager;
+import aohara.tinkertime.Config;
+import aohara.tinkertime.controllers.ZipManager;
 
 public class ModStructure {
 	

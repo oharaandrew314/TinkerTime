@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import aohara.common.workflows.Workflow;
-import aohara.tinkertime.config.Config;
+import aohara.tinkertime.Config;
 
 public class ModDownloadWorkflow extends Workflow {
 

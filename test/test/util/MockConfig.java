@@ -3,7 +3,7 @@ package test.util;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import aohara.tinkertime.config.Config;
+import aohara.tinkertime.Config;
 
 public class MockConfig extends Config {
 	

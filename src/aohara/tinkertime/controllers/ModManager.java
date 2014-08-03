@@ -6,39 +6,36 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import aohara.common.Listenable;
-import aohara.common.executors.context.ExecutorContext;
-import aohara.common.executors.progress.ProgressListener;
+import aohara.common.workflows.ConflictResolver;
 import aohara.common.workflows.ProgressPanel;
 import aohara.common.workflows.Workflow;
-import aohara.tinkertime.config.Config;
-import aohara.tinkertime.controllers.files.ModEnabler;
+import aohara.tinkertime.Config;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.models.context.ModEnableContext;
-import aohara.tinkertime.models.context.ModEnableContext.EnableAction;
 import aohara.tinkertime.workflows.CheckForUpdateWorkflow;
+import aohara.tinkertime.workflows.DeleteModWorkflow;
+import aohara.tinkertime.workflows.DisableModWorkflow;
+import aohara.tinkertime.workflows.EnableModWorkflow;
 import aohara.tinkertime.workflows.UpdateModWorkflow;
 
-public class ModManager extends Listenable<ModUpdateListener>
-		implements ProgressListener {
+public class ModManager extends Listenable<ModUpdateListener> {
 	
 	public static final int NUM_CONCURRENT_DOWNLOADS = 4;
 	
 	private final Executor executor = Executors.newFixedThreadPool(NUM_CONCURRENT_DOWNLOADS);
-	private final ModEnabler enabler;
 	private final Config config;
 	private final ModStateManager sm;
 	private final ProgressPanel progressPanel;
+	private final ConflictResolver cr;
 	
 	public ModManager(
-			ModStateManager sm, Config config, ModEnabler enabler,
-			ProgressPanel progressPanel){
+			ModStateManager sm, Config config, ProgressPanel progressPanel,
+			ConflictResolver cr){
 		this.sm = sm;
 		this.config = config;
-		this.enabler = enabler;
 		this.progressPanel = progressPanel;
+		this.cr = cr;
 		
 		this.addListener(sm);
-		enabler.addListener(this);
 	}
 	
 	// -- Listeners -----------------------
@@ -108,7 +105,7 @@ public class ModManager extends Listenable<ModUpdateListener>
 			throw new ModNotDownloadedException();
 		}
 		
-		enabler.enable(mod, config);
+		submitWorkflow(new EnableModWorkflow(mod, config, sm, cr));
 	}
 	
 	public void disableMod(Mod mod)
@@ -117,38 +114,16 @@ public class ModManager extends Listenable<ModUpdateListener>
 			throw new ModAlreadyDisabledException();
 		}
 		
-		enabler.disable(mod, config);
+		submitWorkflow(new DisableModWorkflow(mod, config, sm));
 	}
 	
 	public void deleteMod(Mod mod) throws CannotDisableModException {
-		enabler.delete(mod, config);
+		submitWorkflow(new DeleteModWorkflow(mod, config, sm));
 	}
 	
 	public void checkForUpdates() throws ModUpdateFailedException {	
 		for (Mod mod : sm.getMods()){
 			submitWorkflow(new CheckForUpdateWorkflow(mod, sm));
-		}
-	}
-	
-	// -- Listeners ------------------------------------------------------
-	
-	@Override
-	public void progressStarted(ExecutorContext object, int target,
-			int tasksRunning) { /* */}
-	@Override
-	public void progressMade(ExecutorContext object, int current) { /* */}
-	@Override
-	public void progressError(ExecutorContext object, int tasksRunning) { /* */}
-	
-	@Override
-	public void progressComplete(ExecutorContext ctx, int tasksRunning) {
-		if (ctx instanceof ModEnableContext){
-			ModEnableContext context = (ModEnableContext) ctx;
-			if (ctx.isSuccessful()){
-				EnableAction action = context.action;
-				context.mod.setEnabled(action == EnableAction.Enable);
-				notifyModUpdated(context.mod, action == EnableAction.Delete);
-			}
 		}
 	}
 	

@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import aohara.common.workflows.FileTransferTask;
 import aohara.common.workflows.Workflow;
 import aohara.common.workflows.WorkflowTask;
-import aohara.tinkertime.config.Config;
+import aohara.tinkertime.Config;
 import aohara.tinkertime.controllers.ModManager.CannotAddModException;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;

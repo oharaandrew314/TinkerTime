@@ -11,7 +11,7 @@ import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 
-import aohara.tinkertime.config.Config;
+import aohara.tinkertime.Config;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
 import aohara.tinkertime.models.ModStructure.Module;
@@ -101,7 +101,7 @@ public class ModLoader {
 	}
 	
 	public static Mod addMod(String name, Config config) throws Throwable {
-		CurseModPage mod = getHtmlPage(name);
+		Mod mod = new Mod(getHtmlPage(name));
 		try {
 			FileUtils.copyURLToFile(
 				getZipUrl(name),
@@ -110,6 +110,6 @@ public class ModLoader {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return new Mod(mod);
+		return mod;
 	}
 }

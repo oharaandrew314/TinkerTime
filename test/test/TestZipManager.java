@@ -14,7 +14,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import test.util.ModLoader;
-import aohara.tinkertime.controllers.files.ZipManager;
+import aohara.tinkertime.controllers.ZipManager;
 import aohara.tinkertime.models.ModStructure;
 import aohara.tinkertime.models.ModStructure.Module;
 

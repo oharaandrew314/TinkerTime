@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import aohara.common.workflows.Workflow;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;
+import aohara.tinkertime.workflows.tasks.MarkModUpdatedTask;
 
 public class CheckForUpdateWorkflow extends Workflow {
 

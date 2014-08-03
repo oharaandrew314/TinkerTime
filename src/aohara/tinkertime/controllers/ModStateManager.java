@@ -14,7 +14,7 @@ import java.util.Set;
 
 import aohara.common.Listenable;
 import aohara.common.selectorPanel.SelectorInterface;
-import aohara.tinkertime.config.Config;
+import aohara.tinkertime.Config;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
 

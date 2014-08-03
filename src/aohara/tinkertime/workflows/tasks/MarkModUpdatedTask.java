@@ -1,4 +1,4 @@
-package aohara.tinkertime.workflows;
+package aohara.tinkertime.workflows.tasks;
 
 import java.nio.file.Path;
 
@@ -15,7 +15,7 @@ public class MarkModUpdatedTask extends WorkflowTask {
 	private final Path downloadedPagePath;
 	private final ModStateManager sm;
 	
-	protected MarkModUpdatedTask(Workflow workflow, Mod existingMod, Path downloadedPagePath, ModStateManager sm) {
+	public MarkModUpdatedTask(Workflow workflow, Mod existingMod, Path downloadedPagePath, ModStateManager sm) {
 		super(workflow);
 		this.existingMod = existingMod;
 		this.downloadedPagePath = downloadedPagePath;

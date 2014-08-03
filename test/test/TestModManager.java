@@ -19,20 +19,18 @@ import org.junit.Test;
 import test.util.MockConfig;
 import test.util.ModLoader;
 import aohara.common.executors.Downloader;
-import aohara.tinkertime.config.Config;
+import aohara.common.workflows.ConflictResolver;
+import aohara.common.workflows.ProgressPanel;
+import aohara.common.workflows.ConflictResolver.Resolution;
+import aohara.tinkertime.Config;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledException;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
 import aohara.tinkertime.controllers.ModStateManager;
-import aohara.tinkertime.controllers.files.ConflictResolver;
-import aohara.tinkertime.controllers.files.ConflictResolver.Resolution;
 import aohara.tinkertime.controllers.files.ModEnabler;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.models.ModApi;
 import aohara.tinkertime.models.ModStructure.Module;
-import aohara.tinkertime.models.context.NewModPageContext;
-import aohara.tinkertime.models.context.PageDownloadContext;
 
 public class TestModManager {
 	
@@ -41,8 +39,6 @@ public class TestModManager {
 	private ModManager manager;
 	private static Mod mod, testMod1, testMod2;
 	private MockCR cr;
-	private Downloader pageDownloader, modDownloader;
-	private ModEnabler enabler;
 	
 	@BeforeClass
 	public static void setUpClass() throws Throwable{
@@ -57,9 +53,7 @@ public class TestModManager {
 		manager = new ModManager(
 			sm = mock(ModStateManager.class),
 			config,
-			pageDownloader = mock(Downloader.class),
-			modDownloader = mock(Downloader.class),
-			enabler = mock(ModEnabler.class)
+			mock(ProgressPanel.class)
 		);
 		cr = spy(new MockCR(config, sm));
 		
