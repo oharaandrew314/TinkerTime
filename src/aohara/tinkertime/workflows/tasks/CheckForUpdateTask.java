@@ -1,28 +1,46 @@
 package aohara.tinkertime.workflows.tasks;
 
+import java.net.URL;
 import java.nio.file.Path;
+import java.util.Date;
 
 import aohara.common.workflows.Workflow;
 import aohara.common.workflows.tasks.WorkflowTask;
-import aohara.tinkertime.models.DownloadedFile;
-import aohara.tinkertime.models.pages.ModPage;
+import aohara.tinkertime.models.pages.FilePage;
 import aohara.tinkertime.models.pages.PageFactory;
 
 public class CheckForUpdateTask extends WorkflowTask {
 	
 	private final Path newPagePath;
-	private final DownloadedFile existing;
+	private final Date lastUpdated;
+	private final String lastFileName;
+	private final URL pageUrl;
 
-	public CheckForUpdateTask(Workflow workflow, Path newPagePath, DownloadedFile existing) {
+	public CheckForUpdateTask(Workflow workflow, Path newPagePath, URL pageUrl, Date lastUpdated, String lastFileName) {
 		super(workflow);
 		this.newPagePath = newPagePath;
-		this.existing = existing;
+		this.lastUpdated = lastUpdated;
+		this.lastFileName = lastFileName;
+		this.pageUrl = pageUrl;
 	}
 
 	@Override
 	public Boolean call() throws Exception {
-		ModPage page = PageFactory.loadModPage(newPagePath, existing.getPageUrl());
-		return page.isUpdateAvailable(existing.getUpdatedOn());
+		// Load Page
+		FilePage page = null;
+		try{
+			page = PageFactory.loadFilePage(newPagePath, pageUrl);
+		} catch (Exception e){
+			return null;
+		}
+		
+		// Check if update is available
+		if (lastUpdated != null && page != null){
+			return page.isUpdateAvailable(lastUpdated);
+		} else if (page != null){
+			return !page.getNewestFileName().equals(lastFileName);
+		}
+		return false;
 	}
 
 	@Override

@@ -17,7 +17,6 @@ import aohara.tinkertime.workflows.DeleteModWorkflow;
 import aohara.tinkertime.workflows.DisableModWorkflow;
 import aohara.tinkertime.workflows.EnableModWorkflow;
 import aohara.tinkertime.workflows.UpdateModWorkflow;
-import aohara.tinkertime.workflows.tasks.MarkModUpdatedTask;
 
 public class ModManager extends Listenable<ModUpdateListener> {
 	
@@ -135,11 +134,9 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		submitEnablerWorkflow(new DeleteModWorkflow(mod, config, sm));
 	}
 	
-	public void checkForUpdates() throws ModUpdateFailedException {	
+	public void checkForModUpdates() throws ModUpdateFailedException {	
 		for (Mod mod : sm.getMods()){
-			CheckForUpdateWorkflow wf = new CheckForUpdateWorkflow(mod);
-			wf.addTask(new MarkModUpdatedTask(wf, mod, wf.getNewPagePath(), sm));
-			submitDownloadWorkflow(wf);
+			submitDownloadWorkflow(CheckForUpdateWorkflow.forExistingFile(mod, sm));
 		}
 	}
 	

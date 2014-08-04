@@ -211,7 +211,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				mm.checkForUpdates();
+				mm.checkForModUpdates();
 			} catch (ModUpdateFailedException e1) {
 				errorMessage("Error checking for updates.");
 			}

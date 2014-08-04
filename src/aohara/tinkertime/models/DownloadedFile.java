@@ -5,7 +5,7 @@ import java.util.Date;
 
 import aohara.tinkertime.models.pages.FilePage;
 
-public class DownloadedFile {
+public class DownloadedFile implements UpdateListener {
 	
 	private String fileName;
 	private Date lastUpdatedOn;
@@ -48,5 +48,10 @@ public class DownloadedFile {
 			o instanceof DownloadedFile
 			&& ((DownloadedFile)o).getPageUrl().equals(getPageUrl())
 		);
+	}
+
+	@Override
+	public void setUpdateAvailable(FilePage latest) {
+		// No action
 	}
 }
