@@ -5,22 +5,24 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import aohara.common.workflows.Workflow;
-import aohara.tinkertime.controllers.ModStateManager;
-import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.workflows.tasks.MarkModUpdatedTask;
+import aohara.tinkertime.models.DownloadedFile;
 
-public class CheckForUpdateWorkflow extends Workflow {
-
-	public CheckForUpdateWorkflow(Mod mod, ModStateManager sm) {
-		super("Checking for Update to " + mod.getName());
+public class CheckForUpdateWorkflow extends Workflow{
+	
+	private final Path newPagePath;
+	
+	public CheckForUpdateWorkflow(DownloadedFile existing){
+		super("Checking for Update for " + existing.getNewestFileName()); // TODO: Try to get a name here
 		try {
-			Path tempPagePath = Files.createTempFile("page", ".temp");
-			tempPagePath.toFile().deleteOnExit();
-			queueDownload(mod.getPageUrl(), tempPagePath);
-			addTask(new MarkModUpdatedTask(this, mod, tempPagePath, sm));
-		} catch (IOException e) {
+			newPagePath = Files.createTempFile("page", ".temp");
+			newPagePath.toFile().deleteOnExit();
+			queueDownload(existing.getPageUrl(), newPagePath);
+		} catch(IOException e){
 			throw new RuntimeException(e);
 		}
 	}
-
+	
+	public Path getNewPagePath(){
+		return newPagePath;
+	}
 }
