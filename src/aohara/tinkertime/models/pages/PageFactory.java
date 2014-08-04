@@ -33,15 +33,17 @@ public class PageFactory {
 	}
 	
 	public static FilePage loadFilePage(Path pagePath, URL pageUrl) throws Exception {
-		if (pageUrl.getHost().equals("www.ksp.sarbian.com")){
+		String host = pageUrl.getHost();
+		if (host.equals("ksp.sarbian.com")){
 			try (Reader reader = new InputStreamReader(pageUrl.openStream())){
 				JsonObject obj = new JsonParser().parse(reader).getAsJsonObject();
 				return ModuleManagerPage.loadPage(obj);
 			}
-		} else if (pageUrl.getHost().equals("www.curse.com")){
+		} else if (host.equals("www.curse.com")){
 			return new CurseModPage(loadPage(pagePath), pageUrl);
 		}
-		throw new IllegalArgumentException("Unsupported Host");
+		throw new IllegalArgumentException(
+			String.format("Unsupported Host.  Got %s", host));
 	}
 
 }

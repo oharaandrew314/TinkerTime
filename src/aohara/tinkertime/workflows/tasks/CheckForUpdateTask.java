@@ -26,21 +26,15 @@ public class CheckForUpdateTask extends WorkflowTask {
 
 	@Override
 	public Boolean call() throws Exception {
-		// Load Page
-		FilePage page = null;
-		try{
-			page = PageFactory.loadFilePage(newPagePath, pageUrl);
-		} catch (Exception e){
-			return null;
-		}
+		FilePage page = PageFactory.loadFilePage(newPagePath, pageUrl);
 		
 		// Check if update is available
 		if (lastUpdated != null && page != null){
 			return page.isUpdateAvailable(lastUpdated);
-		} else if (page != null){
+		} else if (page != null && lastFileName != null){
 			return !page.getNewestFileName().equals(lastFileName);
 		}
-		return false;
+		return page != null;
 	}
 
 	@Override

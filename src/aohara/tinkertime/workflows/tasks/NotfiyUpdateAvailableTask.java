@@ -24,13 +24,7 @@ public class NotfiyUpdateAvailableTask extends WorkflowTask {
 
 	@Override
 	public Boolean call() throws Exception {
-		// Load Page
-		FilePage page = null;
-		try{
-			page = PageFactory.loadFilePage(pagePath, pageUrl);
-		} catch (Exception e){
-			return null;
-		}
+		FilePage page = PageFactory.loadFilePage(pagePath, pageUrl);
 		
 		// Notify update listeners
 		if (page != null){

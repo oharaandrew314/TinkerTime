@@ -136,8 +136,12 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	
 	public void checkForModUpdates() throws ModUpdateFailedException {	
 		for (Mod mod : sm.getMods()){
-			submitDownloadWorkflow(CheckForUpdateWorkflow.forExistingFile(mod, sm));
+			checkForUpdate(CheckForUpdateWorkflow.forExistingFile(mod, sm));
 		}
+	}
+	
+	public void checkForUpdate(CheckForUpdateWorkflow workflow){
+		submitDownloadWorkflow(workflow);
 	}
 	
 	// -- Exceptions ------------------------------------------------------
