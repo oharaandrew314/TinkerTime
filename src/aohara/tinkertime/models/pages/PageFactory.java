@@ -12,6 +12,7 @@ import org.jsoup.nodes.Element;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import aohara.tinkertime.Constants;
 import aohara.tinkertime.controllers.ModManager.CannotAddModException;
 
 public class PageFactory {
@@ -34,12 +35,12 @@ public class PageFactory {
 	
 	public static FilePage loadFilePage(Path pagePath, URL pageUrl) throws Exception {
 		String host = pageUrl.getHost();
-		if (host.equals("ksp.sarbian.com")){
+		if (host.equals(Constants.getModuleManagerJenkinsUrl().getHost())){
 			try (Reader reader = new InputStreamReader(pageUrl.openStream())){
 				JsonObject obj = new JsonParser().parse(reader).getAsJsonObject();
 				return ModuleManagerPage.loadPage(obj);
 			}
-		} else if (host.equals("www.curse.com")){
+		} else if (host.equals(Constants.CURSE_HOST)){
 			return new CurseModPage(loadPage(pagePath), pageUrl);
 		}
 		throw new IllegalArgumentException(

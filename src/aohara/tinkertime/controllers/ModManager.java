@@ -76,7 +76,7 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	
 	// -- Modifiers ---------------------------------
 	
-	private void submitDownloadWorkflow(Workflow workflow){
+	public void submitDownloadWorkflow(Workflow workflow){
 		workflow.addListener(progressPanel);
 		downloadExecutor.execute(workflow);
 	}
@@ -136,12 +136,8 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	
 	public void checkForModUpdates() throws ModUpdateFailedException {	
 		for (Mod mod : sm.getMods()){
-			checkForUpdate(CheckForUpdateWorkflow.forExistingFile(mod, sm));
+			submitDownloadWorkflow(CheckForUpdateWorkflow.forExistingFile(mod, sm));
 		}
-	}
-	
-	public void checkForUpdate(CheckForUpdateWorkflow workflow){
-		submitDownloadWorkflow(workflow);
 	}
 	
 	// -- Exceptions ------------------------------------------------------

@@ -19,6 +19,7 @@ import javax.swing.JPopupMenu;
 import aohara.common.Util;
 import aohara.common.selectorPanel.ListListener;
 import aohara.tinkertime.Config;
+import aohara.tinkertime.Constants;
 import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.CannotAddModException;
@@ -352,9 +353,11 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			JDialog dialog = new FileUpdateDialog("Module Manager", new Config(), mm);
+			JDialog dialog = new FileUpdateDialog(
+				"Module Manager", new Config(), mm,
+				Constants.getModuleManagerJenkinsUrl()
+			);
 			dialog.setVisible(true);
-			
 		}
 	}
 }

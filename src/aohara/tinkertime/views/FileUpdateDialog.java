@@ -3,7 +3,7 @@ package aohara.tinkertime.views;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URL;
 
 import javax.swing.AbstractAction;
@@ -11,6 +11,10 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 
+import aohara.common.workflows.TaskListener;
+import aohara.common.workflows.Workflow;
+import aohara.common.workflows.Workflows;
+import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.Config;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.models.UpdateListener;
@@ -20,62 +24,121 @@ import aohara.tinkertime.workflows.CheckForUpdateWorkflow;
 @SuppressWarnings("serial")
 public class FileUpdateDialog extends JDialog implements UpdateListener {
 	
-	private String latestVersion = null;
 	private final Config config;
 	private final ModManager mm;
+	private final URL pageUrl;
+	private final JLabel currentVersionLabel, latestVersionLabel;
+	private final JButton updateButton;
+	private FilePage latestPage;
 	
-	public FileUpdateDialog(String name, Config config, ModManager mm){
+	public FileUpdateDialog(String name, Config config, ModManager mm, URL pageUrl){
 		this.config = config;
 		this.mm = mm;
+		this.pageUrl = pageUrl;
 		
 		setLayout(new GridLayout(2,2));
 		setTitle(name);
 		
-		add(new JLabel(String.format("Latest Version: %s", latestVersion)));
-		add(new JButton(new CheckForUpdatesAction(this)));
+		add(latestVersionLabel = new JLabel());
+		setUpdateAvailable(null);
+		add(new JButton(new CheckForUpdateAction(this)));
 		
-		add(new JLabel("Current Version: " + getCurrentFileName()));
-		add(new JButton("Update"));
+		add(currentVersionLabel = new JLabel());
+		updateCurrentVersion();
+		add(updateButton = new JButton(new UpdateAction()));
+		updateButton.setEnabled(false);
 		
 		pack();
 	}
 	
-	private String getCurrentFileName(){
+	private File getCurrentFile(){
 		for (File file : config.getGameDataPath().toFile().listFiles()){
 			if (file.getName().startsWith("ModuleManager")){
-				return file.getName();
+				return file;
 			}
 		}
 		return null;
 	}
 	
-	private class CheckForUpdatesAction extends AbstractAction {
+	@Override
+	public void setUpdateAvailable(FilePage latestPage){
+		this.latestPage = latestPage;
+		String latestVersion = latestPage != null ? latestPage.getNewestFileName() : "Please Check";
+		latestVersionLabel.setText(String.format("Latest Version: %s", latestVersion));
+		
+		if (latestPage != null){
+			this.latestPage = latestPage;
+			updateButton.setEnabled(true);
+		}
+	}
+	
+	public void updateCurrentVersion(){
+		currentVersionLabel.setText("Current Version: " + getCurrentFile().getName());
+	}
+	
+	// -- Actions ---------------------------------------------------------
+	
+	private class CheckForUpdateAction extends AbstractAction {
 		
 		private final UpdateListener listener;
 		
-		public CheckForUpdatesAction(UpdateListener listener){
+		private CheckForUpdateAction(UpdateListener listener){
 			super("Check for Updates");
 			this.listener = listener;
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {			
-			try {
-				mm.checkForUpdate(new CheckForUpdateWorkflow(
-					"Module Manager",
-					new URL("https://ksp.sarbian.com/jenkins/job/ModuleManager/lastSuccessfulBuild/api/json"),
-					null,
-					getCurrentFileName(),
-					listener
-				));
-			} catch (MalformedURLException e1) {
-				e1.printStackTrace();
-			}
+			mm.submitDownloadWorkflow(new CheckForUpdateWorkflow(
+				getTitle(),
+				pageUrl,
+				null,
+				getCurrentFile().getName(),
+				listener
+			));
 		}
 	}
 	
-	@Override
-	public void setUpdateAvailable(FilePage latest){
-		latestVersion = latest.getNewestFileName();
+	private class UpdateAction extends AbstractAction implements TaskListener {
+		
+		private UpdateAction(){
+			super("Update");
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			try {
+				Workflow workflow = Workflows.tempDownload(
+					latestPage.getDownloadLink(),
+					config.getGameDataPath().resolve(latestPage.getNewestFileName())
+				);
+				workflow.queueDelete(getCurrentFile().toPath());
+				workflow.addListener(this);
+				mm.submitDownloadWorkflow(workflow);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+
+		@Override
+		public void taskStarted(WorkflowTask task, int targetProgress) {
+			// No Action
+		}
+
+		@Override
+		public void taskProgress(WorkflowTask task, int increment) {
+			// No Action
+		}
+
+		@Override
+		public void taskError(WorkflowTask task, boolean tasksRemaining,
+				Exception e) {
+			// No Action
+		}
+
+		@Override
+		public void taskComplete(WorkflowTask task, boolean tasksRemaining) {
+			updateCurrentVersion();
+		}
 	}
 }
