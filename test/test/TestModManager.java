@@ -36,7 +36,6 @@ import aohara.tinkertime.workflows.UpdateModWorkflow;
 
 public class TestModManager {
 	
-	private ModStateManager sm;
 	private static Config config;
 	private ModManager manager;
 	private static Mod mod, testMod1, testMod2;
@@ -54,7 +53,7 @@ public class TestModManager {
 	@Before
 	public void setUp() throws Throwable {
 		manager = new ModManager(
-			sm = mock(ModStateManager.class),
+			mock(ModStateManager.class),
 			config,
 			mock(ProgressPanel.class),
 			cr = spy(new MockCR()),
