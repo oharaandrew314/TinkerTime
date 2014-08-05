@@ -51,7 +51,7 @@ public class ModuleManagerPage extends Page implements FilePage {
 	@Override
 	public String getNewestFileName() {
 		JsonArray artifacts = obj.get("artifacts").getAsJsonArray();
-		JsonObject dllArtifact = artifacts.get(1).getAsJsonObject();
+		JsonObject dllArtifact = artifacts.get(artifacts.size() - 1).getAsJsonObject();
 		return dllArtifact.get("relativePath").getAsString();
 	}
 	

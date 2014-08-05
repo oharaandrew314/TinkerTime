@@ -13,12 +13,14 @@ import java.util.Set;
 import aohara.common.Listenable;
 import aohara.common.selectorPanel.SelectorInterface;
 import aohara.tinkertime.models.Mod;
+import aohara.tinkertime.models.UpdateListener;
+import aohara.tinkertime.models.pages.FilePage;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 public class ModStateManager extends Listenable<SelectorInterface<Mod>>
-		implements ModUpdateListener {
+		implements ModUpdateListener, UpdateListener {
 	
 	private final Gson gson;
 	private final Path modsPath;
@@ -90,5 +92,15 @@ public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 		}
 		
 		saveMods(mods);
+	}
+
+	@Override
+	public void setUpdateAvailable(FilePage latest) {
+		for (Mod mod : getMods()){
+			if (mod.getPageUrl().equals(latest.getPageUrl())){
+				modUpdated(mod, false);
+				break;
+			}
+		}
 	}
 }

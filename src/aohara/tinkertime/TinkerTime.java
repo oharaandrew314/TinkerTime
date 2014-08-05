@@ -19,6 +19,7 @@ public class TinkerTime implements ListListener<Mod> {
 		NAME = "Tinker Time",
 		VERSION = "0.4",
 		AUTHOR = "Andrew O'Hara";
+	
 	private final ModManager mm;
 	
 	public TinkerTime(){

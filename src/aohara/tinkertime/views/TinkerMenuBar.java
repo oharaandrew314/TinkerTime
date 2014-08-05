@@ -19,6 +19,7 @@ import javax.swing.JPopupMenu;
 import aohara.common.Util;
 import aohara.common.selectorPanel.ListListener;
 import aohara.tinkertime.Config;
+import aohara.tinkertime.Constants;
 import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.CannotAddModException;
@@ -55,7 +56,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		updateMenu.add(new JMenuItem(new UpdateModAction()));
 		updateMenu.add(new JMenuItem(new UpdateAllAction()));
 		updateMenu.add(new JMenuItem(new CheckforUpdatesAction()));
-		updateMenu.add(new JMenuItem(new UpdateModuleManagerAction()));
+		updateMenu.add(new JMenuItem(new UpdateModuleManagerAction(mm)));
 		add(updateMenu);
 		
 		JMenu helpMenu = new JMenu("Help");
@@ -211,7 +212,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				mm.checkForUpdates();
+				mm.checkForModUpdates();
 			} catch (ModUpdateFailedException e1) {
 				errorMessage("Error checking for updates.");
 			}
@@ -343,15 +344,20 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private class UpdateModuleManagerAction extends AbstractAction {
 		
-		public UpdateModuleManagerAction(){
+		private final ModManager mm;
+		
+		public UpdateModuleManagerAction(ModManager mm){
 			super("Update Module Manager");
+			this.mm = mm;
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			JDialog dialog = new FileUpdateDialog("Module Manager", new Config());
+			JDialog dialog = new FileUpdateDialog(
+				"Module Manager", new Config(), mm,
+				Constants.getModuleManagerJenkinsUrl()
+			);
 			dialog.setVisible(true);
-			
 		}
 	}
 }

@@ -3,6 +3,7 @@ package aohara.tinkertime.models;
 import java.net.URL;
 
 import aohara.tinkertime.controllers.ModManager.CannotAddModException;
+import aohara.tinkertime.models.pages.FilePage;
 import aohara.tinkertime.models.pages.ModPage;
 
 public class Mod extends DownloadedFile {
@@ -57,7 +58,8 @@ public class Mod extends DownloadedFile {
 		}
 	}
 	
-	public void setUpdateAvailable(){
+	@Override
+	public void setUpdateAvailable(FilePage latest){
 		updateAvailable = true;
 	}
 	
