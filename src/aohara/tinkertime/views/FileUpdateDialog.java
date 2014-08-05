@@ -1,16 +1,20 @@
 package aohara.tinkertime.views;
 
-import java.awt.GridLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
+import thirdParty.VerticalLayout;
 import aohara.common.workflows.TaskListener;
 import aohara.common.workflows.Workflow;
 import aohara.common.workflows.Workflows;
@@ -32,20 +36,27 @@ public class FileUpdateDialog extends JDialog implements UpdateListener {
 	private FilePage latestPage;
 	
 	public FileUpdateDialog(String name, Config config, ModManager mm, URL pageUrl){
+		super(null, java.awt.Dialog.ModalityType.TOOLKIT_MODAL); // Give Taskbar icon
 		this.config = config;
 		this.mm = mm;
 		this.pageUrl = pageUrl;
-		
-		setLayout(new GridLayout(2,2));
+
 		setTitle(name);
+		setLayout(new VerticalLayout());
 		
-		add(latestVersionLabel = new JLabel());
-		setUpdateAvailable(null);
+		// Label Panel
+		JPanel labelPanel = new JPanel(new VerticalLayout());
+		labelPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		labelPanel.add(latestVersionLabel = new JLabel());
+		labelPanel.add(currentVersionLabel = new JLabel());
+		add(labelPanel);
+		
 		add(new JButton(new CheckForUpdateAction(this)));
-		
-		add(currentVersionLabel = new JLabel());
-		updateCurrentVersion();
 		add(updateButton = new JButton(new UpdateAction()));
+		
+		// Initialize components
+		setUpdateAvailable(null);
+		updateCurrentVersion();
 		updateButton.setEnabled(false);
 		
 		pack();
@@ -82,6 +93,11 @@ public class FileUpdateDialog extends JDialog implements UpdateListener {
 			"Current Version: %s",
 			currentFile != null ? currentFile.getName() : "Not Installed"
 		));
+	}
+	
+	@Override
+	public Dimension getPreferredSize(){
+		return new Dimension(300, 160);
 	}
 	
 	// -- Actions ---------------------------------------------------------
