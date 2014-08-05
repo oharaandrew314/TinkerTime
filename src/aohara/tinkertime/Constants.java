@@ -5,7 +5,11 @@ import java.net.URL;
 
 public class Constants {
 	
-	public static final String CURSE_HOST = "www.curse.com";
+	public static final String
+		CURSE_HOST = "www.curse.com",
+		GITHUB_HOST = "github.com";
+	
+	public static String[] ACCEPTED_MOD_HOSTS = {CURSE_HOST, GITHUB_HOST};
 	
 	public static URL getModuleManagerJenkinsUrl(){
 		try {

@@ -15,7 +15,8 @@ import aohara.tinkertime.Config;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
 import aohara.tinkertime.models.ModStructure.Module;
-import aohara.tinkertime.models.pages.CurseModPage;
+import aohara.tinkertime.models.pages.ModPage;
+import aohara.tinkertime.models.pages.PageFactory;
 
 public class ModLoader {
 	
@@ -27,7 +28,8 @@ public class ModLoader {
 		TESTMOD2 = "TestMod2",
 		ALARMCLOCK = "Kerbal Alarm Clock",
 		NAVBALL = "Enhanced Navball",
-		HOTROCKETS = "HotRockets";
+		HOTROCKETS = "HotRockets",
+		VISUALENHANCEMENTS = "EnvironmentalVisualEnhancements";
 	
 	static {
 		PAGE_URLS.put(
@@ -58,9 +60,17 @@ public class ModLoader {
 			HOTROCKETS,
 			"http://www.curse.com/ksp-mods/kerbal/220207-hotrockets-particle-fx-replacement"
 		);
+		PAGE_URLS.put(
+			VISUALENHANCEMENTS,
+			"https://github.com/rbray89/EnvironmentalVisualEnhancements/releases"
+		);
+	}
+	
+	public static String getUrl(String modName){
+		return PAGE_URLS.get(modName);
 	}
 
-	public static CurseModPage getHtmlPage(String name){
+	public static ModPage getHtmlPage(String name){
 		try {
 			String url = PAGE_URLS.get(name);
 			
@@ -69,7 +79,7 @@ public class ModLoader {
 					String.format("test/res/%s.html", name)
 				), null, url);
 					
-			return new CurseModPage(doc, new URL(url));
+			return PageFactory.loadModPage(doc, new URL(url));
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;

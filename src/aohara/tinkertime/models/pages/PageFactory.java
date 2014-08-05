@@ -25,7 +25,17 @@ public class PageFactory {
 		}
 	}
 	
-	public static Element loadPage(Path path) throws CannotAddModException {
+	public static ModPage loadModPage(Element element, URL pageUrl){
+		String host = pageUrl.getHost();
+		if (host.equals(Constants.CURSE_HOST)){
+			return new CurseModPage(element, pageUrl);
+		} else if (host.equals(Constants.GITHUB_HOST)){
+			return new GithubModPage(element, pageUrl);
+		}
+		return null;
+	}
+	
+	public static Element loadHtmlElement(Path path) throws CannotAddModException {
 		try {
 			return Jsoup.parse(path.toFile(), "UTF-8");
 		} catch (IOException e) {
@@ -40,11 +50,13 @@ public class PageFactory {
 				JsonObject obj = new JsonParser().parse(reader).getAsJsonObject();
 				return ModuleManagerPage.loadPage(obj);
 			}
-		} else if (host.equals(Constants.CURSE_HOST)){
-			return new CurseModPage(loadPage(pagePath), pageUrl);
+		} else {
+			ModPage modPage = loadModPage(loadHtmlElement(pagePath), pageUrl);
+			if (modPage != null){
+				return modPage;
+			}	
 		}
 		throw new IllegalArgumentException(
 			String.format("Unsupported Host.  Got %s", host));
 	}
-
 }

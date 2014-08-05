@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JDialog;
@@ -111,18 +113,12 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 				JOptionPane.QUESTION_MESSAGE
 			);
 			
-			// Cancel if not input given
-			if (url == null || url.trim().isEmpty()){
-				return;
-			}
-			
 			// Check if URL is valid
 			try {
-				URI uri = new URI(url);
-				if (!uri.getHost().contains("curse.com")){
+				List<String> hosts = Arrays.asList(Constants.ACCEPTED_MOD_HOSTS);
+				if (!hosts.contains(new URI(url).getHost())){
 					throw new URISyntaxException(
-						url,
-						"Currently, only mods from curse.com are accepted.\n"
+						url, "Currently, only mods from the followinghosts are accepted:\n" + hosts
 					);
 				}
 			} catch (URISyntaxException e2) {
