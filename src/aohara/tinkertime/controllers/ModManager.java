@@ -10,6 +10,7 @@ import aohara.common.workflows.ConflictResolver;
 import aohara.common.workflows.ProgressPanel;
 import aohara.common.workflows.Workflow;
 import aohara.tinkertime.Config;
+import aohara.tinkertime.Constants;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.views.DialogConflictResolver;
 import aohara.tinkertime.workflows.CheckForUpdateWorkflow;
@@ -86,9 +87,9 @@ public class ModManager extends Listenable<ModUpdateListener> {
 		enablerExecutor.execute(workflow);
 	}
 	
-	public void addNewMod(String url) throws CannotAddModException {
+	public void addNewMod(String urlString) throws CannotAddModException {
 		try {
-			downloadMod(new URL(url));
+			downloadMod(Constants.checkModUrl(urlString));
 		} catch (MalformedURLException e1) {
 			throw new CannotAddModException();
 		}

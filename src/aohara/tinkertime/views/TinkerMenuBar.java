@@ -4,9 +4,8 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Arrays;
 
 import javax.swing.AbstractAction;
 import javax.swing.JDialog;
@@ -103,7 +102,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// Get URL from user
-			String url = JOptionPane.showInputDialog(
+			String urlString = JOptionPane.showInputDialog(
 				getParent(),
 				"Please enter the Curse.com URl of the mod you would like to"
 				+ " add.\ne.g. http://www.curse.com/ksp-mods/kerbal/220221-mechjeb",
@@ -111,33 +110,14 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 				JOptionPane.QUESTION_MESSAGE
 			);
 			
-			// Cancel if not input given
-			if (url == null || url.trim().isEmpty()){
-				return;
-			}
-			
-			// Check if URL is valid
-			try {
-				URI uri = new URI(url);
-				if (!uri.getHost().contains("curse.com")){
-					throw new URISyntaxException(
-						url,
-						"Currently, only mods from curse.com are accepted.\n"
-					);
-				}
-			} catch (URISyntaxException e2) {
-				errorMessage(e2.getMessage());
-				return;
-			}
-			
 			// Try to add Mod
 			try {
-				mm.addNewMod(url);
+				mm.addNewMod(urlString);
 			} catch (CannotAddModException e1) {
 				errorMessage(
-					"Error Extracting Mod Info From Page.\n"
-					+ "Either Curse.com has been updated,"
-					+ "or this is an invalid link."
+					"Mod data could not be deciphered.\n"
+					+ "Either the URL is invalid, or the site layout has been updated.\n"
+					+ " Valid hosts are: " + Arrays.asList(Constants.ACCEPTED_MOD_HOSTS)
 				);
 			}
 		}

@@ -21,6 +21,7 @@ import test.TestModStructure;
    TestModStateManager.class,
    TestModStructure.class,
    TestModuleManagerPage.class,
+   TestGithubModPage.class
 })
 
 public class UnitTestSuite {

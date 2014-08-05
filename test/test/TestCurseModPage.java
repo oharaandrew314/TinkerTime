@@ -1,43 +1,15 @@
 package test;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.Calendar;
-import java.util.Date;
-
 import org.junit.Test;
 
 import test.util.ModLoader;
-import aohara.tinkertime.models.pages.CurseModPage;
 
-public class TestCurseModPage {
-	
-	private void compare(
-		String modName, String modUrl, Date updatedOn, String creator,
-		String newestFile, String downloadLink, String imageLink
-	){
-		CurseModPage page = ModLoader.getHtmlPage(modName);
-		
-		assertEquals(modName, page.getName());
-		assertEquals(updatedOn.toString(), page.getUpdatedOn().toString());
-		assertEquals(creator, page.getCreator());
-		assertEquals(newestFile, page.getNewestFileName());
-		assertEquals(downloadLink, page.getDownloadLink().toString());
-		assertEquals(imageLink, page.getImageUrl().toString());
-		assertEquals(modUrl, page.getPageUrl().toString());
-	}
-	
-	private Date getDate(int year, int month, int date){
-		Calendar c = Calendar.getInstance();
-		c.set(year, month, date, 0, 0, 0);
-		return c.getTime();
-	}
+public class TestCurseModPage extends AbstractTestModPage {
 
 	@Test
 	public void testMechjeb() {		
 		compare(
 			ModLoader.MECHJEB,
-			"http://www.curse.com/ksp-mods/kerbal/220221-mechjeb",
 			getDate(2014, 4, 6),
 			"r4m0n",
 			"MechJeb2-2.2.1.0.zip",
@@ -51,7 +23,6 @@ public class TestCurseModPage {
 	public void testEngineer(){		
 		compare(
 			ModLoader.ENGINEER,
-			"http://www.curse.com/ksp-mods/kerbal/220285-kerbal-engineer-redux",
 			getDate(2014, 4, 12),
 			"cybutek",
 			"Engineer_Redux_v0.6.2.4.zip",
