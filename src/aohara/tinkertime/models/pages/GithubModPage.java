@@ -53,13 +53,7 @@ public class GithubModPage extends ModPage {
 			return null;
 		}
 	}
-
-	@Override
-	public boolean isUpdateAvailable(Date lastUpdated) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
+	
 	@Override
 	public String getName() {
 		return doc.select("h1.entry-title strong > a").text();

@@ -100,9 +100,4 @@ public class CurseModPage extends ModPage {
 			return null;
 		}
 	}
-
-	@Override
-	public boolean isUpdateAvailable(Date lastUpdated) {
-		return getUpdatedOn().compareTo(lastUpdated) > 0;
-	}
 }
