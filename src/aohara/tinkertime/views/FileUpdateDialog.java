@@ -36,13 +36,14 @@ public class FileUpdateDialog extends JDialog implements UpdateListener {
 	private FilePage latestPage;
 	
 	public FileUpdateDialog(String name, Config config, ModManager mm, URL pageUrl){
-		super(null, java.awt.Dialog.ModalityType.TOOLKIT_MODAL); // Give Taskbar icon
 		this.config = config;
 		this.mm = mm;
 		this.pageUrl = pageUrl;
 
 		setTitle(name);
 		setLayout(new VerticalLayout());
+		setModal(true);
+		setResizable(false);
 		
 		// Label Panel
 		JPanel labelPanel = new JPanel(new VerticalLayout());
