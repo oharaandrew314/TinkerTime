@@ -16,7 +16,9 @@ public class CheckForUpdateTask extends WorkflowTask {
 	private final String lastFileName;
 	private final URL pageUrl;
 
-	public CheckForUpdateTask(Workflow workflow, Path newPagePath, URL pageUrl, Date lastUpdated, String lastFileName) {
+	public CheckForUpdateTask(
+			Workflow workflow, Path newPagePath, URL pageUrl, Date lastUpdated,
+			String lastFileName) {
 		super(workflow);
 		this.newPagePath = newPagePath;
 		this.lastUpdated = lastUpdated;
@@ -39,8 +41,6 @@ public class CheckForUpdateTask extends WorkflowTask {
 
 	@Override
 	public int getTargetProgress() throws InvalidContentException {
-		// TODO Auto-generated method stub
-		return 0;
+		return 1;
 	}
-
 }

@@ -17,7 +17,9 @@ public class CheckForUpdateWorkflow extends Workflow{
 	
 	private final Path newPagePath;
 	
-	public static CheckForUpdateWorkflow forExistingFile(DownloadedFile existing, UpdateListener... listeners){
+	public static CheckForUpdateWorkflow forExistingFile(
+			DownloadedFile existing, boolean onlyUpdateIfNewer,
+			UpdateListener... listeners){
 		// Add mod to list of listeners
 		ArrayList<UpdateListener> listenerList = new ArrayList<>();
 		listenerList.add(existing);
@@ -30,19 +32,22 @@ public class CheckForUpdateWorkflow extends Workflow{
 			existing.getPageUrl(),
 			existing.getUpdatedOn(),
 			existing.getNewestFileName(),
+			onlyUpdateIfNewer,
 			listenerList.toArray(new UpdateListener[listenerList.size()])
 		);
 	}
 	
 	public CheckForUpdateWorkflow(
 			String label, URL pageUrl, Date lastUpdated, String lastFileName,
-			UpdateListener... listeners){
+			boolean onlyUpdateIfNewer, UpdateListener... listeners){
 		super("Checking for Update for " +label);
 		try {
 			newPagePath = Files.createTempFile("page", ".temp");
 			newPagePath.toFile().deleteOnExit();
 			queueDownload(pageUrl, newPagePath);
-			addTask(new CheckForUpdateTask(this, newPagePath, pageUrl, lastUpdated, lastFileName));
+			if (onlyUpdateIfNewer){
+				addTask(new CheckForUpdateTask(this, newPagePath, pageUrl, lastUpdated, lastFileName));
+			}
 			addTask(new NotfiyUpdateAvailableTask(this, newPagePath, pageUrl, listeners));
 		} catch(IOException e){
 			throw new RuntimeException(e);

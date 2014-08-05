@@ -66,14 +66,22 @@ public class FileUpdateDialog extends JDialog implements UpdateListener {
 		String latestVersion = latestPage != null ? latestPage.getNewestFileName() : "Please Check";
 		latestVersionLabel.setText(String.format("Latest Version: %s", latestVersion));
 		
-		if (latestPage != null){
+		File currentFile = getCurrentFile();
+		if (latestPage != null &&
+			(currentFile ==  null ||
+			!latestPage.getNewestFileName().equals(currentFile.getName()))
+		){
 			this.latestPage = latestPage;
 			updateButton.setEnabled(true);
 		}
 	}
 	
 	public void updateCurrentVersion(){
-		currentVersionLabel.setText("Current Version: " + getCurrentFile().getName());
+		File currentFile = getCurrentFile();
+		currentVersionLabel.setText(String.format(
+			"Current Version: %s",
+			currentFile != null ? currentFile.getName() : "Not Installed"
+		));
 	}
 	
 	// -- Actions ---------------------------------------------------------
@@ -88,12 +96,14 @@ public class FileUpdateDialog extends JDialog implements UpdateListener {
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent e) {			
+		public void actionPerformed(ActionEvent e) {
+			File currentFile = getCurrentFile();
 			mm.submitDownloadWorkflow(new CheckForUpdateWorkflow(
 				getTitle(),
 				pageUrl,
 				null,
-				getCurrentFile().getName(),
+				currentFile != null ? getCurrentFile().getName(): null,
+				false,
 				listener
 			));
 		}
@@ -108,11 +118,17 @@ public class FileUpdateDialog extends JDialog implements UpdateListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
+				String latestFileName = latestPage.getNewestFileName();
+				
 				Workflow workflow = Workflows.tempDownload(
 					latestPage.getDownloadLink(),
-					config.getGameDataPath().resolve(latestPage.getNewestFileName())
+					config.getGameDataPath().resolve(latestFileName)
 				);
-				workflow.queueDelete(getCurrentFile().toPath());
+				
+				File currentFile = getCurrentFile();
+				if (currentFile != null && !currentFile.getName().equals(latestFileName)){
+					workflow.queueDelete(currentFile.toPath());
+				}
 				workflow.addListener(this);
 				mm.submitDownloadWorkflow(workflow);
 			} catch (IOException e1) {
