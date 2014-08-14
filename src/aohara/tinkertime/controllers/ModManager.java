@@ -19,7 +19,7 @@ import aohara.tinkertime.workflows.DisableModWorkflow;
 import aohara.tinkertime.workflows.EnableModWorkflow;
 import aohara.tinkertime.workflows.UpdateModWorkflow;
 
-public class ModManager extends Listenable<ModUpdateListener> {
+public class ModManager extends Listenable<ModUpdateListener> implements WorkflowRunner {
 	
 	public static final int NUM_CONCURRENT_DOWNLOADS = 4;
 	
@@ -77,12 +77,14 @@ public class ModManager extends Listenable<ModUpdateListener> {
 	
 	// -- Modifiers ---------------------------------
 	
+	@Override
 	public void submitDownloadWorkflow(Workflow workflow){
 		workflow.addListener(progressPanel);
 		downloadExecutor.execute(workflow);
 	}
 	
-	private void submitEnablerWorkflow(Workflow workflow){
+	@Override
+	public void submitEnablerWorkflow(Workflow workflow){
 		workflow.addListener(progressPanel);
 		enablerExecutor.execute(workflow);
 	}
