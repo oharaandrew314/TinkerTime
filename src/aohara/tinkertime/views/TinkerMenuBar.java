@@ -28,6 +28,11 @@ import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledException;
 import aohara.tinkertime.controllers.ModManager.ModNotDownloadedException;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
+import aohara.tinkertime.controllers.fileUpdater.CurrentModuleManager;
+import aohara.tinkertime.controllers.fileUpdater.CurrentTinkerTime;
+import aohara.tinkertime.controllers.fileUpdater.CurrentVersion;
+import aohara.tinkertime.controllers.fileUpdater.ModuleManagerDownloader;
+import aohara.tinkertime.controllers.fileUpdater.TinkerTimeDownload;
 import aohara.tinkertime.models.Mod;
 
 @SuppressWarnings("serial")
@@ -55,7 +60,8 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		updateMenu.add(new JMenuItem(new UpdateModAction()));
 		updateMenu.add(new JMenuItem(new UpdateAllAction()));
 		updateMenu.add(new JMenuItem(new CheckforUpdatesAction()));
-		updateMenu.add(new JMenuItem(new UpdateModuleManagerAction(mm)));
+		updateMenu.add(new JMenuItem(new UpdateModuleManagerAction()));
+		updateMenu.add(new JMenuItem(new UpdateTinkerTimeAction()));
 		add(updateMenu);
 		
 		JMenu helpMenu = new JMenu("Help");
@@ -95,7 +101,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private class AddModAction extends AbstractAction {
 		
-		public AddModAction(){
+		private AddModAction(){
 			super("Add Mod");
 		}
 
@@ -125,7 +131,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private class DeleteModAction extends AbstractAction {
 		
-		public DeleteModAction(){
+		private DeleteModAction(){
 			super("Delete");
 		}
 
@@ -151,7 +157,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private class UpdateModAction extends AbstractAction {
 		
-		public UpdateModAction(){
+		private UpdateModAction(){
 			this("Update Mod");
 		}
 		
@@ -169,7 +175,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private class UpdateAllAction extends UpdateModAction {
 		
-		public UpdateAllAction() {
+		private UpdateAllAction() {
 			super("Update All");
 		}
 
@@ -185,7 +191,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private class CheckforUpdatesAction extends AbstractAction {
 		
-		public CheckforUpdatesAction(){
+		private CheckforUpdatesAction(){
 			super("Check for Updates");
 		}
 
@@ -201,7 +207,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private class EnableDisableModAction extends AbstractAction {
 		
-		public EnableDisableModAction(){
+		private EnableDisableModAction(){
 			super("Enable/Disable");
 		}
 
@@ -229,7 +235,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private class UpdatePathsAction extends AbstractAction {
 		
-		public UpdatePathsAction(){
+		private UpdatePathsAction(){
 			super("Update Paths");
 		}
 
@@ -241,7 +247,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private class ExitAction extends AbstractAction {
 		
-		public ExitAction(){
+		private ExitAction(){
 			super("Exit");
 		}
 
@@ -253,7 +259,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private class HelpAction extends AbstractAction {
 		
-		public HelpAction(){
+		private HelpAction(){
 			super("Help");
 		}
 
@@ -269,7 +275,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private class AboutAction extends AbstractAction {
 		
-		public AboutAction(){
+		private AboutAction(){
 			super("About");
 		}
 
@@ -308,7 +314,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private class ContactAction extends AbstractAction {
 		
-		public ContactAction(){
+		private ContactAction(){
 			super("Contact Me");
 		}
 
@@ -324,18 +330,34 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private class UpdateModuleManagerAction extends AbstractAction {
 		
-		private final ModManager mm;
-		
-		public UpdateModuleManagerAction(ModManager mm){
+		private UpdateModuleManagerAction(){
 			super("Update Module Manager");
-			this.mm = mm;
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			Config config = new Config();
+			CurrentVersion currentVersion = new CurrentModuleManager(config);
 			JDialog dialog = new FileUpdateDialog(
-				"Module Manager", new Config(), mm,
-				Constants.getModuleManagerJenkinsUrl()
+				"Update Module Manager", mm, Constants.getModuleManagerJenkinsUrl(),
+				currentVersion, new ModuleManagerDownloader(mm, config.getGameDataPath(), currentVersion)
+			);
+			dialog.setVisible(true);
+		}
+	}
+	
+	private class UpdateTinkerTimeAction extends AbstractAction {
+		
+		private UpdateTinkerTimeAction(){
+			super("Update Tinker Time");
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			CurrentVersion currentVersion = new CurrentTinkerTime();
+			JDialog dialog = new FileUpdateDialog(
+				"Update Tinker Time",mm, Constants.getTinkerTimeGithubUrl(),
+				currentVersion, new TinkerTimeDownload()
 			);
 			dialog.setVisible(true);
 		}
