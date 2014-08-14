@@ -1,15 +1,15 @@
 TinkerTime
 ==========
 
-Self-Updating Mod Manager for Kerbal Space Program
+Automatically Updating Mod Manager for Kerbal Space Program
  
 ### Development Status
 Alpha (ready for initial feedback)
 
 ### Description
-Tinker Time is a Mod Manager for Kerbal Space Program that will allow you to automatically update, enable, and disable all of your Curse.com mods.  All you have to do is enter the URL to the Curse.com mod webpage, and TinkerTime will do the rest of the work for you.
+Tinker Time is a Mod Manager for Kerbal Space Program that will allow you to automatically update, enable, and disable all of your Curse.com mods.  All you have to do is enter the URL to the Curse.com mod webpage, and Tinker Time will do the rest of the work for you.
 
-At this time, only mods hosted on Curse.com are supported.  Curse.com is the official mod repository chosen by Squad, and thus, it is the priority to establish support for.
+At this time, only mods hosted on Curse.com are supported.  Curse.com is the official mod repository chosen by Squad, and thus, it is the first priority to establish support for.
 
 ### Downloads
 See the "Releases" section on the Tinker Time repository
@@ -17,14 +17,14 @@ https://github.com/oharaandrew314/TinkerTime/releases
 
 ### Requirements
 - Windows, Linux, or OSX
-- Java 7 or better
+- Java 7 or Better
 - An Active Internet Connection for Mod Downloads and Updates
 
 
 ### Report an Issue
-If you would like to report an issue with Tinker Time, then please contact me on <a href="http://tinkertime.uservoice.com/">Tinker Timer's UserVoice </a>.  I will happily respond to your issues regarding:
+If you would like to report an issue with Tinker Time, then please contact me on <a href="http://tinkertime.uservoice.com/">Tinker Time's UserVoice </a>.  I will happily respond to your issues regarding:
 - Mod Incompatability
-- Application Bug
+- Application Bugs
 - Feature Requests
 
 
@@ -33,15 +33,15 @@ If you would like to report an issue with Tinker Time, then please contact me on
 
 
 ## Installation
-Simply download the JAR file and place it somewhere easily accessible
-Double-click the JAR file to run the application
+Simply download the JAR file and place it somewhere easily accessible, then
+double-click the JAR file to run the application
 
 ## Instructions
 
 #### First-time Setup:
 
 1. On first run, you will be asked to configure your mod paths:
-2. Enter your path the Kerbal Space Program.  You can select either the KSP folder or GamaData folder
+2. Enter the path to your KSP install directory.  You can select either the KSP folder or GamaData folder
 3. Enter the path that you wish to place the downloaded mod zip files, and mod state file
 
 
