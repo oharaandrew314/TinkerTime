@@ -4,6 +4,7 @@ import java.awt.event.MouseEvent;
 
 import aohara.common.selectorPanel.ListListener;
 import aohara.common.selectorPanel.SelectorPanel;
+import aohara.common.workflows.ProgressPanel;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;
@@ -11,6 +12,7 @@ import aohara.tinkertime.views.Frame;
 import aohara.tinkertime.views.ModImageView;
 import aohara.tinkertime.views.ModListCellRenderer;
 import aohara.tinkertime.views.ModView;
+import aohara.tinkertime.views.RightPanel;
 import aohara.tinkertime.views.TinkerMenuBar;
 
 public class TinkerTime implements ListListener<Mod> {
@@ -25,12 +27,14 @@ public class TinkerTime implements ListListener<Mod> {
 	public TinkerTime(){
 		Config.verifyConfig();
 		
+		ProgressPanel pp = new ProgressPanel();
+		
 		// Initialize Controllers
 		ModStateManager sm = new ModStateManager(new Config().getModsPath().resolve("mods.json"));
-		mm = ModManager.createDefaultModManager(sm);
+		mm = ModManager.createDefaultModManager(sm, pp);
 		
 		// Initialize GUI
-		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new ModView());
+		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new RightPanel(new ModView(), pp.getComponent()));
 		sp.addControlPanel(true, new ModImageView());
 		sp.setListCellRenderer(new ModListCellRenderer());
 		TinkerMenuBar menuBar = new TinkerMenuBar(mm);		

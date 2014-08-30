@@ -29,16 +29,12 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	private final ProgressPanel progressPanel;
 	private final ConflictResolver cr;
 	
-	public static ModManager createDefaultModManager(ModStateManager sm){
-		
-		final ProgressPanel pp = new ProgressPanel();
+	public static ModManager createDefaultModManager(ModStateManager sm, ProgressPanel pp){
 		
 		ModManager mm =  new ModManager(
 			sm, new Config(), pp, new DialogConflictResolver(),
 			Executors.newFixedThreadPool(NUM_CONCURRENT_DOWNLOADS),
 			Executors.newSingleThreadExecutor());
-		
-		pp.toDialog("Processing Mods");
 		
 		return mm;
 	}

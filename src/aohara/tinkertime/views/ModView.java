@@ -61,7 +61,7 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 					panel.add(readmeArea);
 				}
 			}
-			
+
 		}
 	}
 
