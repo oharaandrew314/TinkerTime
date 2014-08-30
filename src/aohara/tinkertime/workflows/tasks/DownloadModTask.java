@@ -12,30 +12,27 @@ import aohara.common.workflows.Workflow;
 import aohara.common.workflows.tasks.FileTransferTask;
 import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.Config;
-import aohara.tinkertime.controllers.ModManager.CannotAddModException;
 import aohara.tinkertime.controllers.ModStateManager;
+import aohara.tinkertime.controllers.crawlers.Crawler;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.models.pages.ModPage;
-import aohara.tinkertime.models.pages.PageFactory;
 
-public class DownloadModFromPageTask extends WorkflowTask {
+public class DownloadModTask extends WorkflowTask {
+	// TODO Instead use DownloadFileTask and then create MarkModUpdated task
 	
-	private final Path pagePath, dest;
-	private final URL pageUrl;
-	private ModPage cachedPage;
+	private final Path dest;
 	private final ModStateManager sm;
+	private final Crawler<Mod, ?> crawler;
 
-	public DownloadModFromPageTask(Workflow workflow, Config config, Path pagePath, URL pageUrl, ModStateManager sm) {
+	public DownloadModTask(Workflow workflow, Crawler<Mod, ?> crawler, Config config, ModStateManager sm) {
 		super(workflow);
-		this.pagePath = pagePath;
-		this.pageUrl = pageUrl;
 		this.sm = sm;
+		this.crawler = crawler;
 		dest = config.getModsPath();
 	}
 
 	@Override
 	public Boolean call() throws Exception {
-		URL downloadLink = getPage().getDownloadLink();
+		URL downloadLink = crawler.getDownloadLink();
 		try (
 			InputStream is = new BufferedInputStream(downloadLink.openStream());
 			OutputStream os = new FileOutputStream(FileTransferTask.groomDestinationPath(downloadLink, dest).toFile());
@@ -47,23 +44,12 @@ public class DownloadModFromPageTask extends WorkflowTask {
 				progress(bytesRead);
 			}
 		}
-		sm.modUpdated(new Mod(getPage()), false);
+		sm.modUpdated(crawler.crawl(), false);
 		return true;
-	}
-	
-	private ModPage getPage() throws CannotAddModException{
-		if (cachedPage == null){
-			cachedPage = PageFactory.loadModPage(pagePath, pageUrl);
-		}
-		return cachedPage;
 	}
 
 	@Override
-	public int getTargetProgress() throws InvalidContentException {
-		try {
-			return getPage().getDownloadLink().openConnection().getContentLength();
-		} catch (IOException | CannotAddModException e) {
-			throw new InvalidContentException();
-		}
+	public int getTargetProgress() throws IOException {
+		return crawler.getDownloadLink().openConnection().getContentLength();
 	}
 }

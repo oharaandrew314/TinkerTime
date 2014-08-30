@@ -1,5 +1,6 @@
 package aohara.tinkertime.workflows.tasks;
 
+import java.io.IOException;
 import java.nio.file.Path;
 
 import org.apache.commons.io.FileUtils;
@@ -31,7 +32,7 @@ public class DeleteModTask extends WorkflowTask {
 	}
 
 	@Override
-	public int getTargetProgress() throws InvalidContentException {
-		return 1;
+	public int getTargetProgress() throws IOException {
+		return -1;
 	}
 }

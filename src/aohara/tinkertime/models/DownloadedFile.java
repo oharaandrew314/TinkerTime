@@ -3,16 +3,14 @@ package aohara.tinkertime.models;
 import java.net.URL;
 import java.util.Date;
 
-import aohara.tinkertime.models.pages.FilePage;
-
 public class DownloadedFile implements UpdateListener {
 	
 	private String fileName;
 	private Date lastUpdatedOn;
 	private URL downloadLink, pageUrl;
 	
-	public DownloadedFile(FilePage page){
-		update(page);
+	public DownloadedFile(String newestFileName, Date lastUpdated, URL pageUrl){
+		update(newestFileName, lastUpdated, pageUrl);
 	}
 
 	public String getNewestFileName() {
@@ -30,16 +28,11 @@ public class DownloadedFile implements UpdateListener {
 	public URL getPageUrl() {
 		return pageUrl;
 	}
-
-	public boolean isUpdateAvailable(FilePage page) {
-		return getUpdatedOn().compareTo(page.getUpdatedOn()) > 0;
-	}
 	
-	public void update(FilePage page){
-		fileName = page.getNewestFileName();
-		lastUpdatedOn = page.getUpdatedOn();
-		downloadLink = page.getDownloadLink();
-		pageUrl = page.getPageUrl();
+	public void update(String newestFileName, Date lastUpdated, URL pageUrl){
+		this.fileName = newestFileName;
+		this.lastUpdatedOn =lastUpdated;
+		this.pageUrl = pageUrl;
 	}
 	
 	@Override
@@ -51,7 +44,7 @@ public class DownloadedFile implements UpdateListener {
 	}
 
 	@Override
-	public void setUpdateAvailable(FilePage latest) {
+	public void setUpdateAvailable(URL pageUrl, String newestFileName) {
 		// No action
 	}
 }

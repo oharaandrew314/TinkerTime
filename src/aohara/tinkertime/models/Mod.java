@@ -1,21 +1,23 @@
 package aohara.tinkertime.models;
 
 import java.net.URL;
-
-import aohara.tinkertime.controllers.ModManager.CannotAddModException;
-import aohara.tinkertime.models.pages.FilePage;
-import aohara.tinkertime.models.pages.ModPage;
+import java.util.Date;
 
 public class Mod extends DownloadedFile {
 	
-	private String creator, currentFile, name;
+	private String name, creator;
 	private URL imageUrl;
 	private boolean enabled = false;
 	private transient boolean updateAvailable = false;
 	
-	public Mod(ModPage page) throws CannotAddModException {
-		super(page);
-		updateModData(page);
+	public Mod(
+			String modName, String newestFileName, String creator,
+			URL imageUrl, URL pageUrl, Date updatedOn){
+		super(newestFileName, updatedOn, pageUrl);
+		this.name = modName;
+		this.creator = creator;
+		this.imageUrl = imageUrl;
+		updateAvailable = false;
 	}
 	
 	public String getName(){
@@ -24,10 +26,6 @@ public class Mod extends DownloadedFile {
 
 	public String getCreator() {
 		return creator;
-	}
-
-	public String getNewestFileName() {
-		return currentFile;
 	}
 
 	public URL getImageUrl() {
@@ -44,22 +42,18 @@ public class Mod extends DownloadedFile {
 		this.enabled = enabled;
 	}
 	
-	public void updateModData(ModPage page) throws CannotAddModException{
-		super.update(page);
-		try{
-			name = page.getName();
-			creator = page.getCreator();
-			currentFile = page.getNewestFileName();
-			imageUrl = page.getImageUrl();
-			updateAvailable = false;
-		} catch(NullPointerException e){
-			e.printStackTrace();
-			throw new CannotAddModException();
-		}
+	public void updateModData(
+			String modName, String newestFileName, String creator,
+			String currentFile, URL imageUrl, URL pageUrl, Date updatedOn) {
+		super.update(newestFileName, updatedOn, pageUrl);
+		this.name = modName;
+		this.creator = creator;
+		this.imageUrl = imageUrl;
+		updateAvailable = false;
 	}
 	
 	@Override
-	public void setUpdateAvailable(FilePage latest){
+	public void setUpdateAvailable(URL pageUrl, String newestFileName){
 		updateAvailable = true;
 	}
 	

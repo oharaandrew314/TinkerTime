@@ -1,35 +1,30 @@
 package aohara.tinkertime.workflows.tasks;
 
-import java.net.URL;
-import java.nio.file.Path;
+import java.io.IOException;
 
 import aohara.common.workflows.Workflow;
 import aohara.common.workflows.tasks.WorkflowTask;
+import aohara.tinkertime.controllers.crawlers.Crawler;
 import aohara.tinkertime.models.UpdateListener;
-import aohara.tinkertime.models.pages.FilePage;
-import aohara.tinkertime.models.pages.PageFactory;
 
 public class NotfiyUpdateAvailableTask extends WorkflowTask {
 	
 	private final UpdateListener[] listeners;
-	private final Path pagePath;
-	private final URL pageUrl;
+	private final Crawler<?, ?> crawler;
 
-	public NotfiyUpdateAvailableTask(Workflow workflow, Path pagePath, URL pageUrl, UpdateListener... listeners) {
+	public NotfiyUpdateAvailableTask(Workflow workflow, Crawler<?, ?> crawler, UpdateListener... listeners) {
 		super(workflow);
 		this.listeners = listeners;
-		this.pagePath = pagePath;
-		this.pageUrl = pageUrl;
+		this.crawler = crawler;
 	}
 
 	@Override
-	public Boolean call() throws Exception {
-		FilePage page = PageFactory.loadFilePage(pagePath, pageUrl);
-		
+	public Boolean call() throws Exception {		
 		// Notify update listeners
-		if (page != null){
+		String newestFileName = crawler.getNewestFileName();
+		if (newestFileName != null){
 			for (UpdateListener l : listeners){
-				l.setUpdateAvailable(page);
+				l.setUpdateAvailable(crawler.url, newestFileName);
 				progress(1);
 			}
 			return true;
@@ -38,7 +33,7 @@ public class NotfiyUpdateAvailableTask extends WorkflowTask {
 	}
 
 	@Override
-	public int getTargetProgress() throws InvalidContentException {
+	public int getTargetProgress() throws IOException {
 		return listeners.length;
 	}
 

@@ -7,7 +7,7 @@ import aohara.tinkertime.Config;
 
 public class CurrentModuleManager implements CurrentVersion {
 	
-	public static final String FILE_REGEX = "ModuleManager";
+	public static final String MODULE_MANAGER = "ModuleManager";
 	private final Config config;
 	
 	public CurrentModuleManager(Config config){
@@ -16,7 +16,7 @@ public class CurrentModuleManager implements CurrentVersion {
 	
 	public Path getPath(){
 		for (File file : config.getGameDataPath().toFile().listFiles()){
-			if (file.getName().matches(FILE_REGEX)){
+			if (file.getName().toLowerCase().startsWith(MODULE_MANAGER.toLowerCase())){
 				return file.toPath();
 			}
 		}

@@ -5,11 +5,9 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.net.URL;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.junit.Test;
 
-import aohara.tinkertime.models.pages.CurseModPage;
+import aohara.tinkertime.controllers.crawlers.CurseCrawler;
 
 /**
  * WARNING! THIS TEST REQUIRES AN INTERNET CONNECTION!
@@ -40,10 +38,13 @@ public class TestDownloadLinkFormatting {
 		test("http://www.curse.com/ksp-mods/kerbal/220221-mechjeb");
 	}
 	
+	@Test
+	public void testOrbitalScience() throws IOException{
+		test("http://www.curse.com/ksp-mods/kerbal/220208-dmagic-orbital-science");
+	}
+	
 	private void test(String modUrl) throws IOException{
-		Document doc = Jsoup.connect(modUrl).get();
-		CurseModPage page =  new CurseModPage(doc, new URL(modUrl));
-		
-		assertTrue(page.getDownloadLink().openConnection().getContentLength() > 0);
+		CurseCrawler crawler = new CurseCrawler(new URL(modUrl));
+		assertTrue(crawler.getDownloadLink().openConnection().getContentLength() > 0);
 	}
 }

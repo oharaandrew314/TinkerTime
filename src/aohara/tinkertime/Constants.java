@@ -7,9 +7,14 @@ import java.util.Arrays;
 public class Constants {
 	
 	public static final String
-		CURSE_HOST = "www.curse.com",
-		GITHUB_HOST = "github.com";
-	public static String[] ACCEPTED_MOD_HOSTS = {CURSE_HOST, GITHUB_HOST};
+		HOST_CURSE = "www.curse.com",
+		HOST_GITHUB = "github.com",
+		HOST_MODULE_MANAGER = "ksp.sarbian.com";
+	public static final String[] ACCEPTED_MOD_HOSTS = {HOST_CURSE, HOST_GITHUB};
+	
+	public static final String MODULE_MANAGER_ARTIFACT_DL_URL = (
+		"https://ksp.sarbian.com/jenkins/job/ModuleManager/lastSuccessfulBuild/artifact/"
+	);
 	
 	public static URL getModuleManagerJenkinsUrl(){
 		try {
@@ -31,7 +36,7 @@ public class Constants {
 		String host = url.getHost().toLowerCase();
 		String path = url.getPath().toLowerCase();
 
-		if (host.equals(GITHUB_HOST) && !path.endsWith("/releases")){
+		if (host.equals(HOST_GITHUB) && !path.endsWith("/releases")){
 			return new URL(url.toString() + "/releases");
 		} else if (Arrays.asList(ACCEPTED_MOD_HOSTS).contains(host)){
 			return url;

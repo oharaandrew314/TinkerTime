@@ -6,23 +6,18 @@ import java.io.IOException;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 
-import aohara.tinkertime.models.UpdateListener;
-import aohara.tinkertime.models.pages.FilePage;
+import aohara.tinkertime.controllers.crawlers.Crawler;
 import aohara.tinkertime.views.FileUpdateDialog;
 
 @SuppressWarnings("serial")
-public abstract class FileDownloadController extends AbstractAction implements UpdateListener {
+public abstract class FileDownloadController extends AbstractAction {
 	
-	private FilePage latestPage;
+	private final Crawler<?, ?> crawler;
 	private FileUpdateDialog dialog;
 	
-	protected FileDownloadController(){
+	protected FileDownloadController(Crawler<?, ?> crawler){
 		super("Update");
-	}
-	
-	@Override
-	public void setUpdateAvailable(FilePage latestPage){
-		this.latestPage = latestPage;			
+		this.crawler = crawler;
 	}
 	
 	public FileUpdateDialog getDialog(){
@@ -33,15 +28,13 @@ public abstract class FileDownloadController extends AbstractAction implements U
 	public void actionPerformed(ActionEvent e) {
 		if (dialog == null){
 			throw new IllegalStateException("Cannot run without a dialog to report to");
-		} else if (latestPage == null){
-			throw new IllegalStateException("Cannot run without latest page being set");
 		}
 		
 		try {
-			download(latestPage);
+			download(crawler);
 		} catch (IOException e1) {
 			e1.printStackTrace();
-			JOptionPane.showMessageDialog(dialog, "Error Updating\n\n" + e1.toString());
+			JOptionPane.showMessageDialog(null, "Error Updating\n\n" + e1.toString());
 		}
 	}
 	
@@ -49,6 +42,6 @@ public abstract class FileDownloadController extends AbstractAction implements U
 		this.dialog = dialog;
 	}
 	
-	protected abstract void download(FilePage latestPage) throws IOException;
+	protected abstract void download(Crawler<?, ?> crawler) throws IOException;
 	
 }

@@ -7,7 +7,8 @@ import aohara.common.workflows.TaskListener;
 import aohara.common.workflows.Workflow;
 import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.controllers.WorkflowRunner;
-import aohara.tinkertime.models.pages.FilePage;
+import aohara.tinkertime.controllers.crawlers.Crawler;
+import aohara.tinkertime.workflows.DownloadFileWorkflow;
 
 @SuppressWarnings("serial")
 public class ModuleManagerDownloader extends FileDownloadController implements TaskListener {
@@ -16,7 +17,8 @@ public class ModuleManagerDownloader extends FileDownloadController implements T
 	private final Path destFolderPath;
 	private final CurrentVersion currentVersion;
 	
-	public ModuleManagerDownloader(WorkflowRunner runner, Path destFolderPath, CurrentVersion currentVersion){
+	public ModuleManagerDownloader(WorkflowRunner runner, Crawler<?, ?> crawler, Path destFolderPath, CurrentVersion currentVersion){
+		super(crawler);
 		if(!destFolderPath.toFile().isDirectory()){
 			throw new IllegalArgumentException("Destination path must be a folder");
 		}
@@ -27,16 +29,11 @@ public class ModuleManagerDownloader extends FileDownloadController implements T
 	}
 
 	@Override
-	public void download(FilePage latestPage) throws IOException {		
-		Workflow workflow = new Workflow("Updating Module Manager");
-		workflow.queueTempDownload(
-			latestPage.getDownloadLink(),
-			destFolderPath.resolve(latestPage.getNewestFileName()));
-		
+	public void download(Crawler<?, ?> crawler) throws IOException {		
+		Workflow workflow = new DownloadFileWorkflow("Updating Module Manager", crawler, destFolderPath);
 		if (currentVersion.exists()){
 			workflow.queueDelete(currentVersion.getPath());
 		}
-		
 		workflow.addListener(this);
 		runner.submitDownloadWorkflow(workflow);
 	}

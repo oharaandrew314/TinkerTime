@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.URL;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
@@ -14,7 +15,6 @@ import aohara.common.Listenable;
 import aohara.common.selectorPanel.SelectorInterface;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.UpdateListener;
-import aohara.tinkertime.models.pages.FilePage;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -95,9 +95,9 @@ public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 	}
 
 	@Override
-	public void setUpdateAvailable(FilePage latest) {
+	public void setUpdateAvailable(URL pageUrl, String newestFileName) {
 		for (Mod mod : getMods()){
-			if (mod.getPageUrl().equals(latest.getPageUrl())){
+			if (mod.getPageUrl().equals(pageUrl)){
 				modUpdated(mod, false);
 				break;
 			}

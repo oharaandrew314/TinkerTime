@@ -17,7 +17,6 @@ import aohara.tinkertime.controllers.WorkflowRunner;
 import aohara.tinkertime.controllers.fileUpdater.CurrentVersion;
 import aohara.tinkertime.controllers.fileUpdater.FileDownloadController;
 import aohara.tinkertime.models.UpdateListener;
-import aohara.tinkertime.models.pages.FilePage;
 import aohara.tinkertime.workflows.CheckForUpdateWorkflow;
 
 @SuppressWarnings("serial")
@@ -50,12 +49,12 @@ public class FileUpdateDialog extends JDialog implements UpdateListener {
 		labelPanel.add(currentVersionLabel = new JLabel());
 		add(labelPanel);
 		
-		add(new JButton(new CheckForUpdateAction(this, downloader)));
+		add(new JButton(new CheckForUpdateAction(this)));
 		add(updateButton = new JButton(downloader));
 		downloader.setFileUpdateDialog(this);
 		
 		// Initialize components
-		setUpdateAvailable(null);
+		setUpdateAvailable(null, null);
 		updateCurrentVersion();
 		updateButton.setEnabled(false);
 		
@@ -63,11 +62,13 @@ public class FileUpdateDialog extends JDialog implements UpdateListener {
 	}
 	
 	@Override
-	public void setUpdateAvailable(FilePage latestPage){
-		String latestVersion = latestPage != null ? latestPage.getNewestFileName() : "Please Check";
-		latestVersionLabel.setText(String.format("Latest Version: %s", latestVersion));
+	public void setUpdateAvailable(URL pageUrl, String newestFileName){
+		latestVersionLabel.setText(String.format(
+			"Latest Version: %s",
+			newestFileName != null ? newestFileName : "Please Check"
+		));
 		
-		if (latestPage != null){
+		if (newestFileName != null){
 			updateButton.setEnabled(true);
 		}
 	}

@@ -1,9 +1,9 @@
 package aohara.tinkertime.models;
 
-import aohara.tinkertime.models.pages.FilePage;
+import java.net.URL;
 
 public interface UpdateListener {
 	
-	public void setUpdateAvailable(FilePage latest);
+	public void setUpdateAvailable(URL pageUrl, String newestFileName);
 
 }
