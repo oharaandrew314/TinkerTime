@@ -3,51 +3,48 @@ package aohara.tinkertime;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+
 import aohara.common.AbstractConfig;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.views.DirectoryChooser;
 
 public class Config extends AbstractConfig {
+	
+	private static final String KSP_PATH = "kspPath";
 	
 	public Config(){
 		super(TinkerTime.NAME);
 		setLoadOnGet(true);
 	}
 	
-	public void setGameDataPath(Path path) throws IllegalPathException {
-		if (path != null && path.endsWith("GameData")){
-			setProperty("gameDataPath", path.toString());
-		} else if (path != null && path.resolve("GameData").toFile().exists()){
-			setGameDataPath(path.resolve("GameData"));
+	public void setExecutablePath(Path path) throws IllegalPathException {
+		if (path != null && path.toFile().isFile()){
+			setProperty(KSP_PATH, path.toString());
 		} else {
-			throw new IllegalPathException("Kerbal Path must contain the GameData folder");
+			throw new IllegalPathException("Please select your KSP executable");
 		}
 	}
-	
-	public void setModsPath(Path path) throws IllegalPathException {
-		if (path != null && path.toFile().isDirectory()){
-			setProperty("modsPath", path.toFile().getPath());
-		} else {
-			throw new IllegalPathException("Mods Path must be a directory");
-		}
-	}
-	
 	public Path getGameDataPath(){
-		if (hasProperty("gameDataPath")){
-			return Paths.get(getProperty("gameDataPath"));
+		verifyConfig();
+		return Paths.get(getProperty(KSP_PATH)).getParent().resolve("GameData");
+	}
+	
+	public Path getKspPath(){
+		if (hasProperty(KSP_PATH)){
+			return Paths.get(getProperty(KSP_PATH));
 		}
 		return null;
 	}
-	
+
 	public Path getModZipPath(Mod mod){
-		return new Config().getModsPath().resolve(mod.getNewestFileName());
+		return getModsPath().resolve(mod.getNewestFileName());
 	}
 	
 	public Path getModsPath(){
-		if (hasProperty("modsPath")){
-			return Paths.get(getProperty("modsPath"));
-		}
-		return null;
+		Path path = getFolder().resolve("mods");
+		path.toFile().mkdirs();
+		return path;
 	}
 	
 	@Override
@@ -63,15 +60,35 @@ public class Config extends AbstractConfig {
 		}
 	}
 	
-	static void verifyConfig(){
+	protected static void verifyConfig(){
 		Config config = new Config();
-		if (config.getModsPath() == null || config.getGameDataPath() == null){
+		if (config.getKspPath() == null){
 			updateConfig(false, true);
 		}
 	}
 	
 	public static void updateConfig(boolean restartOnSuccess, boolean exitOnCancel){
-		new DirectoryChooser(new Config(), restartOnSuccess, exitOnCancel).setVisible(true);
+		JFileChooser chooser = new JFileChooser();
+		chooser.setDialogTitle("Please select the path to the KSP executable");
+		chooser.setApproveButtonText("Select KSP Path");
+		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		int result = chooser.showSaveDialog(null);
+		
+		if (result == JFileChooser.APPROVE_OPTION){
+			try {
+				new Config().setExecutablePath(chooser.getSelectedFile().toPath());
+			} catch (IllegalPathException e) {
+				JOptionPane.showMessageDialog(null, e.toString());
+				updateConfig(restartOnSuccess, exitOnCancel);
+			}
+		} else {
+			System.exit(0);
+		}
+		
+		if (restartOnSuccess){
+			JOptionPane.showMessageDialog(null, "Restart required");
+			System.exit(0);
+		}
 	}
 
 }
