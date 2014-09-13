@@ -18,24 +18,25 @@ import aohara.tinkertime.models.Mod;
 
 public class DownloadModTask extends WorkflowTask {
 	// TODO Instead use DownloadFileTask and then create MarkModUpdated task
-	
-	private final Path dest;
+
 	private final ModStateManager sm;
 	private final Crawler<Mod, ?> crawler;
+	private final Config config;
 
 	public DownloadModTask(Workflow workflow, Crawler<Mod, ?> crawler, Config config, ModStateManager sm) {
 		super(workflow);
 		this.sm = sm;
 		this.crawler = crawler;
-		dest = config.getModsPath();
+		this.config = config;
 	}
 
 	@Override
 	public Boolean call() throws Exception {
 		URL downloadLink = crawler.getDownloadLink();
+		Path dest = FileTransferTask.groomDestinationPath(downloadLink, config.getModZipPath(crawler.crawl()));
 		try (
 			InputStream is = new BufferedInputStream(downloadLink.openStream());
-			OutputStream os = new FileOutputStream(FileTransferTask.groomDestinationPath(downloadLink, dest).toFile());
+			OutputStream os = new FileOutputStream(dest.toFile());
 		){
 			byte[] buf = new byte[1024];
 			int bytesRead;
