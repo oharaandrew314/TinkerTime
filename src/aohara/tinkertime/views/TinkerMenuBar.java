@@ -238,7 +238,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	private class UpdatePathsAction extends AbstractAction {
 		
 		private UpdatePathsAction(){
-			super("Update Paths");
+			super("Select KSP Installation");
 		}
 
 		@Override
