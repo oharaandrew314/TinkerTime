@@ -26,4 +26,8 @@ public class CachePageTask extends WorkflowTask {
 		return crawler.url.openConnection().getContentLength();
 	}
 
+	@Override
+	public String getTitle() {
+		return String.format("Crawling %s page", crawler.url.getHost());
+	}
 }

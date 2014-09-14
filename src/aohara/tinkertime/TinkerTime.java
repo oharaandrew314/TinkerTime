@@ -12,7 +12,6 @@ import aohara.tinkertime.views.Frame;
 import aohara.tinkertime.views.ModImageView;
 import aohara.tinkertime.views.ModListCellRenderer;
 import aohara.tinkertime.views.ModView;
-import aohara.tinkertime.views.RightPanel;
 import aohara.tinkertime.views.TinkerMenuBar;
 
 public class TinkerTime implements ListListener<Mod> {
@@ -34,7 +33,7 @@ public class TinkerTime implements ListListener<Mod> {
 		mm = ModManager.createDefaultModManager(sm, pp);
 		
 		// Initialize GUI
-		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new RightPanel(new ModView(), pp.getComponent()));
+		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new ModView());
 		sp.addControlPanel(true, new ModImageView());
 		sp.setListCellRenderer(new ModListCellRenderer());
 		TinkerMenuBar menuBar = new TinkerMenuBar(mm);		
@@ -46,7 +45,7 @@ public class TinkerTime implements ListListener<Mod> {
 
 		// Start Application
 		sm.getMods();  // Load mods (will notify selector panel)
-		new Frame(mm, sp, menuBar);
+		new Frame(mm, sp, pp, menuBar);
 	}
 	
 	public static void main(String[] args) {

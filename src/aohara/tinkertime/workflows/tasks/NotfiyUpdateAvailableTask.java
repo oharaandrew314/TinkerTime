@@ -37,4 +37,9 @@ public class NotfiyUpdateAvailableTask extends WorkflowTask {
 		return listeners.length;
 	}
 
+	@Override
+	public String getTitle() {
+		return "Registering Update Available";
+	}
+
 }

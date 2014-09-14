@@ -51,4 +51,9 @@ public class DownloadFileTask extends WorkflowTask {
 		return crawler.getDownloadLink().openConnection().getContentLength();
 	}
 
+	@Override
+	public String getTitle() {
+		return String.format("Downloading %s", crawler.url.getFile());
+	}
+
 }

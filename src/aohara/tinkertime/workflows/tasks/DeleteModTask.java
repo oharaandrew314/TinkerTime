@@ -35,4 +35,9 @@ public class DeleteModTask extends WorkflowTask {
 	public int getTargetProgress() throws IOException {
 		return -1;
 	}
+
+	@Override
+	public String getTitle() {
+		return String.format("Deleting %s", mod.getName());
+	}
 }

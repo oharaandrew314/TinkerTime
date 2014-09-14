@@ -32,4 +32,9 @@ public class MarkModEnabledTask extends WorkflowTask {
 		return -1;
 	}
 
+	@Override
+	public String getTitle() {
+		return String.format("Enabling %s", mod.getName());
+	}
+
 }

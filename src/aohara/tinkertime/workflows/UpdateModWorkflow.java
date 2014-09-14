@@ -16,7 +16,7 @@ public class UpdateModWorkflow extends DownloadFileWorkflow {
 	
 	@SuppressWarnings("unchecked")
 	public UpdateModWorkflow(URL url, Config config, ModStateManager sm) {
-		super("Adding New Mod: " + url, new CrawlerFactory().getCrawler(url), config.getModsPath());
+		super("Adding New Mod: " + url.getFile(), new CrawlerFactory().getCrawler(url), config.getModsPath());
 		addTask(new MarkModUpdatedTask(this, sm, (Crawler<Mod, ?>) crawler));
 	}
 	
@@ -40,6 +40,11 @@ public class UpdateModWorkflow extends DownloadFileWorkflow {
 		@Override
 		public int getTargetProgress() throws IOException {
 			return 0;
+		}
+
+		@Override
+		public String getTitle() {
+			return "Registering Update Available";
 		}
 
 	}
