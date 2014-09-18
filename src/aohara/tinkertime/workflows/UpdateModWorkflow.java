@@ -12,6 +12,13 @@ import aohara.tinkertime.controllers.crawlers.Crawler;
 import aohara.tinkertime.controllers.crawlers.CrawlerFactory;
 import aohara.tinkertime.models.Mod;
 
+/**
+ * Workflow that will update the mod from the given page URL.
+ * 
+ * Will download and store the mod zip file, and save the updated mod information.
+ * 
+ * @author Andrew O'Hara
+ */
 public class UpdateModWorkflow extends DownloadFileWorkflow {
 	
 	@SuppressWarnings("unchecked")
@@ -44,7 +51,7 @@ public class UpdateModWorkflow extends DownloadFileWorkflow {
 
 		@Override
 		public String getTitle() {
-			return "Registering Update Available";
+			return "Registering Mod as Updated";
 		}
 
 	}

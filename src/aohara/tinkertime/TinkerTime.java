@@ -14,6 +14,11 @@ import aohara.tinkertime.views.ModListCellRenderer;
 import aohara.tinkertime.views.ModView;
 import aohara.tinkertime.views.TinkerMenuBar;
 
+/**
+ * Controller which starts the Application.
+ * 
+ * @author Andrew O'Hara
+ */
 public class TinkerTime implements ListListener<Mod> {
 	
 	public static final String
@@ -53,6 +58,7 @@ public class TinkerTime implements ListListener<Mod> {
 	}
 
 	@Override
+	// TODO: Move out of this class
 	public void elementClicked(Mod mod, int numTimes) throws Exception{
 		if (numTimes == 2){
 			if (mod.isEnabled()){

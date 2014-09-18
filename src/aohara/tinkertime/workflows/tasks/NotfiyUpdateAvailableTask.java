@@ -7,6 +7,12 @@ import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.controllers.crawlers.Crawler;
 import aohara.tinkertime.models.UpdateListener;
 
+/**
+ * Workflow Task that notifies the given UpdateListeners that an update is available
+ * for the file represented by the given Crawler.
+ * 
+ * @author Andrew O'Hara
+ */
 public class NotfiyUpdateAvailableTask extends WorkflowTask {
 	
 	private final UpdateListener[] listeners;

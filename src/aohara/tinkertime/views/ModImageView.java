@@ -6,6 +6,13 @@ import javax.swing.JLabel;
 import aohara.common.selectorPanel.ControlPanel;
 import aohara.tinkertime.models.Mod;
 
+/**
+ * Component which displays the Mod's image from a given URL.
+ * 
+ * TODO: Cache the image until the mod is updated.
+ * 
+ * @author Andrew O'Hara
+ */
 public class ModImageView extends ControlPanel<Mod> {
 	
 	private final JLabel label = new JLabel();

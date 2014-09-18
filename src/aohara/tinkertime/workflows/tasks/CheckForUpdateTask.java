@@ -7,6 +7,11 @@ import aohara.common.workflows.Workflow;
 import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.controllers.crawlers.Crawler;
 
+/**
+ * Workflow Task that returns true if an update for a file is available.
+ * 
+ * @author Andrew O'Hara
+ */
 public class CheckForUpdateTask extends WorkflowTask {
 	
 	private final Date lastUpdated;

@@ -10,6 +10,14 @@ import aohara.tinkertime.controllers.WorkflowRunner;
 import aohara.tinkertime.controllers.crawlers.Crawler;
 import aohara.tinkertime.workflows.DownloadFileWorkflow;
 
+/**
+ * Download Action to download ModuleManager for the {@link aohara.tinkertime.views.FileUpdateDialog}.
+ * 
+ * Launches the Download with a {@link aohara.common.workflows.Workflow}
+ * and notifies the dialog when the update is complete.
+ * 
+ * @author Andrew O'Hara
+ */
 @SuppressWarnings("serial")
 public class ModuleManagerDownloader extends FileDownloadController implements TaskListener {
 	

@@ -5,6 +5,11 @@ import java.nio.file.Path;
 
 import aohara.tinkertime.Config;
 
+/**
+ * Strategy for obtaining the currently installed version of ModuleManager.
+ * 
+ * @author Andrew O'Hara
+ */
 public class CurrentModuleManager implements CurrentVersion {
 	
 	public static final String MODULE_MANAGER = "ModuleManager";

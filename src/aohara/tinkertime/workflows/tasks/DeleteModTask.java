@@ -11,6 +11,11 @@ import aohara.tinkertime.Config;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;
 
+/**
+ * Workflow Task that Delete's a mod's Zip File.
+ * 
+ * @author Andrew O'Hara
+ */
 public class DeleteModTask extends WorkflowTask {
 	
 	private final Path zipPath;

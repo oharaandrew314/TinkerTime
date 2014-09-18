@@ -8,6 +8,11 @@ import aohara.tinkertime.models.ModStructure;
 import aohara.tinkertime.models.ModStructure.Module;
 import aohara.tinkertime.workflows.tasks.MarkModEnabledTask;
 
+/**
+ * Workflow that will result in the given mod being disabled.
+ * 
+ * @author Andrew O'Hara
+ */
 public class DisableModWorkflow extends Workflow {
 	
 	public DisableModWorkflow(Mod mod, Config config, ModStateManager sm) {

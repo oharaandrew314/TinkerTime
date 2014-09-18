@@ -6,6 +6,16 @@ import java.util.Date;
 
 import aohara.tinkertime.controllers.crawlers.pageLoaders.PageLoader;
 
+/**
+ * Abstract Base Class for Creating Web Crawlers to gather file information.
+ * This Crawler is meant to be controlled by a Workflow since these operations
+ * are blocking, and may be long-running. 
+ * 
+ * @author Andrew O'Hara
+ *
+ * @param <R> Return Type for the crawl method
+ * @param <T> Type of Page that is to be returned by getPage
+ */
 public abstract class Crawler<R, T> implements PageLoader<T> {
 	
 	private final PageLoader<T> pageLoader;
@@ -21,7 +31,9 @@ public abstract class Crawler<R, T> implements PageLoader<T> {
 		return pageLoader.getPage(url);
 	}
 	
+	// FIXME: Make this part of a ModCrawler Abstract Class
 	public abstract R crawl() throws IOException;
+	
 	public abstract URL getDownloadLink() throws IOException;
 	public abstract String getNewestFileName() throws IOException;
 	protected abstract Date getUpdatedOn() throws IOException;

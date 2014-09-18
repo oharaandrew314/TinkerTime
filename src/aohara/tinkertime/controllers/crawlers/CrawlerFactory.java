@@ -3,12 +3,25 @@ package aohara.tinkertime.controllers.crawlers;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import aohara.tinkertime.Constants;
 import aohara.tinkertime.controllers.crawlers.pageLoaders.JsonLoader;
 import aohara.tinkertime.controllers.crawlers.pageLoaders.WebpageLoader;
 
+/**
+ * Factory for creating crawlers.
+ * 
+ * @author Andrew O'Hara
+ *
+ */
 public class CrawlerFactory {
 	
+	/**
+	 * Creates a Crawler based on the given URL.
+	 * 
+	 * An Unsupported host name will throw an Exception.
+	 * 
+	 * @param url url of the page to be crawled
+	 * @return A crawler for crawling the file data on the given url
+	 */
 	public Crawler<?, ?> getCrawler(URL url){
 		
 		String host = url.getHost();

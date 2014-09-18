@@ -10,6 +10,11 @@ import aohara.tinkertime.models.ModStructure;
 import aohara.tinkertime.models.ModStructure.Module;
 import aohara.tinkertime.workflows.tasks.MarkModEnabledTask;
 
+/**
+ * Workflow that will enable the given mod.
+ * 
+ * @author Andrew O'Hara
+ */
 public class EnableModWorkflow extends Workflow {
 
 	public EnableModWorkflow(Mod mod, Config config, ModStateManager sm, ConflictResolver cr) {

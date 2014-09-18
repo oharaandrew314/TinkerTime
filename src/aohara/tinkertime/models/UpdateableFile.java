@@ -3,13 +3,18 @@ package aohara.tinkertime.models;
 import java.net.URL;
 import java.util.Date;
 
-public class DownloadedFile implements UpdateListener {
+/**
+ * Model for holding information on an updatable File.
+ * 
+ * @author Andrew O'Hara
+ */
+public class UpdateableFile implements UpdateListener {
 	
 	private String fileName;
 	private Date lastUpdatedOn;
 	private URL downloadLink, pageUrl;
 	
-	public DownloadedFile(String newestFileName, Date lastUpdated, URL pageUrl){
+	public UpdateableFile(String newestFileName, Date lastUpdated, URL pageUrl){
 		update(newestFileName, lastUpdated, pageUrl);
 	}
 
@@ -38,8 +43,8 @@ public class DownloadedFile implements UpdateListener {
 	@Override
 	public boolean equals(Object o){
 		return (
-			o instanceof DownloadedFile
-			&& ((DownloadedFile)o).getPageUrl().equals(getPageUrl())
+			o instanceof UpdateableFile
+			&& ((UpdateableFile)o).getPageUrl().equals(getPageUrl())
 		);
 	}
 

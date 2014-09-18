@@ -8,6 +8,11 @@ import java.util.Map;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 	
+/**
+ * PageLoader for loading and caching HTML documents from the web.
+ * 
+ * @author Andrew O'Hara
+ */
 public class WebpageLoader implements PageLoader<Document>{
 	
 	public static final int TIMEOUT_MS = 5000;

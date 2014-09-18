@@ -9,6 +9,17 @@ import javax.swing.JOptionPane;
 import aohara.tinkertime.controllers.crawlers.Crawler;
 import aohara.tinkertime.views.FileUpdateDialog;
 
+/**
+ * Download Action used by the {@link aohara.tinkertime.views.FileUpdateDialog}.
+ * 
+ * This Class is to be used as an Action for initiating the download of a File
+ * initiated by the {@link aohara.tinkertime.views.FileUpdateDialog}.
+ * 
+ * Additional interfaces can be implemented for providing feedback to the View
+ * once the download is complete.
+ * 
+ * @author Andrew O'Hara
+ */
 @SuppressWarnings("serial")
 public abstract class FileDownloadController extends AbstractAction {
 	

@@ -10,6 +10,11 @@ import java.util.Map;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+/**
+ * PageLoader for loading and caching Json Documents from the web.
+ * 
+ * @author Andrew O'Hara
+ */
 public class JsonLoader implements PageLoader<JsonObject> {
 	
 	private static final Map<URL, JsonObject> cache = new HashMap<>();

@@ -10,17 +10,24 @@ import java.util.Date;
 import aohara.common.workflows.Workflow;
 import aohara.tinkertime.controllers.crawlers.Crawler;
 import aohara.tinkertime.controllers.crawlers.CrawlerFactory;
-import aohara.tinkertime.models.DownloadedFile;
+import aohara.tinkertime.models.UpdateableFile;
 import aohara.tinkertime.models.UpdateListener;
 import aohara.tinkertime.workflows.tasks.CheckForUpdateTask;
 import aohara.tinkertime.workflows.tasks.NotfiyUpdateAvailableTask;
 
+/**
+ * Workflow that checks if a File Update is available.
+ * 
+ * If an update is available, the given UpdateListener will be notified. 
+ * 
+ * @author Andrew O'Hara
+ */
 public class CheckForUpdateWorkflow extends Workflow{
 	
 	private final Path newPagePath;
 	
 	public static CheckForUpdateWorkflow forExistingFile(
-			DownloadedFile existing, boolean onlyUpdateIfNewer,
+			UpdateableFile existing, boolean onlyUpdateIfNewer,
 			UpdateListener... listeners){
 		// Add mod to list of listeners
 		ArrayList<UpdateListener> listenerList = new ArrayList<>();

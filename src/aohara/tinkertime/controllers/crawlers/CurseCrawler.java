@@ -13,12 +13,22 @@ import org.jsoup.nodes.Element;
 import aohara.tinkertime.controllers.crawlers.pageLoaders.PageLoader;
 import aohara.tinkertime.models.Mod;
 
+/**
+ * Crawler for gethering Mod File Data from curse.com
+ * 
+ * @author Andrew O'Hara
+ */
 public class CurseCrawler extends Crawler<Mod, Document> {
 	
 	public CurseCrawler(URL url, PageLoader<Document> pageLoader){
 		super(url, pageLoader);
 	}
 
+	/**
+	 * Crawls the page and returns a Mod model with all of the Mod's current data.
+	 * 
+	 * @return Mod representing the mod's most recent data
+	 */
 	@Override
 	public Mod crawl() throws IOException {		
 		Document mainPage = getPage(url);

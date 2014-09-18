@@ -15,6 +15,13 @@ import aohara.tinkertime.Config;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.models.Mod;
 
+/**
+ * Custom ListCellRenderer for a Mod to be displayed on a JList.
+ * 
+ * Displays the Mod name as well as all status icons to the left of it.
+ *  
+ * @author Andrew O'Hara
+ */
 public class ModListCellRenderer implements ListCellRenderer<Mod> {
 	
 	private final ImageIcon checkIcon, xIcon, errorIcon, updateIcon;

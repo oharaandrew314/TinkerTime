@@ -7,6 +7,11 @@ import aohara.tinkertime.controllers.crawlers.Crawler;
 import aohara.tinkertime.workflows.tasks.CachePageTask;
 import aohara.tinkertime.workflows.tasks.DownloadFileTask;
 
+/**
+ * Workflow that will Download the File that the given Crawler will discover.
+ * 
+ * @author Andrew O'Hara
+ */
 public class DownloadFileWorkflow extends Workflow{
 	
 	protected final Crawler<?, ?> crawler;

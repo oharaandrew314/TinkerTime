@@ -3,7 +3,16 @@ package aohara.tinkertime.models;
 import java.net.URL;
 import java.util.Date;
 
-public class Mod extends DownloadedFile {
+/**
+ * Model for holding Mod information and status.
+ * 
+ * Two flags can be set: enabled, and update available.
+ * The Application will display this mod differently depending on the state
+ * of these flags.
+ * 
+ * @author Andrew O'Hara
+ */
+public class Mod extends UpdateableFile {
 	
 	private String name, creator;
 	private URL imageUrl;

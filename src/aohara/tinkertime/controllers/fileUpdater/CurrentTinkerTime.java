@@ -4,6 +4,11 @@ import java.nio.file.Path;
 
 import aohara.tinkertime.TinkerTime;
 
+/**
+ * Strategy for obtaining the currently installed version of Tinker Time.
+ * @author Andrew O'Hara
+ *
+ */
 public class CurrentTinkerTime implements CurrentVersion {
 
 	@Override

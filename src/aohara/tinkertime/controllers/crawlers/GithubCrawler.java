@@ -12,6 +12,11 @@ import org.jsoup.nodes.Element;
 import aohara.tinkertime.controllers.crawlers.pageLoaders.PageLoader;
 import aohara.tinkertime.models.Mod;
 
+/**
+ * Crawler for gathering Mod Data from a Github Project.
+ * 
+ * @author Andrew O'Hara
+ */
 public class GithubCrawler extends Crawler<Mod, Document> {
 
 	public GithubCrawler(URL url, PageLoader<Document> pageLoader) {

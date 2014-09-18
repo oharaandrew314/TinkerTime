@@ -16,6 +16,15 @@ import org.apache.commons.io.IOUtils;
 
 import aohara.tinkertime.Config;
 
+/**
+ * Model for discovering and reporting the structure of a Mod Zip File.
+ * 
+ * Mods can contain a Readme, and contain at least one Module.  Modules can contain
+ * the main mod data, or its bundled dependency data.
+ * 
+ * @author Andrew O'Hara
+ *
+ */
 public class ModStructure {
 	
 	private String readmeName;
@@ -31,6 +40,8 @@ public class ModStructure {
 		
 		Path gameDataPath = null;
 		Set<ZipEntry> entries = getZipEntries();
+		
+		// TODO: Perform Discovery in a Factory Class
 		
 		// Search for Key Zip Entries
 		for (ZipEntry entry : entries){
@@ -111,6 +122,12 @@ public class ModStructure {
 	
 	// -- Module Class ------------------
 	
+	/**
+	 * Represents a Folder that would potentially be added to the KSP GameData
+	 * directory.
+	 * 
+	 * @author Andrew O'Hara
+	 */
 	public class Module {
 
 		private final Path pathWithinZip;
@@ -119,6 +136,7 @@ public class ModStructure {
 		private Module(Path zipPath, Path pathWithinZip) {
 			this.pathWithinZip = pathWithinZip;
 
+			// TODO: Move discovery to Factory
 			for (ZipEntry entry : getZipEntries()) {
 				if (!entry.isDirectory() && toPath(entry).startsWith(pathWithinZip)){
 					entries.add(entry);

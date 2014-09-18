@@ -13,6 +13,11 @@ import aohara.common.workflows.tasks.FileTransferTask;
 import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.controllers.crawlers.Crawler;
 
+/**
+ * Workflow Task that Download's the file discovered by the given crawler.
+ * 
+ * @author Andrew O'Hara
+ */
 public class DownloadFileTask extends WorkflowTask {
 	
 	private final Crawler<?, ?> crawler;

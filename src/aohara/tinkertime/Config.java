@@ -9,6 +9,13 @@ import javax.swing.JOptionPane;
 import aohara.common.AbstractConfig;
 import aohara.tinkertime.models.Mod;
 
+/**
+ * Stores and Retrieves User Configuration Data.
+ * 
+ * Holds data related to Mod Zip File Storage and Mod Installation Directory.
+ * 
+ * @author Andrew O'Hara
+ */
 public class Config extends AbstractConfig {
 	
 	private static final String KSP_PATH = "kspPath";

@@ -1,10 +1,11 @@
-package aohara.tinkertime;
+package aohara.tinkertime.controllers.crawlers;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 
 public class Constants {
+	/** Contains Several Constants for Crawling **/
 	
 	public static final String
 		HOST_CURSE = "www.curse.com",

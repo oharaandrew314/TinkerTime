@@ -19,6 +19,16 @@ import aohara.tinkertime.controllers.fileUpdater.FileDownloadController;
 import aohara.tinkertime.models.UpdateListener;
 import aohara.tinkertime.workflows.CheckForUpdateWorkflow;
 
+/**
+ * Dialog which is used to update Files that are not considered "mods".
+ * 
+ * The Dialog shows the currently installed version, a button to check for
+ * an updated version, and a button to download the latest version.  Once the
+ * latest version has been retrieved with the "Check for Update" button, the
+ * latest version name is displayed on the Dialog.
+ * 
+ * @author Andrew O'Hara
+ */
 @SuppressWarnings("serial")
 public class FileUpdateDialog extends JDialog implements UpdateListener {
 	

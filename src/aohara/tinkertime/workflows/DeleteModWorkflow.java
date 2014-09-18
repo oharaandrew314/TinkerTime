@@ -8,6 +8,11 @@ import aohara.tinkertime.models.ModStructure;
 import aohara.tinkertime.models.ModStructure.Module;
 import aohara.tinkertime.workflows.tasks.DeleteModTask;
 
+/**
+ * Workflow that will result in a Mod being disabled and deleted from the FS.
+ * 
+ * @author Andrew O'Hara
+ */
 public class DeleteModWorkflow extends Workflow {
 
 	public DeleteModWorkflow(Mod mod, Config config, ModStateManager sm) {

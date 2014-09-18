@@ -19,6 +19,14 @@ import aohara.tinkertime.models.UpdateListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+/**
+ * Controller for Storing and Retrieving persistent mod state.
+ * 
+ * Any time a mod's information or state is updated, the updater must call
+ * modUpdated as specified by the ModUpdateListener interface. 
+ * 
+ * @author Andrew O'Hara
+ */
 public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 		implements ModUpdateListener, UpdateListener {
 	

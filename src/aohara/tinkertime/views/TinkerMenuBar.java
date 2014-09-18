@@ -18,7 +18,6 @@ import javax.swing.JPopupMenu;
 import aohara.common.Util;
 import aohara.common.selectorPanel.ListListener;
 import aohara.tinkertime.Config;
-import aohara.tinkertime.Constants;
 import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.CannotAddModException;
@@ -28,6 +27,7 @@ import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledException;
 import aohara.tinkertime.controllers.ModManager.ModNotDownloadedException;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
+import aohara.tinkertime.controllers.crawlers.Constants;
 import aohara.tinkertime.controllers.crawlers.Crawler;
 import aohara.tinkertime.controllers.crawlers.CrawlerFactory;
 import aohara.tinkertime.controllers.fileUpdater.CurrentModuleManager;
@@ -37,6 +37,19 @@ import aohara.tinkertime.controllers.fileUpdater.ModuleManagerDownloader;
 import aohara.tinkertime.controllers.fileUpdater.TinkerTimeDownloader;
 import aohara.tinkertime.models.Mod;
 
+/**
+ * JMenuBar for Tinker Time.
+ * 
+ * Also includes all of the Actions that are performed when a Menu Item is activated.
+ * 
+ * Includes the following menus:
+ * - File: Select KSP Installation Dir and exit the application
+ * - Mod: Actions on the selected mod
+ * - Update: Actions for updating mods or other files
+ * - Help: Help, Contact Information, and About
+ * 
+ * @author Andrew O'Hara
+ */
 @SuppressWarnings("serial")
 public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	

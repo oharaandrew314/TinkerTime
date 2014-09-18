@@ -9,6 +9,11 @@ import aohara.tinkertime.controllers.crawlers.pageLoaders.PageLoader;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+/**
+ * Crawler for gathering file data from a Jenkins Json Artifact.
+ * 
+ * @author Andrew O'Hara
+ */
 public class JenkinsCrawler extends Crawler<Boolean, JsonObject> {
 	
 	private JsonObject cachedJson;
@@ -28,7 +33,7 @@ public class JenkinsCrawler extends Crawler<Boolean, JsonObject> {
 	
 	@Override
 	public Boolean crawl() throws IOException {
-		// TODO Auto-generated method stub
+		// TODO Unused.  Remove from base class
 		return null;
 	}
 

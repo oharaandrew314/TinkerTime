@@ -10,7 +10,7 @@ import aohara.common.workflows.ConflictResolver;
 import aohara.common.workflows.ProgressPanel;
 import aohara.common.workflows.Workflow;
 import aohara.tinkertime.Config;
-import aohara.tinkertime.Constants;
+import aohara.tinkertime.controllers.crawlers.Constants;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.views.DialogConflictResolver;
 import aohara.tinkertime.workflows.CheckForUpdateWorkflow;
@@ -19,6 +19,15 @@ import aohara.tinkertime.workflows.DisableModWorkflow;
 import aohara.tinkertime.workflows.EnableModWorkflow;
 import aohara.tinkertime.workflows.UpdateModWorkflow;
 
+/**
+ * Controller for initiating Asynchronous Tasks for Mod Processing.
+ * 
+ * All Mod-Related Actions are to be initiated through this Controller.
+ * All Asynchronous tasks initiated are executed by the executors of this class,
+ * and the tasks are represented by {@link aohara.common.workflows.Workflow} classes.
+ * 
+ * @author Andrew O'Hara
+ */
 public class ModManager extends Listenable<ModUpdateListener> implements WorkflowRunner {
 	
 	public static final int NUM_CONCURRENT_DOWNLOADS = 4;

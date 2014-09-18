@@ -6,6 +6,11 @@ import javax.swing.JOptionPane;
 
 import aohara.common.workflows.ConflictResolver;
 
+/**
+ * Allows a Module Conflict to be resolved using a Modal Dialog.
+ * 
+ * @author Andrew O'Hara
+ */
 public class DialogConflictResolver extends ConflictResolver {
 
 	@Override
