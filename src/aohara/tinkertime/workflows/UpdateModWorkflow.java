@@ -19,7 +19,7 @@ import aohara.tinkertime.models.Mod;
  * 
  * @author Andrew O'Hara
  */
-public class UpdateModWorkflow extends DownloadFileWorkflow {
+public class UpdateModWorkflow extends CrawlerDownloadFileWorkflow {
 	
 	@SuppressWarnings("unchecked")
 	public UpdateModWorkflow(URL url, Config config, ModStateManager sm) {

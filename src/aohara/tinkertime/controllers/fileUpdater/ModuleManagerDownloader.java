@@ -8,7 +8,7 @@ import aohara.common.workflows.Workflow;
 import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.controllers.WorkflowRunner;
 import aohara.tinkertime.controllers.crawlers.Crawler;
-import aohara.tinkertime.workflows.DownloadFileWorkflow;
+import aohara.tinkertime.workflows.CrawlerDownloadFileWorkflow;
 
 /**
  * Download Action to download ModuleManager for the {@link aohara.tinkertime.views.FileUpdateDialog}.
@@ -38,7 +38,7 @@ public class ModuleManagerDownloader extends FileDownloadController implements T
 
 	@Override
 	public void download(Crawler<?, ?> crawler) throws IOException {		
-		Workflow workflow = new DownloadFileWorkflow("Updating Module Manager", crawler, destFolderPath);
+		Workflow workflow = new CrawlerDownloadFileWorkflow("Updating Module Manager", crawler, destFolderPath);
 		if (currentVersion.exists()){
 			workflow.queueDelete(currentVersion.getPath());
 		}
