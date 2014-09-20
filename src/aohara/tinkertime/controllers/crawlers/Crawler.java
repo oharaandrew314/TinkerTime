@@ -13,7 +13,6 @@ import aohara.tinkertime.controllers.crawlers.pageLoaders.PageLoader;
  * 
  * @author Andrew O'Hara
  *
- * @param <R> Return Type for the crawl method
  * @param <T> Type of Page that is to be returned by getPage
  */
 public abstract class Crawler<T> implements PageLoader<T> {
