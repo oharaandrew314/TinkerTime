@@ -25,7 +25,7 @@ public class ModuleManagerDownloader extends FileDownloadController implements T
 	private final Path destFolderPath;
 	private final CurrentVersion currentVersion;
 	
-	public ModuleManagerDownloader(WorkflowRunner runner, Crawler<?, ?> crawler, Path destFolderPath, CurrentVersion currentVersion){
+	public ModuleManagerDownloader(WorkflowRunner runner, Crawler<?> crawler, Path destFolderPath, CurrentVersion currentVersion){
 		super(crawler);
 		if(!destFolderPath.toFile().isDirectory()){
 			throw new IllegalArgumentException("Destination path must be a folder");
@@ -37,7 +37,7 @@ public class ModuleManagerDownloader extends FileDownloadController implements T
 	}
 
 	@Override
-	public void download(Crawler<?, ?> crawler) throws IOException {		
+	public void download(Crawler<?> crawler) throws IOException {		
 		Workflow workflow = new CrawlerDownloadFileWorkflow("Updating Module Manager", crawler, destFolderPath);
 		if (currentVersion.exists()){
 			workflow.queueDelete(currentVersion.getPath());

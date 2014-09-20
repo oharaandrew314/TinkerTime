@@ -354,7 +354,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 			Config config = new Config();
 			CurrentVersion currentVersion = new CurrentModuleManager(config);
 			URL url = Constants.getModuleManagerJenkinsUrl();
-			Crawler<?, ?> crawler = new CrawlerFactory().getCrawler(url);
+			Crawler<?> crawler = new CrawlerFactory().getCrawler(url);
 			JDialog dialog = new FileUpdateDialog(
 				"Update Module Manager", mm, url, currentVersion,
 				new ModuleManagerDownloader(mm, crawler, config.getGameDataPath(), currentVersion)

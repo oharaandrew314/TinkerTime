@@ -16,9 +16,9 @@ public class CheckForUpdateTask extends WorkflowTask {
 	
 	private final Date lastUpdated;
 	private final String lastFileName;
-	private final Crawler<?, ?> crawler;
+	private final Crawler<?> crawler;
 
-	public CheckForUpdateTask(Workflow workflow, Crawler<?, ?> crawler, Date lastUpdated, String lastFileName) {
+	public CheckForUpdateTask(Workflow workflow, Crawler<?> crawler, Date lastUpdated, String lastFileName) {
 		super(workflow);
 		this.crawler = crawler;
 		this.lastUpdated = lastUpdated;

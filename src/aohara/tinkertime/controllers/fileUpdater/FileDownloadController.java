@@ -23,10 +23,10 @@ import aohara.tinkertime.views.FileUpdateDialog;
 @SuppressWarnings("serial")
 public abstract class FileDownloadController extends AbstractAction {
 	
-	private final Crawler<?, ?> crawler;
+	private final Crawler<?> crawler;
 	private FileUpdateDialog dialog;
 	
-	protected FileDownloadController(Crawler<?, ?> crawler){
+	protected FileDownloadController(Crawler<?> crawler){
 		super("Update");
 		this.crawler = crawler;
 	}
@@ -53,6 +53,6 @@ public abstract class FileDownloadController extends AbstractAction {
 		this.dialog = dialog;
 	}
 	
-	protected abstract void download(Crawler<?, ?> crawler) throws IOException;
+	protected abstract void download(Crawler<?> crawler) throws IOException;
 	
 }

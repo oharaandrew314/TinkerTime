@@ -14,7 +14,7 @@ import com.google.gson.JsonObject;
  * 
  * @author Andrew O'Hara
  */
-public class JenkinsCrawler extends Crawler<Boolean, JsonObject> {
+public class JenkinsCrawler extends Crawler<JsonObject> {
 	
 	private JsonObject cachedJson;
 	private final URL artifactDownloadUrl;
@@ -29,12 +29,6 @@ public class JenkinsCrawler extends Crawler<Boolean, JsonObject> {
 			cachedJson = getPage(url);
 		}
 		return cachedJson;
-	}
-	
-	@Override
-	public Boolean crawl() throws IOException {
-		// TODO Unused.  Remove from base class
-		return null;
 	}
 
 	@Override

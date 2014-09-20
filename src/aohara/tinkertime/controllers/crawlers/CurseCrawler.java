@@ -18,7 +18,7 @@ import aohara.tinkertime.models.Mod;
  * 
  * @author Andrew O'Hara
  */
-public class CurseCrawler extends Crawler<Mod, Document> {
+public class CurseCrawler extends ModCrawler<Document> {
 	
 	public CurseCrawler(URL url, PageLoader<Document> pageLoader){
 		super(url, pageLoader);
@@ -30,7 +30,7 @@ public class CurseCrawler extends Crawler<Mod, Document> {
 	 * @return Mod representing the mod's most recent data
 	 */
 	@Override
-	public Mod crawl() throws IOException {		
+	public Mod createMod() throws IOException {		
 		Document mainPage = getPage(url);
 		
 		// Mod Name

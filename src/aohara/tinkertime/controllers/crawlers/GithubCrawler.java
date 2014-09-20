@@ -17,14 +17,14 @@ import aohara.tinkertime.models.Mod;
  * 
  * @author Andrew O'Hara
  */
-public class GithubCrawler extends Crawler<Mod, Document> {
+public class GithubCrawler extends ModCrawler<Document> {
 
 	public GithubCrawler(URL url, PageLoader<Document> pageLoader) {
 		super(url, pageLoader);
 	}
 
 	@Override
-	public Mod crawl() throws IOException {
+	public Mod createMod() throws IOException {
 		Document doc = getPage(url);
 
 		String name = doc.select("h1.entry-title strong > a").text();

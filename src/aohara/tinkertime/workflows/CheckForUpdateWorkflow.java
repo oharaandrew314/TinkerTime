@@ -10,8 +10,9 @@ import java.util.Date;
 import aohara.common.workflows.Workflow;
 import aohara.tinkertime.controllers.crawlers.Crawler;
 import aohara.tinkertime.controllers.crawlers.CrawlerFactory;
-import aohara.tinkertime.models.UpdateableFile;
+import aohara.tinkertime.controllers.crawlers.ModCrawler;
 import aohara.tinkertime.models.UpdateListener;
+import aohara.tinkertime.models.UpdateableFile;
 import aohara.tinkertime.workflows.tasks.CheckForUpdateTask;
 import aohara.tinkertime.workflows.tasks.NotfiyUpdateAvailableTask;
 
@@ -51,7 +52,7 @@ public class CheckForUpdateWorkflow extends Workflow{
 			boolean onlyUpdateIfNewer, UpdateListener... listeners){
 		super("Checking for Update for " +label);
 		
-		Crawler<?, ?> crawler = new CrawlerFactory().getCrawler(pageUrl);
+		Crawler<?> crawler = new CrawlerFactory().getCrawler(pageUrl);
 		
 		try {
 			newPagePath = Files.createTempFile("page", ".temp");

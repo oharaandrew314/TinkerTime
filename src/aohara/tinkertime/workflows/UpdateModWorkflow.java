@@ -8,9 +8,8 @@ import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.Config;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.controllers.ModUpdateListener;
-import aohara.tinkertime.controllers.crawlers.Crawler;
 import aohara.tinkertime.controllers.crawlers.CrawlerFactory;
-import aohara.tinkertime.models.Mod;
+import aohara.tinkertime.controllers.crawlers.ModCrawler;
 
 /**
  * Workflow that will update the mod from the given page URL.
@@ -21,18 +20,17 @@ import aohara.tinkertime.models.Mod;
  */
 public class UpdateModWorkflow extends CrawlerDownloadFileWorkflow {
 	
-	@SuppressWarnings("unchecked")
 	public UpdateModWorkflow(URL url, Config config, ModStateManager sm) {
-		super("Adding New Mod: " + url.getFile(), new CrawlerFactory().getCrawler(url), config.getModsPath());
-		addTask(new MarkModUpdatedTask(this, sm, (Crawler<Mod, ?>) crawler));
+		super("Adding New Mod: " + url.getFile(), new CrawlerFactory().getModCrawler(url), config.getModsPath());
+		addTask(new MarkModUpdatedTask(this, sm, (ModCrawler<?>) crawler));
 	}
 	
 	private class MarkModUpdatedTask extends WorkflowTask {
 		
 		private final ModUpdateListener listener;
-		private final Crawler<Mod, ?> crawler;
+		private final ModCrawler<?> crawler;
 
-		public MarkModUpdatedTask(Workflow workflow, ModUpdateListener listener, Crawler<Mod, ?> crawler) {
+		public MarkModUpdatedTask(Workflow workflow, ModUpdateListener listener, ModCrawler<?> crawler) {
 			super(workflow);
 			this.listener = listener;
 			this.crawler = crawler;
@@ -40,7 +38,7 @@ public class UpdateModWorkflow extends CrawlerDownloadFileWorkflow {
 
 		@Override
 		public Boolean call() throws Exception {
-			listener.modUpdated(crawler.crawl(), false);
+			listener.modUpdated(crawler.createMod(), false);
 			return true;
 		}
 

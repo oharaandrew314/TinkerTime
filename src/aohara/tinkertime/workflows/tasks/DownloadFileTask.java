@@ -20,10 +20,10 @@ import aohara.tinkertime.controllers.crawlers.Crawler;
  */
 public class DownloadFileTask extends WorkflowTask {
 	
-	private final Crawler<?, ?> crawler;
+	private final Crawler<?> crawler;
 	private final Path destFolder;
 
-	public DownloadFileTask(Workflow workflow, Crawler<?, ?> crawler, Path destFolder) {
+	public DownloadFileTask(Workflow workflow, Crawler<?> crawler, Path destFolder) {
 		super(workflow);
 		if (!destFolder.toFile().isDirectory()){
 			throw new IllegalArgumentException("Destination must be a folder");

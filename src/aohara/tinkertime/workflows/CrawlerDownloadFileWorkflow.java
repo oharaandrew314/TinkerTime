@@ -15,9 +15,9 @@ import aohara.tinkertime.workflows.tasks.DownloadFileTask;
  */
 public class CrawlerDownloadFileWorkflow extends Workflow{
 	
-	protected final Crawler<?, ?> crawler;
+	protected final Crawler<?> crawler;
 
-	public CrawlerDownloadFileWorkflow(String name, Crawler<?, ?> crawler, Path destPath) {
+	public CrawlerDownloadFileWorkflow(String name, Crawler<?> crawler, Path destPath) {
 		super(name);
 		this.crawler = crawler;
 		
@@ -27,16 +27,16 @@ public class CrawlerDownloadFileWorkflow extends Workflow{
 	
 	private class CachePageTask extends WorkflowTask {
 		
-		private final Crawler<?, ?> crawler;
+		private final Crawler<?> crawler;
 
-		public CachePageTask(Workflow workflow, Crawler<?, ?> crawler) {
+		public CachePageTask(Workflow workflow, Crawler<?> crawler) {
 			super(workflow);
 			this.crawler = crawler;
 		}
 
 		@Override
 		public Boolean call() throws Exception {
-			crawler.crawl();
+			crawler.getPage(crawler.url);
 			return true;
 		}
 

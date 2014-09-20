@@ -16,12 +16,12 @@ import aohara.tinkertime.controllers.crawlers.Crawler;
 @SuppressWarnings("serial")
 public class TinkerTimeDownloader extends FileDownloadController {
 
-	public TinkerTimeDownloader(Crawler<?, ?> crawler) {
+	public TinkerTimeDownloader(Crawler<?> crawler) {
 		super(crawler);
 	}
 
 	@Override
-	protected void download(Crawler<?, ?> crawler) throws IOException {
+	protected void download(Crawler<?> crawler) throws IOException {
 		Util.goToHyperlink(crawler.getDownloadLink());
 	}
 }
