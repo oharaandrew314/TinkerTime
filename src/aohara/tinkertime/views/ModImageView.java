@@ -1,23 +1,26 @@
 package aohara.tinkertime.views;
 
+import java.awt.Image;
+
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 import aohara.common.selectorPanel.ControlPanel;
+import aohara.tinkertime.content.ImageCache;
 import aohara.tinkertime.models.Mod;
 
 /**
  * Component which displays the Mod's image from a given URL.
- * 
- * TODO: Cache the image until the mod is updated.
- * 
+ *
  * @author Andrew O'Hara
  */
 public class ModImageView extends ControlPanel<Mod> {
 	
 	private final JLabel label = new JLabel();
+	private final ImageCache cache;
 	
-	public ModImageView(){
+	public ModImageView(ImageCache cache){
+		this.cache = cache;
 		panel.add(label);
 	}
 	
@@ -25,7 +28,8 @@ public class ModImageView extends ControlPanel<Mod> {
 	public void display(Mod element){
 		if (element != null){
 			super.display(element);
-			label.setIcon(new ImageIcon(element.getImageUrl()));
+			Image cachedImage = cache.get(element);
+			label.setIcon(cachedImage != null ? new ImageIcon(cachedImage) : null);
 		}
 	}
 }

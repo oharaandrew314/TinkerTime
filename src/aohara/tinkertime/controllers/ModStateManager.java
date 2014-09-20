@@ -13,6 +13,7 @@ import java.util.Set;
 
 import aohara.common.Listenable;
 import aohara.common.selectorPanel.SelectorInterface;
+import aohara.tinkertime.content.ImageCache;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.UpdateListener;
 
@@ -33,12 +34,14 @@ public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 	private final Gson gson;
 	private final Path modsPath;
 	private final Type modsType = new TypeToken<Set<Mod>>() {}.getType();
+	private final ImageCache imageCache;
 	
 	private final Set<Mod> modCache = new HashSet<>();
 	
-	public ModStateManager(Path modsPath){
+	public ModStateManager(Path modsPath, ImageCache imageCache){
 		gson = new Gson();
 		this.modsPath = modsPath;
+		this.imageCache = imageCache;
 	}
 	
 	private void updateListeners(Collection<Mod> mods){
@@ -100,6 +103,7 @@ public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 		}
 		
 		saveMods(mods);
+		imageCache.modUpdated(mod, deleted);
 	}
 
 	@Override
