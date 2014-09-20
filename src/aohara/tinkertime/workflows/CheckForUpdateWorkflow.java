@@ -10,7 +10,7 @@ import java.util.Date;
 import aohara.common.workflows.Workflow;
 import aohara.tinkertime.controllers.crawlers.Crawler;
 import aohara.tinkertime.controllers.crawlers.CrawlerFactory;
-import aohara.tinkertime.models.UpdateListener;
+import aohara.tinkertime.models.FileUpdateListener;
 import aohara.tinkertime.models.UpdateableFile;
 import aohara.tinkertime.workflows.tasks.CheckForUpdateTask;
 import aohara.tinkertime.workflows.tasks.NotfiyUpdateAvailableTask;
@@ -28,11 +28,11 @@ public class CheckForUpdateWorkflow extends Workflow{
 	
 	public static CheckForUpdateWorkflow forExistingFile(
 			UpdateableFile existing, boolean onlyUpdateIfNewer,
-			UpdateListener... listeners){
+			FileUpdateListener... listeners){
 		// Add mod to list of listeners
-		ArrayList<UpdateListener> listenerList = new ArrayList<>();
+		ArrayList<FileUpdateListener> listenerList = new ArrayList<>();
 		listenerList.add(existing);
-		for (UpdateListener l : listeners){
+		for (FileUpdateListener l : listeners){
 			listenerList.add(l);
 		}
 
@@ -42,13 +42,13 @@ public class CheckForUpdateWorkflow extends Workflow{
 			existing.getUpdatedOn(),
 			existing.getNewestFileName(),
 			onlyUpdateIfNewer,
-			listenerList.toArray(new UpdateListener[listenerList.size()])
+			listenerList.toArray(new FileUpdateListener[listenerList.size()])
 		);
 	}
 	
 	public CheckForUpdateWorkflow(
 			String label, URL pageUrl, Date lastUpdated, String lastFileName,
-			boolean onlyUpdateIfNewer, UpdateListener... listeners){
+			boolean onlyUpdateIfNewer, FileUpdateListener... listeners){
 		super("Checking for Update for " +label);
 		
 		Crawler<?> crawler = new CrawlerFactory().getCrawler(pageUrl);

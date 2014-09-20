@@ -8,7 +8,6 @@ import java.net.URL;
 import java.util.Arrays;
 
 import javax.swing.AbstractAction;
-import javax.swing.JDialog;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -28,13 +27,8 @@ import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledException;
 import aohara.tinkertime.controllers.ModManager.ModNotDownloadedException;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
 import aohara.tinkertime.controllers.crawlers.Constants;
-import aohara.tinkertime.controllers.crawlers.Crawler;
-import aohara.tinkertime.controllers.crawlers.CrawlerFactory;
-import aohara.tinkertime.controllers.fileUpdater.CurrentModuleManager;
-import aohara.tinkertime.controllers.fileUpdater.CurrentTinkerTime;
-import aohara.tinkertime.controllers.fileUpdater.CurrentVersion;
-import aohara.tinkertime.controllers.fileUpdater.ModuleManagerDownloader;
-import aohara.tinkertime.controllers.fileUpdater.TinkerTimeDownloader;
+import aohara.tinkertime.controllers.fileUpdater.ModuleManagerUpdateController;
+import aohara.tinkertime.controllers.fileUpdater.TinkerTimeUpdateController;
 import aohara.tinkertime.models.Mod;
 
 /**
@@ -351,15 +345,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			Config config = new Config();
-			CurrentVersion currentVersion = new CurrentModuleManager(config);
-			URL url = Constants.getModuleManagerJenkinsUrl();
-			Crawler<?> crawler = new CrawlerFactory().getCrawler(url);
-			JDialog dialog = new FileUpdateDialog(
-				"Update Module Manager", mm, url, currentVersion,
-				new ModuleManagerDownloader(mm, crawler, config.getGameDataPath(), currentVersion)
-			);
-			dialog.setVisible(true);
+			new ModuleManagerUpdateController(mm, new Config()).showDialog();
 		}
 	}
 	
@@ -371,13 +357,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			CurrentVersion currentVersion = new CurrentTinkerTime();
-			URL url = Constants.getTinkerTimeGithubUrl();
-			JDialog dialog = new FileUpdateDialog(
-				"Update Tinker Time",mm, url, currentVersion,
-				new TinkerTimeDownloader(new CrawlerFactory().getCrawler(url))
-			);
-			dialog.setVisible(true);
+			new TinkerTimeUpdateController(mm).showDialog();
 		}
 	}
 }

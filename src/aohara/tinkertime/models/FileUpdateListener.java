@@ -7,7 +7,7 @@ import java.net.URL;
  * 
  * @author Andrew O'Hara
  */
-public interface UpdateListener {
+public interface FileUpdateListener {
 	
 	public void setUpdateAvailable(URL pageUrl, String newestFileName);
 

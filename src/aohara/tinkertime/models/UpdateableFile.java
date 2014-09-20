@@ -8,7 +8,7 @@ import java.util.Date;
  * 
  * @author Andrew O'Hara
  */
-public class UpdateableFile implements UpdateListener {
+public class UpdateableFile implements FileUpdateListener {
 	
 	private String fileName;
 	private Date lastUpdatedOn;

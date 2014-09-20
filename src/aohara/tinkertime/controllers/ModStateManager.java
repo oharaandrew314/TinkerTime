@@ -15,7 +15,7 @@ import aohara.common.Listenable;
 import aohara.common.selectorPanel.SelectorInterface;
 import aohara.tinkertime.content.ImageCache;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.models.UpdateListener;
+import aohara.tinkertime.models.FileUpdateListener;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -29,7 +29,7 @@ import com.google.gson.reflect.TypeToken;
  * @author Andrew O'Hara
  */
 public class ModStateManager extends Listenable<SelectorInterface<Mod>>
-		implements ModUpdateListener, UpdateListener {
+		implements ModUpdateListener, FileUpdateListener {
 	
 	private final Gson gson;
 	private final Path modsPath;

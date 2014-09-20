@@ -5,7 +5,7 @@ import java.io.IOException;
 import aohara.common.workflows.Workflow;
 import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.controllers.crawlers.Crawler;
-import aohara.tinkertime.models.UpdateListener;
+import aohara.tinkertime.models.FileUpdateListener;
 
 /**
  * Workflow Task that notifies the given UpdateListeners that an update is available
@@ -15,10 +15,10 @@ import aohara.tinkertime.models.UpdateListener;
  */
 public class NotfiyUpdateAvailableTask extends WorkflowTask {
 	
-	private final UpdateListener[] listeners;
+	private final FileUpdateListener[] listeners;
 	private final Crawler<?> crawler;
 
-	public NotfiyUpdateAvailableTask(Workflow workflow, Crawler<?> crawler, UpdateListener... listeners) {
+	public NotfiyUpdateAvailableTask(Workflow workflow, Crawler<?> crawler, FileUpdateListener... listeners) {
 		super(workflow);
 		this.listeners = listeners;
 		this.crawler = crawler;
@@ -29,7 +29,7 @@ public class NotfiyUpdateAvailableTask extends WorkflowTask {
 		// Notify update listeners
 		String newestFileName = crawler.getNewestFileName();
 		if (newestFileName != null){
-			for (UpdateListener l : listeners){
+			for (FileUpdateListener l : listeners){
 				l.setUpdateAvailable(crawler.url, newestFileName);
 				progress(1);
 			}
