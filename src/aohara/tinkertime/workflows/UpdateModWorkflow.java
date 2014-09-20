@@ -20,9 +20,13 @@ import aohara.tinkertime.controllers.crawlers.ModCrawler;
  */
 public class UpdateModWorkflow extends CrawlerDownloadFileWorkflow {
 	
-	public UpdateModWorkflow(URL url, Config config, ModStateManager sm) {
-		super("Adding New Mod: " + url.getFile(), new CrawlerFactory().getModCrawler(url), config.getModsPath());
-		addTask(new MarkModUpdatedTask(this, sm, (ModCrawler<?>) crawler));
+	public UpdateModWorkflow(ModCrawler<?> crawler, Config config, ModStateManager sm) {
+		super("Adding New Mod: " + crawler.url.getFile(),crawler, config.getModsPath());
+		addTask(new MarkModUpdatedTask(this, sm, crawler));
+	}
+	
+	public UpdateModWorkflow(URL url, Config config, ModStateManager sm){
+		this(new CrawlerFactory().getModCrawler(url), config, sm);
 	}
 	
 	private class MarkModUpdatedTask extends WorkflowTask {

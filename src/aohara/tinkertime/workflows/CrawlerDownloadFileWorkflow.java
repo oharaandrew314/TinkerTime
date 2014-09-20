@@ -14,12 +14,9 @@ import aohara.tinkertime.workflows.tasks.DownloadFileTask;
  * @author Andrew O'Hara
  */
 public class CrawlerDownloadFileWorkflow extends Workflow{
-	
-	protected final Crawler<?> crawler;
 
 	public CrawlerDownloadFileWorkflow(String name, Crawler<?> crawler, Path destPath) {
 		super(name);
-		this.crawler = crawler;
 		
 		addTask(new CachePageTask(this, crawler));		
 		addTask(new DownloadFileTask(this, crawler, destPath));

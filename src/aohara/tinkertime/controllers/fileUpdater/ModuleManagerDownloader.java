@@ -37,11 +37,11 @@ public class ModuleManagerDownloader extends FileDownloadController implements T
 	}
 
 	@Override
-	public void download(Crawler<?> crawler) throws IOException {		
-		Workflow workflow = new CrawlerDownloadFileWorkflow("Updating Module Manager", crawler, destFolderPath);
+	public void download(Crawler<?> crawler) throws IOException {
 		if (currentVersion.exists()){
-			workflow.queueDelete(currentVersion.getPath());
+			currentVersion.getPath().toFile().delete();
 		}
+		Workflow workflow = new CrawlerDownloadFileWorkflow("Updating Module Manager", crawler, destFolderPath);
 		workflow.addListener(this);
 		runner.submitDownloadWorkflow(workflow);
 	}
