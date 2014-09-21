@@ -29,7 +29,7 @@ public class GithubCrawler extends ModCrawler<Document> {
 
 		String name = doc.select("h1.entry-title strong > a").text();
 		String creator = getLatestReleaseElement().select(" p.release-authorship a").first().text();
-		URL imageUrl = new URL(getLatestReleaseElement().select("span.avatar > img").first().attr("src"));
+		URL imageUrl = new URL(getLatestReleaseElement().select("img.avatar").first().attr("src"));
 		
 		return new Mod(name, getNewestFileName(), creator, imageUrl, url, getUpdatedOn());
 	}
