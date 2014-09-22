@@ -21,7 +21,10 @@ import aohara.tinkertime.models.Module;
 public class ArchiveInspector {
 	
 	public static ModStructure inspectArchive(Config config, Mod mod) {
-		Path zipPath = config.getModZipPath(mod);
+		return inspectArchive(config.getModZipPath(mod));
+	}
+	
+	public static ModStructure inspectArchive(Path zipPath){
 		Set<Module> modules = new HashSet<>();
 		String readmeText = null;
 		
@@ -29,8 +32,8 @@ public class ArchiveInspector {
 			
 			Set<ZipEntry> entries = new HashSet<>(Collections.list(zipFile.entries()));
 			
-			for (ZipEntry moduleEntry : getModuleEntries(entries, getGameDataPath(entries))){
-				modules.add(discoverModule(zipPath, entries, moduleEntry));
+			for (Path modulePath : getModulePaths(entries, getGameDataPath(entries))){
+				modules.add(discoverModule(zipPath, entries, modulePath));
 			}
 			
 			readmeText = getReadmeText(zipFile);
@@ -78,38 +81,34 @@ public class ArchiveInspector {
 		return gameDataEntry != null ? Paths.get(gameDataEntry.getName()) : null;
 	}
 	
-	private static Set<ZipEntry> getModuleEntries(Collection<ZipEntry> entries, Path gameDataPath){
-		Set<ZipEntry> moduleEntries = new HashSet<>();
+	private static Set<Path> getModulePaths(Collection<ZipEntry> entries, Path gameDataPath){
+		Set<Path> moduleEntries = new HashSet<>();
 		for (ZipEntry entry : entries){
-			if (entry.isDirectory()){
-				Path entryPath = Paths.get(entry.getName());
-				if (gameDataPath == null){
-					if (entryPath.getNameCount() == 1){
-						moduleEntries.add(entry);
-					}
-				} else if (entryPath.startsWith(gameDataPath) && !entryPath.equals(gameDataPath)){
-					Path rel = gameDataPath.relativize(entryPath);
-					if (rel.getNameCount() == 1){
-						moduleEntries.add(entry);
-					}
+			Path entryPath = Paths.get(entry.getName());
+			if (gameDataPath == null){
+				if (entryPath.getNameCount() == 2){
+					moduleEntries.add(entryPath.getParent());
+				}
+			} else if (entry.isDirectory() && entryPath.startsWith(gameDataPath) && !entryPath.equals(gameDataPath)){
+				Path rel = gameDataPath.relativize(entryPath);
+				if (rel.getNameCount() == 1){
+					moduleEntries.add(entryPath);
 				}
 			}
 		}
 		return moduleEntries;
 	}
 	
-	private static Module discoverModule(Path zipPath, Collection<ZipEntry> entries, ZipEntry moduleEntry){
-		Path moduleDir = Paths.get(moduleEntry.getName());
-		
+	private static Module discoverModule(Path zipPath, Collection<ZipEntry> entries, Path modulePath){		
 		Set<ZipEntry> moduleEntries = new HashSet<>();
 		for (ZipEntry entry : entries){
 			Path entryPath = Paths.get(entry.getName());
-			if (!entry.isDirectory() && entryPath.startsWith(moduleDir)){
+			if (!entry.isDirectory() && entryPath.startsWith(modulePath)){
 				moduleEntries.add(entry);
 			}
 		}
 		
-		return new Module(zipPath, moduleEntry, moduleEntries);
+		return new Module(zipPath, modulePath, moduleEntries);
 	}
 
 }

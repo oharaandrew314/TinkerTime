@@ -22,10 +22,10 @@ public class Module {
 	private final Path zipPath, modulePath;
 	private final Set<ZipEntry> entries;
 	
-	public Module(Path zipPath, ZipEntry moduleEntry, Collection<ZipEntry> entries){
+	public Module(Path zipPath, Path modulePath, Collection<ZipEntry> entries){
 		this.zipPath = zipPath;
 		this.entries = new HashSet<>(entries);
-		modulePath = Paths.get(moduleEntry.getName());
+		this.modulePath = modulePath;
 	}
 	
 	public Map<ZipEntry, Path> getContent(){

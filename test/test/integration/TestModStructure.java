@@ -10,13 +10,14 @@ import java.util.Set;
 import org.junit.Test;
 
 import test.util.ModLoader;
+import test.util.ModStubs;
 import aohara.tinkertime.models.ModStructure;
-import aohara.tinkertime.models.ModStructure.Module;
+import aohara.tinkertime.models.Module;
 
 public class TestModStructure {
 	
-	private void testModules(String modName, String... expectedModuleNames){
-		ModStructure struct = ModLoader.getStructure(modName);
+	private void testModules(ModStubs stub, String... expectedModuleNames){
+		ModStructure struct = ModLoader.getStructure(stub);
 		
 		Set<String> actualNames = new HashSet<>();
 		for (Module module : struct.getModules()){
@@ -31,7 +32,7 @@ public class TestModStructure {
 	
 	private void testModule(Module module, String... expectedFileNames){
 		Set<String> actual = new HashSet<String>();
-		for (Path path : module.getOutput().values()){
+		for (Path path : module.getContent().values()){
 			actual.add(path.toString());
 		}
 		
@@ -43,9 +44,9 @@ public class TestModStructure {
 	
 	@Test
 	public void testMod1(){
-		testModules(ModLoader.TESTMOD1, "TestMod1", "Dependency");
+		testModules(ModStubs.TestMod1, "TestMod1", "Dependency");
 		
-		ModStructure struct = ModLoader.getStructure(ModLoader.TESTMOD1);
+		ModStructure struct = ModLoader.getStructure(ModStubs.TestMod1);
 		for (Module module : struct.getModules()){
 			if (module.getName().equals("TestMod1")){
 				testModule(
@@ -65,9 +66,9 @@ public class TestModStructure {
 	
 	@Test
 	public void testMod2(){
-		testModules(ModLoader.TESTMOD2, "TestMod2", "Dependency");
+		testModules(ModStubs.TestMod2, "TestMod2", "Dependency");
 		
-		ModStructure struct = ModLoader.getStructure(ModLoader.TESTMOD2);
+		ModStructure struct = ModLoader.getStructure(ModStubs.TestMod2);
 		for (Module module : struct.getModules()){
 			if (module.getName().equals("TestMod2")){
 				testModule(
@@ -88,26 +89,26 @@ public class TestModStructure {
 	
 	@Test
 	public void testEngineerEntries(){
-		testModules(ModLoader.ENGINEER, "Engineer");
+		testModules(ModStubs.Engineer, "Engineer");
 	}
 	
 	@Test
 	public void testMechjeb(){
-		testModules(ModLoader.MECHJEB, "MechJeb2");
+		testModules(ModStubs.Mechjeb, "MechJeb2");
 	}
 	
 	@Test
 	public void testAlarmClock(){
-		testModules(ModLoader.ALARMCLOCK, "TriggerTech");
+		testModules(ModStubs.AlarmClock, "TriggerTech");
 	}
 	
 	@Test
 	public void testEnhancedNavball(){
-		testModules(ModLoader.NAVBALL, "EnhancedNavBall");
+		testModules(ModStubs.NavBall, "EnhancedNavBall");
 	}	
 	
 	@Test
 	public void testHotRockets(){
-		testModules(ModLoader.HOTROCKETS, "SmokeScreen", "MP_Nazari", "ModuleManager.2.1.0.dll");
+		testModules(ModStubs.HotRockets, "SmokeScreen", "MP_Nazari");
 	}
 }

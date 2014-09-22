@@ -7,14 +7,13 @@ import java.net.URL;
 
 import org.junit.Test;
 
-import aohara.tinkertime.controllers.crawlers.CurseCrawler;
+import aohara.tinkertime.controllers.crawlers.CrawlerFactory;
+import aohara.tinkertime.controllers.crawlers.ModCrawler;
 
 /**
  * WARNING! THIS TEST REQUIRES AN INTERNET CONNECTION!
- * THIS TEST COMMUNICATES WITH CURSE.COM TO VERIFY DOWNLOAD LINK FORMATTING
- * 
+ *  
  * @author Andrew O'Hara
- *
  */
 public class TestDownloadLinkFormatting {
 
@@ -44,7 +43,7 @@ public class TestDownloadLinkFormatting {
 	}
 	
 	private void test(String modUrl) throws IOException{
-		CurseCrawler crawler = new CurseCrawler(new URL(modUrl));
+		ModCrawler<?> crawler = new CrawlerFactory().getModCrawler(new URL(modUrl));
 		assertTrue(crawler.getDownloadLink().openConnection().getContentLength() > 0);
 	}
 }

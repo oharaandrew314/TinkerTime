@@ -3,7 +3,12 @@ package aohara.tinkertime.controllers.crawlers;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.jsoup.nodes.Document;
+
+import com.google.gson.JsonObject;
+
 import aohara.tinkertime.controllers.crawlers.pageLoaders.JsonLoader;
+import aohara.tinkertime.controllers.crawlers.pageLoaders.PageLoader;
 import aohara.tinkertime.controllers.crawlers.pageLoaders.WebpageLoader;
 
 /**
@@ -23,12 +28,11 @@ public class CrawlerFactory {
 	 * @return A crawler for crawling the file data on the given url
 	 */
 	public ModCrawler<?> getModCrawler(URL url){
-		
 		String host = url.getHost();
 		if (host.equals(Constants.HOST_CURSE)){
-			return new CurseCrawler(url, new WebpageLoader());
+			return new CurseCrawler(url, createHtmlLoader());
 		} else if (host.equals(Constants.HOST_GITHUB)){
-			return new GithubCrawler(url, new WebpageLoader());
+			return new GithubCrawler(url, createHtmlLoader());
 		}
 		throw new UnsupportedOperationException();
 	}
@@ -42,7 +46,7 @@ public class CrawlerFactory {
 		if (host.equals(Constants.HOST_MODULE_MANAGER)){
 			try {
 				URL artifactUrl = new URL(Constants.MODULE_MANAGER_ARTIFACT_DL_URL);
-				return new JenkinsCrawler(url, new JsonLoader(), artifactUrl);
+				return new JenkinsCrawler(url, createJsonLoader(), artifactUrl);
 			} catch (MalformedURLException e) {
 				throw new RuntimeException(e);
 			}
@@ -50,5 +54,11 @@ public class CrawlerFactory {
 		throw new UnsupportedOperationException();
 	}
 	
+	protected PageLoader<Document> createHtmlLoader(){
+		return new WebpageLoader();
+	}
 	
+	protected PageLoader<JsonObject> createJsonLoader(){
+		return new JsonLoader();
+	}
 }

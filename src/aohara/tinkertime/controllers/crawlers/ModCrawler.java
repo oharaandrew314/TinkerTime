@@ -1,5 +1,6 @@
 package aohara.tinkertime.controllers.crawlers;
 
+import java.io.IOException;
 import java.net.URL;
 
 import aohara.tinkertime.controllers.crawlers.pageLoaders.PageLoader;
@@ -20,6 +21,6 @@ public abstract class ModCrawler<T> extends Crawler<T> {
 		super(url, pageLoader);
 	}
 	
-	public abstract Mod createMod() throws Exception;
+	public abstract Mod createMod() throws IOException;
 
 }

@@ -1,0 +1,27 @@
+package test.util;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+
+public enum ModStubs {
+	TestMod1("TestMod1", "http://www.curse.com/ksp-mods/kerbal/220285-kerbal-engineer-redux"),
+	TestMod2("TestMod2", "http://www.curse.com/ksp-mods/kerbal/220285-kerbal-engineer-redux"),
+	Engineer("Kerbal Engineer Redux", "http://www.curse.com/ksp-mods/kerbal/220285-kerbal-engineer-redux"),
+	Mechjeb("MechJeb", "http://www.curse.com/ksp-mods/kerbal/220221-mechjeb"),
+	AlarmClock("Kerbal Alarm Clock", "http://www.curse.com/ksp-mods/kerbal/220289-kerbal-alarm-clock"),
+	NavBall("Enhanced Navball", "http://www.curse.com/ksp-mods/kerbal/220469-enhanced-navball-v1-2"),
+	HotRockets("HotRockets", "http://www.curse.com/ksp-mods/kerbal/220207-hotrockets-particle-fx-replacement"),
+	Eve("EnvironmentalVisualEnhancements", "https://github.com/rbray89/EnvironmentalVisualEnhancements/releases");
+	
+	public final String name;
+	public final URL url;
+	
+	private ModStubs(String name, String url){
+		this.name = name;
+		try {
+			this.url = new URL(url);
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+}
