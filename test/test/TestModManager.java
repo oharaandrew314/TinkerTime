@@ -19,12 +19,12 @@ import org.junit.Test;
 
 import test.util.MockConfig;
 import test.util.ModLoader;
+import test.util.ModStubs;
 import aohara.common.workflows.ConflictResolver;
 import aohara.common.workflows.ConflictResolver.Resolution;
 import aohara.common.workflows.ProgressPanel;
 import aohara.tinkertime.Config;
 import aohara.tinkertime.controllers.ModManager;
-import aohara.tinkertime.controllers.ModManager.CannotAddModException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledException;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
@@ -45,9 +45,9 @@ public class TestModManager {
 	@BeforeClass
 	public static void setUpClass() throws Throwable{
 		config = spy(new MockConfig());
-		mod = ModLoader.addMod(ModLoader.MECHJEB, config);
-		testMod1 = ModLoader.addMod(ModLoader.TESTMOD1, config);
-		testMod2 = ModLoader.addMod(ModLoader.TESTMOD2, config);
+		mod = ModLoader.addMod(ModStubs.Mechjeb, config);
+		testMod1 = ModLoader.addMod(ModStubs.TestMod1, config);
+		testMod2 = ModLoader.addMod(ModStubs.TestMod2, config);
 	}
 	
 	@Before
@@ -72,12 +72,6 @@ public class TestModManager {
 	public void testAddMod() throws Throwable {
 		manager.addNewMod(mod.getPageUrl().toString());
 		verify(downloedExecutor, times(1)).execute(any(UpdateModWorkflow.class));
-	}
-
-	@Test
-	public void testIsDownloaded() throws CannotAddModException {
-		Mod mod = new Mod(ModLoader.getHtmlPage(ModLoader.ENGINEER));		
-		assertFalse(manager.isDownloaded(mod));
 	}
 	
 	// -- Enable Tests ------------------------------------

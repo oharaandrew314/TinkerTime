@@ -16,6 +16,14 @@ import aohara.tinkertime.models.Module;
 
 public class ModLoader {
 	
+	public static Mod loadMod(ModStubs stub){
+		try {
+			return new MockCrawlerFactory().getModCrawler(stub.url).createMod();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 	public static URL getZipUrl(ModStubs stub){
 		return ModLoader.class.getClassLoader().getResource(
 			String.format("test/res/zips/%s.zip", stub.name)
