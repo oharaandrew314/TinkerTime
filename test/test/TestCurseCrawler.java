@@ -1,15 +1,17 @@
 package test;
 
+import java.io.IOException;
+
 import org.junit.Test;
 
-import test.util.ModLoader;
+import test.util.ModStubs;
 
-public class TestCurseModPage extends AbstractTestModPage {
+public class TestCurseCrawler extends AbstractTestModCrawler {
 
 	@Test
-	public void testMechjeb() {		
+	public void testMechjeb() throws IOException {		
 		compare(
-			ModLoader.MECHJEB,
+			ModStubs.Mechjeb,
 			getDate(2014, 4, 6),
 			"r4m0n",
 			"MechJeb2-2.2.1.0.zip",
@@ -20,9 +22,9 @@ public class TestCurseModPage extends AbstractTestModPage {
 	}
 	
 	@Test
-	public void testEngineer(){		
+	public void testEngineer() throws IOException {		
 		compare(
-			ModLoader.ENGINEER,
+			ModStubs.Engineer,
 			getDate(2014, 4, 12),
 			"cybutek",
 			"Engineer_Redux_v0.6.2.4.zip",
