@@ -56,7 +56,7 @@ public class ModLoader {
 		try {
 			FileUtils.copyURLToFile(
 				getZipUrl(stub),
-				config.getModZipPath(mod).toFile()
+				mod.getCachedZipPath(config).toFile()
 			);
 		} catch (IOException e) {
 			e.printStackTrace();

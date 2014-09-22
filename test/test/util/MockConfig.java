@@ -13,7 +13,7 @@ public class MockConfig extends Config {
 	}
 	
 	@Override
-	public Path getModsPath(){
+	public Path getModsZipPath(){
 		return Paths.get("/");
 	}
 }

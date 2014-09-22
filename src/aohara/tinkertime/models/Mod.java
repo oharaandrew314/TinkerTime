@@ -1,7 +1,12 @@
 package aohara.tinkertime.models;
 
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.Date;
+
+import org.apache.commons.io.FilenameUtils;
+
+import aohara.tinkertime.Config;
 
 /**
  * Model for holding Mod information and status.
@@ -39,6 +44,19 @@ public class Mod extends UpdateableFile {
 
 	public URL getImageUrl() {
 		return imageUrl;
+	}
+	
+	public String getId(){
+		return FilenameUtils.getBaseName(getPageUrl().toString());	
+	}
+	
+	public Path getCachedZipPath(Config config){
+		return config.getModsZipPath().resolve(getNewestFileName());
+	}
+	
+	public Path getCachedImagePath(Config config){
+		String imageName = FilenameUtils.getBaseName(getPageUrl().toString());
+		return config.getImageCachePath().resolve(imageName);
 	}
 	
 	// -- Other Methods --------------------

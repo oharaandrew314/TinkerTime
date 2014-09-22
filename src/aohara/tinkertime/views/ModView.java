@@ -55,7 +55,7 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 			
 			// Readme
 			Config config = new Config();
-			if (config.getModZipPath(mod).toFile().exists()){
+			if (mod.getCachedZipPath(config).toFile().exists()){
 				String readmeText = ArchiveInspector.getReadmeText(config, mod);				
 				if (readmeText != null && !readmeText.trim().isEmpty()){
 					panel.add(new JLabel("<html><b>Readme:</b></html"));

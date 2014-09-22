@@ -35,7 +35,7 @@ public class TinkerTime implements ListListener<Mod> {
 		ProgressPanel pp = new ProgressPanel();
 		
 		// Initialize Controllers
-		ModStateManager sm = new ModStateManager(config.getModsPath().resolve("mods.json"));
+		ModStateManager sm = new ModStateManager(config.getModsZipPath().resolve("mods.json"));
 		mm = ModManager.createDefaultModManager(sm, pp);
 		
 		// Initialize GUI

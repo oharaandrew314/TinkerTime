@@ -21,7 +21,7 @@ import aohara.tinkertime.models.Module;
 public class ArchiveInspector {
 	
 	public static ModStructure inspectArchive(Config config, Mod mod) {
-		return inspectArchive(config.getModZipPath(mod));
+		return inspectArchive(mod.getCachedZipPath(config));
 	}
 	
 	public static ModStructure inspectArchive(Path zipPath){
@@ -45,7 +45,7 @@ public class ArchiveInspector {
 	}
 	
 	public static String getReadmeText(Config config, Mod mod){
-		try(ZipFile zipFile = new ZipFile(config.getModZipPath(mod).toFile())){
+		try(ZipFile zipFile = new ZipFile(mod.getCachedZipPath(config).toFile())){
 			return getReadmeText(zipFile);
 		} catch (IOException e) {}
 		return null;

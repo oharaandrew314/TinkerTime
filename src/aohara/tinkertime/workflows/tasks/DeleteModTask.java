@@ -24,7 +24,7 @@ public class DeleteModTask extends WorkflowTask {
 
 	public DeleteModTask(Workflow workflow, Mod mod, Config config, ModStateManager sm) {
 		super(workflow);
-		zipPath = config.getModZipPath(mod);
+		zipPath = mod.getCachedZipPath(config);
 		this.sm = sm;
 		this.mod = mod;
 	}

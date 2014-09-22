@@ -73,7 +73,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	// -- Accessors ------------------------
 	
 	public static boolean isDownloaded(Mod mod, Config config){
-		return config.getModZipPath(mod).toFile().exists();
+		return mod.getCachedImagePath(config).toFile().exists();
 	}
 	
 	public boolean isDownloaded(Mod mod){

@@ -7,7 +7,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import aohara.common.AbstractConfig;
-import aohara.tinkertime.models.Mod;
 
 /**
  * Stores and Retrieves User Configuration Data.
@@ -43,20 +42,15 @@ public class Config extends AbstractConfig {
 		}
 		return null;
 	}
-
-	public Path getModZipPath(Mod mod){
-		// TODO: Move to Mod Class (give it reference to config)
-		return getModsPath().resolve(mod.getNewestFileName());
-	}
 	
-	public Path getModImagePath(Mod mod){
-		// TODO: move to Mod Class (give it reference to config)
-		Path imageName = Paths.get(mod.getPageUrl().getFile()).getFileName();
-		return getFolder().resolve("imageCache").resolve(imageName);
-	}
-	
-	public Path getModsPath(){
+	public Path getModsZipPath(){
 		Path path = getFolder().resolve("mods");
+		path.toFile().mkdirs();
+		return path;
+	}
+	
+	public Path getImageCachePath(){
+		Path path = getFolder().resolve("imageCache");
 		path.toFile().mkdirs();
 		return path;
 	}

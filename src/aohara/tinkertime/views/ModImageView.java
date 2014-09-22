@@ -31,7 +31,7 @@ public class ModImageView extends ControlPanel<Mod> {
 		if (element != null){
 			try {
 				super.display(element);
-				Image cachedImage = ImageIO.read(config.getModImagePath(element).toFile());
+				Image cachedImage = ImageIO.read(element.getCachedImagePath(config).toFile());
 				label.setIcon(cachedImage != null ? new ImageIcon(cachedImage) : null);
 			} catch(IOException ex){
 				// Do Nothing
