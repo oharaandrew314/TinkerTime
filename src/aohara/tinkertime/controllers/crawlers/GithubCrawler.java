@@ -25,13 +25,9 @@ public class GithubCrawler extends ModCrawler<Document> {
 
 	@Override
 	public Mod createMod() throws IOException {
-		Document doc = getPage(url);
-
-		String name = doc.select("h1.entry-title strong > a").text();
 		String creator = getLatestReleaseElement().select(" p.release-authorship a").first().text();
-		URL imageUrl = new URL(getLatestReleaseElement().select("img.avatar").first().attr("src"));
 		
-		return new Mod(name, getNewestFileName(), creator, imageUrl, url, getUpdatedOn());
+		return new Mod(getName(), getNewestFileName(), creator, getImageUrl(), url, getUpdatedOn());
 	}
 	
 	private Element getLatestReleaseElement() throws IOException {
@@ -63,6 +59,16 @@ public class GithubCrawler extends ModCrawler<Document> {
 		} catch (ParseException e) {
 			throw new IOException(e);
 		}
+	}
+
+	@Override
+	public URL getImageUrl() throws IOException {
+		return new URL(getLatestReleaseElement().select("img.avatar").first().attr("src"));
+	}
+
+	@Override
+	public String getName() throws IOException {
+		return getPage(url).select("h1.entry-title strong > a").text();
 	}
 
 }

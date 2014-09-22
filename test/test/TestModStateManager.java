@@ -3,7 +3,6 @@ package test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -14,7 +13,6 @@ import org.junit.Test;
 
 import test.util.ModLoader;
 import test.util.ModStubs;
-import aohara.tinkertime.content.ImageCache;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;
 
@@ -49,7 +47,7 @@ public class TestModStateManager {
 		mod1 = ModLoader.loadMod(ModStubs.Mechjeb);
 		mod2 = ModLoader.loadMod(ModStubs.Engineer);
 
-		stateManager = new ModStateManager(path, mock(ImageCache.class));
+		stateManager = new ModStateManager(path);
 	}
 
 	@Test

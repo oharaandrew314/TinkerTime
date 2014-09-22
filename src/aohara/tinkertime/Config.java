@@ -45,7 +45,14 @@ public class Config extends AbstractConfig {
 	}
 
 	public Path getModZipPath(Mod mod){
+		// TODO: Move to Mod Class (give it reference to config)
 		return getModsPath().resolve(mod.getNewestFileName());
+	}
+	
+	public Path getModImagePath(Mod mod){
+		// TODO: move to Mod Class (give it reference to config)
+		Path imageName = Paths.get(mod.getPageUrl().getFile()).getFileName();
+		return getFolder().resolve("imageCache").resolve(imageName);
 	}
 	
 	public Path getModsPath(){

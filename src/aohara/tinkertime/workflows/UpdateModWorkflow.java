@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import aohara.common.workflows.Workflow;
+import aohara.common.workflows.tasks.FileTransferTask;
 import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.Config;
 import aohara.tinkertime.controllers.ModStateManager;
@@ -23,6 +24,7 @@ public class UpdateModWorkflow extends CrawlerDownloadFileWorkflow {
 	public UpdateModWorkflow(ModCrawler<?> crawler, Config config, ModStateManager sm) {
 		super("Adding New Mod: " + crawler.url.getFile(),crawler, config.getModsPath());
 		addTask(new MarkModUpdatedTask(this, sm, crawler));
+		addTask(new CacheImageTask(this, crawler, config));
 	}
 	
 	public UpdateModWorkflow(URL url, Config config, ModStateManager sm){
@@ -56,5 +58,43 @@ public class UpdateModWorkflow extends CrawlerDownloadFileWorkflow {
 			return "Registering Mod as Updated";
 		}
 
+	}
+	
+	private class CacheImageTask extends WorkflowTask {
+		
+		private final ModCrawler<?> crawler;
+		private final Config config;
+
+		public CacheImageTask(Workflow workflow, ModCrawler<?> crawler, Config config) {
+			super(workflow);
+			this.crawler = crawler;
+			this.config = config;
+		}
+
+		@Override
+		public Boolean call() throws Exception {
+			FileTransferTask.transferFile(
+				this,
+				crawler.getImageUrl(),
+				config.getModImagePath(crawler.createMod())
+			);
+			return true;
+		}
+
+		@Override
+		public int getTargetProgress() throws IOException {
+			return crawler.getImageUrl().openConnection().getContentLength();
+		}
+
+		@Override
+		public String getTitle() {
+			String name = "mod";
+			try {
+				name = crawler.getName();
+			} catch (IOException e){}
+			
+			return String.format("Caching %s image", name);
+		}
+		
 	}
 }

@@ -1,7 +1,6 @@
 package aohara.tinkertime.controllers.crawlers;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,29 +29,13 @@ public class CurseCrawler extends ModCrawler<Document> {
 	 * @return Mod representing the mod's most recent data
 	 */
 	@Override
-	public Mod createMod() throws IOException {		
-		Document mainPage = getPage(url);
-		
-		// Mod Name
-		Element ele = mainPage.getElementById("project-overview");
-		ele = ele.getElementsByClass("caption").first();
-		String name = ele.text();
-		
+	public Mod createMod() throws IOException {
 		// Creator
-		ele = mainPage.getElementById("project-overview");
+		Element ele = getPage(url).getElementById("project-overview");
 		ele = ele.getElementsContainingOwnText("Manager").first();
 		String creator = ele.text().split(":")[1].trim();
-		
-		// Image URL
-		URL imageUrl;
-		try {
-			ele = mainPage.select("img.primary-project-attachment").first();
-			imageUrl = new URL(ele.absUrl("src"));
-		} catch (MalformedURLException e) {
-			throw new IOException(e.getMessage());
-		}
 
-		return new Mod(name, getNewestFileName(), creator, imageUrl, url, getUpdatedOn());
+		return new Mod(getName(), getNewestFileName(), creator, getImageUrl(), url, getUpdatedOn());
 	}
 	
 	@Override
@@ -87,5 +70,19 @@ public class CurseCrawler extends ModCrawler<Document> {
 		Document downloadPage = getPage(downloadPageUrl);
 		String downloadLink = downloadPage.select("a.download-link").first().absUrl("data-href");
 		return new URL(downloadLink.replace(" ", "%20"));
+	}
+
+	@Override
+	public URL getImageUrl() throws IOException {
+		Document mainPage = getPage(url);
+		Element ele = mainPage.select("img.primary-project-attachment").first();
+		return new URL(ele.absUrl("src"));
+	}
+
+	@Override
+	public String getName() throws IOException {
+		Element ele = getPage(url).getElementById("project-overview");
+		ele = ele.getElementsByClass("caption").first();
+		return ele.text();
 	}
 }
