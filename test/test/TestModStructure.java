@@ -15,8 +15,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import test.util.ModLoader;
+import test.util.ModStubs;
 import aohara.tinkertime.models.ModStructure;
-import aohara.tinkertime.models.ModStructure.Module;
+import aohara.tinkertime.models.Module;
 
 public class TestModStructure {
 	
@@ -24,8 +25,8 @@ public class TestModStructure {
 	
 	@Before
 	public void setUp(){
-		struct1 = spy(ModLoader.getStructure(ModLoader.TESTMOD1));
-		struct2 = spy(ModLoader.getStructure(ModLoader.TESTMOD2));
+		struct1 = spy(ModLoader.getStructure(ModStubs.TestMod1));
+		struct2 = spy(ModLoader.getStructure(ModStubs.TestMod2));
 	}
 	
 	private void testModuleNames(ModStructure struct, Set<String> expectedNames){
@@ -82,7 +83,7 @@ public class TestModStructure {
 		
 		assertEquals(
 			paths,
-			new HashSet<Path>(commonModule.getOutput().values())
+			new HashSet<Path>(commonModule.getContent().values())
 		);
 	}
 }

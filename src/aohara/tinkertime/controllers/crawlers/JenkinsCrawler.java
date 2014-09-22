@@ -44,7 +44,7 @@ public class JenkinsCrawler extends Crawler<JsonObject> {
 	}
 
 	@Override
-	protected Date getUpdatedOn() throws IOException {
+	public Date getUpdatedOn() throws IOException {
 		long timestamp = getJson().get("timestamp").getAsLong();
 		return new Date(timestamp);
 	}

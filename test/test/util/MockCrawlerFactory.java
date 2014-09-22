@@ -40,11 +40,10 @@ public class MockCrawlerFactory extends CrawlerFactory{
 	private static class MockJsonLoader implements PageLoader<JsonObject>{
 
 		@Override
-		public JsonObject getPage(URL url) throws IOException {
-			return new JsonLoader().getPage(new URL(String.format(
-				"test/res/json/%s.json",
-				FilenameUtils.getBaseName(url.toString()
-			))));
+		public JsonObject getPage(URL url) throws IOException {			
+			return new JsonLoader().getPage(this.getClass().getClassLoader().getResource(
+					String.format("test/res/json/%s.json", FilenameUtils.getBaseName(url.toString())
+			)));
 		}
 		
 	}

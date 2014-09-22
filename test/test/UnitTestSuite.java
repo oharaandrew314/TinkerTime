@@ -20,7 +20,7 @@ import test.TestModStructure;
    TestModManager.class,
    TestModStateManager.class,
    TestModStructure.class,
-   TestModuleManagerPage.class,
+   TestMOduleManagerCrawler.class,
    TestGithubCrawler.class
 })
 
