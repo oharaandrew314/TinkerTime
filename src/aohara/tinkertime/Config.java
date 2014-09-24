@@ -17,30 +17,33 @@ import aohara.common.AbstractConfig;
  */
 public class Config extends AbstractConfig {
 	
-	private static final String KSP_PATH = "kspPath";
+	private static final String KSP_PATH = "kspPath", GAMEDATA_PATH = "gamedataPath";
+	private static final String GAMEDATA_PROMPT = ("Please select your KSP GameData folder");
+			
 	
 	public Config(){
 		super(TinkerTime.NAME);
 		setLoadOnGet(true);
 	}
+
 	
-	public void setExecutablePath(Path path) throws IllegalPathException {
-		if (path != null && path.toFile().isFile()){
-			setProperty(KSP_PATH, path.toString());
+	public void setGameDataPath(Path path) throws IllegalPathException {
+		if (path != null && path.toFile().isDirectory()){
+			setProperty(GAMEDATA_PATH, path.toString());
 		} else {
-			throw new IllegalPathException("Please select your KSP executable");
+			throw new IllegalPathException(GAMEDATA_PROMPT);
 		}
-	}
-	public Path getGameDataPath(){
-		verifyConfig();
-		return Paths.get(getProperty(KSP_PATH)).getParent().resolve("GameData");
 	}
 	
-	public Path getKspPath(){
-		if (hasProperty(KSP_PATH)){
-			return Paths.get(getProperty(KSP_PATH));
-		}
-		return null;
+	public Path getGameDataPath(){
+		if (hasProperty(GAMEDATA_PATH)){
+			return Paths.get(getProperty(GAMEDATA_PATH));
+		} else if (hasProperty(KSP_PATH)){
+			return Paths.get(getProperty(KSP_PATH)).getParent().resolve("GameData");
+		} else {
+			updateConfig(true);
+			return getGameDataPath();
+		}		
 	}
 	
 	public Path getModsZipPath(){
@@ -70,31 +73,26 @@ public class Config extends AbstractConfig {
 	
 	protected static void verifyConfig(){
 		Config config = new Config();
-		if (config.getKspPath() == null){
-			updateConfig(false, true);
+		if (config.getGameDataPath() == null){
+			updateConfig(true);
 		}
 	}
 	
-	public static void updateConfig(boolean restartOnSuccess, boolean exitOnCancel){
+	public static void updateConfig(boolean exitOnCancel){
 		JFileChooser chooser = new JFileChooser();
-		chooser.setDialogTitle("Please select the path to the KSP executable");
+		chooser.setDialogTitle(GAMEDATA_PROMPT);
 		chooser.setApproveButtonText("Select KSP Path");
-		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		int result = chooser.showSaveDialog(null);
 		
 		if (result == JFileChooser.APPROVE_OPTION){
 			try {
-				new Config().setExecutablePath(chooser.getSelectedFile().toPath());
+				new Config().setGameDataPath(chooser.getSelectedFile().toPath());
 			} catch (IllegalPathException e) {
 				JOptionPane.showMessageDialog(null, e.toString());
-				updateConfig(restartOnSuccess, exitOnCancel);
+				updateConfig(exitOnCancel);
 			}
 		} else {
-			System.exit(0);
-		}
-		
-		if (restartOnSuccess){
-			JOptionPane.showMessageDialog(null, "Restart required");
 			System.exit(0);
 		}
 	}
