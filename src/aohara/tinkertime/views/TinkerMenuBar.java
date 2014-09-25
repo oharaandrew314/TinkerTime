@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
@@ -125,10 +126,14 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 				getParent(),
 				"Please enter the URL of the mod you would like to"
 				+ " add.\ne.g. http://www.curse.com/ksp-mods/kerbal/220221-mechjeb\n\n"
-				+ "Supported Hosts are " + Constants.ACCEPTED_MOD_HOSTS,
+				+ "Supported Hosts are " + Arrays.asList(Constants.ACCEPTED_MOD_HOSTS),
 				"Enter Mod Page URL",
 				JOptionPane.QUESTION_MESSAGE
 			);
+			
+			if (urlString == null || urlString.trim().isEmpty()){
+				return;
+			}
 			
 			// Try to add Mod
 			try {
