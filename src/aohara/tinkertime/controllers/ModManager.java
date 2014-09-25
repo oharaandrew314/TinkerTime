@@ -1,23 +1,22 @@
 package aohara.tinkertime.controllers;
 
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+
+import org.apache.commons.io.FilenameUtils;
 
 import aohara.common.Listenable;
 import aohara.common.workflows.ConflictResolver;
 import aohara.common.workflows.ProgressPanel;
 import aohara.common.workflows.Workflow;
 import aohara.tinkertime.Config;
-import aohara.tinkertime.controllers.crawlers.Constants;
+import aohara.tinkertime.controllers.crawlers.CrawlerFactory;
+import aohara.tinkertime.controllers.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.views.DialogConflictResolver;
-import aohara.tinkertime.workflows.CheckForUpdateWorkflow;
-import aohara.tinkertime.workflows.DeleteModWorkflow;
-import aohara.tinkertime.workflows.DisableModWorkflow;
-import aohara.tinkertime.workflows.EnableModWorkflow;
-import aohara.tinkertime.workflows.UpdateModWorkflow;
+import aohara.tinkertime.workflows.ModWorkflowBuilder;
 
 /**
  * Controller for initiating Asynchronous Tasks for Mod Processing.
@@ -94,20 +93,22 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		enablerExecutor.execute(workflow);
 	}
 	
-	public void addNewMod(String urlString) throws CannotAddModException {
+	public void updateMod(Mod mod) throws ModUpdateFailedException {
 		try {
-			downloadMod(Constants.checkModUrl(urlString));
-		} catch (MalformedURLException e1) {
-			throw new CannotAddModException();
+			downloadMod(mod.getPageUrl());
+		} catch(UnsupportedHostException e){
+			throw new ModUpdateFailedException();
 		}
 	}
 	
-	public void updateMod(Mod mod) {
-		downloadMod(mod.getPageUrl());
-	}
-	
-	private void downloadMod(URL url){
-		submitDownloadWorkflow(new UpdateModWorkflow(url, config, sm));
+	public void downloadMod(URL url) throws ModUpdateFailedException, UnsupportedHostException {
+		Workflow wf = new Workflow("Downloading " + FilenameUtils.getBaseName(url.toString()));
+		try {
+			ModWorkflowBuilder.downloadMod(wf, new CrawlerFactory().getModCrawler(url), config, sm);
+			submitDownloadWorkflow(wf);
+		} catch (IOException e) {
+			throw new ModUpdateFailedException();
+		}
 	}
 	
 	public void updateMods() throws ModUpdateFailedException{
@@ -116,35 +117,50 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		}
 	}
 	
-	public void enableMod(Mod mod)
-		throws ModAlreadyEnabledException, ModNotDownloadedException,
-		CannotEnableModException, CannotDisableModException
-	{
+	public void enableMod(Mod mod) throws ModAlreadyEnabledException, ModNotDownloadedException {
 		if (mod.isEnabled()){
 			throw new ModAlreadyEnabledException();
 		} else if (!isDownloaded(mod)){
 			throw new ModNotDownloadedException();
 		}
 		
-		submitEnablerWorkflow(new EnableModWorkflow(mod, config, sm, cr));
+		Workflow wf = new Workflow("Enabling " + mod);
+		ModWorkflowBuilder.enableMod(wf, mod, config, sm, cr);		
+		submitEnablerWorkflow(wf);
 	}
 	
-	public void disableMod(Mod mod)
-			throws ModAlreadyDisabledException, CannotDisableModException {
+	public void disableMod(Mod mod) throws ModAlreadyDisabledException {
 		if (!mod.isEnabled()){
 			throw new ModAlreadyDisabledException();
 		}
 		
-		submitEnablerWorkflow(new DisableModWorkflow(mod, config, sm));
+		Workflow wf = new Workflow("Disabling " + mod);
+		ModWorkflowBuilder.disableMod(wf, mod, config, sm);
+		submitEnablerWorkflow(wf);
 	}
 	
 	public void deleteMod(Mod mod) throws CannotDisableModException {
-		submitEnablerWorkflow(new DeleteModWorkflow(mod, config, sm));
+		Workflow wf = new Workflow("Deleting " + mod);
+		ModWorkflowBuilder.deleteMod(wf, mod, config, sm);		
+		submitEnablerWorkflow(wf);
 	}
 	
-	public void checkForModUpdates() throws ModUpdateFailedException {	
+	public void checkForModUpdates() throws Exception{
+		Exception e = null;
+		
 		for (Mod mod : sm.getMods()){
-			submitDownloadWorkflow(CheckForUpdateWorkflow.forExistingFile(mod, true, sm));
+			try {
+				Workflow wf = new Workflow("Checking for update for " + mod);
+				ModWorkflowBuilder.checkForUpdates(wf, mod.getPageUrl(), mod.getUpdatedOn(), mod.getNewestFileName(), mod, sm);
+				submitDownloadWorkflow(wf);
+			} catch (IOException | UnsupportedHostException ex) {
+				ex.printStackTrace();
+				e = ex;
+			}
+		}
+		
+		if (e != null){
+			throw e;
 		}
 	}
 	

@@ -8,11 +8,13 @@ import java.nio.file.Path;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 
+import aohara.common.workflows.Workflow;
 import aohara.tinkertime.controllers.WorkflowRunner;
 import aohara.tinkertime.controllers.crawlers.Crawler;
+import aohara.tinkertime.controllers.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.FileUpdateListener;
 import aohara.tinkertime.views.FileUpdateDialog;
-import aohara.tinkertime.workflows.CheckForUpdateWorkflow;
+import aohara.tinkertime.workflows.ModWorkflowBuilder;
 
 /**
  * Controller for managing a {@link aohara.views.FileUpdateDialog}.
@@ -26,25 +28,28 @@ public abstract class FileUpdateController implements FileUpdateListener {
 	protected final WorkflowRunner runner;
 	private FileUpdateDialog dialog;
 	private final String title;
+	private final URL pageUrl;
 	
-	protected FileUpdateController(WorkflowRunner runner, String title){
+	protected FileUpdateController(WorkflowRunner runner, String title, URL pageUrl){
 		this.runner = runner;
 		this.title = title;
+		this.pageUrl = pageUrl;
 	}
 	
 	public void checkLatestVersion(){
-		Crawler<?> crawler = createCrawler();
-		runner.submitDownloadWorkflow(new CheckForUpdateWorkflow(
-			title, crawler.url, null, getCurrentVersion(), false, this
-		));
-		
+		try {
+			Workflow wf = new Workflow("Checking for update for " + title);
+			ModWorkflowBuilder.checkForUpdates(wf, pageUrl, null, getCurrentVersion(), this);
+			runner.submitDownloadWorkflow(wf);	
+		} catch (IOException | UnsupportedHostException e) {
+			e.printStackTrace();
+		}	
 	}
 	
 	public abstract String getCurrentVersion();
 	public abstract Path getCurrentPath();
 	public abstract boolean currentlyExists();
 	public abstract void update() throws IOException;
-	protected abstract Crawler<?> createCrawler(); 
 	
 	public void showDialog(){
 		dialog = new FileUpdateDialog(title, new UpdateAction(), new CheckLatestAction(this));
@@ -105,6 +110,8 @@ public abstract class FileUpdateController implements FileUpdateListener {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			Workflow wf = new Workflow("Checking for update for " + title);
+			
 			runner.submitDownloadWorkflow(new CheckForUpdateWorkflow(
 				title, createCrawler().url, null, getCurrentVersion(), false, listener
 			));

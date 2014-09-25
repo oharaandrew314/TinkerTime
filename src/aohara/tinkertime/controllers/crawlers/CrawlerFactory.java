@@ -27,20 +27,29 @@ public class CrawlerFactory {
 	 * @param url url of the page to be crawled
 	 * @return A crawler for crawling the file data on the given url
 	 */
-	public ModCrawler<?> getModCrawler(URL url){
-		String host = url.getHost();
+	public ModCrawler<?> getModCrawler(URL url) throws UnsupportedHostException{
+		String host = url.getHost().toLowerCase();
+		String path = url.getPath().toLowerCase();
+		
 		if (host.equals(Constants.HOST_CURSE)){
 			return new CurseCrawler(url, createHtmlLoader());
 		} else if (host.equals(Constants.HOST_GITHUB)){
+			if (host.equals(Constants.HOST_GITHUB) && !path.endsWith("/releases")){
+				try {
+					url = new URL(url.toString() + "/releases");
+				} catch (MalformedURLException e) {
+					throw new RuntimeException(e);
+				}
+			}
 			return new GithubCrawler(url, createHtmlLoader());
 		}
-		throw new UnsupportedOperationException();
+		throw new UnsupportedHostException();
 	}
 	
-	public Crawler<?> getCrawler(URL url){
+	public Crawler<?> getCrawler(URL url) throws UnsupportedHostException{
 		try {
 			return getModCrawler(url);
-		} catch (UnsupportedOperationException e){}
+		} catch (UnsupportedHostException e){}
 		
 		String host = url.getHost();
 		if (host.equals(Constants.HOST_MODULE_MANAGER)){
@@ -51,7 +60,7 @@ public class CrawlerFactory {
 				throw new RuntimeException(e);
 			}
 		}
-		throw new UnsupportedOperationException();
+		throw new UnsupportedHostException();
 	}
 	
 	protected PageLoader<Document> createHtmlLoader(){
@@ -61,4 +70,7 @@ public class CrawlerFactory {
 	protected PageLoader<JsonObject> createJsonLoader(){
 		return new JsonLoader();
 	}
+	
+	@SuppressWarnings("serial")
+	public static class UnsupportedHostException extends Exception {}
 }
