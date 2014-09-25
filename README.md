@@ -4,12 +4,14 @@ TinkerTime
 Automatically Updating Mod Manager for Kerbal Space Program
  
 ### Development Status
-Alpha (ready for initial feedback)
+Alpha (Usable, but not yet fully featured)
 
 ### Description
-Tinker Time is a Mod Manager for Kerbal Space Program that will allow you to automatically update, enable, and disable all of your Curse.com mods.  All you have to do is enter the URL to the Curse.com mod webpage, and Tinker Time will do the rest of the work for you.
+Tinker Time is a Mod Manager for Kerbal Space Program that will allow you to automatically update, enable, and disable all of your mods from Curse or Github.  All you have to do is enter the URL to the mod webpage, and Tinker Time will do the rest of the work for you.
 
-At this time, only mods hosted on Curse.com are supported.  Curse.com is the official mod repository chosen by Squad, and thus, it is the first priority to establish support for.
+At this time, only mods hosted on Curse and Github are supported.  Future repositories may be added later.
+
+TinkerTime will automatically manage your ModuleManager Installation. :)
 
 ### Downloads
 See the "Releases" section on the Tinker Time repository
@@ -18,7 +20,7 @@ https://github.com/oharaandrew314/TinkerTime/releases
 ### Requirements
 - Windows, Linux, or OSX
 - Java 7 or Better
-- An Active Internet Connection for Mod Downloads and Updates
+- An Active Internet Connection
 
 
 ### Report an Issue
@@ -40,14 +42,11 @@ double-click the JAR file to run the application
 
 #### First-time Setup:
 
-1. On first run, you will be asked to configure your mod paths:
-2. Enter the path to your KSP install directory.  You can select either the KSP folder or GamaData folder
-3. Enter the path that you wish to place the downloaded mod zip files, and mod state file
-
+- On first run, you will be asked to select your KSP GameData path
 
 #### To download a Mod:
 
-1. Find a Mod you would like to add on Curse.com, and copy the URL from your browser's address bar
+1. Find a Mod you would like to add and copy the URL from your browser's address bar
 2. Using the Menu Bar, Mod > Add Mod
 3. Paste the URL into the dialog, and click "OK"
 4. A progress bar will appear as the mod data and zip file is downloaded
@@ -81,6 +80,21 @@ One of two choices:
 2. Go to the Menu Bar, click Mod > Update
 3. Wait for the latest mod data to be downloaded
 4. If there is a newer version available, it will be downloaded
+
+### To Update Module Manager:
+
+TinkerTime will automatically get the bleeding-edge version of ModuleManager on startup.  To manually check for updates:
+
+1. Go to Update > Update Module Manager
+2. Click "Update"
+
+
+### To Update TinkerTime:
+
+1. Go to Update > Update Tinker Time
+2. Click "Check for Updates" to see if a newer version is available
+3. Click "Update".  The jar will be downloaded using your browser
+4. Exit Tinker Time and launch the newly downloaded one
  
 ### License
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/InteractiveResource" property="dct:title" rel="dct:type">Tinker Time</span> by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Andrew O'Hara</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.<br />Based on a work at <a xmlns:dct="http://purl.org/dc/terms/" href="https://github.com/oharaandrew314/TinkerTime" rel="dct:source">https://github.com/oharaandrew314/TinkerTime</a>.
