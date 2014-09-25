@@ -1,13 +1,10 @@
 package aohara.tinkertime;
 
-import java.io.IOException;
-
 import aohara.common.selectorPanel.SelectorPanel;
 import aohara.common.workflows.ProgressPanel;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.controllers.fileUpdater.ModuleManagerUpdateController;
-import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.views.Frame;
 import aohara.tinkertime.views.ModImageView;
