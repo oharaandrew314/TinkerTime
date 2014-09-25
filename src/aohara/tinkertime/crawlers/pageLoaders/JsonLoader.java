@@ -1,4 +1,4 @@
-package aohara.tinkertime.controllers.crawlers.pageLoaders;
+package aohara.tinkertime.crawlers.pageLoaders;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

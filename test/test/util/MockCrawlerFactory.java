@@ -8,9 +8,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import aohara.tinkertime.controllers.crawlers.CrawlerFactory;
-import aohara.tinkertime.controllers.crawlers.pageLoaders.JsonLoader;
-import aohara.tinkertime.controllers.crawlers.pageLoaders.PageLoader;
+import aohara.tinkertime.crawlers.CrawlerFactory;
+import aohara.tinkertime.crawlers.pageLoaders.JsonLoader;
+import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 
 import com.google.gson.JsonObject;
 

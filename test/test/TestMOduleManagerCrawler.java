@@ -12,8 +12,8 @@ import java.util.Date;
 import org.junit.Test;
 
 import test.util.MockCrawlerFactory;
-import aohara.tinkertime.controllers.crawlers.CrawlerFactory.UnsupportedHostException;
-import aohara.tinkertime.controllers.crawlers.JenkinsCrawler;
+import aohara.tinkertime.crawlers.JenkinsCrawler;
+import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 
 public class TestMOduleManagerCrawler {
 	

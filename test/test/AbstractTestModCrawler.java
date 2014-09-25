@@ -9,7 +9,7 @@ import java.util.Date;
 
 import test.util.MockCrawlerFactory;
 import test.util.ModStubs;
-import aohara.tinkertime.controllers.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 
 public abstract class AbstractTestModCrawler {

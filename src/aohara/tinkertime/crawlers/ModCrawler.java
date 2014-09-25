@@ -1,9 +1,9 @@
-package aohara.tinkertime.controllers.crawlers;
+package aohara.tinkertime.crawlers;
 
 import java.io.IOException;
 import java.net.URL;
 
-import aohara.tinkertime.controllers.crawlers.pageLoaders.PageLoader;
+import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 import aohara.tinkertime.models.Mod;
 
 /**

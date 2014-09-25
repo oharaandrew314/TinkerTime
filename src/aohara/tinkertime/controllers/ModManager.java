@@ -12,7 +12,7 @@ import aohara.common.workflows.ConflictResolver;
 import aohara.common.workflows.ProgressPanel;
 import aohara.common.workflows.Workflow;
 import aohara.tinkertime.Config;
-import aohara.tinkertime.controllers.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.views.DialogConflictResolver;
 import aohara.tinkertime.workflows.ModWorkflowBuilder;

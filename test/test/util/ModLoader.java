@@ -10,7 +10,7 @@ import org.apache.commons.io.FileUtils;
 
 import aohara.tinkertime.Config;
 import aohara.tinkertime.content.ArchiveInspector;
-import aohara.tinkertime.controllers.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
 import aohara.tinkertime.models.Module;

@@ -7,9 +7,9 @@ import java.net.URL;
 
 import org.junit.Test;
 
-import aohara.tinkertime.controllers.crawlers.CrawlerFactory;
-import aohara.tinkertime.controllers.crawlers.CrawlerFactory.UnsupportedHostException;
-import aohara.tinkertime.controllers.crawlers.ModCrawler;
+import aohara.tinkertime.crawlers.CrawlerFactory;
+import aohara.tinkertime.crawlers.ModCrawler;
+import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 
 /**
  * WARNING! THIS TEST REQUIRES AN INTERNET CONNECTION!

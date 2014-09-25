@@ -6,8 +6,8 @@ import java.nio.file.Path;
 import aohara.common.Util;
 import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.controllers.WorkflowRunner;
-import aohara.tinkertime.controllers.crawlers.Constants;
-import aohara.tinkertime.controllers.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.crawlers.Constants;
+import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 
 public class TinkerTimeUpdateController extends FileUpdateController {
 

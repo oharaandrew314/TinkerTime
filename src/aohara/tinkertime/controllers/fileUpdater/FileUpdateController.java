@@ -10,9 +10,9 @@ import javax.swing.JOptionPane;
 
 import aohara.common.workflows.Workflow;
 import aohara.tinkertime.controllers.WorkflowRunner;
-import aohara.tinkertime.controllers.crawlers.Crawler;
-import aohara.tinkertime.controllers.crawlers.CrawlerFactory;
-import aohara.tinkertime.controllers.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.crawlers.Crawler;
+import aohara.tinkertime.crawlers.CrawlerFactory;
+import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.FileUpdateListener;
 import aohara.tinkertime.views.FileUpdateDialog;
 import aohara.tinkertime.workflows.ModWorkflowBuilder;

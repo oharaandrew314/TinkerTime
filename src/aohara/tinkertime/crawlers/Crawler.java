@@ -1,10 +1,10 @@
-package aohara.tinkertime.controllers.crawlers;
+package aohara.tinkertime.crawlers;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
 
-import aohara.tinkertime.controllers.crawlers.pageLoaders.PageLoader;
+import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 
 /**
  * Abstract Base Class for Creating Web Crawlers to gather file information.

@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import aohara.common.workflows.Workflow;
 import aohara.common.workflows.tasks.WorkflowTask;
-import aohara.tinkertime.controllers.crawlers.Crawler;
+import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.models.FileUpdateListener;
 
 /**

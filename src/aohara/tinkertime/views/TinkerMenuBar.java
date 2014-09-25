@@ -25,10 +25,10 @@ import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledException;
 import aohara.tinkertime.controllers.ModManager.ModNotDownloadedException;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
-import aohara.tinkertime.controllers.crawlers.Constants;
-import aohara.tinkertime.controllers.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.controllers.fileUpdater.ModuleManagerUpdateController;
 import aohara.tinkertime.controllers.fileUpdater.TinkerTimeUpdateController;
+import aohara.tinkertime.crawlers.Constants;
+import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 
 /**

@@ -5,7 +5,7 @@ import java.util.Date;
 
 import aohara.common.workflows.Workflow;
 import aohara.common.workflows.tasks.WorkflowTask;
-import aohara.tinkertime.controllers.crawlers.Crawler;
+import aohara.tinkertime.crawlers.Crawler;
 
 /**
  * Workflow Task that returns true if an update for a file is available.

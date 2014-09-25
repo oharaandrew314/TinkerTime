@@ -12,9 +12,9 @@ import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.common.workflows.tasks.gen.PathGen;
 import aohara.tinkertime.Config;
 import aohara.tinkertime.controllers.WorkflowRunner;
-import aohara.tinkertime.controllers.crawlers.Constants;
-import aohara.tinkertime.controllers.crawlers.Crawler;
-import aohara.tinkertime.controllers.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.crawlers.Constants;
+import aohara.tinkertime.crawlers.Crawler;
+import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.workflows.ModWorkflowBuilder;
 
 public class ModuleManagerUpdateController extends FileUpdateController implements TaskListener {

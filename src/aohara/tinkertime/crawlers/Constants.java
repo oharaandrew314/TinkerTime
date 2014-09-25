@@ -1,4 +1,4 @@
-package aohara.tinkertime.controllers.crawlers;
+package aohara.tinkertime.crawlers;
 
 import java.net.MalformedURLException;
 import java.net.URL;

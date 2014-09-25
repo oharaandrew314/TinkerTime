@@ -1,4 +1,4 @@
-package aohara.tinkertime.controllers.crawlers;
+package aohara.tinkertime.crawlers;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -8,9 +8,9 @@ import org.jsoup.nodes.Document;
 
 import com.google.gson.JsonObject;
 
-import aohara.tinkertime.controllers.crawlers.pageLoaders.JsonLoader;
-import aohara.tinkertime.controllers.crawlers.pageLoaders.PageLoader;
-import aohara.tinkertime.controllers.crawlers.pageLoaders.WebpageLoader;
+import aohara.tinkertime.crawlers.pageLoaders.JsonLoader;
+import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
+import aohara.tinkertime.crawlers.pageLoaders.WebpageLoader;
 
 /**
  * Factory for creating crawlers.

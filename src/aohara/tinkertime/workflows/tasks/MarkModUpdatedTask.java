@@ -5,7 +5,7 @@ import java.io.IOException;
 import aohara.common.workflows.Workflow;
 import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.controllers.ModUpdateListener;
-import aohara.tinkertime.controllers.crawlers.ModCrawler;
+import aohara.tinkertime.crawlers.ModCrawler;
 import aohara.tinkertime.models.Mod;
 
 public class MarkModUpdatedTask extends WorkflowTask {
