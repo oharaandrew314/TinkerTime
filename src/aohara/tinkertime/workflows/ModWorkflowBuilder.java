@@ -137,7 +137,21 @@ public class ModWorkflowBuilder {
 	}
 	
 	private static PathGen modZipPathGen(final ModCrawler<?> crawler, final Config config) throws IOException{
-		return modZipPathGen(crawler.createMod(), config);
+		return new PathGen(){
+			@Override
+			public URI getURI() throws URISyntaxException {
+				return getPath().toUri();
+			}
+
+			@Override
+			public Path getPath() {
+				try {
+					return crawler.createMod().getCachedZipPath(config);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		};
 	}
 	
 	private static URLGen modImageLinkGen(final ModCrawler<?> crawler){
