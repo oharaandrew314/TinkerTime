@@ -90,7 +90,7 @@ public class Config extends AbstractConfig {
 				JOptionPane.showMessageDialog(null, e.toString());
 				updateConfig(exitOnCancel);
 			}
-		} else {
+		} else if(exitOnCancel) {
 			System.exit(0);
 		}
 	}
