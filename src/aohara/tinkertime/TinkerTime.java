@@ -1,9 +1,13 @@
 package aohara.tinkertime;
 
+import java.io.IOException;
+
 import aohara.common.selectorPanel.SelectorPanel;
 import aohara.common.workflows.ProgressPanel;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModStateManager;
+import aohara.tinkertime.controllers.fileUpdater.ModuleManagerUpdateController;
+import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.views.Frame;
 import aohara.tinkertime.views.ModImageView;
@@ -48,7 +52,15 @@ public class TinkerTime {
 
 		// Start Application
 		sm.getMods();  // Load mods (will notify selector panel)
-		new Frame(mm, sp, pp, menuBar);		
+		new Frame(mm, sp, pp, menuBar);
+		
+		// Launch Startup Tasks
+		try {
+			new ModuleManagerUpdateController(mm, config).downloadUpdate(true); // Check for ModuleManager Update
+			mm.checkForModUpdates(); // Check for Mod Updates (Mark only)
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	public static void main(String[] args) {

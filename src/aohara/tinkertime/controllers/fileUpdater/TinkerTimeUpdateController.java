@@ -34,7 +34,7 @@ public class TinkerTimeUpdateController extends FileUpdateController {
 	}
 
 	@Override
-	public void buildWorkflowTask(Workflow workflow, Crawler<?> crawler) throws IOException {
+	public void buildWorkflowTask(Workflow workflow, Crawler<?> crawler, boolean downloadOnlyIfNewer) throws IOException {
 		workflow.addTask(new BrowserGoToTask(workflow, ModWorkflowBuilder.downloadLinkGen(crawler)));
 	}
 }
