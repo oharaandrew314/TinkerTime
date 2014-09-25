@@ -17,7 +17,7 @@ import aohara.common.AbstractConfig;
  */
 public class Config extends AbstractConfig {
 	
-	private static final String KSP_PATH = "kspPath", GAMEDATA_PATH = "gamedataPath";
+	private static final String GAMEDATA_PATH = "gamedataPath";
 	private static final String GAMEDATA_PROMPT = ("Please select your KSP GameData folder");
 			
 	
@@ -38,8 +38,6 @@ public class Config extends AbstractConfig {
 	public Path getGameDataPath(){
 		if (hasProperty(GAMEDATA_PATH)){
 			return Paths.get(getProperty(GAMEDATA_PATH));
-		} else if (hasProperty(KSP_PATH)){
-			return Paths.get(getProperty(KSP_PATH)).getParent().resolve("GameData");
 		} else {
 			updateConfig(true);
 			return getGameDataPath();
