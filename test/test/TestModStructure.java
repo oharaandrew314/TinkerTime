@@ -6,6 +6,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -24,7 +25,7 @@ public class TestModStructure {
 	private ModStructure struct1, struct2;
 	
 	@Before
-	public void setUp(){
+	public void setUp() throws IOException{
 		struct1 = spy(ModLoader.getStructure(ModStubs.TestMod1));
 		struct2 = spy(ModLoader.getStructure(ModStubs.TestMod2));
 	}

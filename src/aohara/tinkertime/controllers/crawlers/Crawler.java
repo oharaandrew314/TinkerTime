@@ -39,7 +39,7 @@ public abstract class Crawler<T> implements PageLoader<T> {
 			if (lastUpdated != null){
 				return getUpdatedOn().compareTo(lastUpdated) > 0;
 			} else if (lastFileName != null){
-				return getNewestFileName().equals(lastFileName);
+				return !getNewestFileName().equals(lastFileName);
 			}
 			return true;
 		} catch (IOException e){

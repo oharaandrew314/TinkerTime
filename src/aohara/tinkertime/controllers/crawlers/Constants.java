@@ -10,6 +10,7 @@ public class Constants {
 		HOST_CURSE = "www.curse.com",
 		HOST_GITHUB = "github.com",
 		HOST_MODULE_MANAGER = "ksp.sarbian.com";
+	public static final String[] ACCEPTED_MOD_HOSTS	 = new String[]{ HOST_CURSE, HOST_GITHUB };
 	
 	public static final String MODULE_MANAGER_ARTIFACT_DL_URL = (
 		"https://ksp.sarbian.com/jenkins/job/ModuleManager/lastSuccessfulBuild/artifact/"

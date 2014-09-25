@@ -11,6 +11,7 @@ import javax.swing.JOptionPane;
 import aohara.common.workflows.Workflow;
 import aohara.tinkertime.controllers.WorkflowRunner;
 import aohara.tinkertime.controllers.crawlers.Crawler;
+import aohara.tinkertime.controllers.crawlers.CrawlerFactory;
 import aohara.tinkertime.controllers.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.FileUpdateListener;
 import aohara.tinkertime.views.FileUpdateDialog;
@@ -28,22 +29,12 @@ public abstract class FileUpdateController implements FileUpdateListener {
 	protected final WorkflowRunner runner;
 	private FileUpdateDialog dialog;
 	private final String title;
-	private final URL pageUrl;
+	protected final Crawler<?> crawler;
 	
-	protected FileUpdateController(WorkflowRunner runner, String title, URL pageUrl){
+	protected FileUpdateController(WorkflowRunner runner, String title, URL pageUrl) throws UnsupportedHostException{
 		this.runner = runner;
 		this.title = title;
-		this.pageUrl = pageUrl;
-	}
-	
-	public void checkLatestVersion(){
-		try {
-			Workflow wf = new Workflow("Checking for update for " + title);
-			ModWorkflowBuilder.checkForUpdates(wf, pageUrl, null, getCurrentVersion(), this);
-			runner.submitDownloadWorkflow(wf);	
-		} catch (IOException | UnsupportedHostException e) {
-			e.printStackTrace();
-		}	
+		this.crawler = new CrawlerFactory().getCrawler(pageUrl);
 	}
 	
 	public abstract String getCurrentVersion();
@@ -110,11 +101,14 @@ public abstract class FileUpdateController implements FileUpdateListener {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			Workflow wf = new Workflow("Checking for update for " + title);
+			try {
+				Workflow wf = new Workflow("Checking for update for " + title);
+				ModWorkflowBuilder.checkForUpdates(wf, crawler.url, null, getCurrentVersion(), listener);
+				runner.submitDownloadWorkflow(wf);
+			} catch (IOException | UnsupportedHostException e1) {
+				e1.printStackTrace();
+			}
 			
-			runner.submitDownloadWorkflow(new CheckForUpdateWorkflow(
-				title, createCrawler().url, null, getCurrentVersion(), false, listener
-			));
 		}
 	}
 

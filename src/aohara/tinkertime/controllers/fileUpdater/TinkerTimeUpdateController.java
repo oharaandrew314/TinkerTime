@@ -7,13 +7,12 @@ import aohara.common.Util;
 import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.controllers.WorkflowRunner;
 import aohara.tinkertime.controllers.crawlers.Constants;
-import aohara.tinkertime.controllers.crawlers.Crawler;
-import aohara.tinkertime.controllers.crawlers.CrawlerFactory;
+import aohara.tinkertime.controllers.crawlers.CrawlerFactory.UnsupportedHostException;
 
 public class TinkerTimeUpdateController extends FileUpdateController {
 
-	public TinkerTimeUpdateController(WorkflowRunner runner) {
-		super(runner, "Tinker Time");
+	public TinkerTimeUpdateController(WorkflowRunner runner) throws UnsupportedHostException {
+		super(runner, "Tinker Time", Constants.getTinkerTimeGithubUrl());
 	}
 
 	@Override
@@ -33,12 +32,7 @@ public class TinkerTimeUpdateController extends FileUpdateController {
 
 	@Override
 	public void update() throws IOException {
-		Util.goToHyperlink(createCrawler().getDownloadLink());
-	}
-
-	@Override
-	protected Crawler<?> createCrawler() {
-		return new CrawlerFactory().getCrawler(Constants.getTinkerTimeGithubUrl());
+		Util.goToHyperlink(crawler.getDownloadLink());
 	}
 
 }

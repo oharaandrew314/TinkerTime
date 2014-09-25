@@ -4,12 +4,13 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import aohara.tinkertime.controllers.crawlers.CrawlerFactory.UnsupportedHostException;
 import test.util.ModStubs;
 
 public class TestCurseCrawler extends AbstractTestModCrawler {
 
 	@Test
-	public void testMechjeb() throws IOException {		
+	public void testMechjeb() throws IOException, UnsupportedHostException {		
 		compare(
 			ModStubs.Mechjeb,
 			getDate(2014, 4, 6),
@@ -22,7 +23,7 @@ public class TestCurseCrawler extends AbstractTestModCrawler {
 	}
 	
 	@Test
-	public void testEngineer() throws IOException {		
+	public void testEngineer() throws IOException, UnsupportedHostException {		
 		compare(
 			ModStubs.Engineer,
 			getDate(2014, 4, 12),

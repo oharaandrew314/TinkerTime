@@ -23,6 +23,7 @@ import test.util.ModStubs;
 import aohara.common.workflows.ConflictResolver;
 import aohara.common.workflows.ConflictResolver.Resolution;
 import aohara.common.workflows.ProgressPanel;
+import aohara.common.workflows.Workflow;
 import aohara.tinkertime.Config;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledException;
@@ -30,9 +31,6 @@ import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledException;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.workflows.DisableModWorkflow;
-import aohara.tinkertime.workflows.EnableModWorkflow;
-import aohara.tinkertime.workflows.UpdateModWorkflow;
 
 public class TestModManager {
 	
@@ -70,8 +68,8 @@ public class TestModManager {
 	
 	@Test
 	public void testAddMod() throws Throwable {
-		manager.addNewMod(mod.getPageUrl().toString());
-		verify(downloedExecutor, times(1)).execute(any(UpdateModWorkflow.class));
+		manager.downloadMod(mod.getPageUrl());
+		verify(downloedExecutor, times(1)).execute(any(Workflow.class));
 	}
 	
 	// -- Enable Tests ------------------------------------
@@ -83,7 +81,7 @@ public class TestModManager {
 			manager.enableMod(mod);
 			
 			verifyZeroInteractions(cr);
-			verify(enablerExecutor, times(1)).execute(any(EnableModWorkflow.class));
+			verify(enablerExecutor, times(1)).execute(any(Workflow.class));
 		}
 	
 	@Test
@@ -126,7 +124,7 @@ public class TestModManager {
 	public void testDisableMod() throws Throwable {
 		mod.setEnabled(true);
 		manager.disableMod(mod);
-		verify(enablerExecutor, times(1)).execute(any(DisableModWorkflow.class));
+		verify(enablerExecutor, times(1)).execute(any(Workflow.class));
 	}
 	
 	@Test(expected = ModAlreadyDisabledException.class)
@@ -141,7 +139,7 @@ public class TestModManager {
 	@Test
 	public void testUpdate() throws ModUpdateFailedException{
 		manager.updateMod(mod);
-		verify(downloedExecutor, times(1)).execute(any(UpdateModWorkflow.class));
+		verify(downloedExecutor, times(1)).execute(any(Workflow.class));
 	}
 	
 	// -- Mock Objects -------------------------------------

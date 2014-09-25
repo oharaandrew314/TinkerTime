@@ -12,11 +12,12 @@ import java.util.Date;
 import org.junit.Test;
 
 import test.util.MockCrawlerFactory;
+import aohara.tinkertime.controllers.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.controllers.crawlers.JenkinsCrawler;
 
 public class TestMOduleManagerCrawler {
 	
-	private static JenkinsCrawler loadTestPage(int num) throws IOException {
+	private static JenkinsCrawler loadTestPage(int num) throws IOException, UnsupportedHostException {
 		URL url = new URL(String.format("https://ksp.sarbian.com/moduleManagerPage%d.json", num));
 		return (JenkinsCrawler) new MockCrawlerFactory().getCrawler(url);
 	}
@@ -33,7 +34,7 @@ public class TestMOduleManagerCrawler {
 	}
 
 	@Test
-	public void testGetUpdatedOn() throws IOException {
+	public void testGetUpdatedOn() throws IOException, UnsupportedHostException {
 		JenkinsCrawler crawler = loadTestPage(1);
 		
 		Calendar cal = Calendar.getInstance();
@@ -45,14 +46,14 @@ public class TestMOduleManagerCrawler {
 	}
 	
 	@Test
-	public void testGetNewestFileName() throws IOException {
+	public void testGetNewestFileName() throws IOException, UnsupportedHostException {
 		JenkinsCrawler crawler = loadTestPage(1);
 		
 		assertEquals("ModuleManager.2.2.0.dll", crawler.getNewestFileName());
 	}
 	
 	@Test
-	public void testGetDownloadLink() throws IOException {
+	public void testGetDownloadLink() throws IOException, UnsupportedHostException {
 		JenkinsCrawler crawler = loadTestPage(1);
 		
 		String expectedUrl = (
@@ -62,7 +63,7 @@ public class TestMOduleManagerCrawler {
 	}
 	
 	@Test
-	public void testIsUpdateAvailableForPassedBuild() throws IOException{
+	public void testIsUpdateAvailableForPassedBuild() throws IOException, UnsupportedHostException{
 		JenkinsCrawler crawler = loadTestPage(1);
 		
 		assertTrue(crawler.isUpdateAvailable(getDateDelta(crawler, -1000000), null));

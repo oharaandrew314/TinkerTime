@@ -2,6 +2,7 @@ package aohara.tinkertime.controllers.crawlers;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 
 import org.jsoup.nodes.Document;
 
@@ -72,5 +73,15 @@ public class CrawlerFactory {
 	}
 	
 	@SuppressWarnings("serial")
-	public static class UnsupportedHostException extends Exception {}
+	public static class UnsupportedHostException extends Exception {
+		
+		@Override
+		public String getMessage(){
+			return (
+				"Mod data could not be deciphered.\n"
+				+ "Either the URL is invalid, or the site layout has been updated.\n"
+				+ " Valid hosts are: " + Arrays.asList(Constants.ACCEPTED_MOD_HOSTS)
+			);
+		}
+	}
 }

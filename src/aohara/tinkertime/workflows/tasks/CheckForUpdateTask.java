@@ -27,6 +27,7 @@ public class CheckForUpdateTask extends WorkflowTask {
 
 	@Override
 	public Boolean call() throws Exception {
+		System.out.println(crawler.getNewestFileName() + " " + crawler.isUpdateAvailable(lastUpdated, lastFileName));
 		return crawler.isUpdateAvailable(lastUpdated, lastFileName);
 	}
 

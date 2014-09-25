@@ -12,7 +12,6 @@ import aohara.common.workflows.ConflictResolver;
 import aohara.common.workflows.ProgressPanel;
 import aohara.common.workflows.Workflow;
 import aohara.tinkertime.Config;
-import aohara.tinkertime.controllers.crawlers.CrawlerFactory;
 import aohara.tinkertime.controllers.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.views.DialogConflictResolver;
@@ -104,7 +103,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	public void downloadMod(URL url) throws ModUpdateFailedException, UnsupportedHostException {
 		Workflow wf = new Workflow("Downloading " + FilenameUtils.getBaseName(url.toString()));
 		try {
-			ModWorkflowBuilder.downloadMod(wf, new CrawlerFactory().getModCrawler(url), config, sm);
+			ModWorkflowBuilder.downloadMod(wf, url, config, sm);
 			submitDownloadWorkflow(wf);
 		} catch (IOException e) {
 			throw new ModUpdateFailedException();
@@ -117,7 +116,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		}
 	}
 	
-	public void enableMod(Mod mod) throws ModAlreadyEnabledException, ModNotDownloadedException {
+	public void enableMod(Mod mod) throws ModAlreadyEnabledException, ModNotDownloadedException, IOException {
 		if (mod.isEnabled()){
 			throw new ModAlreadyEnabledException();
 		} else if (!isDownloaded(mod)){
@@ -129,7 +128,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		submitEnablerWorkflow(wf);
 	}
 	
-	public void disableMod(Mod mod) throws ModAlreadyDisabledException {
+	public void disableMod(Mod mod) throws ModAlreadyDisabledException, IOException {
 		if (!mod.isEnabled()){
 			throw new ModAlreadyDisabledException();
 		}
@@ -139,7 +138,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		submitEnablerWorkflow(wf);
 	}
 	
-	public void deleteMod(Mod mod) throws CannotDisableModException {
+	public void deleteMod(Mod mod) throws CannotDisableModException, IOException {
 		Workflow wf = new Workflow("Deleting " + mod);
 		ModWorkflowBuilder.deleteMod(wf, mod, config, sm);		
 		submitEnablerWorkflow(wf);

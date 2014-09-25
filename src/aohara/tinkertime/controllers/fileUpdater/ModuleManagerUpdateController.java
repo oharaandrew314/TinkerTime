@@ -2,26 +2,28 @@ package aohara.tinkertime.controllers.fileUpdater;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 
 import aohara.common.workflows.TaskListener;
 import aohara.common.workflows.Workflow;
 import aohara.common.workflows.tasks.WorkflowTask;
+import aohara.common.workflows.tasks.gen.PathGen;
 import aohara.tinkertime.Config;
 import aohara.tinkertime.controllers.WorkflowRunner;
 import aohara.tinkertime.controllers.crawlers.Constants;
 import aohara.tinkertime.controllers.crawlers.Crawler;
-import aohara.tinkertime.controllers.crawlers.CrawlerFactory;
-import aohara.tinkertime.workflows.CrawlerDownloadFileWorkflow;
+import aohara.tinkertime.controllers.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.workflows.ModWorkflowBuilder;
 
 public class ModuleManagerUpdateController extends FileUpdateController implements TaskListener {
 	
 	public static final String MODULE_MANAGER = "ModuleManager";
 	private final Path destFolder;
 	
-	public ModuleManagerUpdateController(WorkflowRunner runner, Config config) {
-		super(runner, "Module Manager");
+	public ModuleManagerUpdateController(WorkflowRunner runner, Config config) throws UnsupportedHostException {
+		super(runner, "Module Manager", Constants.getModuleManagerJenkinsUrl());
 		destFolder = config.getGameDataPath();
 	}
 
@@ -54,15 +56,29 @@ public class ModuleManagerUpdateController extends FileUpdateController implemen
 		if (currentlyExists()){
 			getCurrentPath().toFile().delete();
 		}
-		Workflow workflow = new CrawlerDownloadFileWorkflow("Updating Module Manager", createCrawler(), destFolder);
-		workflow.addListener(this);
-		runner.submitDownloadWorkflow(workflow);
+		
+		Workflow wf = new Workflow("Updating Module Manager");
+		ModWorkflowBuilder.downloadFile(wf, crawler, getDestGen(crawler, destFolder));
+		wf.addListener(this);
+		runner.submitDownloadWorkflow(wf);
 	}
+	
+	private PathGen getDestGen(final Crawler<?> crawler, final Path destFolder){
+		return new PathGen(){
+			@Override
+			public URI getURI() throws URISyntaxException {
+				return getPath().toUri();
+			}
 
-	@Override
-	protected Crawler<?> createCrawler() {
-		URL url = Constants.getModuleManagerJenkinsUrl();
-		return new CrawlerFactory().getCrawler(url);
+			@Override
+			public Path getPath() {
+				try {
+					return destFolder.resolve(crawler.getNewestFileName());
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		};
 	}
 	
 	@Override

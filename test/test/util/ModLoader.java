@@ -10,13 +10,14 @@ import org.apache.commons.io.FileUtils;
 
 import aohara.tinkertime.Config;
 import aohara.tinkertime.content.ArchiveInspector;
+import aohara.tinkertime.controllers.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
 import aohara.tinkertime.models.Module;
 
 public class ModLoader {
 	
-	public static Mod loadMod(ModStubs stub){
+	public static Mod loadMod(ModStubs stub) throws UnsupportedHostException{
 		try {
 			return new MockCrawlerFactory().getModCrawler(stub.url).createMod();
 		} catch (IOException e) {
@@ -38,7 +39,7 @@ public class ModLoader {
 		}
 	}
 	
-	public static ModStructure getStructure(ModStubs stub){
+	public static ModStructure getStructure(ModStubs stub) throws IOException{
 		return ArchiveInspector.inspectArchive(getZipPath(stub));
 	}
 	

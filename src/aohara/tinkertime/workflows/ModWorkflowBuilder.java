@@ -33,11 +33,13 @@ import aohara.tinkertime.workflows.tasks.NotfiyUpdateAvailableTask;
 
 public class ModWorkflowBuilder {
 	
+	private static final CrawlerFactory factory = new CrawlerFactory();
+	
 	public static void checkForUpdates(
 			Workflow workflow, URL pageUrl, Date lastUpdated, String lastFileName,
 			FileUpdateListener... listeners
 	) throws IOException, UnsupportedHostException {		
-		Crawler<?> crawler = new CrawlerFactory().getCrawler(pageUrl);
+		Crawler<?> crawler = factory.getCrawler(pageUrl);
 		
 		workflow.addTask(new CacheCrawlerPageTask(workflow, crawler));
 		workflow.addTask(new CheckForUpdateTask(workflow, crawler, lastUpdated, lastFileName));
@@ -49,13 +51,14 @@ public class ModWorkflowBuilder {
 		WorkflowBuilder.tempDownload(workflow, downloadLinkGen(crawler), dest);
 	}
 	
-	public static void downloadMod(Workflow workflow, ModCrawler<?> crawler, Config config, ModStateManager sm) throws IOException {
+	public static void downloadMod(Workflow workflow, URL pageUrl, Config config, ModStateManager sm) throws IOException, UnsupportedHostException {
+		ModCrawler<?> crawler = factory.getModCrawler(pageUrl);
 		downloadFile(workflow, crawler, modZipPathGen(crawler, config));
 		workflow.addTask(new MarkModUpdatedTask(workflow, sm, crawler));
 		WorkflowBuilder.download(workflow, modImageLinkGen(crawler), modImageCacheGen(crawler, config));
 	}
 	
-	public static void deleteMod(Workflow workflow, Mod mod, Config config, ModStateManager sm){
+	public static void deleteMod(Workflow workflow, Mod mod, Config config, ModStateManager sm) throws IOException {
 		if (mod.isEnabled()){
 			for (Module module : ArchiveInspector.inspectArchive(config, mod).getModules()){
 				WorkflowBuilder.delete(workflow, GenFactory.fromPath(config.getGameDataPath().resolve(module.getName())));
@@ -65,7 +68,7 @@ public class ModWorkflowBuilder {
 		workflow.addTask(new MarkModUpdatedTask(workflow, sm, mod));
 	}
 	
-	public static void disableMod(Workflow workflow, Mod mod, Config config, ModStateManager sm){
+	public static void disableMod(Workflow workflow, Mod mod, Config config, ModStateManager sm) throws IOException{
 		for (Module module : ArchiveInspector.inspectArchive(config, mod).getModules()){
 			
 			if (!isDependency(module, config, sm)){
@@ -75,7 +78,7 @@ public class ModWorkflowBuilder {
 		workflow.addTask(new MarkModEnabledTask(workflow, mod, sm, false));
 	}
 	
-	public static void enableMod(Workflow workflow, Mod mod, Config config, ModStateManager sm, ConflictResolver cr){
+	public static void enableMod(Workflow workflow, Mod mod, Config config, ModStateManager sm, ConflictResolver cr) throws IOException{
 		ModStructure structure = ArchiveInspector.inspectArchive(config, mod);
 		for (Module module : structure.getModules()){
 			workflow.addTask(new UnzipTask(
@@ -87,9 +90,9 @@ public class ModWorkflowBuilder {
 		workflow.addTask(new MarkModEnabledTask(workflow, mod, sm, true));
 	}
 	
-	// helper
+	// helpers
 	
-	private static boolean isDependency(Module module, Config config, ModStateManager sm){
+	private static boolean isDependency(Module module, Config config, ModStateManager sm) throws IOException{
 		int numDependencies = 0;
 		for (Mod mod : sm.getMods()){
 			if (ArchiveInspector.inspectArchive(config, mod).usesModule(module)){

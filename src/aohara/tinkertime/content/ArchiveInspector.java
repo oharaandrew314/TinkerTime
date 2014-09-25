@@ -20,11 +20,11 @@ import aohara.tinkertime.models.Module;
 
 public class ArchiveInspector {
 	
-	public static ModStructure inspectArchive(Config config, Mod mod) {
+	public static ModStructure inspectArchive(Config config, Mod mod) throws IOException {
 		return inspectArchive(mod.getCachedZipPath(config));
 	}
 	
-	public static ModStructure inspectArchive(Path zipPath){
+	public static ModStructure inspectArchive(Path zipPath) throws IOException {
 		Set<Module> modules = new HashSet<>();
 		String readmeText = null;
 		
@@ -37,8 +37,6 @@ public class ArchiveInspector {
 			}
 			
 			readmeText = getReadmeText(zipFile);
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 		
 		return new ModStructure(zipPath, modules, readmeText);
