@@ -30,18 +30,10 @@ public class CrawlerFactory {
 	 */
 	public ModCrawler<?> getModCrawler(URL url) throws UnsupportedHostException{
 		String host = url.getHost().toLowerCase();
-		String path = url.getPath().toLowerCase();
 		
 		if (host.equals(Constants.HOST_CURSE)){
 			return new CurseCrawler(url, createHtmlLoader());
 		} else if (host.equals(Constants.HOST_GITHUB)){
-			if (host.equals(Constants.HOST_GITHUB) && !path.endsWith("/releases")){
-				try {
-					url = new URL(url.toString() + "/releases");
-				} catch (MalformedURLException e) {
-					throw new RuntimeException(e);
-				}
-			}
 			return new GithubCrawler(url, createHtmlLoader());
 		}
 		throw new UnsupportedHostException();

@@ -22,6 +22,14 @@ public class GithubCrawler extends ModCrawler<Document> {
 	public GithubCrawler(URL url, PageLoader<Document> pageLoader) {
 		super(url, pageLoader);
 	}
+	
+	@Override
+	public Document getPage(URL url) throws IOException {
+		if (!url.getPath().endsWith("/releases")){
+			url = new URL(url.toString() + "/releases");
+		}
+		return super.getPage(url);
+	}
 
 	@Override
 	public Mod createMod() throws IOException {

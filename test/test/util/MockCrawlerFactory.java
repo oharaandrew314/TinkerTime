@@ -2,6 +2,7 @@ package test.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.apache.commons.io.FilenameUtils;
@@ -29,9 +30,20 @@ public class MockCrawlerFactory extends CrawlerFactory{
 	private static class MockWebpageLoader implements PageLoader<Document>{
 		
 		@Override
-		public Document getPage(URL url) throws IOException {
-			String filePath = String.format("test/res/html/%s.html", FilenameUtils.getBaseName(url.toString()));
-			try(InputStream is = ModLoader.class.getClassLoader().getResourceAsStream(filePath)){
+		public Document getPage(URL url) throws IOException {			
+			String fileName = FilenameUtils.getBaseName(url.toString());
+			if (fileName.equals("releases")){
+				try { // Chopp off releases from path
+					java.net.URI uri = url.toURI();
+					uri = uri.getPath().endsWith("/") ? uri.resolve("..") : uri.resolve(".");
+					String[] names = uri.getPath().split("/");
+					fileName = names[names.length - 1];
+				} catch (URISyntaxException e) {
+					throw new IOException(e);
+				}
+			}
+			
+			try(InputStream is = ModLoader.class.getClassLoader().getResourceAsStream(String.format("test/res/html/%s.html", fileName))){
 				return Jsoup.parse(is, null, url.toString());
 			}
 		}
