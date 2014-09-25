@@ -3,11 +3,14 @@ package aohara.tinkertime.controllers.fileUpdater;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import aohara.common.Util;
+import aohara.common.workflows.Workflow;
+import aohara.common.workflows.tasks.BrowserGoToTask;
 import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.controllers.WorkflowRunner;
 import aohara.tinkertime.crawlers.Constants;
+import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.workflows.ModWorkflowBuilder;
 
 public class TinkerTimeUpdateController extends FileUpdateController {
 
@@ -31,8 +34,7 @@ public class TinkerTimeUpdateController extends FileUpdateController {
 	}
 
 	@Override
-	public void update() throws IOException {
-		Util.goToHyperlink(crawler.getDownloadLink());
+	public void buildWorkflowTask(Workflow workflow, Crawler<?> crawler) throws IOException {
+		workflow.addTask(new BrowserGoToTask(workflow, ModWorkflowBuilder.downloadLinkGen(crawler)));
 	}
-
 }

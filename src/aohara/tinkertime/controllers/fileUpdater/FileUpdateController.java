@@ -8,12 +8,15 @@ import java.nio.file.Path;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 
+import aohara.common.workflows.TaskListener;
 import aohara.common.workflows.Workflow;
+import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.controllers.WorkflowRunner;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.FileUpdateListener;
+import aohara.tinkertime.models.UpdateableFile;
 import aohara.tinkertime.views.FileUpdateDialog;
 import aohara.tinkertime.workflows.ModWorkflowBuilder;
 
@@ -21,41 +24,60 @@ import aohara.tinkertime.workflows.ModWorkflowBuilder;
  * Controller for managing a {@link aohara.views.FileUpdateDialog}.
  * 
  * @author Andrew O'Hara
- *
  */
 @SuppressWarnings("serial")
-public abstract class FileUpdateController implements FileUpdateListener {
+public abstract class FileUpdateController implements FileUpdateListener, TaskListener {
 	
-	protected final WorkflowRunner runner;
+	private final WorkflowRunner runner;
 	private FileUpdateDialog dialog;
 	private final String title;
-	protected final Crawler<?> crawler;
+	private final URL pageUrl;
 	
-	protected FileUpdateController(WorkflowRunner runner, String title, URL pageUrl) throws UnsupportedHostException{
+	protected FileUpdateController(WorkflowRunner runner, String title, URL pageUrl) {
 		this.runner = runner;
 		this.title = title;
-		this.crawler = new CrawlerFactory().getCrawler(pageUrl);
+		this.pageUrl = pageUrl;
 	}
 	
 	public abstract String getCurrentVersion();
 	public abstract Path getCurrentPath();
 	public abstract boolean currentlyExists();
-	public abstract void update() throws IOException;
 	
 	public void showDialog(){
-		dialog = new FileUpdateDialog(title, new UpdateAction(), new CheckLatestAction(this));
+		dialog = new FileUpdateDialog(title, new UpdateAction(this), new CheckLatestAction(this));
 		updateDialog(null);
 		dialog.setVisible(true);
 	}
 	
 	protected void updateDialog(String latestVersion){
-		dialog.update(getCurrentVersion(), latestVersion);
+		if (dialog != null){
+			dialog.update(getCurrentVersion(), latestVersion);
+		}
 	}
 	
 	@Override
 	public void setUpdateAvailable(URL pageUrl, String newestFileName) {
 		updateDialog(newestFileName);
 	}
+	
+	public void checkForUpdate() throws IOException, UnsupportedHostException{
+		Workflow wf = new Workflow("Checking for update for " + title);
+		ModWorkflowBuilder.checkLatestVersion(wf, new UpdateableFile(getCurrentVersion(), null, pageUrl), this);
+		submitWorkflow(wf);
+	}
+	
+	public void downloadUpdate(boolean onlyIfNewer) throws IOException, UnsupportedHostException{
+		Workflow workflow = new Workflow("Updating " + title);
+		buildWorkflowTask(workflow, new CrawlerFactory().getCrawler(pageUrl), onlyIfNewer);
+		submitWorkflow(workflow);
+	}
+	
+	private void submitWorkflow(Workflow workflow){
+		workflow.addListener(this);
+		runner.submitDownloadWorkflow(workflow);
+	}
+	
+	public abstract void buildWorkflowTask(Workflow workflow, Crawler<?> crawler, boolean downloadOnlyIfNewer) throws IOException;
 	
 	// -- Actions ------------------------------------------------------------
 	
@@ -64,23 +86,24 @@ public abstract class FileUpdateController implements FileUpdateListener {
 	 * 
 	 * @author Andrew O'Hara
 	 */
-	private class UpdateAction extends AbstractAction {
+	private static class UpdateAction extends AbstractAction {
 		
-		public UpdateAction(){
+		private final FileUpdateController controller;
+		
+		public UpdateAction(FileUpdateController controller){
 			super("Update");
+			this.controller = controller;
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				update();
-			} catch (IOException e1) {
+				controller.downloadUpdate(false);
+			} catch (IOException | UnsupportedHostException e1) {
 				e1.printStackTrace();
-				JOptionPane.showMessageDialog(null, "Error Updating\n\n" + e1.toString());
+				JOptionPane.showMessageDialog(controller.dialog, "Error Updating\n\n" + e1.toString());
 			}
-			
 		}
-		
 	}
 	
 	/**
@@ -90,26 +113,46 @@ public abstract class FileUpdateController implements FileUpdateListener {
 	 * 
 	 * @author Andrew O'Hara
 	 */
-	private class CheckLatestAction extends AbstractAction {
+	private static class CheckLatestAction extends AbstractAction {
 		
-		private final FileUpdateListener listener;
+		private final FileUpdateController controller;
 		
-		public CheckLatestAction(FileUpdateListener listener){
+		public CheckLatestAction(FileUpdateController controller){
 			super("Check for Updates");
-			this.listener = listener;
+			this.controller = controller;
 		}
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				Workflow wf = new Workflow("Checking for update for " + title);
-				ModWorkflowBuilder.checkForUpdates(wf, crawler.url, null, getCurrentVersion(), listener);
-				runner.submitDownloadWorkflow(wf);
+				controller.checkForUpdate();
 			} catch (IOException | UnsupportedHostException e1) {
-				e1.printStackTrace();
+				JOptionPane.showMessageDialog(controller.dialog, "Error Checking for Updates\n\n" + e1.toString());
 			}
-			
 		}
 	}
+	
+	// -- Listeners -----------------------------------------------------
 
+	@Override
+	public void taskComplete(WorkflowTask task, boolean tasksRemaining) {
+		updateDialog(null);
+	}
+	
+	// -- Unused -----------------------------------------------------------
+	
+	@Override
+	public void taskStarted(WorkflowTask task, int targetProgress) {
+		// No Action
+	}
+
+	@Override
+	public void taskProgress(WorkflowTask task, int increment) {
+		// No Action
+	}
+
+	@Override
+	public void taskError(WorkflowTask task, boolean tasksRemaining, Exception e) {
+		// No Action
+	}
 }

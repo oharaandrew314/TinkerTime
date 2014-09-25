@@ -173,7 +173,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		for (Mod mod : sm.getMods()){
 			try {
 				Workflow wf = new Workflow("Checking for update for " + mod);
-				ModWorkflowBuilder.checkForUpdates(wf, mod.getPageUrl(), mod.getUpdatedOn(), mod.getNewestFileName(), mod, sm);
+				ModWorkflowBuilder.checkForUpdates(wf, mod, mod, sm);
 				submitDownloadWorkflow(wf);
 			} catch (IOException | UnsupportedHostException ex) {
 				ex.printStackTrace();

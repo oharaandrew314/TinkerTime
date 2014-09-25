@@ -48,7 +48,7 @@ public class TinkerTime {
 
 		// Start Application
 		sm.getMods();  // Load mods (will notify selector panel)
-		new Frame(mm, sp, pp, menuBar);
+		new Frame(mm, sp, pp, menuBar);		
 	}
 	
 	public static void main(String[] args) {

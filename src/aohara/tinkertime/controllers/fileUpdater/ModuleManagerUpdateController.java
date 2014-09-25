@@ -6,18 +6,18 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 
-import aohara.common.workflows.TaskListener;
+import sun.security.action.GetLongAction;
 import aohara.common.workflows.Workflow;
-import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.common.workflows.tasks.gen.PathGen;
 import aohara.tinkertime.Config;
 import aohara.tinkertime.controllers.WorkflowRunner;
 import aohara.tinkertime.crawlers.Constants;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.models.UpdateableFile;
 import aohara.tinkertime.workflows.ModWorkflowBuilder;
 
-public class ModuleManagerUpdateController extends FileUpdateController implements TaskListener {
+public class ModuleManagerUpdateController extends FileUpdateController {
 	
 	public static final String MODULE_MANAGER = "ModuleManager";
 	private final Path destFolder;
@@ -50,21 +50,14 @@ public class ModuleManagerUpdateController extends FileUpdateController implemen
 	public boolean currentlyExists() {
 		return getCurrentPath() != null;
 	}
-
+	
 	@Override
-	public void update() throws IOException {
+	public void buildWorkflowTask(Workflow workflow, final Crawler<?> crawler, boolean downloadOnlyIfNewer) throws IOException {
 		if (currentlyExists()){
 			getCurrentPath().toFile().delete();
 		}
 		
-		Workflow wf = new Workflow("Updating Module Manager");
-		ModWorkflowBuilder.downloadFile(wf, crawler, getDestGen(crawler, destFolder));
-		wf.addListener(this);
-		runner.submitDownloadWorkflow(wf);
-	}
-	
-	private PathGen getDestGen(final Crawler<?> crawler, final Path destFolder){
-		return new PathGen(){
+		PathGen destGen = new PathGen(){
 			@Override
 			public URI getURI() throws URISyntaxException {
 				return getPath().toUri();
@@ -79,27 +72,12 @@ public class ModuleManagerUpdateController extends FileUpdateController implemen
 				}
 			}
 		};
-	}
-	
-	@Override
-	public void taskComplete(WorkflowTask task, boolean tasksRemaining) {
-		updateDialog(null);
-	}
-	
-	// -- Unused -----------------------------------------------------------
-	
-	@Override
-	public void taskStarted(WorkflowTask task, int targetProgress) {
-		// No Action
-	}
-
-	@Override
-	public void taskProgress(WorkflowTask task, int increment) {
-		// No Action
-	}
-
-	@Override
-	public void taskError(WorkflowTask task, boolean tasksRemaining, Exception e) {
-		// No Action
+		
+		if (downloadOnlyIfNewer){
+			ModWorkflowBuilder.downloadFile(workflow, crawler, destGen);
+		} else {
+			ModWorkflowBuilder.downloadFileIfNewer(workflow, new UpdateableFile(getCurrentVersion(), null, crawler.url), destGen);
+		}
+		
 	}
 }

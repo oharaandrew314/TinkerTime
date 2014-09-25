@@ -5,7 +5,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.Date;
 
 import aohara.common.workflows.ConflictResolver;
 import aohara.common.workflows.Workflow;
@@ -19,12 +18,13 @@ import aohara.tinkertime.content.ArchiveInspector;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory;
-import aohara.tinkertime.crawlers.ModCrawler;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.crawlers.ModCrawler;
 import aohara.tinkertime.models.FileUpdateListener;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
 import aohara.tinkertime.models.Module;
+import aohara.tinkertime.models.UpdateableFile;
 import aohara.tinkertime.workflows.tasks.CacheCrawlerPageTask;
 import aohara.tinkertime.workflows.tasks.CheckForUpdateTask;
 import aohara.tinkertime.workflows.tasks.MarkModEnabledTask;
@@ -35,22 +35,55 @@ public class ModWorkflowBuilder {
 	
 	private static final CrawlerFactory factory = new CrawlerFactory();
 	
+	/**
+	 * Notifies the listeners if an update is available for the given file
+	 */
 	public static void checkForUpdates(
-			Workflow workflow, URL pageUrl, Date lastUpdated, String lastFileName,
-			FileUpdateListener... listeners
-	) throws IOException, UnsupportedHostException {		
-		Crawler<?> crawler = factory.getCrawler(pageUrl);
+			Workflow workflow, UpdateableFile file, FileUpdateListener... listeners
+	) throws IOException, UnsupportedHostException {	
+		Crawler<?> crawler = factory.getCrawler(file.getPageUrl());
 		
 		workflow.addTask(new CacheCrawlerPageTask(workflow, crawler));
-		workflow.addTask(new CheckForUpdateTask(workflow, crawler, lastUpdated, lastFileName));
+		workflow.addTask(new CheckForUpdateTask(workflow, crawler, file.getUpdatedOn(), file.getNewestFileName()));
 		workflow.addTask(new NotfiyUpdateAvailableTask(workflow, crawler, listeners));
 	}
 	
+	/**
+	 * Notifies the listener of the file's latest version available.
+	 */
+	public static void checkLatestVersion(
+			Workflow workflow, UpdateableFile file, FileUpdateListener... listeners
+	) throws UnsupportedHostException {
+		Crawler<?> crawler = factory.getCrawler(file.getPageUrl());
+		
+		workflow.addTask(new CacheCrawlerPageTask(workflow, crawler));
+		workflow.addTask(new NotfiyUpdateAvailableTask(workflow, crawler, listeners));
+	}
+	
+	/**
+	 * Downloads the file if a newer version is available.
+	 */
+	public static void downloadFileIfNewer(
+		Workflow workflow, UpdateableFile file, PathGen dest
+	) throws UnsupportedHostException, IOException{
+		Crawler<?> crawler = factory.getCrawler(file.getPageUrl());
+		
+		workflow.addTask(new CacheCrawlerPageTask(workflow, crawler));
+		workflow.addTask(new CheckForUpdateTask(workflow, crawler, file.getUpdatedOn(), file.getNewestFileName()));
+		WorkflowBuilder.tempDownload(workflow, downloadLinkGen(crawler), dest);
+	}
+	
+	/**
+	 * Downloads the latest version of the file
+	 */
 	public static void downloadFile(Workflow workflow, Crawler<?> crawler, PathGen dest) throws IOException {
 		workflow.addTask(new CacheCrawlerPageTask(workflow, crawler));
 		WorkflowBuilder.tempDownload(workflow, downloadLinkGen(crawler), dest);
 	}
 	
+	/**
+	 * Downloads the latest version of the mod referenced by the URL.
+	 */
 	public static void downloadMod(Workflow workflow, URL pageUrl, Config config, ModStateManager sm) throws IOException, UnsupportedHostException {
 		ModCrawler<?> crawler = factory.getModCrawler(pageUrl);
 		downloadFile(workflow, crawler, modZipPathGen(crawler, config));
@@ -104,7 +137,7 @@ public class ModWorkflowBuilder {
 	
 	// Generators
 	
-	private static URLGen downloadLinkGen(final Crawler<?> crawler){
+	public static URLGen downloadLinkGen(final Crawler<?> crawler){
 		return new URLGen(){
 			@Override
 			public URI getURI() throws URISyntaxException {
