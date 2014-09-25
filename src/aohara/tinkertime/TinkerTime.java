@@ -1,8 +1,5 @@
 package aohara.tinkertime;
 
-import java.awt.event.MouseEvent;
-
-import aohara.common.selectorPanel.ListListener;
 import aohara.common.selectorPanel.SelectorPanel;
 import aohara.common.workflows.ProgressPanel;
 import aohara.tinkertime.controllers.ModManager;
@@ -19,7 +16,7 @@ import aohara.tinkertime.views.TinkerMenuBar;
  * 
  * @author Andrew O'Hara
  */
-public class TinkerTime implements ListListener<Mod> {
+public class TinkerTime {
 	
 	public static final String
 		NAME = "Tinker Time",
@@ -45,7 +42,7 @@ public class TinkerTime implements ListListener<Mod> {
 		TinkerMenuBar menuBar = new TinkerMenuBar(mm);		
 		
 		// Add Listeners
-		sp.addListener(this);
+		sp.addListener(mm);
 		sp.addListener(menuBar);
 		sm.addListener(sp);
 
@@ -56,27 +53,5 @@ public class TinkerTime implements ListListener<Mod> {
 	
 	public static void main(String[] args) {
 		new TinkerTime();
-	}
-
-	@Override
-	// TODO: Move out of this class
-	public void elementClicked(Mod mod, int numTimes) throws Exception{
-		if (numTimes == 2){
-			if (mod.isEnabled()){
-				mm.disableMod(mod);
-			} else {
-				mm.enableMod(mod);
-			}
-		}
-	}
-
-	@Override
-	public void elementSelected(Mod element) {
-		// Do Nothing
-	}
-
-	@Override
-	public void elementRightClicked(MouseEvent evt, Mod mod) throws Exception {
-		// Do Nothing
 	}
 }

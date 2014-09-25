@@ -1,5 +1,6 @@
 package aohara.tinkertime.controllers;
 
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.Executor;
@@ -8,6 +9,7 @@ import java.util.concurrent.Executors;
 import org.apache.commons.io.FilenameUtils;
 
 import aohara.common.Listenable;
+import aohara.common.selectorPanel.ListListener;
 import aohara.common.workflows.ConflictResolver;
 import aohara.common.workflows.ProgressPanel;
 import aohara.common.workflows.Workflow;
@@ -26,7 +28,7 @@ import aohara.tinkertime.workflows.ModWorkflowBuilder;
  * 
  * @author Andrew O'Hara
  */
-public class ModManager extends Listenable<ModUpdateListener> implements WorkflowRunner {
+public class ModManager extends Listenable<ModUpdateListener> implements WorkflowRunner, ListListener<Mod> {
 	
 	public static final int NUM_CONCURRENT_DOWNLOADS = 4;
 	
@@ -66,6 +68,27 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		for (ModUpdateListener l : getListeners()){
 			l.modUpdated(mod, deleted);
 		}
+	}
+	
+	@Override
+	public void elementClicked(Mod mod, int numTimes) throws Exception{
+		if (numTimes == 2){
+			if (mod.isEnabled()){
+				disableMod(mod);
+			} else {
+				enableMod(mod);
+			}
+		}
+	}
+
+	@Override
+	public void elementSelected(Mod element) {
+		// Do Nothing
+	}
+
+	@Override
+	public void elementRightClicked(MouseEvent evt, Mod mod) throws Exception {
+		// Do Nothing
 	}
 	
 	// -- Accessors ------------------------
