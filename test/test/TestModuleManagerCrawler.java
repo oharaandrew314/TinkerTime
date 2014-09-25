@@ -15,7 +15,7 @@ import test.util.MockCrawlerFactory;
 import aohara.tinkertime.crawlers.JenkinsCrawler;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 
-public class TestMOduleManagerCrawler {
+public class TestModuleManagerCrawler {
 	
 	private static JenkinsCrawler loadTestPage(int num) throws IOException, UnsupportedHostException {
 		URL url = new URL(String.format("https://ksp.sarbian.com/moduleManagerPage%d.json", num));

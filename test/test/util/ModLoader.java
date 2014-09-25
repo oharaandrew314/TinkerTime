@@ -25,7 +25,7 @@ public class ModLoader {
 		}
 	}
 	
-	public static URL getZipUrl(ModStubs stub){
+	private static URL getZipUrl(ModStubs stub){
 		return ModLoader.class.getClassLoader().getResource(
 			String.format("test/res/zips/%s.zip", stub.name)
 		);
@@ -57,7 +57,7 @@ public class ModLoader {
 		try {
 			FileUtils.copyURLToFile(
 				getZipUrl(stub),
-				mod.getCachedZipPath(config).toFile()
+				getZipPath(stub).toFile()
 			);
 		} catch (IOException e) {
 			e.printStackTrace();
