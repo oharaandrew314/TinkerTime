@@ -282,7 +282,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				Util.goToHyperlink(new URL("https://github.com/oharaandrew314/TinkerTime/blob/master/README.md"));
+				Util.goToHyperlink(new URL("https://github.com/oharaandrew314/TinkerTime/wiki"));
 			} catch (IOException e1) {
 				errorMessage("Error opening help");
 			}
