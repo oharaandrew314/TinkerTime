@@ -41,7 +41,7 @@ public class TinkerTime {
 		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new ModView(), new ModComparator());
 		sp.addControlPanel(true, new ModImageView(config));
 		sp.setListCellRenderer(new ModListCellRenderer());
-		TinkerMenuBar menuBar = new TinkerMenuBar(mm);		
+		TinkerMenuBar menuBar = new TinkerMenuBar(mm);
 		
 		// Add Listeners
 		sp.addListener(mm);

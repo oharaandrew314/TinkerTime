@@ -1,5 +1,6 @@
 package aohara.tinkertime;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -7,7 +8,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import aohara.common.AbstractConfig;
-import aohara.tinkertime.controllers.ModStateManager;
 
 /**
  * Stores and Retrieves User Configuration Data.
@@ -78,11 +78,20 @@ public class Config extends AbstractConfig {
 	}
 	
 	public Path getModsListPath(){
-		return getModsZipPath().resolve("mods.json");
+		return getGameDataPath().resolve("TinkerTime.json");
 	}
 	
 	public static void updateConfig(boolean restartOnSuccess, boolean exitOnCancel){
-		JFileChooser chooser = new JFileChooser();
+		Config config = new Config();
+		
+		// Get Default Directory for FileChooser
+		File defaultDir = null;
+		if (config.hasProperty(GAMEDATA_PATH)){
+			defaultDir = config.getGameDataPath().toFile();
+		}
+		
+		// Create JFileChooser
+		JFileChooser chooser = new JFileChooser(defaultDir);
 		chooser.setDialogTitle(GAMEDATA_PROMPT);
 		chooser.setApproveButtonText("Select KSP Path");
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -90,11 +99,9 @@ public class Config extends AbstractConfig {
 		
 		if (result == JFileChooser.APPROVE_OPTION){
 			try {
-				Config config = new Config();
 				config.setGameDataPath(chooser.getSelectedFile().toPath());
 				if (restartOnSuccess){
 					JOptionPane.showMessageDialog(null, "A restart is required");
-					new ModStateManager(config.getModsListPath()).clear();;
 					System.exit(0);
 				}
 			} catch (IllegalPathException e) {
