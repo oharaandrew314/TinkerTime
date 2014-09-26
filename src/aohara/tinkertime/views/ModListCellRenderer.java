@@ -12,7 +12,6 @@ import javax.swing.ListCellRenderer;
 
 import thirdParty.CompoundIcon;
 import aohara.tinkertime.Config;
-import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.models.Mod;
 
 /**
@@ -44,7 +43,7 @@ public class ModListCellRenderer implements ListCellRenderer<Mod> {
 
 		// Compile list of icons
 		LinkedList<ImageIcon> icons = new LinkedList<>();
-		if (ModManager.isDownloaded(mod, new Config())){
+		if (mod.isDownloaded(new Config())){
 			icons.add(mod.isEnabled() ? checkIcon : xIcon);
 		} else {
 			icons.add(errorIcon);

@@ -50,6 +50,10 @@ public class Mod extends UpdateableFile {
 		return FilenameUtils.getBaseName(getPageUrl().toString());	
 	}
 	
+	public boolean isDownloaded(Config config){
+		return getCachedZipPath(config).toFile().exists();
+	}
+	
 	public Path getCachedZipPath(Config config){
 		return config.getModsZipPath().resolve(getNewestFileName());
 	}

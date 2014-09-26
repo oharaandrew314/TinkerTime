@@ -14,6 +14,6 @@ public class MockConfig extends Config {
 	
 	@Override
 	public Path getModsZipPath(){
-		return Paths.get("/");
+		return Paths.get("test/res/zips");
 	}
 }

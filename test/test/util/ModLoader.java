@@ -6,9 +6,6 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.apache.commons.io.FileUtils;
-
-import aohara.tinkertime.Config;
 import aohara.tinkertime.content.ArchiveInspector;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
@@ -17,30 +14,34 @@ import aohara.tinkertime.models.Module;
 
 public class ModLoader {
 	
-	public static Mod loadMod(ModStubs stub) throws UnsupportedHostException{
+	public static MockMod loadMod(ModStubs stub) throws UnsupportedHostException{
 		try {
-			return new MockCrawlerFactory().getModCrawler(stub.url).createMod();
+			Mod mod = new MockCrawlerFactory().getModCrawler(stub.url).createMod();
+			return new MockMod(
+				mod.getName(), mod.getNewestFileName(), mod.getCreator(),
+				mod.getImageUrl(), mod.getPageUrl(), mod.getUpdatedOn()
+			);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
-	private static URL getZipUrl(ModStubs stub){
+	private static URL getZipUrl(String modName){
 		return ModLoader.class.getClassLoader().getResource(
-			String.format("test/res/zips/%s.zip", stub.name)
+			String.format("test/res/zips/%s.zip", modName)
 		);
 	}
 	
-	public static Path getZipPath(ModStubs stub){
+	public static Path getZipPath(String modName){
 		try {
-			return Paths.get(getZipUrl(stub).toURI());
+			return Paths.get(getZipUrl(modName).toURI());
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
 	public static ModStructure getStructure(ModStubs stub) throws IOException{
-		return ArchiveInspector.inspectArchive(getZipPath(stub));
+		return ArchiveInspector.inspectArchive(getZipPath(stub.name));
 	}
 	
 	public static Module getModule(ModStructure struct, String moduleName){
@@ -50,18 +51,5 @@ public class ModLoader {
 			}
 		}
 		return null;
-	}
-	
-	public static Mod addMod(ModStubs stub, Config config) throws Throwable {
-		Mod mod = new MockCrawlerFactory().getModCrawler(stub.url).createMod();
-		try {
-			FileUtils.copyURLToFile(
-				getZipUrl(stub),
-				getZipPath(stub).toFile()
-			);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return mod;
 	}
 }

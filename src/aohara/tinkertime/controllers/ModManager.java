@@ -91,16 +91,6 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		// Do Nothing
 	}
 	
-	// -- Accessors ------------------------
-	
-	public static boolean isDownloaded(Mod mod, Config config){
-		return mod.getCachedImagePath(config).toFile().exists();
-	}
-	
-	public boolean isDownloaded(Mod mod){
-		return isDownloaded(mod, config);
-	}
-	
 	// -- Modifiers ---------------------------------
 	
 	@Override
@@ -142,7 +132,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	public void enableMod(Mod mod) throws ModAlreadyEnabledException, ModNotDownloadedException, IOException {
 		if (mod.isEnabled()){
 			throw new ModAlreadyEnabledException();
-		} else if (!isDownloaded(mod)){
+		} else if (!mod.isDownloaded(config)){
 			throw new ModNotDownloadedException();
 		}
 		

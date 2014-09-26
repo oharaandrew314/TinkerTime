@@ -18,6 +18,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import test.util.MockConfig;
+import test.util.MockMod;
 import test.util.ModLoader;
 import test.util.ModStubs;
 import aohara.common.workflows.ConflictResolver;
@@ -36,16 +37,20 @@ public class TestModManager {
 	
 	private static Config config;
 	private ModManager manager;
-	private static Mod mod, testMod1, testMod2;
+	private static MockMod mod, testMod1, testMod2;
 	private MockCR cr;
 	private Executor downloedExecutor, enablerExecutor;
 	
 	@BeforeClass
 	public static void setUpClass() throws Throwable{
 		config = spy(new MockConfig());
-		mod = ModLoader.addMod(ModStubs.Mechjeb, config);
-		testMod1 = ModLoader.addMod(ModStubs.TestMod1, config);
-		testMod2 = ModLoader.addMod(ModStubs.TestMod2, config);
+		mod = ModLoader.loadMod(ModStubs.Mechjeb);
+		testMod1 = ModLoader.loadMod(ModStubs.TestMod1);
+		testMod2 = ModLoader.loadMod(ModStubs.TestMod2);
+		
+		mod.setDownloaded(true);
+		testMod1.setDownloaded(true);
+		testMod2.setDownloaded(true);
 	}
 	
 	@Before
@@ -76,7 +81,7 @@ public class TestModManager {
 	
 	private void enableMod(Mod mod) throws Throwable {
 			reset(downloedExecutor);
-			assertTrue(ModManager.isDownloaded(mod, config));
+			assertTrue(mod.isDownloaded(config));
 			
 			manager.enableMod(mod);
 			
