@@ -34,7 +34,7 @@ public class TinkerTime {
 		ProgressPanel pp = new ProgressPanel();
 		
 		// Initialize Controllers
-		ModStateManager sm = new ModStateManager(config.getModsZipPath().resolve("mods.json"));
+		ModStateManager sm = new ModStateManager(config.getModsListPath());
 		mm = ModManager.createDefaultModManager(sm, pp);
 		
 		// Initialize GUI

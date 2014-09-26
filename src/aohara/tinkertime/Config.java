@@ -7,6 +7,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import aohara.common.AbstractConfig;
+import aohara.tinkertime.controllers.ModStateManager;
 
 /**
  * Stores and Retrieves User Configuration Data.
@@ -76,6 +77,10 @@ public class Config extends AbstractConfig {
 		}
 	}
 	
+	public Path getModsListPath(){
+		return getModsZipPath().resolve("mods.json");
+	}
+	
 	public static void updateConfig(boolean restartOnSuccess, boolean exitOnCancel){
 		JFileChooser chooser = new JFileChooser();
 		chooser.setDialogTitle(GAMEDATA_PROMPT);
@@ -85,9 +90,11 @@ public class Config extends AbstractConfig {
 		
 		if (result == JFileChooser.APPROVE_OPTION){
 			try {
-				new Config().setGameDataPath(chooser.getSelectedFile().toPath());
+				Config config = new Config();
+				config.setGameDataPath(chooser.getSelectedFile().toPath());
 				if (restartOnSuccess){
 					JOptionPane.showMessageDialog(null, "A restart is required");
+					new ModStateManager(config.getModsListPath()).clear();;
 					System.exit(0);
 				}
 			} catch (IllegalPathException e) {

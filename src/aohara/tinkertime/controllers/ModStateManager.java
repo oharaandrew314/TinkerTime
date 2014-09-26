@@ -101,6 +101,10 @@ public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 		
 		saveMods(mods);
 	}
+	
+	public void clear(){
+		saveMods(new HashSet<Mod>());
+	}
 
 	@Override
 	public void setUpdateAvailable(URL pageUrl, String newestFileName) {
