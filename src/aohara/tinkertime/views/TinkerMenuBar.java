@@ -257,7 +257,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			Config.updateConfig(false);
+			Config.updateConfig(true, false);
 		}
 	}
 	

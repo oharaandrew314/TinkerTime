@@ -39,7 +39,7 @@ public class Config extends AbstractConfig {
 		if (hasProperty(GAMEDATA_PATH)){
 			return Paths.get(getProperty(GAMEDATA_PATH));
 		} else {
-			updateConfig(true);
+			updateConfig(false, true);
 			return getGameDataPath();
 		}		
 	}
@@ -72,11 +72,11 @@ public class Config extends AbstractConfig {
 	protected static void verifyConfig(){
 		Config config = new Config();
 		if (config.getGameDataPath() == null){
-			updateConfig(true);
+			updateConfig(true, true);
 		}
 	}
 	
-	public static void updateConfig(boolean exitOnCancel){
+	public static void updateConfig(boolean restartOnSuccess, boolean exitOnCancel){
 		JFileChooser chooser = new JFileChooser();
 		chooser.setDialogTitle(GAMEDATA_PROMPT);
 		chooser.setApproveButtonText("Select KSP Path");
@@ -86,9 +86,13 @@ public class Config extends AbstractConfig {
 		if (result == JFileChooser.APPROVE_OPTION){
 			try {
 				new Config().setGameDataPath(chooser.getSelectedFile().toPath());
+				if (restartOnSuccess){
+					JOptionPane.showMessageDialog(null, "A restart is required");
+					System.exit(0);
+				}
 			} catch (IllegalPathException e) {
 				JOptionPane.showMessageDialog(null, e.toString());
-				updateConfig(exitOnCancel);
+				updateConfig(restartOnSuccess, exitOnCancel);
 			}
 		} else if(exitOnCancel) {
 			System.exit(0);
