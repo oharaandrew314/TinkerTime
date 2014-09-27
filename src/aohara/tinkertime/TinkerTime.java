@@ -28,8 +28,8 @@ public class TinkerTime {
 	private final ModManager mm;
 	
 	public TinkerTime(){
-		Config.verifyConfig();
 		Config config = new Config();
+		config.verifyConfig();
 		
 		ProgressPanel pp = new ProgressPanel();
 		
@@ -54,8 +54,15 @@ public class TinkerTime {
 		
 		// Launch Startup Tasks
 		try {
-			new ModuleManagerUpdateController(mm, config).downloadUpdate(true); // Check for ModuleManager Update
-			mm.checkForModUpdates(); // Check for Mod Updates (Mark only)
+			// Check for ModuleManager Update
+			if (config.autoUpdateModuleManager()){
+				new ModuleManagerUpdateController(mm, config).downloadUpdate(true);
+			}
+			
+			// Check for Mod Updates
+			if (config.autoCheckForModUpdates()){
+				mm.checkForModUpdates();
+			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

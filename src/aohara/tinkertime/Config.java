@@ -1,13 +1,17 @@
 package aohara.tinkertime;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 
 import aohara.common.AbstractConfig;
+import aohara.common.options.Option;
+import aohara.common.options.OptionInput;
+import aohara.common.options.OptionSaveStrategy;
+import aohara.common.options.OptionsWindow;
 
 /**
  * Stores and Retrieves User Configuration Data.
@@ -18,31 +22,22 @@ import aohara.common.AbstractConfig;
  */
 public class Config extends AbstractConfig {
 	
-	private static final String GAMEDATA_PATH = "gamedataPath";
-	private static final String GAMEDATA_PROMPT = ("Please select your KSP GameData folder");
+	private static final String
+		GAMEDATA_PATH = "gamedataPath",
+		AUTO_UPDATE_MM = "autoUpdateMM",
+		AUTO_CHECK_FOR_MOD_UPDATES = "autoCheckForModUpdates";
+	//private static final String GAMEDATA_PROMPT = ("Please select your KSP GameData folder");
 			
 	
 	public Config(){
 		super(TinkerTime.NAME);
 		setLoadOnGet(true);
 	}
-
 	
-	public void setGameDataPath(Path path) throws IllegalPathException {
-		if (path != null && path.toFile().isDirectory()){
-			setProperty(GAMEDATA_PATH, path.toString());
-		} else {
-			throw new IllegalPathException(GAMEDATA_PROMPT);
-		}
-	}
+	// -- Getters -------------------------------------------------------
 	
 	public Path getGameDataPath(){
-		if (hasProperty(GAMEDATA_PATH)){
-			return Paths.get(getProperty(GAMEDATA_PATH));
-		} else {
-			updateConfig(false, true);
-			return getGameDataPath();
-		}		
+		return Paths.get(getProperty(GAMEDATA_PATH));	
 	}
 	
 	public Path getModsZipPath(){
@@ -57,60 +52,89 @@ public class Config extends AbstractConfig {
 		return path;
 	}
 	
+	public Path getModsListPath(){
+		return getGameDataPath().resolve("TinkerTime.json");
+	}
+	
+	public boolean autoUpdateModuleManager(){
+		return Boolean.parseBoolean(getProperty(AUTO_UPDATE_MM));
+	}
+	
+	public boolean autoCheckForModUpdates(){
+		return Boolean.parseBoolean(getProperty(AUTO_CHECK_FOR_MOD_UPDATES)); 
+	}
+	
+	// -- Setters ----------------------------------------------------------
+
+	/*
+	public void setGameDataPath(Path path) throws IllegalPathException {
+		if (path != null && path.toFile().isDirectory()){
+			setProperty(GAMEDATA_PATH, path.toString());
+		} else {
+			throw new IllegalPathException(GAMEDATA_PROMPT);
+		}
+	}
+	*/
+	
 	@Override
 	public void setProperty(String key, String value){
 		super.setProperty(key, value);
 		save();
 	}
 	
-	@SuppressWarnings("serial")
-	public class IllegalPathException extends Exception {
-		private IllegalPathException(String message){
-			super(message);
-		}
-	}
+	// -- Verification ----------------------------------------------------
 	
-	protected static void verifyConfig(){
-		Config config = new Config();
-		if (config.getGameDataPath() == null){
+	@Override
+	public void verifyConfig(){
+		if (!hasProperty(AUTO_UPDATE_MM)){
+			setProperty(AUTO_UPDATE_MM, Boolean.toString(true));
+		}
+		
+		if (!hasProperty(AUTO_CHECK_FOR_MOD_UPDATES)){
+			setProperty(AUTO_CHECK_FOR_MOD_UPDATES, Boolean.toString(true));
+		}
+		
+		if (!hasProperty(GAMEDATA_PATH)){
 			updateConfig(true, true);
 		}
 	}
 	
-	public Path getModsListPath(){
-		return getGameDataPath().resolve("TinkerTime.json");
+	public void updateConfig(boolean restartOnSuccess, boolean exitOnCancel){		
+		Set<OptionInput> optionInputs = new HashSet<>();
+		
+		// GameData Path Option
+		Option option = new Option(
+			"GameData Path",
+			getGameDataPath().toString(),
+			new OptionSaveStrategy.ConfigStrategy(this, GAMEDATA_PATH)
+		);
+		optionInputs.add(new OptionInput.FileChooserInput(option, JFileChooser.DIRECTORIES_ONLY));
+		
+		// Auto Update Module Manager Option
+		option = new Option(
+			"Update Module Manager on Startup",
+			Boolean.toString(autoUpdateModuleManager()),
+			new OptionSaveStrategy.ConfigStrategy(this, AUTO_UPDATE_MM) 
+		);
+		optionInputs.add(new OptionInput.TrueFalseInput(option));
+		
+		// Auto Check for Mod Updates Option
+		option = new Option(
+			"Check For Updates on Startup",
+			Boolean.toString(autoCheckForModUpdates()),
+			new OptionSaveStrategy.ConfigStrategy(this, AUTO_CHECK_FOR_MOD_UPDATES) 
+		);
+		optionInputs.add(new OptionInput.TrueFalseInput(option));
+		
+		new OptionsWindow("Options", optionInputs, restartOnSuccess, exitOnCancel).toDialog();
 	}
 	
-	public static void updateConfig(boolean restartOnSuccess, boolean exitOnCancel){
-		Config config = new Config();
-		
-		// Get Default Directory for FileChooser
-		File defaultDir = null;
-		if (config.hasProperty(GAMEDATA_PATH)){
-			defaultDir = config.getGameDataPath().toFile();
-		}
-		
-		// Create JFileChooser
-		JFileChooser chooser = new JFileChooser(defaultDir);
-		chooser.setDialogTitle(GAMEDATA_PROMPT);
-		chooser.setApproveButtonText("Select KSP Path");
-		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		int result = chooser.showSaveDialog(null);
-		
-		if (result == JFileChooser.APPROVE_OPTION){
-			try {
-				config.setGameDataPath(chooser.getSelectedFile().toPath());
-				if (restartOnSuccess){
-					JOptionPane.showMessageDialog(null, "A restart is required");
-					System.exit(0);
-				}
-			} catch (IllegalPathException e) {
-				JOptionPane.showMessageDialog(null, e.toString());
-				updateConfig(restartOnSuccess, exitOnCancel);
-			}
-		} else if(exitOnCancel) {
-			System.exit(0);
+	// -- Exceptions -------------------------------------------------
+	
+	@SuppressWarnings("serial")
+	public static class IllegalPathException extends Exception {
+		private IllegalPathException(String message){
+			super(message);
 		}
 	}
-
 }
