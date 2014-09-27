@@ -47,6 +47,11 @@ public class UpdateableFile implements FileUpdateListener {
 			&& ((UpdateableFile)o).getPageUrl().equals(getPageUrl())
 		);
 	}
+	
+	@Override
+	public int hashCode(){
+		return getPageUrl().hashCode();
+	}
 
 	@Override
 	public void setUpdateAvailable(URL pageUrl, String newestFileName) {
