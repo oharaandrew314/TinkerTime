@@ -6,7 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URL;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,17 +40,10 @@ public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 		this.config = config;
 	}
 	
-	private void updateListeners(Collection<Mod> mods){
-		for (SelectorInterface<Mod> l : getListeners()){
-			l.setDataSource(mods);
-		}
-	}
-	
 	private synchronized Set<Mod> loadMods(){
 		try(FileReader reader = new FileReader(config.getModsListPath().toFile())){
 			Set<Mod> mods = gson.fromJson(reader, modsType);
 			if (mods != null){
-				updateListeners(mods);
 				return mods;
 			}
 		} catch (FileNotFoundException e){
@@ -62,48 +54,52 @@ public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 		return new HashSet<Mod>();
 	}
 	
-	private void saveMods(Set<Mod> mods){
-		try(FileWriter writer = new FileWriter(config.getModsListPath().toFile())){
-			gson.toJson(mods, modsType, writer);
-			updateListeners(mods);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	public synchronized Set<Mod> getMods(){
 		if (modCache.isEmpty()){
 			modCache.addAll(loadMods());
+			for (SelectorInterface<Mod> l : getListeners()){
+				l.clear();
+				for (Mod mod : modCache){
+					l.addElement(mod);
+				}
+			}
 		}
-		
 		return new HashSet<Mod>(modCache);
 	}
 
 	@Override
 	public synchronized void modUpdated(Mod mod, boolean deleted) {
-		modCache.clear();
+		// See if a mod needs to be removed
 		
-		Set<Mod> mods = loadMods();
-		
-		// Remove the old mod
 		Set<Mod> toRemove = new HashSet<>();
-		for (Mod m : mods){
-			if (m.getName().equals(mod.getName())){
-				toRemove.add(m);
+		for (Mod m : modCache){
+			if (m.equals(mod)){
+				toRemove.add(mod);
+				for (SelectorInterface<Mod> l : getListeners()){
+					l.removeElement(mod);
+				}
 			}
 		}
-		mods.removeAll(toRemove);
+		modCache.removeAll(toRemove);
 		
-		// If the mod is being updated, add the new data
+		// Update Mod if it is not removed
 		if (!deleted){
-			mods.add(mod);
+			modCache.add(mod);
+			for (SelectorInterface<Mod> l : getListeners()){
+				l.addElement(mod);
+			}
 		}
 		
-		saveMods(mods);
+		// Save Mods
+		try(FileWriter writer = new FileWriter(config.getModsListPath().toFile())){
+			gson.toJson(modCache, modsType, writer);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
-	public void setUpdateAvailable(URL pageUrl, String newestFileName) {
+	public synchronized void setUpdateAvailable(URL pageUrl, String newestFileName) {
 		for (Mod mod : getMods()){
 			if (mod.getPageUrl().equals(pageUrl)){
 				modUpdated(mod, false);
