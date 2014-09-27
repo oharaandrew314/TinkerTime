@@ -4,13 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import test.util.MockConfig;
 import test.util.ModLoader;
 import test.util.ModStubs;
 import aohara.tinkertime.controllers.ModStateManager;
@@ -20,7 +20,6 @@ public class TestModStateManager {
 
 	private Mod mod1, mod2;
 	private ModStateManager stateManager;
-	private Path path;
 	private List<Mod> mods;
 	
 	private static Mod getUpdatedMod(final Mod mod, final String newestFile){
@@ -42,12 +41,10 @@ public class TestModStateManager {
 
 	@Before
 	public void setUp() throws Throwable {
-		path = UnitTestSuite.getTempFile("mods", ".json");
-
 		mod1 = ModLoader.loadMod(ModStubs.Mechjeb);
 		mod2 = ModLoader.loadMod(ModStubs.Engineer);
 
-		stateManager = new ModStateManager(path);
+		stateManager = new ModStateManager(new MockConfig());
 	}
 
 	@Test

@@ -26,7 +26,6 @@ public class Config extends AbstractConfig {
 		GAMEDATA_PATH = "gamedataPath",
 		AUTO_UPDATE_MM = "autoUpdateMM",
 		AUTO_CHECK_FOR_MOD_UPDATES = "autoCheckForModUpdates";
-	//private static final String GAMEDATA_PROMPT = ("Please select your KSP GameData folder");
 			
 	
 	public Config(){
@@ -65,16 +64,6 @@ public class Config extends AbstractConfig {
 	}
 	
 	// -- Setters ----------------------------------------------------------
-
-	/*
-	public void setGameDataPath(Path path) throws IllegalPathException {
-		if (path != null && path.toFile().isDirectory()){
-			setProperty(GAMEDATA_PATH, path.toString());
-		} else {
-			throw new IllegalPathException(GAMEDATA_PROMPT);
-		}
-	}
-	*/
 	
 	@Override
 	public void setProperty(String key, String value){

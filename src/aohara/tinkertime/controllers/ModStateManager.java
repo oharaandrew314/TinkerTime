@@ -6,13 +6,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URL;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 import aohara.common.Listenable;
 import aohara.common.selectorPanel.SelectorInterface;
+import aohara.tinkertime.Config;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.FileUpdateListener;
 
@@ -31,14 +31,14 @@ public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 		implements ModUpdateListener, FileUpdateListener {
 	
 	private final Gson gson;
-	private final Path modsPath;
+	private final Config config;
 	private final Type modsType = new TypeToken<Set<Mod>>() {}.getType();
 	
 	private final Set<Mod> modCache = new HashSet<>();
 	
-	public ModStateManager(Path modsPath){
+	public ModStateManager(Config config){
 		gson = new Gson();
-		this.modsPath = modsPath;
+		this.config = config;
 	}
 	
 	private void updateListeners(Collection<Mod> mods){
@@ -48,7 +48,7 @@ public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 	}
 	
 	private synchronized Set<Mod> loadMods(){
-		try(FileReader reader = new FileReader(modsPath.toFile())){
+		try(FileReader reader = new FileReader(config.getModsListPath().toFile())){
 			Set<Mod> mods = gson.fromJson(reader, modsType);
 			if (mods != null){
 				updateListeners(mods);
@@ -63,7 +63,7 @@ public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 	}
 	
 	private void saveMods(Set<Mod> mods){
-		try(FileWriter writer = new FileWriter(modsPath.toFile())){
+		try(FileWriter writer = new FileWriter(config.getModsListPath().toFile())){
 			gson.toJson(mods, modsType, writer);
 			updateListeners(mods);
 		} catch (IOException e) {
