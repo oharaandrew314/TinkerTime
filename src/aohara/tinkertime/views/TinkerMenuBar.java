@@ -55,7 +55,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		this.mm = mm;
 		
 		JMenu fileMenu = new JMenu("File");
-		fileMenu.add(new JMenuItem(new UpdatePathsAction()));
+		fileMenu.add(new JMenuItem(new OptionsAction()));
 		fileMenu.add(new JMenuItem(new ExitAction()));
 		add(fileMenu);
 		
@@ -249,15 +249,15 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		}
 	}
 	
-	private class UpdatePathsAction extends AbstractAction {
+	private class OptionsAction extends AbstractAction {
 		
-		private UpdatePathsAction(){
-			super("Select KSP Installation");
+		private OptionsAction(){
+			super("Options");
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			Config.updateConfig(true, false);
+			new Config().updateConfig(true, false);
 		}
 	}
 	

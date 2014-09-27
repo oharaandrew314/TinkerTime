@@ -89,6 +89,7 @@ public class ModWorkflowBuilder {
 		downloadFile(workflow, crawler, modZipPathGen(crawler, config));
 		workflow.addTask(new MarkModUpdatedTask(workflow, sm, crawler));
 		WorkflowBuilder.download(workflow, modImageLinkGen(crawler), modImageCacheGen(crawler, config));
+		workflow.addTask(new MarkModUpdatedTask(workflow, sm, crawler));
 	}
 	
 	public static void deleteMod(Workflow workflow, Mod mod, Config config, ModStateManager sm) throws IOException {
