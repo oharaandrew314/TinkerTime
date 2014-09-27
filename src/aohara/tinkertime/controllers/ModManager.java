@@ -106,9 +106,14 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	}
 	
 	public void updateMod(Mod mod) throws ModUpdateFailedException {
+		Workflow wf = new Workflow("Updating " + mod.getName());
 		try {
-			downloadMod(mod.getPageUrl());
-		} catch(UnsupportedHostException e){
+			if (mod.isEnabled()){
+				ModWorkflowBuilder.disableMod(wf, mod, config, sm);
+			}
+			ModWorkflowBuilder.downloadMod(wf, mod.getPageUrl(), config, sm);
+			submitDownloadWorkflow(wf);
+		} catch (IOException | UnsupportedHostException e) {
 			throw new ModUpdateFailedException();
 		}
 	}
