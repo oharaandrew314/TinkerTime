@@ -112,4 +112,9 @@ public class TestModStructure {
 	public void testHotRockets() throws IOException{
 		testModules(ModStubs.HotRockets, "SmokeScreen", "MP_Nazari");
 	}
+	
+	@Test
+	public void testNear() throws IOException {
+		testModules(ModStubs.Near, "NEAR");
+	}
 }

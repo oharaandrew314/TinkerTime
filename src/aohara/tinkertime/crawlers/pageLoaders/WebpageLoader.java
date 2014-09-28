@@ -15,7 +15,7 @@ import org.jsoup.nodes.Document;
  */
 public class WebpageLoader implements PageLoader<Document>{
 	
-	public static final int TIMEOUT_MS = 5000;
+	public static final int TIMEOUT_MS = 10000;
 		
 	private final Map<URL, Document> documentCache = new HashMap<>();
 	

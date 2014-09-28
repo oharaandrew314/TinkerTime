@@ -63,20 +63,22 @@ public class ArchiveInspector {
 	
 	private static Path getGameDataPath(Collection<ZipEntry> entries){
 		int shortestLength = Integer.MAX_VALUE;
-		ZipEntry gameDataEntry = null;
+		Path gameDataPath = null;
 		
 		for (ZipEntry entry : entries){
-			if (entry.isDirectory()){
-				if (entry.getName().toLowerCase().endsWith("gamedata/")){
-					int pathLength = Paths.get(entry.getName()).getNameCount();
-					if (pathLength < shortestLength){
-						shortestLength = pathLength;
-						gameDataEntry = entry;
-					}
+			Path path = Paths.get(entry.getName());
+			if (entry.isDirectory() && entry.getName().toLowerCase().endsWith("gamedata/")){
+				
+				int pathLength = path.getNameCount();
+				if (pathLength < shortestLength){
+					shortestLength = pathLength;
+					gameDataPath = path;
 				}
+			} else if (entry.getName().toLowerCase().startsWith("gamedata/")){
+				gameDataPath = path.getName(0);
 			}
 		}
-		return gameDataEntry != null ? Paths.get(gameDataEntry.getName()) : null;
+		return gameDataPath;
 	}
 	
 	private static Set<Path> getModulePaths(Collection<ZipEntry> entries, Path gameDataPath){

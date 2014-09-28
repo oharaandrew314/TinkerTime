@@ -12,7 +12,8 @@ public enum ModStubs {
 	NavBall("Enhanced Navball", "http://www.curse.com/ksp-mods/kerbal/220469-enhanced-navball-v1-2"),
 	HotRockets("HotRockets", "http://www.curse.com/ksp-mods/kerbal/220207-hotrockets-particle-fx-replacement"),
 	Eve("EnvironmentalVisualEnhancements", "https://github.com/rbray89/EnvironmentalVisualEnhancements"),
-	ProceduralFairings("ProceduralFairings", "https://github.com/e-dog/ProceduralFairings");
+	ProceduralFairings("ProceduralFairings", "https://github.com/e-dog/ProceduralFairings"),
+	Near("NEAR", "https://github.com/ferram4/Ferram-Aerospace-Research");
 	
 	public final String name;
 	public final URL url;
