@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.swing.JFileChooser;
 
 import aohara.common.AbstractConfig;
+import aohara.common.options.Constraints;
 import aohara.common.options.Option;
 import aohara.common.options.OptionInput;
 import aohara.common.options.OptionSaveStrategy;
@@ -83,7 +84,7 @@ public class Config extends AbstractConfig {
 			setProperty(AUTO_CHECK_FOR_MOD_UPDATES, Boolean.toString(true));
 		}
 		
-		if (!hasProperty(GAMEDATA_PATH)){
+		if (!hasProperty(GAMEDATA_PATH) || getProperty(GAMEDATA_PATH) == null || getProperty(GAMEDATA_PATH).isEmpty()){
 			updateConfig(true, true);
 		}
 	}
@@ -94,9 +95,11 @@ public class Config extends AbstractConfig {
 		// GameData Path Option
 		Option option = new Option(
 			"GameData Path",
-			getGameDataPath().toString(),
+			hasProperty(GAMEDATA_PATH) ? getGameDataPath().toString() : null,
 			new OptionSaveStrategy.ConfigStrategy(this, GAMEDATA_PATH)
 		);
+		option.addConstraint(new Constraints.NotNull(option));
+		option.addConstraint(new Constraints.EnsurePathExists(option, true));
 		optionInputs.add(new OptionInput.FileChooserInput(option, JFileChooser.DIRECTORIES_ONLY));
 		
 		// Auto Update Module Manager Option

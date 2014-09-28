@@ -41,7 +41,6 @@ public abstract class FileUpdateController implements FileUpdateListener, TaskLi
 	
 	public abstract String getCurrentVersion();
 	public abstract Path getCurrentPath();
-	public abstract boolean currentlyExists();
 	
 	public void showDialog(){
 		dialog = new FileUpdateDialog(title, new UpdateAction(this), new CheckLatestAction(this));

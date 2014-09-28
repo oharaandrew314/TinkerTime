@@ -37,22 +37,19 @@ public class ModuleManagerUpdateController extends FileUpdateController {
 
 	@Override
 	public Path getCurrentPath() {
-		for (File file : destFolder.toFile().listFiles()){
-			if (file.getName().toLowerCase().startsWith(MODULE_MANAGER.toLowerCase())){
-				return file.toPath();
+		if (destFolder != null && destFolder.toFile().isDirectory()){
+			for (File file : destFolder.toFile().listFiles()){
+				if (file.getName().toLowerCase().startsWith(MODULE_MANAGER.toLowerCase())){
+					return file.toPath();
+				}
 			}
 		}
 		return null;
 	}
-
-	@Override
-	public boolean currentlyExists() {
-		return getCurrentPath() != null;
-	}
 	
 	@Override
 	public void buildWorkflowTask(Workflow workflow, final Crawler<?> crawler, boolean downloadOnlyIfNewer) throws IOException {
-		if (currentlyExists()){
+		if (getCurrentPath() != null){
 			getCurrentPath().toFile().delete();
 		}
 		
