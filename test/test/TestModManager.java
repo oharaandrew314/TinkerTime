@@ -10,59 +10,59 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
-import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.concurrent.Executor;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import test.util.MockConfig;
+import test.util.MockMod;
 import test.util.ModLoader;
-import aohara.common.executors.Downloader;
-import aohara.tinkertime.config.Config;
+import test.util.ModStubs;
+import aohara.common.workflows.ConflictResolver;
+import aohara.common.workflows.ConflictResolver.Resolution;
+import aohara.common.workflows.ProgressPanel;
+import aohara.common.workflows.Workflow;
+import aohara.tinkertime.Config;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledException;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
 import aohara.tinkertime.controllers.ModStateManager;
-import aohara.tinkertime.controllers.files.ConflictResolver;
-import aohara.tinkertime.controllers.files.ModEnabler;
-import aohara.tinkertime.controllers.files.ConflictResolver.Resolution;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.models.ModApi;
-import aohara.tinkertime.models.ModStructure.Module;
-import aohara.tinkertime.models.context.NewModPageContext;
-import aohara.tinkertime.models.context.PageDownloadContext;
 
 public class TestModManager {
 	
-	private ModStateManager sm;
 	private static Config config;
 	private ModManager manager;
-	private static Mod mod, testMod1, testMod2;
+	private static MockMod mod, testMod1, testMod2;
 	private MockCR cr;
-	private Downloader pageDownloader, modDownloader;
-	private ModEnabler enabler;
+	private Executor downloedExecutor, enablerExecutor;
 	
 	@BeforeClass
 	public static void setUpClass() throws Throwable{
 		config = spy(new MockConfig());
-		mod = ModLoader.addMod(ModLoader.MECHJEB, config);
-		testMod1 = ModLoader.addMod(ModLoader.TESTMOD1, config);
-		testMod2 = ModLoader.addMod(ModLoader.TESTMOD2, config);
+		mod = ModLoader.loadMod(ModStubs.Mechjeb);
+		testMod1 = ModLoader.loadMod(ModStubs.TestMod1);
+		testMod2 = ModLoader.loadMod(ModStubs.TestMod2);
+		
+		mod.setDownloaded(true);
+		testMod1.setDownloaded(true);
+		testMod2.setDownloaded(true);
 	}
 	
 	@Before
 	public void setUp() throws Throwable {
 		manager = new ModManager(
-			sm = mock(ModStateManager.class),
+			mock(ModStateManager.class),
 			config,
-			pageDownloader = mock(Downloader.class),
-			modDownloader = mock(Downloader.class),
-			enabler = mock(ModEnabler.class)
+			mock(ProgressPanel.class),
+			cr = spy(new MockCR()),
+			downloedExecutor = mock(Executor.class),
+			enablerExecutor = mock(Executor.class)
 		);
-		cr = spy(new MockCR(config, sm));
 		
 		mod.setEnabled(false);
 		testMod1.setEnabled(false);
@@ -73,27 +73,20 @@ public class TestModManager {
 	
 	@Test
 	public void testAddMod() throws Throwable {
-		manager.addNewMod(mod.getPageUrl().toString());
-	
-		verify(modDownloader, times(1)).submit(any(NewModPageContext.class));
-	}
-
-	@Test
-	public void testIsDownloaded() throws IOException {
-		ModApi mod = ModLoader.getPage(ModLoader.ENGINEER);		
-		assertTrue(manager.isDownloaded(mod));
+		manager.downloadMod(mod.getPageUrl());
+		verify(downloedExecutor, times(1)).execute(any(Workflow.class));
 	}
 	
 	// -- Enable Tests ------------------------------------
 	
 	private void enableMod(Mod mod) throws Throwable {
-			reset(enabler);
-			assertTrue(ModManager.isDownloaded(mod, config));
+			reset(downloedExecutor);
+			assertTrue(mod.isDownloaded(config));
 			
 			manager.enableMod(mod);
 			
 			verifyZeroInteractions(cr);
-			verify(enabler, times(1)).enable(mod, config);
+			verify(enablerExecutor, times(1)).execute(any(Workflow.class));
 		}
 	
 	@Test
@@ -135,10 +128,8 @@ public class TestModManager {
 	@Test
 	public void testDisableMod() throws Throwable {
 		mod.setEnabled(true);
-		
 		manager.disableMod(mod);
-		
-		verify(enabler, times(1)).disable(mod, config);
+		verify(enablerExecutor, times(1)).execute(any(Workflow.class));
 	}
 	
 	@Test(expected = ModAlreadyDisabledException.class)
@@ -153,35 +144,18 @@ public class TestModManager {
 	@Test
 	public void testUpdate() throws ModUpdateFailedException{
 		manager.updateMod(mod);
-		verify(pageDownloader, times(1)).submit(any(PageDownloadContext.class));
+		verify(downloedExecutor, times(1)).execute(any(Workflow.class));
 	}
 	
 	// -- Mock Objects -------------------------------------
 	
 	private static class MockCR extends ConflictResolver {
 		
-		public MockCR(Config config, ModStateManager sm) {
-			super(config, sm);
-		}
-
 		public Resolution res;
 
 		@Override
-		public Resolution getResolution(Module module, Mod mod) {
+		public Resolution getResolution(Path conflictPath) {
 			return res;
-		}
-	}
-	
-	private static class MockConfig extends Config {
-		
-		@Override
-		public Path getGameDataPath(){
-			return Paths.get("/");
-		}
-		
-		@Override
-		public Path getModsPath(){
-			return Paths.get("/");
 		}
 	}
 }

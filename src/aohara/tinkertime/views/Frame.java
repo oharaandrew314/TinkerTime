@@ -1,5 +1,6 @@
 package aohara.tinkertime.views;
 
+import java.awt.BorderLayout;
 import java.awt.Image;
 import java.io.IOException;
 import java.net.URL;
@@ -10,18 +11,27 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 
 import aohara.common.selectorPanel.DecoratedComponent;
+import aohara.common.workflows.ProgressPanel;
 import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.controllers.ModManager;
 
+/**
+ * The main Application JFrame.
+ * 
+ * It demands that all of its components be given in the constructor.
+ *
+ * @author Andrew O'Hara
+ */
 @SuppressWarnings("serial")
 public class Frame extends JFrame {
 	
 	public Frame(
-			ModManager mm, DecoratedComponent<?> selectorPanel,
-			JMenuBar menuBar) {
+		ModManager mm, DecoratedComponent<?> selectorPanel,
+		ProgressPanel progressPanel, JMenuBar menuBar
+	) {
 		setTitle(TinkerTime.NAME);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(800, 600);
+		setLayout(new BorderLayout());
 		setJMenuBar(menuBar);
 		
 		// Add App icons
@@ -32,7 +42,9 @@ public class Frame extends JFrame {
 		imageList.add(loadIcon("icon 16x16.png"));
 		setIconImages(imageList);
 		
-		add(selectorPanel.getComponent());
+		add(selectorPanel.getComponent(), BorderLayout.CENTER);
+		add(progressPanel.getComponent(), BorderLayout.SOUTH);
+		pack();
 		setVisible(true);
 	}
 	

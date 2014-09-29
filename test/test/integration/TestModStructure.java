@@ -2,6 +2,7 @@ package test.integration;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -10,13 +11,14 @@ import java.util.Set;
 import org.junit.Test;
 
 import test.util.ModLoader;
+import test.util.ModStubs;
 import aohara.tinkertime.models.ModStructure;
-import aohara.tinkertime.models.ModStructure.Module;
+import aohara.tinkertime.models.Module;
 
 public class TestModStructure {
 	
-	private void testModules(String modName, String... expectedModuleNames){
-		ModStructure struct = ModLoader.getStructure(modName);
+	private void testModules(ModStubs stub, String... expectedModuleNames) throws IOException{
+		ModStructure struct = ModLoader.getStructure(stub);
 		
 		Set<String> actualNames = new HashSet<>();
 		for (Module module : struct.getModules()){
@@ -31,7 +33,7 @@ public class TestModStructure {
 	
 	private void testModule(Module module, String... expectedFileNames){
 		Set<String> actual = new HashSet<String>();
-		for (Path path : module.getOutput().values()){
+		for (Path path : module.getContent().values()){
 			actual.add(path.toString());
 		}
 		
@@ -42,10 +44,10 @@ public class TestModStructure {
 	}
 	
 	@Test
-	public void testMod1(){
-		testModules(ModLoader.TESTMOD1, "TestMod1", "Dependency");
+	public void testMod1() throws IOException{
+		testModules(ModStubs.TestMod1, "TestMod1", "Dependency");
 		
-		ModStructure struct = ModLoader.getStructure(ModLoader.TESTMOD1);
+		ModStructure struct = ModLoader.getStructure(ModStubs.TestMod1);
 		for (Module module : struct.getModules()){
 			if (module.getName().equals("TestMod1")){
 				testModule(
@@ -64,10 +66,10 @@ public class TestModStructure {
 	}
 	
 	@Test
-	public void testMod2(){
-		testModules(ModLoader.TESTMOD2, "TestMod2", "Dependency");
+	public void testMod2() throws IOException{
+		testModules(ModStubs.TestMod2, "TestMod2", "Dependency");
 		
-		ModStructure struct = ModLoader.getStructure(ModLoader.TESTMOD2);
+		ModStructure struct = ModLoader.getStructure(ModStubs.TestMod2);
 		for (Module module : struct.getModules()){
 			if (module.getName().equals("TestMod2")){
 				testModule(
@@ -87,27 +89,32 @@ public class TestModStructure {
 	}
 	
 	@Test
-	public void testEngineerEntries(){
-		testModules(ModLoader.ENGINEER, "Engineer");
+	public void testEngineerEntries() throws IOException{
+		testModules(ModStubs.Engineer, "Engineer");
 	}
 	
 	@Test
-	public void testMechjeb(){
-		testModules(ModLoader.MECHJEB, "MechJeb2");
+	public void testMechjeb() throws IOException{
+		testModules(ModStubs.Mechjeb, "MechJeb2");
 	}
 	
 	@Test
-	public void testAlarmClock(){
-		testModules(ModLoader.ALARMCLOCK, "TriggerTech");
+	public void testAlarmClock() throws IOException{
+		testModules(ModStubs.AlarmClock, "TriggerTech");
 	}
 	
 	@Test
-	public void testEnhancedNavball(){
-		testModules(ModLoader.NAVBALL, "EnhancedNavBall");
+	public void testEnhancedNavball() throws IOException{
+		testModules(ModStubs.NavBall, "EnhancedNavBall");
 	}	
 	
 	@Test
-	public void testHotRockets(){
-		testModules(ModLoader.HOTROCKETS, "SmokeScreen", "MP_Nazari", "ModuleManager.2.1.0.dll");
+	public void testHotRockets() throws IOException{
+		testModules(ModStubs.HotRockets, "SmokeScreen", "MP_Nazari");
+	}
+	
+	@Test
+	public void testNear() throws IOException {
+		testModules(ModStubs.Near, "NEAR");
 	}
 }

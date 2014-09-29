@@ -1,55 +1,66 @@
 package aohara.tinkertime.models;
 
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.Date;
 
-import aohara.tinkertime.controllers.ModManager.CannotAddModException;
+import org.apache.commons.io.FilenameUtils;
 
-public class Mod extends ModApi{
+import aohara.tinkertime.Config;
+
+/**
+ * Model for holding Mod information and status.
+ * 
+ * Two flags can be set: enabled, and update available.
+ * The Application will display this mod differently depending on the state
+ * of these flags.
+ * 
+ * @author Andrew O'Hara
+ */
+public class Mod extends UpdateableFile {
 	
-	private String name, creator, currentFile;
-	private Date lastUpdated;
-	private URL downloadLink, imageUrl, pageUrl;
+	private String name, creator;
+	private URL imageUrl;
 	private boolean enabled = false;
 	private transient boolean updateAvailable = false;
 	
-	public Mod(ModApi page) throws CannotAddModException {
-		updateModData(page);
+	public Mod(
+			String modName, String newestFileName, String creator,
+			URL imageUrl, URL pageUrl, Date updatedOn){
+		super(newestFileName, updatedOn, pageUrl);
+		this.name = modName;
+		this.creator = creator;
+		this.imageUrl = imageUrl;
+		updateAvailable = false;
 	}
-
-	@Override
-	public String getName() {
+	
+	public String getName(){
 		return name;
 	}
 
-	@Override
-	public Date getUpdatedOn() {
-		return lastUpdated;
-	}
-
-	@Override
 	public String getCreator() {
 		return creator;
 	}
 
-	@Override
-	public String getNewestFile() {
-		return currentFile;
-	}
-
-	@Override
-	public URL getDownloadLink() {
-		return downloadLink;
-	}
-
-	@Override
 	public URL getImageUrl() {
 		return imageUrl;
 	}
-
-	@Override
-	public URL getPageUrl() {
-		return pageUrl;
+	
+	public String getId(){
+		return FilenameUtils.getBaseName(getPageUrl().toString());	
+	}
+	
+	public boolean isDownloaded(Config config){
+		return getCachedZipPath(config).toFile().exists();
+	}
+	
+	public Path getCachedZipPath(Config config){
+		return config.getModsZipPath().resolve(getNewestFileName());
+	}
+	
+	public Path getCachedImagePath(Config config){
+		String imageName = FilenameUtils.getBaseName(getPageUrl().toString());
+		return config.getImageCachePath().resolve(imageName);
 	}
 	
 	// -- Other Methods --------------------
@@ -62,26 +73,18 @@ public class Mod extends ModApi{
 		this.enabled = enabled;
 	}
 	
-	public void updateModData(ModApi mod) throws CannotAddModException{
-		try{
-			name = mod.getName();
-			creator = mod.getCreator();
-			currentFile = mod.getNewestFile();
-			
-			lastUpdated = mod.getUpdatedOn();
-			
-			downloadLink = mod.getDownloadLink();
-			imageUrl = mod.getImageUrl();
-			pageUrl = mod.getPageUrl();
-			
-			updateAvailable = false;
-		} catch(NullPointerException e){
-			e.printStackTrace();
-			throw new CannotAddModException();
-		}
+	public void updateModData(
+			String modName, String newestFileName, String creator,
+			String currentFile, URL imageUrl, URL pageUrl, Date updatedOn) {
+		super.update(newestFileName, updatedOn, pageUrl);
+		this.name = modName;
+		this.creator = creator;
+		this.imageUrl = imageUrl;
+		updateAvailable = false;
 	}
 	
-	public void setUpdateAvailable(){
+	@Override
+	public void setUpdateAvailable(URL pageUrl, String newestFileName){
 		updateAvailable = true;
 	}
 	
@@ -90,10 +93,7 @@ public class Mod extends ModApi{
 	}
 	
 	@Override
-	public boolean equals(Object o){
-		if (o instanceof Mod){
-			return ((Mod)o).getName().equals(getName());
-		}
-		return false;
+	public String toString(){
+		return getName();
 	}
 }

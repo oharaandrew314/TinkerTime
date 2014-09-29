@@ -1,9 +1,12 @@
 package test;
 
 
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.spy;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -11,34 +14,20 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import test.util.ModLoader;
-import aohara.tinkertime.controllers.files.ZipManager;
+import test.util.ModStubs;
 import aohara.tinkertime.models.ModStructure;
-import aohara.tinkertime.models.ModStructure.Module;
+import aohara.tinkertime.models.Module;
 
 public class TestModStructure {
 	
 	private ModStructure struct1, struct2;
 	
 	@Before
-	public void setUp(){
-		struct1 = spyStructure(ModLoader.TESTMOD1);
-		struct2 = spyStructure(ModLoader.TESTMOD2);
-	}
-	
-	private ModStructure spyStructure(String name){
-		ModStructure struct = spy(ModLoader.getStructure(name));
-		when(struct.getZipManager()).then(new Answer<ZipManager>(){
-			@Override
-			public ZipManager answer(InvocationOnMock invocation)
-					throws Throwable {
-				return mock(ZipManager.class);
-			}
-		});
-		return struct;
+	public void setUp() throws IOException{
+		struct1 = spy(ModLoader.getStructure(ModStubs.TestMod1));
+		struct2 = spy(ModLoader.getStructure(ModStubs.TestMod2));
 	}
 	
 	private void testModuleNames(ModStructure struct, Set<String> expectedNames){
@@ -93,6 +82,9 @@ public class TestModStructure {
 		paths.add(Paths.get("Dependency/Dependency.txt"));
 		paths.add(Paths.get("Dependency/part1.txt"));
 		
-		assertEquals(paths, commonModule.getOutput());
+		assertEquals(
+			paths,
+			new HashSet<Path>(commonModule.getContent().values())
+		);
 	}
 }

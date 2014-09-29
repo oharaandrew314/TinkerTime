@@ -12,6 +12,13 @@ import javax.swing.JOptionPane;
 import aohara.common.Util;
 import aohara.common.selectorPanel.DecoratedComponent;
 
+/**
+ * Decorated JLabel which contains a clickable URL.
+ * 
+ * If the URL is clicked, the page will be loaded using system's default browser.
+ * 
+ * @author Andrew O'Hara
+ */
 public class UrlPanel extends MouseAdapter implements DecoratedComponent<JLabel> {
 	
 	private final URL url;

@@ -5,48 +5,45 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.HashMap;
+import java.net.URL;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import aohara.common.Listenable;
 import aohara.common.selectorPanel.SelectorInterface;
-import aohara.tinkertime.config.Config;
+import aohara.tinkertime.Config;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.models.ModStructure;
+import aohara.tinkertime.models.FileUpdateListener;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+/**
+ * Controller for Storing and Retrieving persistent mod state.
+ * 
+ * Any time a mod's information or state is updated, the updater must call
+ * modUpdated as specified by the ModUpdateListener interface. 
+ * 
+ * @author Andrew O'Hara
+ */
 public class ModStateManager extends Listenable<SelectorInterface<Mod>>
-		implements ModUpdateListener {
+		implements ModUpdateListener, FileUpdateListener {
 	
 	private final Gson gson;
-	private final Path modsPath;
+	private final Config config;
 	private final Type modsType = new TypeToken<Set<Mod>>() {}.getType();
 	
 	private final Set<Mod> modCache = new HashSet<>();
-	private final Map<Mod, ModStructure> structureCache = new HashMap<>();
 	
-	public ModStateManager(Path modsPath){
+	public ModStateManager(Config config){
 		gson = new Gson();
-		this.modsPath = modsPath;
-	}
-	
-	private void updateListeners(Collection<Mod> mods){
-		for (SelectorInterface<Mod> l : getListeners()){
-			l.setDataSource(mods);
-		}
+		this.config = config;
 	}
 	
 	private synchronized Set<Mod> loadMods(){
-		try(FileReader reader = new FileReader(modsPath.toFile())){
+		try(FileReader reader = new FileReader(config.getModsListPath().toFile())){
 			Set<Mod> mods = gson.fromJson(reader, modsType);
 			if (mods != null){
-				updateListeners(mods);
 				return mods;
 			}
 		} catch (FileNotFoundException e){
@@ -57,58 +54,57 @@ public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 		return new HashSet<Mod>();
 	}
 	
-	private void saveMods(Set<Mod> mods){
-		try(FileWriter writer = new FileWriter(modsPath.toFile())){
-			gson.toJson(mods, modsType, writer);
-			updateListeners(mods);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	public synchronized Set<Mod> getMods(){
 		if (modCache.isEmpty()){
 			modCache.addAll(loadMods());
-		}
-		return new HashSet<Mod>(modCache);
-	}
-	
-	public synchronized Map<Mod, ModStructure> getModStructures(Config config){
-		if (structureCache.isEmpty()){
-			for (Mod mod : getMods()){
-				if (config.getModZipPath(mod).toFile().exists()){
-					structureCache.put(mod, new ModStructure(mod, config));
+			for (SelectorInterface<Mod> l : getListeners()){
+				l.clear();
+				for (Mod mod : modCache){
+					l.addElement(mod);
 				}
 			}
 		}
-		return new HashMap<Mod, ModStructure>(structureCache);
-	}
-	
-	public synchronized Set<ModStructure> getStructures(Config config){
-		return new HashSet<ModStructure>(getModStructures(config).values());
+		return new HashSet<Mod>(modCache);
 	}
 
 	@Override
 	public synchronized void modUpdated(Mod mod, boolean deleted) {
-		modCache.clear();
-		structureCache.clear();
+		// See if a mod needs to be removed
 		
-		Set<Mod> mods = loadMods();
-		
-		// Remove the old mod
 		Set<Mod> toRemove = new HashSet<>();
-		for (Mod m : mods){
-			if (m.getName().equals(mod.getName())){
-				toRemove.add(m);
+		for (Mod m : modCache){
+			if (m.equals(mod)){
+				toRemove.add(mod);
+				for (SelectorInterface<Mod> l : getListeners()){
+					l.removeElement(mod);
+				}
 			}
 		}
-		mods.removeAll(toRemove);
+		modCache.removeAll(toRemove);
 		
-		// If the mod is being updated, add the new data
+		// Update Mod if it is not removed
 		if (!deleted){
-			mods.add(mod);
+			modCache.add(mod);
+			for (SelectorInterface<Mod> l : getListeners()){
+				l.addElement(mod);
+			}
 		}
 		
-		saveMods(mods);
+		// Save Mods
+		try(FileWriter writer = new FileWriter(config.getModsListPath().toFile())){
+			gson.toJson(modCache, modsType, writer);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public synchronized void setUpdateAvailable(URL pageUrl, String newestFileName) {
+		for (Mod mod : getMods()){
+			if (mod.getPageUrl().equals(pageUrl)){
+				modUpdated(mod, false);
+				break;
+			}
+		}
 	}
 }

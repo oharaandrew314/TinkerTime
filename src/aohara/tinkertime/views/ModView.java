@@ -15,10 +15,17 @@ import javax.swing.event.HyperlinkListener;
 import thirdParty.VerticalLayout;
 import aohara.common.Util;
 import aohara.common.selectorPanel.SelectorView;
-import aohara.tinkertime.config.Config;
+import aohara.tinkertime.Config;
+import aohara.tinkertime.content.ArchiveInspector;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.models.ModStructure;
 
+/**
+ * Panel for displaying a Mod's information.
+ * 
+ * Includes the Mod's file information, as well as the Readme if it exists.
+ * 
+ * @author Andrew O'Hara
+ */
 public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 	
 	private Mod mod;
@@ -48,10 +55,8 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 			
 			// Readme
 			Config config = new Config();
-			if (config.getModZipPath(mod).toFile().exists()){
-				ModStructure struct = new ModStructure(mod, config);
-				String readmeText = struct.getReadmeText();
-				
+			if (mod.getCachedZipPath(config).toFile().exists()){
+				String readmeText = ArchiveInspector.getReadmeText(config, mod);				
 				if (readmeText != null && !readmeText.trim().isEmpty()){
 					panel.add(new JLabel("<html><b>Readme:</b></html"));
 					JTextArea readmeArea = new JTextArea(readmeText);
@@ -61,7 +66,7 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 					panel.add(readmeArea);
 				}
 			}
-			
+
 		}
 	}
 

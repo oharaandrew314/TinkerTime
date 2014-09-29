@@ -4,9 +4,9 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
@@ -17,18 +17,33 @@ import javax.swing.JPopupMenu;
 
 import aohara.common.Util;
 import aohara.common.selectorPanel.ListListener;
+import aohara.tinkertime.Config;
 import aohara.tinkertime.TinkerTime;
-import aohara.tinkertime.config.Config;
 import aohara.tinkertime.controllers.ModManager;
-import aohara.tinkertime.controllers.ModManager.CannotAddModException;
 import aohara.tinkertime.controllers.ModManager.CannotDisableModException;
-import aohara.tinkertime.controllers.ModManager.CannotEnableModException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledException;
 import aohara.tinkertime.controllers.ModManager.ModNotDownloadedException;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
+import aohara.tinkertime.controllers.fileUpdater.ModuleManagerUpdateController;
+import aohara.tinkertime.controllers.fileUpdater.TinkerTimeUpdateController;
+import aohara.tinkertime.crawlers.Constants;
+import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 
+/**
+ * JMenuBar for Tinker Time.
+ * 
+ * Also includes all of the Actions that are performed when a Menu Item is activated.
+ * 
+ * Includes the following menus:
+ * - File: Select KSP Installation Dir and exit the application
+ * - Mod: Actions on the selected mod
+ * - Update: Actions for updating mods or other files
+ * - Help: Help, Contact Information, and About
+ * 
+ * @author Andrew O'Hara
+ */
 @SuppressWarnings("serial")
 public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
@@ -40,7 +55,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		this.mm = mm;
 		
 		JMenu fileMenu = new JMenu("File");
-		fileMenu.add(new JMenuItem(new UpdatePathsAction()));
+		fileMenu.add(new JMenuItem(new OptionsAction()));
 		fileMenu.add(new JMenuItem(new ExitAction()));
 		add(fileMenu);
 		
@@ -54,6 +69,8 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		updateMenu.add(new JMenuItem(new UpdateModAction()));
 		updateMenu.add(new JMenuItem(new UpdateAllAction()));
 		updateMenu.add(new JMenuItem(new CheckforUpdatesAction()));
+		updateMenu.add(new JMenuItem(new UpdateModuleManagerAction()));
+		updateMenu.add(new JMenuItem(new UpdateTinkerTimeAction()));
 		add(updateMenu);
 		
 		JMenu helpMenu = new JMenu("Help");
@@ -65,6 +82,11 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		popupMenu = new JPopupMenu();
 		popupMenu.add(new EnableDisableModAction());
 		popupMenu.add(new DeleteModAction());
+	}
+	
+	private void errorMessage(Exception ex){
+		ex.printStackTrace();
+		errorMessage(ex.toString());
 	}
 	
 	private void errorMessage(String message){
@@ -93,56 +115,38 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private class AddModAction extends AbstractAction {
 		
-		public AddModAction(){
+		private AddModAction(){
 			super("Add Mod");
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent evt) {
 			// Get URL from user
-			String url = JOptionPane.showInputDialog(
+			String urlString = JOptionPane.showInputDialog(
 				getParent(),
-				"Please enter the Curse.com URl of the mod you would like to"
-				+ " add.\ne.g. http://www.curse.com/ksp-mods/kerbal/220221-mechjeb",
-				"Enter Curse.com Mod URL",
+				"Please enter the URL of the mod you would like to"
+				+ " add.\ne.g. http://www.curse.com/ksp-mods/kerbal/220221-mechjeb\n\n"
+				+ "Supported Hosts are " + Arrays.asList(Constants.ACCEPTED_MOD_HOSTS),
+				"Enter Mod Page URL",
 				JOptionPane.QUESTION_MESSAGE
 			);
 			
-			// Cancel if not input given
-			if (url == null || url.trim().isEmpty()){
-				return;
-			}
-			
-			// Check if URL is valid
-			try {
-				URI uri = new URI(url);
-				if (!uri.getHost().contains("curse.com")){
-					throw new URISyntaxException(
-						url,
-						"Currently, only mods from curse.com are accepted.\n"
-					);
-				}
-			} catch (URISyntaxException e2) {
-				errorMessage(e2.getMessage());
+			if (urlString == null || urlString.trim().isEmpty()){
 				return;
 			}
 			
 			// Try to add Mod
 			try {
-				mm.addNewMod(url);
-			} catch (CannotAddModException e1) {
-				errorMessage(
-					"Error Extracting Mod Info From Page.\n"
-					+ "Either Curse.com has been updated,"
-					+ "or this is an invalid link."
-				);
+				mm.downloadMod(new URL(urlString));
+			} catch (UnsupportedHostException | ModUpdateFailedException | MalformedURLException ex) {
+				errorMessage(ex);
 			}
 		}
 	}
 	
 	private class DeleteModAction extends AbstractAction {
 		
-		public DeleteModAction(){
+		private DeleteModAction(){
 			super("Delete");
 		}
 
@@ -159,7 +163,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 					) == JOptionPane.YES_OPTION){
 						mm.deleteMod(selectedMod);
 					}
-				} catch (CannotDisableModException e1) {
+				} catch (CannotDisableModException | IOException e1) {
 					errorMessage(selectedMod.getName() + " could not be disabled.");
 				}
 			}
@@ -168,7 +172,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private class UpdateModAction extends AbstractAction {
 		
-		public UpdateModAction(){
+		private UpdateModAction(){
 			this("Update Mod");
 		}
 		
@@ -179,23 +183,18 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (selectedMod != null){
-				updateMod(selectedMod);
-			}
-		}
-		
-		protected void updateMod(Mod mod) {
-			try {
-				mm.updateMod(selectedMod);
-			} catch (ModUpdateFailedException e1) {
-				errorMessage("There was an error updating " + mod.getName());
-				e1.printStackTrace();
+				try {
+					mm.updateMod(selectedMod);
+				} catch (ModUpdateFailedException e1) {
+					errorMessage(e1);
+				}
 			}
 		}
 	}
 	
 	private class UpdateAllAction extends UpdateModAction {
 		
-		public UpdateAllAction() {
+		private UpdateAllAction() {
 			super("Update All");
 		}
 
@@ -211,15 +210,16 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private class CheckforUpdatesAction extends AbstractAction {
 		
-		public CheckforUpdatesAction(){
+		private CheckforUpdatesAction(){
 			super("Check for Updates");
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				mm.checkForUpdates();
-			} catch (ModUpdateFailedException e1) {
+				mm.checkForModUpdates();
+			} catch (Exception e1) {
+				e1.printStackTrace();
 				errorMessage("Error checking for updates.");
 			}
 		}
@@ -227,7 +227,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private class EnableDisableModAction extends AbstractAction {
 		
-		public EnableDisableModAction(){
+		private EnableDisableModAction(){
 			super("Enable/Disable");
 		}
 
@@ -236,38 +236,34 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 			if (selectedMod != null && selectedMod.isEnabled()){
 				try {
 					mm.disableMod(selectedMod);
-				} catch (ModAlreadyDisabledException
-						| CannotDisableModException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+				} catch (ModAlreadyDisabledException | IOException e1) {
+					errorMessage(e1);
 				}
 			} else if (selectedMod != null){
 				try {
 					mm.enableMod(selectedMod);
-				} catch (ModAlreadyEnabledException | ModNotDownloadedException
-						| CannotEnableModException | CannotDisableModException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+				} catch (ModAlreadyEnabledException | ModNotDownloadedException | IOException e1) {
+					errorMessage(e1);
 				}
 			}
 		}
 	}
 	
-	private class UpdatePathsAction extends AbstractAction {
+	private class OptionsAction extends AbstractAction {
 		
-		public UpdatePathsAction(){
-			super("Update Paths");
+		private OptionsAction(){
+			super("Options");
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			Config.updateConfig(true, false);
+			new Config().updateConfig(true, false);
 		}
 	}
 	
 	private class ExitAction extends AbstractAction {
 		
-		public ExitAction(){
+		private ExitAction(){
 			super("Exit");
 		}
 
@@ -279,14 +275,14 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private class HelpAction extends AbstractAction {
 		
-		public HelpAction(){
+		private HelpAction(){
 			super("Help");
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				Util.goToHyperlink(new URL("https://github.com/oharaandrew314/TinkerTime/blob/master/README.md"));
+				Util.goToHyperlink(new URL("https://github.com/oharaandrew314/TinkerTime/wiki"));
 			} catch (IOException e1) {
 				errorMessage("Error opening help");
 			}
@@ -295,7 +291,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private class AboutAction extends AbstractAction {
 		
-		public AboutAction(){
+		private AboutAction(){
 			super("About");
 		}
 
@@ -334,7 +330,7 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 	
 	private class ContactAction extends AbstractAction {
 		
-		public ContactAction(){
+		private ContactAction(){
 			super("Contact Me");
 		}
 
@@ -344,6 +340,38 @@ public class TinkerMenuBar extends JMenuBar implements ListListener<Mod>{
 				Util.goToHyperlink(new URL("http://tinkertime.uservoice.com"));
 			} catch (IOException e1) {
 				errorMessage(e1.getMessage());
+			}
+		}
+	}
+	
+	private class UpdateModuleManagerAction extends AbstractAction {
+		
+		private UpdateModuleManagerAction(){
+			super("Update Module Manager");
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			try {
+				new ModuleManagerUpdateController(mm, new Config()).showDialog();
+			} catch (UnsupportedHostException e1) {
+				errorMessage(e1);
+			}
+		}
+	}
+	
+	private class UpdateTinkerTimeAction extends AbstractAction {
+		
+		private UpdateTinkerTimeAction(){
+			super("Update Tinker Time");
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			try {
+				new TinkerTimeUpdateController(mm).showDialog();
+			} catch (UnsupportedHostException e1) {
+				errorMessage(e1);
 			}
 		}
 	}

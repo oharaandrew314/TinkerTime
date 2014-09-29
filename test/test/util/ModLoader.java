@@ -3,92 +3,45 @@ package test.util;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
-
-import aohara.tinkertime.config.Config;
+import aohara.tinkertime.content.ArchiveInspector;
+import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.models.ModPage;
 import aohara.tinkertime.models.ModStructure;
-import aohara.tinkertime.models.ModStructure.Module;
+import aohara.tinkertime.models.Module;
 
 public class ModLoader {
 	
-	private static final Map<String, String> PAGE_URLS = new HashMap<>();
-	public static final String
-		ENGINEER = "Kerbal Engineer Redux",
-		MECHJEB = "MechJeb",
-		TESTMOD1 = "TestMod",
-		TESTMOD2 = "TestMod2",
-		ALARMCLOCK = "Kerbal Alarm Clock",
-		NAVBALL = "Enhanced Navball",
-		HOTROCKETS = "HotRockets";
-	
-	static {
-		PAGE_URLS.put(
-			ENGINEER,
-			"http://www.curse.com/ksp-mods/kerbal/220285-kerbal-engineer-redux"
-		);
-		PAGE_URLS.put(
-			MECHJEB,
-			"http://www.curse.com/ksp-mods/kerbal/220221-mechjeb"
-		);
-		PAGE_URLS.put(
-			TESTMOD1,
-			"http://www.curse.com/ksp-mods/kerbal/220285-kerbal-engineer-redux"
-		);
-		PAGE_URLS.put(
-			TESTMOD2,
-			"http://www.curse.com/ksp-mods/kerbal/220285-kerbal-engineer-redux"
-		);
-		PAGE_URLS.put(
-			ALARMCLOCK,
-			"http://www.curse.com/ksp-mods/kerbal/220289-kerbal-alarm-clock"
-		);
-		PAGE_URLS.put(
-			NAVBALL,
-			"http://www.curse.com/ksp-mods/kerbal/220469-enhanced-navball-v1-2"
-		);
-		PAGE_URLS.put(
-			HOTROCKETS,
-			"http://www.curse.com/ksp-mods/kerbal/220207-hotrockets-particle-fx-replacement"
-		);
-	}
-
-	public static ModPage getPage(String name){
+	public static MockMod loadMod(ModStubs stub) throws UnsupportedHostException{
 		try {
-			String url = PAGE_URLS.get(name);
-			
-			Element doc = Jsoup.parse(
-				ModLoader.class.getClassLoader().getResourceAsStream(
-					String.format("test/res/%s.html", name)
-				), null, url);
-					
-			return new ModPage(doc, new URL(url));
+			Mod mod = new MockCrawlerFactory().getModCrawler(stub.url).createMod();
+			return new MockMod(
+				mod.getName(), mod.getNewestFileName(), mod.getCreator(),
+				mod.getImageUrl(), mod.getPageUrl(), mod.getUpdatedOn()
+			);
 		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
+			throw new RuntimeException(e);
 		}
 	}
 	
-	public static URL getZipUrl(String name){
+	private static URL getZipUrl(String modName){
 		return ModLoader.class.getClassLoader().getResource(
-			String.format("test/res/%s.zip", name)
+			String.format("test/res/zips/%s.zip", modName)
 		);
 	}
 	
-	public static ModStructure getStructure(String name){
+	public static Path getZipPath(String modName){
 		try {
-			return new ModStructure(Paths.get(getZipUrl(name).toURI()));
+			return Paths.get(getZipUrl(modName).toURI());
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
-			return null;
+			throw new RuntimeException(e);
 		}
+	}
+	
+	public static ModStructure getStructure(ModStubs stub) throws IOException{
+		return ArchiveInspector.inspectArchive(getZipPath(stub.name));
 	}
 	
 	public static Module getModule(ModStructure struct, String moduleName){
@@ -98,18 +51,5 @@ public class ModLoader {
 			}
 		}
 		return null;
-	}
-	
-	public static Mod addMod(String name, Config config) throws Throwable {
-		ModPage mod = getPage(name);
-		try {
-			FileUtils.copyURLToFile(
-				getZipUrl(name),
-				config.getModZipPath(mod).toFile()
-			);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return new Mod(mod);
 	}
 }

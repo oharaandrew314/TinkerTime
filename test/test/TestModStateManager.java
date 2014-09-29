@@ -3,47 +3,35 @@ package test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
+import test.util.MockConfig;
 import test.util.ModLoader;
+import test.util.ModStubs;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;
 
 public class TestModStateManager {
 
-	private static Mod MOD1, MOD2;
 	private Mod mod1, mod2;
 	private ModStateManager stateManager;
-	private Path path;
 	private List<Mod> mods;
-
-	@BeforeClass
-	public static void setUpClass() throws Throwable {
-		MOD1 = new Mod(ModLoader.getPage(ModLoader.MECHJEB));
-		MOD2 = new Mod(ModLoader.getPage(ModLoader.ENGINEER));
-	}
-
-	private static Mod getUpdatedMod(final Mod mod, final String newestFile) throws Throwable {
-		Mod mocked = spy(mod);
-		when(mocked.getNewestFile()).thenAnswer(new Answer<String>() {
-			@Override
-			public String answer(InvocationOnMock invocation) throws Throwable {
-				return newestFile;
-			}
-		});
-
-		return new Mod(mocked);
+	
+	private static Mod getUpdatedMod(final Mod mod, final String newestFile){
+		return new Mod(
+			mod.getName(),
+			newestFile,
+			mod.getCreator(),
+			mod.getImageUrl(),
+			mod.getPageUrl(),
+			mod.getUpdatedOn()
+		);
+		
 	}
 	
 	private void update(Mod mod, boolean deleted){
@@ -53,12 +41,10 @@ public class TestModStateManager {
 
 	@Before
 	public void setUp() throws Throwable {
-		path = UnitTestSuite.getTempFile("mods", ".json");
+		mod1 = ModLoader.loadMod(ModStubs.Mechjeb);
+		mod2 = ModLoader.loadMod(ModStubs.Engineer);
 
-		mod1 = new Mod(MOD1);
-		mod2 = new Mod(MOD2);
-
-		stateManager = new ModStateManager(path);
+		stateManager = new ModStateManager(new MockConfig());
 	}
 
 	@Test
@@ -89,15 +75,15 @@ public class TestModStateManager {
 	public void testSaveUpdatedMod() throws Throwable {	
 		testSaveOne();
 		
-		String newestFile = mod1.getNewestFile() + "-updated";
+		String newestFile = mod1.getNewestFileName() + "-updated";
 		Mod newer = getUpdatedMod(mod1, newestFile);
-		assertEquals(newestFile, newer.getNewestFile());
+		assertEquals(newestFile, newer.getNewestFileName());
 		
 		update(newer, false);
 		
 		assertEquals(1, mods.size());
 		assertTrue(mods.contains(newer));
-		assertEquals(newestFile, mods.get(0).getNewestFile());
+		assertEquals(newestFile, mods.get(0).getNewestFileName());
 	}
 	
 	@Test

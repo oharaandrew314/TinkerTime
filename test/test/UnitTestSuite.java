@@ -9,19 +9,19 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 import test.TestModManager;
-import test.TestModPage;
+import test.TestCurseCrawler;
 import test.TestModStateManager;
 import test.TestModStructure;
-import test.TestZipManager;
 
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-   TestModPage.class,
-   TestZipManager.class,
+   TestCurseCrawler.class,
    TestModManager.class,
    TestModStateManager.class,
    TestModStructure.class,
+   TestModuleManagerCrawler.class,
+   TestGithubCrawler.class
 })
 
 public class UnitTestSuite {

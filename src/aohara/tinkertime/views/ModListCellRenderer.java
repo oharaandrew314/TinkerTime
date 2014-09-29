@@ -11,10 +11,16 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
 import thirdParty.CompoundIcon;
-import aohara.tinkertime.config.Config;
-import aohara.tinkertime.controllers.ModManager;
+import aohara.tinkertime.Config;
 import aohara.tinkertime.models.Mod;
 
+/**
+ * Custom ListCellRenderer for a Mod to be displayed on a JList.
+ * 
+ * Displays the Mod name as well as all status icons to the left of it.
+ *  
+ * @author Andrew O'Hara
+ */
 public class ModListCellRenderer implements ListCellRenderer<Mod> {
 	
 	private final ImageIcon checkIcon, xIcon, errorIcon, updateIcon;
@@ -37,7 +43,7 @@ public class ModListCellRenderer implements ListCellRenderer<Mod> {
 
 		// Compile list of icons
 		LinkedList<ImageIcon> icons = new LinkedList<>();
-		if (ModManager.isDownloaded(mod, new Config())){
+		if (mod.isDownloaded(new Config())){
 			icons.add(mod.isEnabled() ? checkIcon : xIcon);
 		} else {
 			icons.add(errorIcon);

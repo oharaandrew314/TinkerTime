@@ -1,26 +1,26 @@
 package aohara.tinkertime.views;
 
+import java.nio.file.Path;
+
 import javax.swing.JOptionPane;
 
-import aohara.tinkertime.config.Config;
-import aohara.tinkertime.controllers.ModStateManager;
-import aohara.tinkertime.controllers.files.ConflictResolver;
-import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.models.ModStructure.Module;
+import aohara.common.workflows.ConflictResolver;
 
+/**
+ * Allows a Module Conflict to be resolved using a Modal Dialog.
+ * 
+ * @author Andrew O'Hara
+ */
 public class DialogConflictResolver extends ConflictResolver {
 
-	public DialogConflictResolver(Config config, ModStateManager sm) {
-		super(config, sm);
-	}
-
 	@Override
-	public Resolution getResolution(Module module, Mod mod) {
+	public Resolution getResolution(Path conflictPath) {
 		return (Resolution) JOptionPane.showInputDialog(
 			null,
 			String.format(
-				"The %s module alrerady exists while enabling %s.\n"
-				+ "What should be done?", module.getName(), mod.getName()),
+				"%s already exists.  What should be done?",
+				conflictPath
+			),
 			"Module Conflict",
 			JOptionPane.QUESTION_MESSAGE,
 			null,
