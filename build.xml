@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="run" name="Create Runnable Jar for TinkerTime">
+
+	<!-- Environment Setup -->
+	<property name="build.dir" value="${basedir}/bin"/>
+	<property name="main.src.dir" value="${basedir}/src"/>
+	<property name="common.src.dir" value="${basedir}/Common"/>
+
+	<path id="classpath.base">
+		<pathelement location="lib/base/jsoup-1.7.3.jar"/>
+		<pathelement location="lib/base/commons-io-2.4.jar"/>
+		<pathelement location="lib/base/gson-2.2.4.jar"/>
+	</path>
+	<path id="classpath.test">
+		<path refid="classpath.base" />
+		<pathelement location="lib/test/mockito-all-1.9.5.jar"/>
+		<pathelement location="lib/test/junit.jar"/>
+	</path>
+
+	<!-- Test -->
+    <target name="test" depends="build-test">
+    	<junit showoutput="true" printsummary="on" enabletestlistenerevents="true" haltonfailure="yes">
+    		<formatter type="brief" usefile="false" />
+	        <classpath>
+	        	<path refid="classpath.test" />
+	        	<pathelement location="${build.dir}"/>
+	        </classpath>
+	        <test name="test.UnitTestSuite"/>
+	    </junit>
+    </target>
+
+    <!-- Run Jar -->
+    <target name="run_jar" depends="jar">
+    	 <java jar="${build.dir}/Tinker Time.jar" fork="true"/>
+    </target>
+
+    <!-- JAR -->
+    <target name="jar" depends="build">
+        <jar destfile="${build.dir}/Tinker Time.jar" basedir="${build.dir}">
+        	<zipgroupfileset dir="${basedir}/lib/base" includes="*.jar" excludes=""/>
+            <manifest>
+                <attribute name="Main-Class" value="aohara.tinkertime.TinkerTime"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <!-- Run Class Files -->
+    <target name="run" depends="build">
+    	<java classname="aohara.tinkertime.TinkerTime">
+    		<classpath>
+    			<path refid="classpath.base"/>
+    			<pathelement location="${build.dir}"/>
+    		</classpath>
+    	</java>
+    </target>
+
+    <!-- Build Tests -->
+    <target name="build-test" depends="build">
+    	<javac srcdir="${basedir}/test" destDir="${build.dir}" includeantruntime="false">
+    		<classpath refid="classpath.test"/>
+    	</javac>
+
+    	<copy todir="${build.dir}/test/res">
+		  	<fileset dir="${basedir}/test/test/res"/>
+		</copy>
+    </target>
+
+    <!-- Build -->
+    <target name="build">
+	    <mkdir dir="${build.dir}"/>
+
+	    <copy todir="${build.dir}">
+		  	<fileset dir="${basedir}/res"/>
+		</copy>
+
+	    <javac srcdir="${common.src.dir}" destdir="${build.dir}" includeantruntime="false">
+	    	<classpath refid="classpath.base"/>
+	    </javac>
+	    <javac srcdir="${main.src.dir}" destdir="${build.dir}" includeantruntime="false">
+	    	<classpath refid="classpath.base"/>
+	    </javac>
+	</target>
+
+
+	<!-- Clean -->
+    <target name="clean">
+	    <delete dir="${build.dir}"/>
+	</target>
+
+</project>
