@@ -4,8 +4,6 @@ TinkerTime
 Automatically Updating Mod Manager for Kerbal Space Program
  
 ### Development Status
-Master: [![Build Status](https://travis-ci.org/oharaandrew314/TinkerTime.svg?branch=master)](https://travis-ci.org/oharaandrew314/TinkerTime)
-
 1.0: [![Build Status](https://travis-ci.org/oharaandrew314/TinkerTime.svg?branch=1.0)](https://travis-ci.org/oharaandrew314/TinkerTime)
 
 Beta (Nearing Feature Completion)
