@@ -30,8 +30,7 @@ public class ArchiveInspector {
 		
 		try(ZipFile zipFile = new ZipFile(zipPath.toFile())){
 			
-			Set<ZipEntry> entries = new HashSet<>(Collections.list(zipFile.entries()));
-			
+			Set<ZipEntry> entries = new HashSet<ZipEntry>(Collections.list(zipFile.entries()));
 			for (Path modulePath : getModulePaths(entries, getGameDataPath(entries))){
 				modules.add(discoverModule(zipPath, entries, modulePath));
 			}
@@ -50,7 +49,7 @@ public class ArchiveInspector {
 	}
 	
 	private static String getReadmeText(ZipFile zipFile){		
-		for (ZipEntry entry : new HashSet<>(Collections.list(zipFile.entries()))){
+		for (ZipEntry entry : new HashSet<ZipEntry>(Collections.list(zipFile.entries()))){
 			if (!entry.isDirectory() && entry.getName().toLowerCase().contains("readme")){
 				try(StringWriter writer = new StringWriter()){
 					IOUtils.copy(zipFile.getInputStream(entry), writer);
