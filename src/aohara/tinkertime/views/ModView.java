@@ -3,6 +3,7 @@ package aohara.tinkertime.views;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -47,7 +48,8 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 			panel.setBorder(BorderFactory.createTitledBorder(mod.getName() + " - by " + mod.getCreator()));
 			
 			JLabel updatedLabel = new JLabel();
-			updatedLabel.setText("Last Updated: " + DATE_FORMAT.format(mod.getUpdatedOn()));
+			Date updatedOn = mod.getUpdatedOn();
+			updatedLabel.setText("Last Updated: " + (updatedOn != null ? DATE_FORMAT.format(updatedOn) : "N/A"));
 			panel.add(updatedLabel);
 			
 			// Mod Page Link
