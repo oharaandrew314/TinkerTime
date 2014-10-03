@@ -17,7 +17,8 @@ public class TestGithubCrawler extends AbstractTestModCrawler {
 			"rbray89",
 			"EnvironmentalVisualEnhancements-7-4-LR.zip",
 			"https://github.com/rbray89/EnvironmentalVisualEnhancements/releases/download/Release-7-4/EnvironmentalVisualEnhancements-7-4.zip",
-			"https://avatars2.githubusercontent.com/u/1095572?v=2&s=40"
+			"https://avatars2.githubusercontent.com/u/1095572?v=2&s=40",
+			null
 		);
 	}
 	
@@ -29,7 +30,8 @@ public class TestGithubCrawler extends AbstractTestModCrawler {
 			"e-dog",
 			"ProcFairings_3.09.zip",
 			"https://github.com/e-dog/ProceduralFairings/releases",
-			"https://avatars0.githubusercontent.com/u/5958584?v=2&s=40"
+			"https://avatars0.githubusercontent.com/u/5958584?v=2&s=40",
+			null
 		);
 	}
 

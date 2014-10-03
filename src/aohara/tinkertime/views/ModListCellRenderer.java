@@ -54,7 +54,11 @@ public class ModListCellRenderer implements ListCellRenderer<Mod> {
 		}
 		
 		// Create cell label
-		JLabel label = (JLabel) def.getListCellRendererComponent(list, mod, index, isSelected, cellHasFocus);
+		String text = mod.getName();
+		if (mod.getSupportedVersion() != null){
+			text = String.format("[%s] %s", mod.getSupportedVersion(), text);
+		}
+		JLabel label = (JLabel) def.getListCellRendererComponent(list, text, index, isSelected, cellHasFocus);
 		label.setIcon(new CompoundIcon(icons.toArray(new Icon[0])));
 		return label;
 	}

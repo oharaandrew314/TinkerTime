@@ -19,7 +19,8 @@ public class ModLoader {
 			Mod mod = new MockCrawlerFactory().getModCrawler(stub.url).createMod();
 			return new MockMod(
 				mod.getName(), mod.getNewestFileName(), mod.getCreator(),
-				mod.getImageUrl(), mod.getPageUrl(), mod.getUpdatedOn()
+				mod.getImageUrl(), mod.getPageUrl(), mod.getUpdatedOn(),
+				mod.getSupportedVersion()
 			);
 		} catch (IOException e) {
 			throw new RuntimeException(e);

@@ -19,18 +19,19 @@ import aohara.tinkertime.Config;
  */
 public class Mod extends UpdateableFile {
 	
-	private String name, creator;
+	private String name, creator, supportedVersion;
 	private URL imageUrl;
 	private boolean enabled = false;
 	private transient boolean updateAvailable = false;
 	
 	public Mod(
 			String modName, String newestFileName, String creator,
-			URL imageUrl, URL pageUrl, Date updatedOn){
+			URL imageUrl, URL pageUrl, Date updatedOn, String supportedVersion){
 		super(newestFileName, updatedOn, pageUrl);
 		this.name = modName;
 		this.creator = creator;
 		this.imageUrl = imageUrl;
+		this.supportedVersion = supportedVersion;
 		updateAvailable = false;
 	}
 	
@@ -61,6 +62,14 @@ public class Mod extends UpdateableFile {
 	public Path getCachedImagePath(Config config){
 		String imageName = FilenameUtils.getBaseName(getPageUrl().toString());
 		return config.getImageCachePath().resolve(imageName);
+	}
+	
+	/**
+	 * Returns the version of KSP that this mod version supports.
+	 * @return supported KSP version
+	 */
+	public String getSupportedVersion(){
+		return supportedVersion;
 	}
 	
 	// -- Other Methods --------------------

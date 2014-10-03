@@ -76,4 +76,10 @@ public class CurseCrawler extends ModCrawler<Document> {
 		ele = ele.getElementsContainingOwnText("Manager").first();
 		return ele.text().split(":")[1].trim();
 	}
+
+	@Override
+	public String getSupportedVersion() throws IOException {
+		String text = getPage(url).select("li.version").first().text();
+		return text.split(":")[1].trim();
+	}
 }

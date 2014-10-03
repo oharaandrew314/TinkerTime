@@ -47,6 +47,11 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 			// Set Border
 			panel.setBorder(BorderFactory.createTitledBorder(mod.getName() + " - by " + mod.getCreator()));
 			
+			// Supported KSP Version
+			String kspVersion =  mod.getSupportedVersion();
+			panel.add(new JLabel("KSP Version: " + (kspVersion != null ? kspVersion : "Unknown")));
+			
+			// Last Updated On
 			JLabel updatedLabel = new JLabel();
 			Date updatedOn = mod.getUpdatedOn();
 			updatedLabel.setText("Last Updated: " + (updatedOn != null ? DATE_FORMAT.format(updatedOn) : "N/A"));

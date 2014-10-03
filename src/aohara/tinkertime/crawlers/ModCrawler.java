@@ -23,12 +23,19 @@ public abstract class ModCrawler<T> extends Crawler<T> {
 	
 	public Mod createMod() throws IOException{
 		return new Mod(
-			getName(), getNewestFileName(), getCreator(), getImageUrl(), url, getUpdatedOn()
+			getName(), getNewestFileName(), getCreator(), getImageUrl(),
+			url, getUpdatedOn(), getSupportedVersion()
 		);
 	}
 	
 	public abstract String getName() throws IOException;
 	public abstract URL getImageUrl() throws IOException;
 	protected abstract String getCreator() throws IOException;
-
+	
+	/**
+	 * Returns the version of KSP that this mod version supports.
+	 * @return supported KSP Version
+	 * @throws IOException if there is an error reading the mod page
+	 */
+	public abstract String getSupportedVersion() throws IOException;
 }

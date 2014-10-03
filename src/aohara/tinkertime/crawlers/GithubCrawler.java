@@ -76,4 +76,9 @@ public class GithubCrawler extends ModCrawler<Document> {
 		return getLatestReleaseElement().select(" p.release-authorship a").first().text();
 	}
 
+	@Override
+	public String getSupportedVersion() throws IOException {
+		return null;  // Not Supported by Github
+	}
+
 }

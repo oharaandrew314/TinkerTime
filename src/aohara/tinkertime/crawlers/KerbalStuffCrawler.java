@@ -77,4 +77,9 @@ public class KerbalStuffCrawler extends ModCrawler <JsonObject>{
 	protected String getCreator() throws IOException {
 		return getPage(url).get("author").getAsString();
 	}
+
+	@Override
+	public String getSupportedVersion() throws IOException {
+		return getLatestVersion().get("ksp_version").getAsString();
+	}
 }

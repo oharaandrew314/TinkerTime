@@ -16,7 +16,7 @@ public abstract class AbstractTestModCrawler {
 	
 	protected void compare(
 		ModStubs stub, Date updatedOn, String creator,
-		String newestFile, String downloadLink, String imageLink
+		String newestFile, String downloadLink, String imageLink, String supportedVersion
 	) throws IOException, UnsupportedHostException {
 		Mod actualMod = new MockCrawlerFactory().getModCrawler(stub.url).createMod();
 		
@@ -26,7 +26,8 @@ public abstract class AbstractTestModCrawler {
 			creator,
 			new URL(imageLink),
 			stub.url,
-			updatedOn
+			updatedOn,
+			supportedVersion
 		);
 		
 		assertEquals(actualMod.getName(), expectedMod.getName());

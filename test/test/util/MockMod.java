@@ -13,8 +13,8 @@ public class MockMod extends Mod {
 	private boolean downloaded = false;
 
 	public MockMod(String modName, String newestFileName, String creator,
-			URL imageUrl, URL pageUrl, Date updatedOn) {
-		super(modName, newestFileName, creator, imageUrl, pageUrl, updatedOn);
+			URL imageUrl, URL pageUrl, Date updatedOn, String supportedVersion) {
+		super(modName, newestFileName, creator, imageUrl, pageUrl, updatedOn, supportedVersion);
 	}
 	
 	public void setDownloaded(boolean downloaded){
