@@ -99,7 +99,7 @@ public class ModWorkflowBuilder {
 			}
 		}
 		WorkflowBuilder.delete(workflow, modZipPathGen(mod, config));
-		workflow.addTask(new MarkModUpdatedTask(workflow, sm, mod));
+		workflow.addTask(MarkModUpdatedTask.notifyDeletion(workflow, sm, mod));
 	}
 	
 	public static void disableMod(Workflow workflow, Mod mod, Config config, ModStateManager sm) throws IOException{
