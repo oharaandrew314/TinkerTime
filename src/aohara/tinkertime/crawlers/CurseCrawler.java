@@ -10,7 +10,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
-import aohara.tinkertime.models.Mod;
 
 /**
  * Crawler for gethering Mod File Data from curse.com
@@ -21,21 +20,6 @@ public class CurseCrawler extends ModCrawler<Document> {
 	
 	public CurseCrawler(URL url, PageLoader<Document> pageLoader){
 		super(url, pageLoader);
-	}
-
-	/**
-	 * Crawls the page and returns a Mod model with all of the Mod's current data.
-	 * 
-	 * @return Mod representing the mod's most recent data
-	 */
-	@Override
-	public Mod createMod() throws IOException {
-		// Creator
-		Element ele = getPage(url).getElementById("project-overview");
-		ele = ele.getElementsContainingOwnText("Manager").first();
-		String creator = ele.text().split(":")[1].trim();
-
-		return new Mod(getName(), getNewestFileName(), creator, getImageUrl(), url, getUpdatedOn());
 	}
 	
 	@Override
@@ -84,5 +68,12 @@ public class CurseCrawler extends ModCrawler<Document> {
 		Element ele = getPage(url).getElementById("project-overview");
 		ele = ele.getElementsByClass("caption").first();
 		return ele.text();
+	}
+
+	@Override
+	protected String getCreator() throws IOException {
+		Element ele = getPage(url).getElementById("project-overview");
+		ele = ele.getElementsContainingOwnText("Manager").first();
+		return ele.text().split(":")[1].trim();
 	}
 }

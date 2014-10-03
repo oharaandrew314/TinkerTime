@@ -10,7 +10,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
-import aohara.tinkertime.models.Mod;
 
 /**
  * Crawler for gathering Mod Data from a Github Project.
@@ -29,13 +28,6 @@ public class GithubCrawler extends ModCrawler<Document> {
 			url = new URL(url.toString() + "/releases");
 		}
 		return super.getPage(url);
-	}
-
-	@Override
-	public Mod createMod() throws IOException {
-		String creator = getLatestReleaseElement().select(" p.release-authorship a").first().text();
-		
-		return new Mod(getName(), getNewestFileName(), creator, getImageUrl(), url, getUpdatedOn());
 	}
 	
 	private Element getLatestReleaseElement() throws IOException {
@@ -77,6 +69,11 @@ public class GithubCrawler extends ModCrawler<Document> {
 	@Override
 	public String getName() throws IOException {
 		return getPage(url).select("h1.entry-title strong > a").text();
+	}
+
+	@Override
+	protected String getCreator() throws IOException {
+		return getLatestReleaseElement().select(" p.release-authorship a").first().text();
 	}
 
 }

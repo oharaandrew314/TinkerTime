@@ -21,8 +21,14 @@ public abstract class ModCrawler<T> extends Crawler<T> {
 		super(url, pageLoader);
 	}
 	
+	public Mod createMod() throws IOException{
+		return new Mod(
+			getName(), getNewestFileName(), getCreator(), getImageUrl(), url, getUpdatedOn()
+		);
+	}
+	
 	public abstract String getName() throws IOException;
 	public abstract URL getImageUrl() throws IOException;
-	public abstract Mod createMod() throws IOException;
+	protected abstract String getCreator() throws IOException;
 
 }

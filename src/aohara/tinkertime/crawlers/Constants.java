@@ -3,14 +3,22 @@ package aohara.tinkertime.crawlers;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+/**
+ * Contains Several Constants for Crawling
+ * 
+ * @author Andrew O'Hara
+ */
 public class Constants {
-	/** Contains Several Constants for Crawling **/
 	
+	// Host Names
 	public static final String
 		HOST_CURSE = "www.curse.com",
 		HOST_GITHUB = "github.com",
-		HOST_MODULE_MANAGER = "ksp.sarbian.com";
-	public static final String[] ACCEPTED_MOD_HOSTS	 = new String[]{ HOST_CURSE, HOST_GITHUB };
+		HOST_MODULE_MANAGER = "ksp.sarbian.com",
+		HOST_KERBAL_STUFF = "kerbalstuff.com";
+	public static final String[] ACCEPTED_MOD_HOSTS	 = new String[]{
+		HOST_CURSE, HOST_GITHUB, HOST_KERBAL_STUFF
+	};
 	
 	public static final String MODULE_MANAGER_ARTIFACT_DL_URL = (
 		"https://ksp.sarbian.com/jenkins/job/ModuleManager/lastSuccessfulBuild/artifact/"
