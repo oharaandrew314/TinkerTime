@@ -63,7 +63,7 @@ public class KerbalStuffCrawler extends ModCrawler <JsonObject>{
 	@Override
 	public String getNewestFileName() throws IOException {
 		return String.format(
-			"%s %s", getName(),
+			"%s %s.zip", getName(),
 			getLatestVersion().get("friendly_version").getAsString()
 		);
 	}
