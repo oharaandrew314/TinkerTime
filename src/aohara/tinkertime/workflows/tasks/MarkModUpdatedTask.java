@@ -5,6 +5,8 @@ import java.io.IOException;
 import aohara.common.workflows.Workflow;
 import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.controllers.ModUpdateListener;
+import aohara.tinkertime.crawlers.CrawlerFactory;
+import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.crawlers.ModCrawler;
 import aohara.tinkertime.models.Mod;
 
@@ -12,29 +14,31 @@ public class MarkModUpdatedTask extends WorkflowTask {
 	
 	private final ModUpdateListener listener;
 	private final ModCrawler<?> crawler;
-	private final Mod mod;
+	private boolean deleted = false;
 
 	public MarkModUpdatedTask(Workflow workflow, ModUpdateListener listener, ModCrawler<?> crawler) {
 		super(workflow);
 		this.listener = listener;
 		this.crawler = crawler;
-		this.mod = null;
 	}
 	
-	public MarkModUpdatedTask(Workflow workflow, ModUpdateListener listener, Mod mod) {
-		super(workflow);
-		this.listener = listener;
-		this.crawler = null;
-		this.mod = mod;
+	public static MarkModUpdatedTask notifyDeletion(Workflow workflow, ModUpdateListener listener, Mod mod){
+		try {
+			MarkModUpdatedTask task = new MarkModUpdatedTask(
+				workflow,
+				listener,
+				new CrawlerFactory().getModCrawler(mod.getPageUrl())
+			);
+			task.deleted = true;
+			return task;
+		} catch (UnsupportedHostException e) {
+			throw new IllegalStateException("This should not happen");
+		}
 	}
 
 	@Override
 	public Boolean call() throws Exception {
-		if (mod != null){
-			listener.modUpdated(mod, false);
-		} else {
-			listener.modUpdated(crawler.createMod(), false);
-		}
+		listener.modUpdated(crawler.createMod(), deleted);
 		return true;
 	}
 
@@ -47,5 +51,4 @@ public class MarkModUpdatedTask extends WorkflowTask {
 	public String getTitle() {
 		return "Registering Mod as Updated";
 	}
-
 }
