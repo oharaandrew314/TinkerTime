@@ -1,6 +1,5 @@
 package aohara.tinkertime.controllers;
 
-import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.Executor;
@@ -37,11 +36,12 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	private final ModStateManager sm;
 	private final ProgressPanel progressPanel;
 	private final ConflictResolver cr;
+	private Mod selectedMod;
 	
-	public static ModManager createDefaultModManager(ModStateManager sm, ProgressPanel pp){
+	public static ModManager createDefaultModManager(Config config, ModStateManager sm, ProgressPanel pp){
 		
 		ModManager mm =  new ModManager(
-			sm, new Config(), pp, new DialogConflictResolver(),
+			sm, config, pp, new DialogConflictResolver(),
 			Executors.newFixedThreadPool(NUM_CONCURRENT_DOWNLOADS),
 			Executors.newSingleThreadExecutor());
 		
@@ -60,6 +60,12 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		this.enablerExecutor = enablerExecutor;
 		
 		addListener(sm);
+	}
+	
+	// -- Accessors --------------------------------------------------------
+	
+	public Mod getSelectedMod(){
+		return selectedMod;
 	}
 	
 	// -- Listeners -----------------------
@@ -83,12 +89,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 
 	@Override
 	public void elementSelected(Mod element) {
-		// Do Nothing
-	}
-
-	@Override
-	public void elementRightClicked(MouseEvent evt, Mod mod) throws Exception {
-		// Do Nothing
+		selectedMod = element;
 	}
 	
 	// -- Modifiers ---------------------------------

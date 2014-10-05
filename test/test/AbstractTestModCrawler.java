@@ -36,8 +36,8 @@ public abstract class AbstractTestModCrawler {
 		assertEquals(expectedMod.getImageUrl(), actualMod.getImageUrl());
 		assertEquals(expectedMod.getPageUrl(), actualMod.getPageUrl());
 		assertEquals(
-			expectedMod.getUpdatedOn() != null ? expectedMod.getUpdatedOn() : null,
-			actualMod.getUpdatedOn() != null ? actualMod.getUpdatedOn() : null			
+			expectedMod.getUpdatedOn() != null ? expectedMod.getUpdatedOn().toString() : null,
+			actualMod.getUpdatedOn() != null ? actualMod.getUpdatedOn().toString() : null			
 		);
 	}
 	
