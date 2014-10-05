@@ -5,6 +5,8 @@ import java.awt.Image;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 import aohara.common.content.ImageManager;
 import aohara.tinkertime.TinkerTime;
@@ -20,6 +22,16 @@ import aohara.tinkertime.TinkerTime;
 public class TinkerFrame extends JFrame {
 	
 	public TinkerFrame() {
+		// Try to use Nimbus Look & Feel
+		try {
+		    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+		        if ("Nimbus".equals(info.getName())) {
+		            UIManager.setLookAndFeel(info.getClassName());
+		            break;
+		        }
+		    }
+		} catch (Exception e) {}
+		
 		setTitle(TinkerTime.NAME);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(new BorderLayout());
