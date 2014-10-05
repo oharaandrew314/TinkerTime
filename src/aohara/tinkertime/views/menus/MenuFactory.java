@@ -15,7 +15,6 @@ public class MenuFactory {
 		toolBar.setFloatable(false);
 		
 		toolBar.add(new Actions.OptionsAction(toolBar, mm));
-		//toolBar.add(new Actions.ExitAction(toolBar, mm));
 		
 		toolBar.addSeparator();
 		
@@ -26,10 +25,7 @@ public class MenuFactory {
 		toolBar.addSeparator();
 		
 		toolBar.add(new Actions.UpdateModAction(toolBar, mm));
-		//toolBar.add(new Actions.UpdateAllAction(toolBar, mm));
 		toolBar.add(new Actions.CheckforUpdatesAction(toolBar, mm));
-		//toolBar.add(new Actions.UpdateModuleManagerAction(toolBar, mm));
-		//toolBar.add(new Actions.UpdateTinkerTimeAction(toolBar, mm));
 
 		toolBar.addSeparator();
 		
