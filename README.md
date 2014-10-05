@@ -37,7 +37,7 @@ v0.7
 - Each KSP Installation to have its own separate mods configuration
 - Various other under-the-hood improvements
 
-v0.7
+v0.6
 - Initial Release
 - Curse.com support
  
