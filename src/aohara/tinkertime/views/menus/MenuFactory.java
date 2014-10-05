@@ -1,0 +1,82 @@
+package aohara.tinkertime.views.menus;
+
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JToolBar;
+
+import aohara.tinkertime.controllers.ModManager;
+
+public class MenuFactory {
+	
+	public static JToolBar createToolBar(ModManager mm){
+		JToolBar toolBar = new JToolBar();
+		toolBar.setFloatable(false);
+		
+		toolBar.add(new Actions.OptionsAction(toolBar, mm));
+		toolBar.add(new Actions.ExitAction(toolBar, mm));
+		
+		toolBar.addSeparator();
+		
+		toolBar.add(new Actions.AddModAction(toolBar, mm));
+		toolBar.add(new Actions.EnableDisableModAction(toolBar, mm));
+		toolBar.add(new Actions.DeleteModAction(toolBar, mm));
+
+		toolBar.addSeparator();
+		
+		toolBar.add(new Actions.UpdateModAction(toolBar, mm));
+		toolBar.add(new Actions.UpdateAllAction(toolBar, mm));
+		toolBar.add(new Actions.CheckforUpdatesAction(toolBar, mm));
+		toolBar.add(new Actions.UpdateModuleManagerAction(toolBar, mm));
+		toolBar.add(new Actions.UpdateTinkerTimeAction(toolBar, mm));
+
+		toolBar.addSeparator();
+		
+		toolBar.add(new Actions.AboutAction(toolBar, mm));
+		toolBar.add(new Actions.HelpAction(toolBar, mm));
+		toolBar.add(new Actions.ContactAction(toolBar, mm));
+		
+		return toolBar;
+	}
+	
+	public static JMenuBar creatMenuBar(ModManager mm){
+		JMenuBar menuBar = new JMenuBar();
+		
+		JMenu fileMenu = new JMenu("File");
+		fileMenu.add(new JMenuItem(new Actions.OptionsAction(menuBar, mm)));
+		fileMenu.add(new JMenuItem(new Actions.ExitAction(menuBar, mm)));
+		menuBar.add(fileMenu);
+		
+		JMenu modMenu = new JMenu("Mod");
+		modMenu.add(new JMenuItem(new Actions.AddModAction(menuBar, mm)));
+		modMenu.add(new JMenuItem(new Actions.EnableDisableModAction(menuBar, mm)));
+		modMenu.add(new JMenuItem(new Actions.DeleteModAction(menuBar, mm)));
+		menuBar.add(modMenu);
+		
+		JMenu updateMenu = new JMenu("Update");
+		updateMenu.add(new JMenuItem(new Actions.UpdateModAction(menuBar, mm)));
+		updateMenu.add(new JMenuItem(new Actions.UpdateAllAction(menuBar, mm)));
+		updateMenu.add(new JMenuItem(new Actions.CheckforUpdatesAction(menuBar, mm)));
+		updateMenu.add(new JMenuItem(new Actions.UpdateModuleManagerAction(menuBar, mm)));
+		updateMenu.add(new JMenuItem(new Actions.UpdateTinkerTimeAction(menuBar, mm)));
+		menuBar.add(updateMenu);
+		
+		JMenu helpMenu = new JMenu("Help");
+		helpMenu.add(new JMenuItem(new Actions.AboutAction(menuBar, mm)));
+		helpMenu.add(new JMenuItem(new Actions.HelpAction(menuBar, mm)));
+		helpMenu.add(new JMenuItem(new Actions.ContactAction(menuBar, mm)));
+		menuBar.add(helpMenu);
+		
+		return menuBar;
+	}
+	
+	public static JPopupMenu createPopupMenu(ModManager mm){
+		JPopupMenu popupMenu = new JPopupMenu();
+		popupMenu.add(new Actions.EnableDisableModAction(popupMenu, mm));
+		popupMenu.add(new Actions.UpdateModAction(popupMenu, mm));
+		popupMenu.add(new Actions.DeleteModAction(popupMenu, mm));
+		return popupMenu;
+	}
+
+}
