@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.Arrays;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
@@ -42,6 +43,7 @@ public class Actions {
 			super(title, iconName != null ? IMAGE_MANAGER.getIcon(iconName): null);
 			this.parent = parent;
 			this.mm = mm;
+			putValue(Action.SHORT_DESCRIPTION, title);
 		}
 		
 		protected void errorMessage(Exception ex){
@@ -93,7 +95,7 @@ public class Actions {
 	public static class DeleteModAction extends TinkerAction {
 		
 		public DeleteModAction(JComponent parent, ModManager mm){
-			super("Delete", "icon/glyphicons_433_minus.png", parent, mm);
+			super("Delete Mod", "icon/glyphicons_433_minus.png", parent, mm);
 		}
 
 		@Override

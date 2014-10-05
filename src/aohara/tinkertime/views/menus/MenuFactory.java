@@ -15,7 +15,7 @@ public class MenuFactory {
 		toolBar.setFloatable(false);
 		
 		toolBar.add(new Actions.OptionsAction(toolBar, mm));
-		toolBar.add(new Actions.ExitAction(toolBar, mm));
+		//toolBar.add(new Actions.ExitAction(toolBar, mm));
 		
 		toolBar.addSeparator();
 		
@@ -26,10 +26,10 @@ public class MenuFactory {
 		toolBar.addSeparator();
 		
 		toolBar.add(new Actions.UpdateModAction(toolBar, mm));
-		toolBar.add(new Actions.UpdateAllAction(toolBar, mm));
+		//toolBar.add(new Actions.UpdateAllAction(toolBar, mm));
 		toolBar.add(new Actions.CheckforUpdatesAction(toolBar, mm));
-		toolBar.add(new Actions.UpdateModuleManagerAction(toolBar, mm));
-		toolBar.add(new Actions.UpdateTinkerTimeAction(toolBar, mm));
+		//toolBar.add(new Actions.UpdateModuleManagerAction(toolBar, mm));
+		//toolBar.add(new Actions.UpdateTinkerTimeAction(toolBar, mm));
 
 		toolBar.addSeparator();
 		
@@ -52,10 +52,10 @@ public class MenuFactory {
 		modMenu.add(new JMenuItem(new Actions.AddModAction(menuBar, mm)));
 		modMenu.add(new JMenuItem(new Actions.EnableDisableModAction(menuBar, mm)));
 		modMenu.add(new JMenuItem(new Actions.DeleteModAction(menuBar, mm)));
+		modMenu.add(new JMenuItem(new Actions.UpdateModAction(menuBar, mm)));
 		menuBar.add(modMenu);
 		
-		JMenu updateMenu = new JMenu("Update");
-		updateMenu.add(new JMenuItem(new Actions.UpdateModAction(menuBar, mm)));
+		JMenu updateMenu = new JMenu("Updates");
 		updateMenu.add(new JMenuItem(new Actions.UpdateAllAction(menuBar, mm)));
 		updateMenu.add(new JMenuItem(new Actions.CheckforUpdatesAction(menuBar, mm)));
 		updateMenu.add(new JMenuItem(new Actions.UpdateModuleManagerAction(menuBar, mm)));
