@@ -33,7 +33,7 @@ public class MockCrawlerFactory extends CrawlerFactory{
 		public Document getPage(URL url) throws IOException {			
 			String fileName = FilenameUtils.getBaseName(url.toString());
 			if (fileName.equals("releases")){
-				try { // Chopp off releases from path
+				try { // Chop off releases from path
 					java.net.URI uri = url.toURI();
 					uri = uri.getPath().endsWith("/") ? uri.resolve("..") : uri.resolve(".");
 					String[] names = uri.getPath().split("/");

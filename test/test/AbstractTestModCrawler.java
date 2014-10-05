@@ -30,12 +30,15 @@ public abstract class AbstractTestModCrawler {
 			supportedVersion
 		);
 		
-		assertEquals(actualMod.getName(), expectedMod.getName());
-		assertEquals(actualMod.getNewestFileName(), expectedMod.getNewestFileName());
-		assertEquals(actualMod.getCreator(), expectedMod.getCreator());
-		assertEquals(actualMod.getImageUrl(), expectedMod.getImageUrl());
-		assertEquals(actualMod.getPageUrl(), expectedMod.getPageUrl());
-		assertEquals(actualMod.getUpdatedOn().toString(), expectedMod.getUpdatedOn().toString());
+		assertEquals(expectedMod.getName(), actualMod.getName());
+		assertEquals(expectedMod.getNewestFileName(), actualMod.getNewestFileName());
+		assertEquals(expectedMod.getCreator(), actualMod.getCreator());
+		assertEquals(expectedMod.getImageUrl(), actualMod.getImageUrl());
+		assertEquals(expectedMod.getPageUrl(), actualMod.getPageUrl());
+		assertEquals(
+			expectedMod.getUpdatedOn() != null ? expectedMod.getUpdatedOn() : null,
+			actualMod.getUpdatedOn() != null ? actualMod.getUpdatedOn() : null			
+		);
 	}
 	
 	protected Date getDate(int year, int month, int date){
