@@ -3,3 +3,6 @@
 .project
 Thumbs.db
 .settings/*
+.idea
+build/
+.gradletasknamecache
