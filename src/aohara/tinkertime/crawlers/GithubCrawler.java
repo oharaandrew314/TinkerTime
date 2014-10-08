@@ -1,6 +1,8 @@
 package aohara.tinkertime.crawlers;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -81,4 +83,17 @@ public class GithubCrawler extends ModCrawler<Document> {
 		return null;  // Not Supported by Github
 	}
 
+	@Override
+	public String generateId() {
+		try { // Chop off releases from path
+			URI uri = url.toURI();
+			if (url.getPath().endsWith("releases")){
+				uri = uri.getPath().endsWith("/") ? uri.resolve("..") : uri.resolve(".");
+			}
+			String[] names = uri.getPath().split("/");
+			return names[names.length - 1];
+		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		}	
+	}
 }

@@ -63,4 +63,9 @@ public class JenkinsCrawler extends Crawler<JsonObject> {
 		}
 	}
 
+	@Override
+	public String generateId() {
+		return url.getHost();
+	}
+
 }

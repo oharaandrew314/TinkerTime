@@ -19,19 +19,18 @@ import aohara.tinkertime.Config;
  */
 public class Mod extends UpdateableFile {
 	
+	public final String id;
 	private String name, creator, supportedVersion;
 	private URL imageUrl;
 	private boolean enabled = false;
 	private transient boolean updateAvailable = false;
 	
 	public Mod(
-			String modName, String newestFileName, String creator,
+			String id, String modName, String newestFileName, String creator,
 			URL imageUrl, URL pageUrl, Date updatedOn, String supportedVersion){
 		super(newestFileName, updatedOn, pageUrl);
-		this.name = modName;
-		this.creator = creator;
-		this.imageUrl = imageUrl;
-		this.supportedVersion = supportedVersion;
+		this.id = id;
+		updateModData(modName, newestFileName, creator, newestFileName, imageUrl, pageUrl, updatedOn);
 		updateAvailable = false;
 	}
 	
@@ -45,10 +44,6 @@ public class Mod extends UpdateableFile {
 
 	public URL getImageUrl() {
 		return imageUrl;
-	}
-	
-	public String getId(){
-		return FilenameUtils.getBaseName(getPageUrl().toString());	
 	}
 	
 	public boolean isDownloaded(Config config){

@@ -7,6 +7,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import aohara.tinkertime.crawlers.Crawler;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -21,7 +23,7 @@ public class JsonLoader implements PageLoader<JsonObject> {
 	private final JsonParser parser = new JsonParser();
 
 	@Override
-	public JsonObject getPage(URL url) throws IOException {
+	public JsonObject getPage(Crawler<JsonObject> crawler, URL url) throws IOException {
 		if (!cache.containsKey(url)){
 			try(Reader r = new InputStreamReader(url.openStream())){
 				return parser.parse(r).getAsJsonObject();

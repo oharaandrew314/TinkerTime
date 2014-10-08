@@ -13,6 +13,7 @@ public class TestGithubCrawler extends AbstractTestModCrawler {
 	public void testVisualEnhancements() throws IOException, UnsupportedHostException{
 		compare(
 			ModStubs.Eve,
+			"EnvironmentalVisualEnhancements",
 			getDate(2014, 8, 5),
 			"rbray89",
 			"EnvironmentalVisualEnhancements-7-4-LR.zip",
@@ -26,6 +27,7 @@ public class TestGithubCrawler extends AbstractTestModCrawler {
 	public void testProceduralFairings() throws IOException, UnsupportedHostException {
 		compare(
 			ModStubs.ProceduralFairings,
+			"ProceduralFairings",
 			getDate(2014, 7, 3),
 			"e-dog",
 			"ProcFairings_3.09.zip",

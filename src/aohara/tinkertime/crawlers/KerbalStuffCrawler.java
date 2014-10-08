@@ -20,14 +20,14 @@ public class KerbalStuffCrawler extends ModCrawler<JsonObject>{
 	}
 	
 	private static URL getApiURL(URL url){
-		Matcher m = ID_PATTERN.matcher(url.getPath());
-		if (m.find()){
-			String path = String.format("/api/mod/%s", m.group(2));
-			try {
-				return new URL("https", Constants.HOST_KERBAL_STUFF, path);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		try {
+			return new URL(
+				"https",
+				Constants.HOST_KERBAL_STUFF,
+				String.format("/api/mod/%s", generateId(url))
+			);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -81,5 +81,18 @@ public class KerbalStuffCrawler extends ModCrawler<JsonObject>{
 	@Override
 	public String getSupportedVersion() throws IOException {
 		return getLatestVersion().get("ksp_version").getAsString();
+	}
+
+	@Override
+	public String generateId(){
+		return generateId(url);
+	}
+	
+	private static String generateId(URL url) {
+		Matcher m = ID_PATTERN.matcher(url.getPath());
+		if (m.find()){
+			return m.group(2);
+		}
+		return null;
 	}
 }

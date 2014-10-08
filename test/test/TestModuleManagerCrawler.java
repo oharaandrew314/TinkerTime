@@ -11,15 +11,15 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import test.util.MockCrawlerFactory;
-import aohara.tinkertime.crawlers.JenkinsCrawler;
+import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.crawlers.JenkinsCrawler;
 
 public class TestModuleManagerCrawler {
 	
 	private static JenkinsCrawler loadTestPage(int num) throws IOException, UnsupportedHostException {
-		URL url = new URL(String.format("https://ksp.sarbian.com/moduleManagerPage%d.json", num));
-		return (JenkinsCrawler) new MockCrawlerFactory().getCrawler(url);
+		URL url = new URL(String.format("file:/test/res/moduleManagerPage%d.json", num));
+		return (JenkinsCrawler) new CrawlerFactory().getCrawler(url);
 	}
 	
 	private Date getDateDelta(JenkinsCrawler crawler, int delta){

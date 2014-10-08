@@ -23,8 +23,8 @@ public abstract class ModCrawler<T> extends Crawler<T> {
 	
 	public Mod createMod() throws IOException{
 		return new Mod(
-			getName(), getNewestFileName(), getCreator(), getImageUrl(),
-			url, getUpdatedOn(), getSupportedVersion()
+			generateId(), getName(), getNewestFileName(), getCreator(),
+			getImageUrl(), url, getUpdatedOn(), getSupportedVersion()
 		);
 	}
 	

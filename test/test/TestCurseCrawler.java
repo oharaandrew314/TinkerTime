@@ -13,6 +13,7 @@ public class TestCurseCrawler extends AbstractTestModCrawler {
 	public void testMechjeb() throws IOException, UnsupportedHostException {		
 		compare(
 			ModStubs.Mechjeb,
+			"220221-mechjeb",
 			getDate(2014, 4, 6),
 			"r4m0n",
 			"MechJeb2-2.2.1.0.zip",
@@ -27,6 +28,7 @@ public class TestCurseCrawler extends AbstractTestModCrawler {
 	public void testEngineer() throws IOException, UnsupportedHostException {		
 		compare(
 			ModStubs.Engineer,
+			"220285-kerbal-engineer-redux",
 			getDate(2014, 4, 12),
 			"cybutek",
 			"Engineer_Redux_v0.6.2.4.zip",

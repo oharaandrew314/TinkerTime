@@ -13,6 +13,7 @@ public class TestKerbalStuffCrawler extends AbstractTestModCrawler {
 	public void testRadialEngines() throws IOException, UnsupportedHostException {		
 		compare(
 			ModStubs.RadialEngines,
+			"153",
 			null,
 			"teejaye85",
 			"Radial Engine Mounts by PanaTee Parts International v0.30.zip",
@@ -27,6 +28,7 @@ public class TestKerbalStuffCrawler extends AbstractTestModCrawler {
 	public void testTimeControl() throws IOException, UnsupportedHostException {
 		compare(
 			ModStubs.TimeControl,
+			"21",
 			null,
 			"Xaiier",
 			"Time Control 13.2.zip",

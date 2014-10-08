@@ -7,6 +7,8 @@ import java.util.Map;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+
+import aohara.tinkertime.crawlers.Crawler;
 	
 /**
  * PageLoader for loading and caching HTML documents from the web.
@@ -19,7 +21,7 @@ public class WebpageLoader implements PageLoader<Document>{
 		
 	private final Map<URL, Document> documentCache = new HashMap<>();
 	
-	public Document getPage(URL url) throws IOException {
+	public Document getPage(Crawler<Document> crawler, URL url) throws IOException {
 		if (!documentCache.containsKey(url)){
 			documentCache.put(url, Jsoup.parse(url, TIMEOUT_MS));
 		}

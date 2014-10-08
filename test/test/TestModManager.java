@@ -18,7 +18,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import test.util.MockConfig;
-import test.util.MockMod;
 import test.util.ModLoader;
 import test.util.ModStubs;
 import aohara.common.workflows.ConflictResolver;
@@ -37,7 +36,7 @@ public class TestModManager {
 	
 	private static Config config;
 	private ModManager manager;
-	private static MockMod mod, testMod1, testMod2;
+	private static ModLoader.MockMod mod, testMod1, testMod2;
 	private MockCR cr;
 	private Executor downloedExecutor, enablerExecutor;
 	

@@ -24,6 +24,7 @@ public class TestModStateManager {
 	
 	private static Mod getUpdatedMod(final Mod mod, final String newestFile){
 		return new Mod(
+			mod.id,
 			mod.getName(),
 			newestFile,
 			mod.getCreator(),

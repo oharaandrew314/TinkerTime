@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.commons.io.FilenameUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
@@ -81,5 +82,10 @@ public class CurseCrawler extends ModCrawler<Document> {
 	public String getSupportedVersion() throws IOException {
 		String text = getPage(url).select("li.version").first().text();
 		return text.split(":")[1].trim();
+	}
+
+	@Override
+	public String generateId() {
+		return FilenameUtils.getBaseName(url.getPath());
 	}
 }

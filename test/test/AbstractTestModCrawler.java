@@ -15,12 +15,13 @@ import aohara.tinkertime.models.Mod;
 public abstract class AbstractTestModCrawler {
 	
 	protected void compare(
-		ModStubs stub, Date updatedOn, String creator,
+		ModStubs stub, String id, Date updatedOn, String creator,
 		String newestFile, String downloadLink, String imageLink, String supportedVersion
 	) throws IOException, UnsupportedHostException {
 		Mod actualMod = new MockCrawlerFactory().getModCrawler(stub.url).createMod();
 		
 		Mod expectedMod = new Mod(
+			id,
 			stub.name,
 			newestFile,
 			creator,

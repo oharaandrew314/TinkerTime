@@ -6,6 +6,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import aohara.tinkertime.Config;
 import aohara.tinkertime.content.ArchiveInspector;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
@@ -17,11 +18,7 @@ public class ModLoader {
 	public static MockMod loadMod(ModStubs stub) throws UnsupportedHostException{
 		try {
 			Mod mod = new MockCrawlerFactory().getModCrawler(stub.url).createMod();
-			return new MockMod(
-				mod.getName(), mod.getNewestFileName(), mod.getCreator(),
-				mod.getImageUrl(), mod.getPageUrl(), mod.getUpdatedOn(),
-				mod.getSupportedVersion()
-			);
+			return new MockMod(mod);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -52,5 +49,33 @@ public class ModLoader {
 			}
 		}
 		return null;
+	}
+	
+	public static class MockMod extends Mod {
+		
+		private boolean downloaded = false;
+
+		public MockMod(Mod mod) {
+			super(
+				mod.id,
+				mod.getName(),
+				mod.getNewestFileName(),
+				mod.getCreator(),
+				mod.getImageUrl(),
+				mod.getPageUrl(),
+				mod.getUpdatedOn(),
+				mod.getSupportedVersion()
+			);
+		}
+		
+		public void setDownloaded(boolean downloaded){
+			this.downloaded = downloaded;
+		}
+		
+		@Override
+		public Path getCachedZipPath(Config config){
+			return downloaded ? ModLoader.getZipPath(getName()) : Paths.get("/");
+		}
+
 	}
 }

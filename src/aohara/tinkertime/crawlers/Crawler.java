@@ -15,7 +15,7 @@ import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
  *
  * @param <T> Type of Page that is to be returned by getPage
  */
-public abstract class Crawler<T> implements PageLoader<T> {
+public abstract class Crawler<T> {
 	
 	private final PageLoader<T> pageLoader;
 	public final URL url;
@@ -25,11 +25,11 @@ public abstract class Crawler<T> implements PageLoader<T> {
 		this.pageLoader = pageLoader;
 	}
 	
-	@Override
 	public T getPage(URL url) throws IOException {
-		return pageLoader.getPage(url);
+		return pageLoader.getPage(this, url);
 	}
 	
+	public abstract String generateId();
 	public abstract URL getDownloadLink() throws IOException;
 	public abstract String getNewestFileName() throws IOException;
 	protected abstract Date getUpdatedOn() throws IOException;
