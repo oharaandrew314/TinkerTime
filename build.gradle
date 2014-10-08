@@ -17,9 +17,16 @@ repositories {
 }
 
 sourceSets {
+
+    Common {
+        java {
+            srcDir 'Common'
+        }
+    }
+
     main {
         java {
-//            compileClasspath += Common.output
+            compileClasspath += Common.output
             srcDir 'src'
         }
         resources {
@@ -32,12 +39,6 @@ sourceSets {
             srcDir 'test'
         }
     }
-
-    Common {
-        java {
-            srcDir 'Common'
-        }
-    }
 }
 
 configurations {
@@ -47,11 +48,11 @@ configurations {
 // In this section you declare the dependencies for your production and test code
 dependencies {
 
+    commonCompile 'commons-io:commons-io:2.4'
+
     compile 'commons-io:commons-io:2.4'
     compile 'com.google.code.gson:gson:2.2.4'
     compile 'org.jsoup:jsoup:1.7.3'
-
-//    compile fileTree(dir:'Common', include: '**/*.java')
 
     testCompile 'org.mockito:mockito-all:1.9.5'
     testCompile 'junit:junit:4.11'
