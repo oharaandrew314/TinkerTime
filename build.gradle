@@ -10,6 +10,9 @@
 
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
+//apply plugin: 'application'
+//
+//mainClassName = 'aohara.tinkertime.TinkerTime'
 
 // In this section you declare where to find the dependencies of your project
 repositories {
@@ -18,16 +21,9 @@ repositories {
 
 sourceSets {
 
-    Common {
-        java {
-            srcDir 'Common'
-        }
-    }
-
     main {
         java {
-            compileClasspath += Common.output
-            srcDir 'src'
+            srcDirs ('src', 'Common')
         }
         resources {
             srcDir 'res'
@@ -41,14 +37,12 @@ sourceSets {
     }
 }
 
-configurations {
-    main.extendsFrom commonCompile
-}
+//configurations {
+//    main.extendsFrom commonCompile
+//}
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
-
-    commonCompile 'commons-io:commons-io:2.4'
 
     compile 'commons-io:commons-io:2.4'
     compile 'com.google.code.gson:gson:2.2.4'
@@ -56,4 +50,13 @@ dependencies {
 
     testCompile 'org.mockito:mockito-all:1.9.5'
     testCompile 'junit:junit:4.11'
+}
+
+jar {
+
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+
+    manifest {
+        attributes 'Main-Class': 'aohara.tinkertime.TinkerTime'
+    }
 }

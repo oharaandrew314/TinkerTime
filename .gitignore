@@ -6,3 +6,4 @@ Thumbs.db
 .idea
 build/
 .gradletasknamecache
+.gradle
