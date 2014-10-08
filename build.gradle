@@ -34,12 +34,11 @@ sourceSets {
         java {
             srcDir 'test'
         }
+        resources {
+            srcDir 'test/test/res'
+        }
     }
 }
-
-//configurations {
-//    main.extendsFrom commonCompile
-//}
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
