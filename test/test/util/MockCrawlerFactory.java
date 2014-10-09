@@ -43,7 +43,7 @@ public class MockCrawlerFactory extends CrawlerFactory{
 				}
 			}
 			
-			try(InputStream is = ModLoader.class.getClassLoader().getResourceAsStream(String.format("test/res/html/%s.html", fileName))){
+			try(InputStream is = ModLoader.class.getClassLoader().getResourceAsStream(String.format("html/%s.html", fileName))){
 				return Jsoup.parse(is, null, url.toString());
 			}
 		}
@@ -54,7 +54,7 @@ public class MockCrawlerFactory extends CrawlerFactory{
 		@Override
 		public JsonObject getPage(URL url) throws IOException {			
 			return new JsonLoader().getPage(this.getClass().getClassLoader().getResource(
-					String.format("test/res/json/%s.json", FilenameUtils.getBaseName(url.toString())
+					String.format("json/%s.json", FilenameUtils.getBaseName(url.toString())
 			)));
 		}
 		
