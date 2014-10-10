@@ -26,6 +26,10 @@ sourceSets {
     }
 }
 
+task unitTest( type: Test ) {
+    exclude 'test/integration/*'
+}
+
 compileJava {
   sourceCompatibility = '1.7'
   targetCompatibility = '1.7'
