@@ -1,6 +1,7 @@
 package test;
 
 import java.io.IOException;
+import java.util.Calendar;
 
 import org.junit.Test;
 
@@ -14,7 +15,7 @@ public class TestKerbalStuffCrawler extends AbstractTestModCrawler {
 		compare(
 			ModStubs.RadialEngines,
 			"153",
-			null,
+			Calendar.getInstance().getTime(),
 			"teejaye85",
 			"Radial Engine Mounts by PanaTee Parts International v0.30.zip",
 			"https://kerbalstuff.com/mod/153/Radial%20Engine%20Mounts%20by%"
@@ -29,7 +30,7 @@ public class TestKerbalStuffCrawler extends AbstractTestModCrawler {
 		compare(
 			ModStubs.TimeControl,
 			"21",
-			null,
+			Calendar.getInstance().getTime(),
 			"Xaiier",
 			"Time Control 13.2.zip",
 			"https://kerbalstuff.com/mod/21/Time%20Control/download/13.2",
