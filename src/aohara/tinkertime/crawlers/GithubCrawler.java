@@ -38,7 +38,11 @@ public class GithubCrawler extends ModCrawler<Document> {
 	}
 	
 	private Element getDownloadElement() throws IOException {
-		return getLatestReleaseElement().select("div.release-body ul.release-downloads a").first();
+		try {
+			return getLatestReleaseElement().select("div.release-body ul.release-downloads a").first();
+		} catch (NullPointerException e){
+			throw new IOException("No Releases discovered for this mod");
+		}
 	}
 
 	@Override
