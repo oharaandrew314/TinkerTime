@@ -30,7 +30,10 @@ public class Mod extends UpdateableFile {
 			URL imageUrl, URL pageUrl, Date updatedOn, String supportedVersion){
 		super(newestFileName, updatedOn, pageUrl);
 		this.id = id;
-		updateModData(modName, newestFileName, creator, newestFileName, imageUrl, pageUrl, updatedOn);
+		update(newestFileName, updatedOn, pageUrl);
+		this.name = modName;
+		this.creator = creator;
+		this.imageUrl = imageUrl;
 		updateAvailable = false;
 	}
 	
@@ -75,16 +78,6 @@ public class Mod extends UpdateableFile {
 	
 	public void setEnabled(boolean enabled){
 		this.enabled = enabled;
-	}
-	
-	public void updateModData(
-			String modName, String newestFileName, String creator,
-			String currentFile, URL imageUrl, URL pageUrl, Date updatedOn) {
-		super.update(newestFileName, updatedOn, pageUrl);
-		this.name = modName;
-		this.creator = creator;
-		this.imageUrl = imageUrl;
-		updateAvailable = false;
 	}
 	
 	@Override

@@ -36,7 +36,7 @@ public abstract class Crawler<T> {
 	
 	public boolean isUpdateAvailable(Date lastUpdated, String lastFileName) {
 		try {
-			if (lastUpdated != null){
+			if (lastUpdated != null && getUpdatedOn() != null){
 				return getUpdatedOn().compareTo(lastUpdated) > 0;
 			} else if (lastFileName != null){
 				return !getNewestFileName().equals(lastFileName);

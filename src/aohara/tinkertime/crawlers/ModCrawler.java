@@ -2,6 +2,8 @@ package aohara.tinkertime.crawlers;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Calendar;
+import java.util.Date;
 
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 import aohara.tinkertime.models.Mod;
@@ -22,9 +24,10 @@ public abstract class ModCrawler<T> extends Crawler<T> {
 	}
 	
 	public Mod createMod() throws IOException{
+		Date updatedOn = getUpdatedOn() != null ? getUpdatedOn() : Calendar.getInstance().getTime();
 		return new Mod(
 			generateId(), getName(), getNewestFileName(), getCreator(),
-			getImageUrl(), url, getUpdatedOn(), getSupportedVersion()
+			getImageUrl(), url, updatedOn, getSupportedVersion()
 		);
 	}
 	
