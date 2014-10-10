@@ -2,8 +2,7 @@ package aohara.tinkertime.workflows.tasks;
 
 import java.io.IOException;
 
-import aohara.common.workflows.Workflow;
-import aohara.common.workflows.tasks.WorkflowTask;
+import aohara.common.workflows.Workflow.WorkflowTask;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;
 
@@ -21,8 +20,7 @@ public class MarkModEnabledTask extends WorkflowTask {
 	private final ModStateManager sm;
 	private final boolean markEnabled;
 
-	public MarkModEnabledTask(Workflow workflow, Mod mod, ModStateManager sm, boolean enable) {
-		super(workflow);
+	public MarkModEnabledTask(Mod mod, ModStateManager sm, boolean enable) {
 		this.mod = mod;
 		this.sm = sm;
 		markEnabled = enable;

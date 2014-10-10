@@ -2,8 +2,7 @@ package aohara.tinkertime.workflows.tasks;
 
 import java.io.IOException;
 
-import aohara.common.workflows.Workflow;
-import aohara.common.workflows.tasks.WorkflowTask;
+import aohara.common.workflows.Workflow.WorkflowTask;
 import aohara.tinkertime.controllers.ModUpdateListener;
 import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
@@ -16,16 +15,14 @@ public class MarkModUpdatedTask extends WorkflowTask {
 	private final ModCrawler<?> crawler;
 	private boolean deleted = false;
 
-	public MarkModUpdatedTask(Workflow workflow, ModUpdateListener listener, ModCrawler<?> crawler) {
-		super(workflow);
+	public MarkModUpdatedTask(ModUpdateListener listener, ModCrawler<?> crawler) {
 		this.listener = listener;
 		this.crawler = crawler;
 	}
 	
-	public static MarkModUpdatedTask notifyDeletion(Workflow workflow, ModUpdateListener listener, Mod mod){
+	public static MarkModUpdatedTask notifyDeletion(ModUpdateListener listener, Mod mod){
 		try {
 			MarkModUpdatedTask task = new MarkModUpdatedTask(
-				workflow,
 				listener,
 				new CrawlerFactory().getModCrawler(mod.getPageUrl())
 			);

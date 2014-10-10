@@ -107,23 +107,23 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	}
 	
 	public void updateMod(Mod mod) throws ModUpdateFailedException {
-		Workflow wf = new Workflow("Updating " + mod.getName());
+		ModWorkflowBuilder builder = new ModWorkflowBuilder("Updating " + mod.getName());
 		try {
 			if (mod.isEnabled()){
-				ModWorkflowBuilder.disableMod(wf, mod, config, sm);
+				builder.disableMod( mod, config, sm);
 			}
-			ModWorkflowBuilder.downloadMod(wf, mod.getPageUrl(), config, sm);
-			submitDownloadWorkflow(wf);
+			builder.downloadMod(mod.getPageUrl(), config, sm);
+			submitDownloadWorkflow(builder.buildWorkflow());
 		} catch (IOException | UnsupportedHostException e) {
 			throw new ModUpdateFailedException();
 		}
 	}
 	
 	public void downloadMod(URL url) throws ModUpdateFailedException, UnsupportedHostException {
-		Workflow wf = new Workflow("Downloading " + FilenameUtils.getBaseName(url.toString()));
+		ModWorkflowBuilder builder = new ModWorkflowBuilder("Downloading " + FilenameUtils.getBaseName(url.toString()));
 		try {
-			ModWorkflowBuilder.downloadMod(wf, url, config, sm);
-			submitDownloadWorkflow(wf);
+			builder.downloadMod(url, config, sm);
+			submitDownloadWorkflow(builder.buildWorkflow());
 		} catch (IOException e) {
 			throw new ModUpdateFailedException();
 		}
@@ -142,9 +142,9 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 			throw new ModNotDownloadedException();
 		}
 		
-		Workflow wf = new Workflow("Enabling " + mod);
-		ModWorkflowBuilder.enableMod(wf, mod, config, sm, cr);		
-		submitEnablerWorkflow(wf);
+		ModWorkflowBuilder builder = new ModWorkflowBuilder("Enabling " + mod);
+		builder.enableMod(mod, config, sm, cr);
+		submitEnablerWorkflow(builder.buildWorkflow());
 	}
 	
 	public void disableMod(Mod mod) throws ModAlreadyDisabledException, IOException {
@@ -152,15 +152,15 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 			throw new ModAlreadyDisabledException();
 		}
 		
-		Workflow wf = new Workflow("Disabling " + mod);
-		ModWorkflowBuilder.disableMod(wf, mod, config, sm);
-		submitEnablerWorkflow(wf);
+		ModWorkflowBuilder builder = new ModWorkflowBuilder("Disabling " + mod);
+		builder.disableMod(mod, config, sm);
+		submitEnablerWorkflow(builder.buildWorkflow());
 	}
 	
 	public void deleteMod(Mod mod) throws CannotDisableModException, IOException {
-		Workflow wf = new Workflow("Deleting " + mod);
-		ModWorkflowBuilder.deleteMod(wf, mod, config, sm);		
-		submitEnablerWorkflow(wf);
+		ModWorkflowBuilder builder = new ModWorkflowBuilder("Deleting " + mod);
+		builder.deleteMod(mod, config, sm);		
+		submitEnablerWorkflow(builder.buildWorkflow());
 	}
 	
 	public void checkForModUpdates() throws Exception{
@@ -168,9 +168,9 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		
 		for (Mod mod : sm.getMods()){
 			try {
-				Workflow wf = new Workflow("Checking for update for " + mod);
-				ModWorkflowBuilder.checkForUpdates(wf, mod, mod, sm);
-				submitDownloadWorkflow(wf);
+				ModWorkflowBuilder builder = new ModWorkflowBuilder("Checking for update for " + mod);
+				builder.checkForUpdates(mod, mod, sm);
+				submitDownloadWorkflow(builder.buildWorkflow());
 			} catch (IOException | UnsupportedHostException ex) {
 				ex.printStackTrace();
 				e = ex;

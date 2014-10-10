@@ -2,16 +2,14 @@ package aohara.tinkertime.workflows.tasks;
 
 import java.io.IOException;
 
-import aohara.common.workflows.Workflow;
-import aohara.common.workflows.tasks.WorkflowTask;
+import aohara.common.workflows.Workflow.WorkflowTask;
 import aohara.tinkertime.crawlers.Crawler;
 
 public class CacheCrawlerPageTask extends WorkflowTask {
 	
 	private final Crawler<?> crawler;
 
-	public CacheCrawlerPageTask(Workflow workflow, Crawler<?> crawler) {
-		super(workflow);
+	public CacheCrawlerPageTask(Crawler<?> crawler) {
 		this.crawler = crawler;
 	}
 

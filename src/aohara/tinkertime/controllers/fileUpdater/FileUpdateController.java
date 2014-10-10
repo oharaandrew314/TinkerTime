@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
 
 import aohara.common.workflows.TaskListener;
 import aohara.common.workflows.Workflow;
-import aohara.common.workflows.tasks.WorkflowTask;
+import aohara.common.workflows.Workflow.WorkflowTask;
 import aohara.tinkertime.controllers.WorkflowRunner;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory;
@@ -60,15 +60,15 @@ public abstract class FileUpdateController implements FileUpdateListener, TaskLi
 	}
 	
 	public void checkForUpdate() throws IOException, UnsupportedHostException{
-		Workflow wf = new Workflow("Checking for update for " + title);
-		ModWorkflowBuilder.checkLatestVersion(wf, new UpdateableFile(getCurrentVersion(), null, pageUrl), this);
-		submitWorkflow(wf);
+		ModWorkflowBuilder builder = new ModWorkflowBuilder("Checking for update for " + title);
+		builder.checkLatestVersion(new UpdateableFile(getCurrentVersion(), null, pageUrl), this);
+		submitWorkflow(builder.buildWorkflow());
 	}
 	
 	public void downloadUpdate(boolean onlyIfNewer) throws IOException, UnsupportedHostException{
-		Workflow workflow = new Workflow("Updating " + title);
-		buildWorkflowTask(workflow, new CrawlerFactory().getCrawler(pageUrl), onlyIfNewer);
-		submitWorkflow(workflow);
+		ModWorkflowBuilder builder = new ModWorkflowBuilder("Updating " + title);
+		buildWorkflowTask(builder, new CrawlerFactory().getCrawler(pageUrl), onlyIfNewer);
+		submitWorkflow(builder.buildWorkflow());
 	}
 	
 	private void submitWorkflow(Workflow workflow){
@@ -76,7 +76,7 @@ public abstract class FileUpdateController implements FileUpdateListener, TaskLi
 		runner.submitDownloadWorkflow(workflow);
 	}
 	
-	public abstract void buildWorkflowTask(Workflow workflow, Crawler<?> crawler, boolean downloadOnlyIfNewer) throws IOException;
+	public abstract void buildWorkflowTask(ModWorkflowBuilder builder, Crawler<?> crawler, boolean downloadOnlyIfNewer) throws IOException;
 	
 	// -- Actions ------------------------------------------------------------
 	
