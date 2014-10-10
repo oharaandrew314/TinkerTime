@@ -30,7 +30,7 @@ public class MockCrawlerFactory extends CrawlerFactory{
 		
 		@Override
 		public Document getPage(Crawler<Document> crawler, URL url) throws IOException {
-			String resourceName = String.format("test/res/html/%s.html", crawler.generateId());
+			String resourceName = String.format("html/%s.html", crawler.generateId());
 			try(InputStream is = ModLoader.class.getClassLoader().getResourceAsStream(resourceName)){
 				return Jsoup.parse(is, null, url.toString());
 			}
@@ -41,7 +41,7 @@ public class MockCrawlerFactory extends CrawlerFactory{
 
 		@Override
 		public JsonObject getPage(Crawler<JsonObject> crawler, URL url) throws IOException {			
-			String resourceName = String.format("test/res/json/%s.json", crawler.generateId());
+			String resourceName = String.format("json/%s.json", crawler.generateId());
 			return new JsonLoader().getPage(crawler, this.getClass().getClassLoader().getResource(resourceName));
 		}
 		

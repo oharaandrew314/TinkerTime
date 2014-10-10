@@ -1,11 +1,16 @@
 package test.integration;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
@@ -24,7 +29,7 @@ public class TestModStructure {
 		for (Module module : struct.getModules()){
 			actualNames.add(module.getName());			
 		}
-		
+
 		assertEquals(
 			new HashSet<String>(Arrays.asList(expectedModuleNames)),
 			actualNames
@@ -32,17 +37,14 @@ public class TestModStructure {
 	}
 	
 	private void testModule(Module module, String... expectedFileNames){
-		Set<String> actual = new HashSet<String>();
+		List<String> actual = new ArrayList<>();
 		for (Path path : module.getContent().values()){
 			actual.add(path.toString());
 		}
-		
-		assertEquals(
-			new HashSet<String>(Arrays.asList(expectedFileNames)),
-			actual
-		);
+
+        assertThat(actual, containsInAnyOrder(expectedFileNames));
 	}
-	
+
 	@Test
 	public void testMod1() throws IOException{
 		testModules(ModStubs.TestMod1, "TestMod1", "Dependency");
@@ -52,10 +54,10 @@ public class TestModStructure {
 			if (module.getName().equals("TestMod1")){
 				testModule(
 					module,
-					"TestMod1\\Plugins\\Foo.dll",
-					"TestMod1\\Icons\\icon.ico",
-					"TestMod1\\TestMod1.txt",
-					"TestMod1\\Parts\\Fuel\\BigTank\\BigTank.tank"
+					Paths.get("TestMod1", "Plugins", "Foo.dll").toString(),
+					Paths.get("TestMod1", "Icons", "icon.ico").toString(),
+					Paths.get("TestMod1", "TestMod1.txt").toString(),
+					Paths.get("TestMod1", "Parts", "Fuel", "BigTank", "BigTank.tank").toString()
 				);
 			} else if (module.getName().equals("Dependency")){
 				// No Action
@@ -74,11 +76,11 @@ public class TestModStructure {
 			if (module.getName().equals("TestMod2")){
 				testModule(
 						module,
-						"TestMod2\\Plugins\\Foo.dll",
-						"TestMod2\\Icons\\icon.ico",
-						"TestMod2\\TestMod2.txt",
-						"TestMod2\\Parts\\Fuel\\BigTank\\BigTank.tank"
-					);;
+						Paths.get("TestMod2", "Plugins", "Foo.dll").toString(),
+						Paths.get("TestMod2", "Icons", "icon.ico").toString(),
+						Paths.get("TestMod2", "TestMod2.txt").toString(),
+						Paths.get("TestMod2", "Parts", "Fuel", "BigTank", "BigTank.tank").toString()
+					);
 				
 			} else if (module.getName().equals("Dependency")){
 				

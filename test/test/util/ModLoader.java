@@ -26,7 +26,7 @@ public class ModLoader {
 	
 	private static URL getZipUrl(String modName){
 		return ModLoader.class.getClassLoader().getResource(
-			String.format("test/res/zips/%s.zip", modName)
+			String.format("zips/%s.zip", modName)
 		);
 	}
 	

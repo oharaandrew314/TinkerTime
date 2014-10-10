@@ -4,10 +4,11 @@ TinkerTime
 Automatically Updating Mod Manager for Kerbal Space Program
  
 ### Development Status
+
+Master: [![Build Status](https://travis-ci.org/oharaandrew314/TinkerTime.svg?branch=master)](https://travis-ci.org/oharaandrew314/TinkerTime)
 1.0: [![Build Status](https://travis-ci.org/oharaandrew314/TinkerTime.svg?branch=1.0)](https://travis-ci.org/oharaandrew314/TinkerTime)
 
 Beta (Nearing Feature Completion)
-
 
 ### Description
 Tinker Time is a Mod Manager for Kerbal Space Program that will allow you to automatically update, enable, and disable all of your mods from Curse or Github.  All you have to do is enter the URL to the mod webpage, and Tinker Time will do the rest of the work for you.

@@ -19,7 +19,7 @@ import aohara.tinkertime.crawlers.pageLoaders.JsonLoader;
 public class TestModuleManagerCrawler {
 	
 	private static JenkinsCrawler loadTestPage(int num) throws IOException, UnsupportedHostException {
-		URL url = TestModuleManagerCrawler.class.getClassLoader().getResource(String.format("test/res/json/moduleManagerPage%d.json", num));
+		URL url = TestModuleManagerCrawler.class.getClassLoader().getResource(String.format("json/moduleManagerPage%d.json", num));
 		return new JenkinsCrawler(url, new JsonLoader(), new URL(Constants.MODULE_MANAGER_ARTIFACT_DL_URL));
 	}
 	
