@@ -88,14 +88,22 @@ public class ArchiveInspector {
 				if (entryPath.getNameCount() == 2){
 					moduleEntries.add(entryPath.getParent());
 				}
-			} else if (entry.isDirectory() && entryPath.startsWith(gameDataPath) && !entryPath.equals(gameDataPath)){
+			} else if (entryPath.startsWith(gameDataPath) && !entryPath.equals(gameDataPath)){
+				if (!entry.isDirectory() && !entryPath.getParent().equals(gameDataPath)){
+					entryPath = entryPath.getParent();
+				}
 				Path rel = gameDataPath.relativize(entryPath);
-				if (rel.getNameCount() == 1){
+				if (rel.getNameCount() == 1 && isDirectory(rel)){
 					moduleEntries.add(entryPath);
 				}
+				
 			}
 		}
 		return moduleEntries;
+	}
+	
+	private static boolean isDirectory(Path path){
+		return !path.getName(path.getNameCount() - 1).toString().contains(".");
 	}
 	
 	private static Module discoverModule(Path zipPath, Collection<ZipEntry> entries, Path modulePath){		

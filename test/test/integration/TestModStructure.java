@@ -119,4 +119,9 @@ public class TestModStructure {
 	public void testNear() throws IOException {
 		testModules(ModStubs.Near, "NEAR");
 	}
+	
+	@Test
+	public void testRadialEngineMounts() throws IOException {
+		testModules(ModStubs.RadialEngines, "RadialEngineMountsPPI");
+	}
 }
