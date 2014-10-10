@@ -30,19 +30,23 @@ public class ModImageView extends ControlPanel<Mod> {
 	
 	@Override
 	public void display(Mod element){
+		BufferedImage image = null;
 		if (element != null){
 			try {
 				super.display(element);
-				BufferedImage image = imageManager.getImage(element.getCachedImagePath(config));
-				if (image != null){
-					Dimension size = imageManager.scaleToFit(image, new Dimension(panel.getWidth(), panel.getWidth()));
-					label.setIcon(new ImageIcon(imageManager.resizeImage(image, size)));
-				} else {
-					label.setIcon(null);
-				}
+				image = imageManager.getImage(element.getCachedImagePath(config));
 			} catch(IOException ex){
 				// Do Nothing
 			}
+			if (image != null){
+				Dimension size = imageManager.scaleToFit(image, new Dimension(panel.getWidth(), panel.getWidth()));
+				try{
+					image = imageManager.resizeImage(image, size);
+				} catch (IllegalArgumentException e){
+					
+				}
+			}
 		}
+		label.setIcon(image != null ? new ImageIcon(image) : null);
 	}
 }
