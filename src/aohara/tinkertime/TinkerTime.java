@@ -22,7 +22,7 @@ public class TinkerTime {
 	
 	public static final String
 		NAME = "Tinker Time",
-		VERSION = "0.6",
+		VERSION = "0.6.2",
 		AUTHOR = "Andrew O'Hara";
 	
 	private final ModManager mm;
@@ -47,6 +47,9 @@ public class TinkerTime {
 		sp.addListener(mm);
 		sp.addListener(menuBar);
 		sm.addListener(sp);
+		
+		// Set HTTP User-agent
+		System.setProperty("http.agent", "TinkerTime Bot");
 
 		// Start Application
 		sm.getMods();  // Load mods (will notify selector panel)
