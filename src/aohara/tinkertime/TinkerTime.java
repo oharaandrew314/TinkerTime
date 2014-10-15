@@ -26,7 +26,7 @@ public class TinkerTime {
 	
 	public static final String
 		NAME = "Tinker Time",
-		VERSION = "1.0",
+		VERSION = "0.7",
 		AUTHOR = "Andrew O'Hara";
 	
 	public static void main(String[] args) {		
