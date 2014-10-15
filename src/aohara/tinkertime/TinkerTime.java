@@ -26,7 +26,7 @@ public class TinkerTime {
 	
 	public static final String
 		NAME = "Tinker Time",
-		VERSION = "1.0",
+		VERSION = "0.7",
 		AUTHOR = "Andrew O'Hara";
 	
 	public static void main(String[] args) {		
@@ -39,6 +39,9 @@ public class TinkerTime {
 		// Initialize Controllers
 		ModStateManager sm = new ModStateManager(config);
 		ModManager mm = ModManager.createDefaultModManager(config, sm, pp);
+		
+		// Set HTTP User-agent
+		System.setProperty("http.agent", "TinkerTime Bot");
 		
 		// Initialize GUI
 		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new ModView(), new ModComparator());
