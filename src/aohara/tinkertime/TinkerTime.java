@@ -47,6 +47,9 @@ public class TinkerTime {
 		sp.addListener(mm);
 		sp.addListener(menuBar);
 		sm.addListener(sp);
+		
+		// Set HTTP User-agent
+		System.setProperty("http.agent", "TinkerTime Bot");
 
 		// Start Application
 		sm.getMods();  // Load mods (will notify selector panel)
