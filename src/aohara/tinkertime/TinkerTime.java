@@ -22,7 +22,7 @@ public class TinkerTime {
 	
 	public static final String
 		NAME = "Tinker Time",
-		VERSION = "0.6",
+		VERSION = "0.6.2",
 		AUTHOR = "Andrew O'Hara";
 	
 	private final ModManager mm;
