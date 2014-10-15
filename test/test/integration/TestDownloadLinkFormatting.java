@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.net.URL;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import aohara.tinkertime.crawlers.CrawlerFactory;
@@ -16,7 +17,13 @@ import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
  *  
  * @author Andrew O'Hara
  */
+
 public class TestDownloadLinkFormatting {
+	
+	@BeforeClass
+	public static void setUpClass(){
+		System.setProperty("http.agent", "TinkerTime Bot");
+	}
 
 	@Test
 	public void tesEngineer() throws IOException, UnsupportedHostException{

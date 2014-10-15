@@ -40,6 +40,9 @@ public class TinkerTime {
 		ModStateManager sm = new ModStateManager(config);
 		ModManager mm = ModManager.createDefaultModManager(config, sm, pp);
 		
+		// Set HTTP User-agent
+		System.setProperty("http.agent", "TinkerTime Bot");
+		
 		// Initialize GUI
 		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new ModView(), new ModComparator());
 		sp.addControlPanel(true, new ModImageView(config));
