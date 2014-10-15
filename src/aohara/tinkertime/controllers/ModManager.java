@@ -115,7 +115,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 			builder.downloadMod(mod.getPageUrl(), config, sm);
 			submitDownloadWorkflow(builder.buildWorkflow());
 		} catch (IOException | UnsupportedHostException e) {
-			throw new ModUpdateFailedException();
+			throw new ModUpdateFailedException(e);
 		}
 	}
 	
@@ -125,7 +125,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 			builder.downloadMod(url, config, sm);
 			submitDownloadWorkflow(builder.buildWorkflow());
 		} catch (IOException e) {
-			throw new ModUpdateFailedException();
+			throw new ModUpdateFailedException(e);
 		}
 	}
 	
@@ -197,5 +197,9 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	@SuppressWarnings("serial")
 	public static class CannotEnableModException extends Exception {}
 	@SuppressWarnings("serial")
-	public static class ModUpdateFailedException extends Exception {}
+	public static class ModUpdateFailedException extends Exception {
+		public ModUpdateFailedException(Exception e){
+			super(e);
+		}
+	}
 }

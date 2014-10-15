@@ -37,7 +37,7 @@ public class TestModStructure {
 		ZipNode module = ModLoader.getModule(struct, moduleName);	
 		
 		Set<String> actual = new HashSet<>();
-		getFilePaths(actual, struct.gameDataNode, module);
+		getFilePaths(actual, module.getParent(), module);
         assertThat(actual, containsInAnyOrder(expectedFileNames));
 	}
 	

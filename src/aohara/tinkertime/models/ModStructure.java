@@ -26,13 +26,9 @@ import thirdParty.ZipNode;
 public class ModStructure {
 	
 	public final String readmeText;
-	public final ZipNode gameDataNode;
 	private final Set<ZipNode> modules;
-	public final Path zipPath;
 	
-	public ModStructure(Path zipPath, ZipNode gameDataNode, Set<ZipNode> modules, String readmeText){
-		this.zipPath = zipPath;
-		this.gameDataNode = gameDataNode;
+	public ModStructure(Set<ZipNode> modules, String readmeText){
 		this.modules = modules;
 		this.readmeText = readmeText;
 	}
@@ -65,7 +61,7 @@ public class ModStructure {
 			gameData = gameData != null ? gameData : root;
 			
 			// Discover structure
-			return new ModStructure(zipPath, gameData, getModules(gameData), getReadmeText(zipFile));
+			return new ModStructure(getModules(gameData), getReadmeText(zipFile));
 		}
 	}
 	
