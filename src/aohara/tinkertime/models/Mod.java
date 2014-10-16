@@ -34,6 +34,7 @@ public class Mod extends UpdateableFile {
 		this.name = modName;
 		this.creator = creator;
 		this.imageUrl = imageUrl;
+		this.supportedVersion = supportedVersion;
 		updateAvailable = false;
 	}
 	
