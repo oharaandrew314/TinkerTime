@@ -13,6 +13,7 @@ sourceSets {
         }
         resources {
             srcDir 'res'
+             exclude('*/Thumbs.db')
         }
     }
 
