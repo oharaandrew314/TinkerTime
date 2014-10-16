@@ -11,7 +11,6 @@ import org.junit.runners.Suite;
 import test.TestModManager;
 import test.TestCurseCrawler;
 import test.TestModStateManager;
-import test.TestModStructure;
 
 
 @RunWith(Suite.class)
@@ -19,7 +18,6 @@ import test.TestModStructure;
    TestCurseCrawler.class,
    TestModManager.class,
    TestModStateManager.class,
-   TestModStructure.class,
    TestModuleManagerCrawler.class,
    TestGithubCrawler.class
 })

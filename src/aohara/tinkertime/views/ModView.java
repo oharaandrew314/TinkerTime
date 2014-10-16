@@ -17,8 +17,8 @@ import thirdParty.VerticalLayout;
 import aohara.common.Util;
 import aohara.common.selectorPanel.SelectorView;
 import aohara.tinkertime.Config;
-import aohara.tinkertime.content.ArchiveInspector;
 import aohara.tinkertime.models.Mod;
+import aohara.tinkertime.models.ModStructure;
 
 /**
  * Panel for displaying a Mod's information.
@@ -63,7 +63,7 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 			// Readme
 			Config config = new Config();
 			if (mod.getCachedZipPath(config).toFile().exists()){
-				String readmeText = ArchiveInspector.getReadmeText(config, mod);				
+				String readmeText = ModStructure.getReadmeText(config, mod);				
 				if (readmeText != null && !readmeText.trim().isEmpty()){
 					panel.add(new JLabel("<html><b>Readme:</b></html"));
 					JTextArea readmeArea = new JTextArea(readmeText);

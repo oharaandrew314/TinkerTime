@@ -6,12 +6,11 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import thirdParty.ZipNode;
 import aohara.tinkertime.Config;
-import aohara.tinkertime.content.ArchiveInspector;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
-import aohara.tinkertime.models.Module;
 
 public class ModLoader {
 	
@@ -39,11 +38,11 @@ public class ModLoader {
 	}
 	
 	public static ModStructure getStructure(ModStubs stub) throws IOException{
-		return ArchiveInspector.inspectArchive(getZipPath(stub.name));
+		return ModStructure.inspectArchive(getZipPath(stub.name));
 	}
 	
-	public static Module getModule(ModStructure struct, String moduleName){
-		for (Module module : struct.getModules()){
+	public static ZipNode getModule(ModStructure struct, String moduleName){
+		for (ZipNode module : struct.getModules()){
 			if (module.getName().equals(moduleName)){
 				return module;
 			}
@@ -76,6 +75,5 @@ public class ModLoader {
 		public Path getCachedZipPath(Config config){
 			return downloaded ? ModLoader.getZipPath(getName()) : Paths.get("/");
 		}
-
 	}
 }

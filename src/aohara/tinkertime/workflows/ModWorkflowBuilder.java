@@ -1,20 +1,20 @@
 package aohara.tinkertime.workflows;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 
+import thirdParty.ZipNode;
 import aohara.common.workflows.ConflictResolver;
-
 import aohara.common.workflows.WorkflowBuilder;
 import aohara.common.workflows.tasks.UnzipTask;
 import aohara.common.workflows.tasks.gen.GenFactory;
 import aohara.common.workflows.tasks.gen.PathGen;
 import aohara.common.workflows.tasks.gen.URLGen;
 import aohara.tinkertime.Config;
-import aohara.tinkertime.content.ArchiveInspector;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory;
@@ -23,7 +23,6 @@ import aohara.tinkertime.crawlers.ModCrawler;
 import aohara.tinkertime.models.FileUpdateListener;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
-import aohara.tinkertime.models.Module;
 import aohara.tinkertime.models.UpdateableFile;
 import aohara.tinkertime.workflows.tasks.CacheCrawlerPageTask;
 import aohara.tinkertime.workflows.tasks.CheckForUpdateTask;
@@ -91,7 +90,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	
 	public void deleteMod(Mod mod, Config config, ModStateManager sm) throws IOException {
 		if (mod.isEnabled()){
-			for (Module module : ArchiveInspector.inspectArchive(config, mod).getModules()){
+			for (ZipNode module : ModStructure.inspectArchive(config, mod).getModules()){
 				delete(GenFactory.fromPath(config.getGameDataPath().resolve(module.getName())));
 			}
 		}
@@ -100,7 +99,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	}
 	
 	public void disableMod(Mod mod, Config config, ModStateManager sm) throws IOException{
-		for (Module module : ArchiveInspector.inspectArchive(config, mod).getModules()){
+		for (ZipNode module : ModStructure.inspectArchive(config, mod).getModules()){
 			
 			if (!isDependency(module, config, sm)){
 				delete(GenFactory.fromPath(config.getGameDataPath().resolve(module.getName())));
@@ -110,25 +109,23 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	}
 	
 	public void enableMod(Mod mod, Config config, ModStateManager sm, ConflictResolver cr) throws IOException{
-		ModStructure structure = ArchiveInspector.inspectArchive(config, mod);
-		for (Module module : structure.getModules()){
-			addTask(new UnzipTask(
-				structure.zipPath,
-				config.getGameDataPath(),
-				module.getContent(),
-				cr));
+		ModStructure structure = ModStructure.inspectArchive(config, mod);
+		for (ZipNode module : structure.getModules()){
+			addTask(new UnzipTask(config.getGameDataPath(), module, cr));
 		}
 		addTask(new MarkModEnabledTask(mod, sm, true));
 	}
 	
 	// helpers
 	
-	private boolean isDependency(Module module, Config config, ModStateManager sm) throws IOException{
+	private boolean isDependency(ZipNode module, Config config, ModStateManager sm) throws IOException{
 		int numDependencies = 0;
 		for (Mod mod : sm.getMods()){
-			if (ArchiveInspector.inspectArchive(config, mod).usesModule(module)){
-				numDependencies++;
-			}
+			try {
+				if (ModStructure.inspectArchive(config, mod).usesModule(module)){
+					numDependencies++;
+				}
+			} catch (FileNotFoundException ex){}
 		}
 		return numDependencies > 1;
 	}
