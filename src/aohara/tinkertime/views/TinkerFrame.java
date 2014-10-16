@@ -17,8 +17,6 @@ import aohara.tinkertime.TinkerTime;
 
 /**
  * The main Application JFrame.
- * 
- * It demands that all of its components be given in the constructor.
  *
  * @author Andrew O'Hara
  */
