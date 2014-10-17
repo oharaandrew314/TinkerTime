@@ -16,15 +16,16 @@ public class KerbalStuffCrawler extends ModCrawler<JsonObject>{
 	private static Pattern ID_PATTERN = Pattern.compile("(mod/)(\\d+)(/*)");
 
 	public KerbalStuffCrawler(URL url, PageLoader<JsonObject> pageLoader) {
-		super(getApiURL(url), pageLoader);
+		super(url, pageLoader);
 	}
 	
-	private static URL getApiURL(URL url){
+	@Override
+	public URL getApiUrl(){
 		try {
 			return new URL(
 				"https",
 				Constants.HOST_KERBAL_STUFF,
-				String.format("/api/mod/%s", generateId(url))
+				String.format("/api/mod/%s", generateId(getPageUrl()))
 			);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -34,12 +35,12 @@ public class KerbalStuffCrawler extends ModCrawler<JsonObject>{
 
 	@Override
 	public String getName() throws IOException {
-		return getPage(url).get("name").getAsString();
+		return getPage(getApiUrl()).get("name").getAsString();
 	}
 
 	@Override
 	public URL getImageUrl() throws IOException {
-		String imagePath = getPage(url).get("background").getAsString();
+		String imagePath = getPage(getApiUrl()).get("background").getAsString();
 		return new URL("https", "cdn.mediacru.sh", imagePath);
 	}
 	
@@ -53,7 +54,7 @@ public class KerbalStuffCrawler extends ModCrawler<JsonObject>{
 	}
 	
 	private JsonObject getLatestVersion() throws IOException {
-		JsonArray versions = getPage(url).get("versions").getAsJsonArray();
+		JsonArray versions = getPage(getApiUrl()).get("versions").getAsJsonArray();
 		if (versions.size() > 0){
 			return versions.get(0).getAsJsonObject();
 		}
@@ -75,7 +76,7 @@ public class KerbalStuffCrawler extends ModCrawler<JsonObject>{
 
 	@Override
 	protected String getCreator() throws IOException {
-		return getPage(url).get("author").getAsString();
+		return getPage(getApiUrl()).get("author").getAsString();
 	}
 
 	@Override
@@ -85,7 +86,7 @@ public class KerbalStuffCrawler extends ModCrawler<JsonObject>{
 
 	@Override
 	public String generateId(){
-		return generateId(url);
+		return generateId(getApiUrl());
 	}
 	
 	private static String generateId(URL url) {

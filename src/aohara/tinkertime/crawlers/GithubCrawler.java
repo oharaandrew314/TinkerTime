@@ -33,7 +33,7 @@ public class GithubCrawler extends ModCrawler<Document> {
 	}
 	
 	private Element getLatestReleaseElement() throws IOException {
-		Document doc = getPage(url);
+		Document doc = getPage(getApiUrl());
 		return doc.select("div.label-latest").first();
 	}
 	
@@ -74,7 +74,7 @@ public class GithubCrawler extends ModCrawler<Document> {
 
 	@Override
 	public String getName() throws IOException {
-		return getPage(url).select("h1.entry-title strong > a").text();
+		return getPage(getApiUrl()).select("h1.entry-title strong > a").text();
 	}
 
 	@Override
@@ -90,8 +90,8 @@ public class GithubCrawler extends ModCrawler<Document> {
 	@Override
 	public String generateId() {
 		try { // Chop off releases from path
-			URI uri = url.toURI();
-			if (url.getPath().endsWith("releases")){
+			URI uri = getApiUrl().toURI();
+			if (getApiUrl().getPath().endsWith("releases")){
 				uri = uri.getPath().endsWith("/") ? uri.resolve("..") : uri.resolve(".");
 			}
 			String[] names = uri.getPath().split("/");

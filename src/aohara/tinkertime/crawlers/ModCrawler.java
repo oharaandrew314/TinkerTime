@@ -27,7 +27,7 @@ public abstract class ModCrawler<T> extends Crawler<T> {
 		Date updatedOn = getUpdatedOn() != null ? getUpdatedOn() : Calendar.getInstance().getTime();
 		return new Mod(
 			generateId(), getName(), getNewestFileName(), getCreator(),
-			getImageUrl(), url, updatedOn, getSupportedVersion()
+			getImageUrl(), getPageUrl(), updatedOn, getSupportedVersion()
 		);
 	}
 	

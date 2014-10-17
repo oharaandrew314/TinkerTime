@@ -15,17 +15,17 @@ public class CacheCrawlerPageTask extends WorkflowTask {
 
 	@Override
 	public Boolean call() throws Exception {
-		crawler.getPage(crawler.url);
+		crawler.getPage(crawler.getApiUrl());
 		return true;
 	}
 
 	@Override
 	public int getTargetProgress() throws IOException {
-		return crawler.url.openConnection().getContentLength();
+		return crawler.getApiUrl().openConnection().getContentLength();
 	}
 
 	@Override
 	public String getTitle() {
-		return String.format("Crawling %s page", crawler.url.getHost());
+		return String.format("Crawling %s page", crawler.getApiUrl().getHost());
 	}
 }
