@@ -26,7 +26,7 @@ public class JenkinsCrawler extends Crawler<JsonObject> {
 
 	private JsonObject getJson() throws IOException {
 		if (cachedJson == null){
-			cachedJson = getPage(url);
+			cachedJson = getPage(getApiUrl());
 		}
 		return cachedJson;
 	}
@@ -65,7 +65,7 @@ public class JenkinsCrawler extends Crawler<JsonObject> {
 
 	@Override
 	public String generateId() {
-		return url.getHost();
+		return getApiUrl().getHost();
 	}
 
 }

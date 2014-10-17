@@ -19,7 +19,7 @@ import com.google.gson.JsonParser;
  */
 public class JsonLoader implements PageLoader<JsonObject> {
 	
-	private static final Map<URL, JsonObject> cache = new HashMap<>();
+	private final Map<URL, JsonObject> cache = new HashMap<>();
 	private final JsonParser parser = new JsonParser();
 
 	@Override

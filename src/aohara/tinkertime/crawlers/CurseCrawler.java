@@ -25,7 +25,7 @@ public class CurseCrawler extends ModCrawler<Document> {
 	
 	@Override
 	protected Date getUpdatedOn() throws IOException {
-		Document mainPage = getPage(url);
+		Document mainPage = getPage(getApiUrl());
 		Element ele = mainPage.getElementById("project-overview");
 		ele = ele.getElementsContainingOwnText("Updated").first();
 		String dateText = ele.text().replace("Updated", "").trim();
@@ -38,7 +38,7 @@ public class CurseCrawler extends ModCrawler<Document> {
 	
 	@Override
 	public String getNewestFileName() throws IOException{
-		Document mainPage = getPage(url);
+		Document mainPage = getPage(getApiUrl());
 		Element ele = mainPage.getElementById("project-overview");
 		ele = ele.getElementsContainingOwnText("Newest File").first();
 		return ele.text().split(":")[1].trim();
@@ -47,7 +47,7 @@ public class CurseCrawler extends ModCrawler<Document> {
 	@Override
 	public URL getDownloadLink() throws IOException{
 		// Get Download Page Link
-		Document mainPage = getPage(url);
+		Document mainPage = getPage(getApiUrl());
 		String downloadPageLink = mainPage.select("ul.regular-dl a").first().absUrl("href");
 		URL downloadPageUrl = new URL(downloadPageLink);
 		
@@ -59,33 +59,33 @@ public class CurseCrawler extends ModCrawler<Document> {
 
 	@Override
 	public URL getImageUrl() throws IOException {
-		Document mainPage = getPage(url);
+		Document mainPage = getPage(getApiUrl());
 		Element ele = mainPage.select("img.primary-project-attachment").first();
 		return new URL(ele.absUrl("src"));
 	}
 
 	@Override
 	public String getName() throws IOException {
-		Element ele = getPage(url).getElementById("project-overview");
+		Element ele = getPage(getApiUrl()).getElementById("project-overview");
 		ele = ele.getElementsByClass("caption").first();
 		return ele.text();
 	}
 
 	@Override
 	protected String getCreator() throws IOException {
-		Element ele = getPage(url).getElementById("project-overview");
+		Element ele = getPage(getApiUrl()).getElementById("project-overview");
 		ele = ele.getElementsContainingOwnText("Manager").first();
 		return ele.text().split(":")[1].trim();
 	}
 
 	@Override
 	public String getSupportedVersion() throws IOException {
-		String text = getPage(url).select("li.version").first().text();
+		String text = getPage(getApiUrl()).select("li.version").first().text();
 		return text.split(":")[1].trim();
 	}
 
 	@Override
 	public String generateId() {
-		return FilenameUtils.getBaseName(url.getPath());
+		return FilenameUtils.getBaseName(getApiUrl().getPath());
 	}
 }

@@ -72,7 +72,7 @@ public class ModuleManagerUpdateController extends FileUpdateController {
 			builder.downloadFile(crawler, destGen);
 		} else {
 			try {
-				builder.downloadFileIfNewer(new UpdateableFile(getCurrentVersion(), null, crawler.url), destGen);
+				builder.downloadFileIfNewer(new UpdateableFile(getCurrentVersion(), null, crawler.getApiUrl()), destGen);
 			} catch (UnsupportedHostException e) {
 				throw new RuntimeException(e);
 			}

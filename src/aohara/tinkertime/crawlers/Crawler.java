@@ -18,7 +18,7 @@ import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 public abstract class Crawler<T> {
 	
 	private final PageLoader<T> pageLoader;
-	public final URL url;
+	private final URL url;
 	
 	public Crawler(URL url, PageLoader<T> pageLoader){
 		this.url = url;
@@ -46,5 +46,13 @@ public abstract class Crawler<T> {
 			e.printStackTrace();
 			return false;
 		}
+	}
+	
+	public URL getPageUrl(){
+		return url;
+	}
+	
+	public URL getApiUrl(){
+		return url;
 	}
 }
