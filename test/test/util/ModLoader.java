@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import thirdParty.ZipNode;
-import aohara.tinkertime.Config;
+import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
@@ -72,7 +72,7 @@ public class ModLoader {
 		}
 		
 		@Override
-		public Path getCachedZipPath(Config config){
+		public Path getCachedZipPath(TinkerConfig config){
 			return downloaded ? ModLoader.getZipPath(getName()) : Paths.get("/");
 		}
 	}

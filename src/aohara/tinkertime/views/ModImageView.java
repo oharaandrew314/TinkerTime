@@ -9,7 +9,7 @@ import javax.swing.JLabel;
 
 import aohara.common.content.ImageManager;
 import aohara.common.selectorPanel.ControlPanel;
-import aohara.tinkertime.Config;
+import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.models.Mod;
 
 /**
@@ -21,9 +21,9 @@ public class ModImageView extends ControlPanel<Mod> {
 	
 	private final ImageManager imageManager = new ImageManager();
 	private final JLabel label = new JLabel();
-	private final Config config;
+	private final TinkerConfig config;
 	
-	public ModImageView(Config config){
+	public ModImageView(TinkerConfig config){
 		this.config = config;
 		panel.add(label);
 	}

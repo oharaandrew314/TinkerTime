@@ -13,7 +13,7 @@ import javax.swing.JOptionPane;
 
 import aohara.common.Util;
 import aohara.common.content.ImageManager;
-import aohara.tinkertime.Config;
+import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.CannotDisableModException;
@@ -212,7 +212,7 @@ public class Actions {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			new Config().updateConfig(true, false);
+			TinkerConfig.create().updateConfig(true, false);
 		}
 	}
 	
@@ -309,7 +309,7 @@ public class Actions {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				new ModuleManagerUpdateController(mm, new Config()).showDialog();
+				new ModuleManagerUpdateController(mm, TinkerConfig.create()).showDialog();
 			} catch (UnsupportedHostException e1) {
 				errorMessage(e1);
 			}

@@ -24,7 +24,7 @@ import aohara.common.workflows.ConflictResolver;
 import aohara.common.workflows.ConflictResolver.Resolution;
 import aohara.common.workflows.ProgressPanel;
 import aohara.common.workflows.Workflow;
-import aohara.tinkertime.Config;
+import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledException;
@@ -34,7 +34,7 @@ import aohara.tinkertime.models.Mod;
 
 public class TestModManager {
 	
-	private static Config config;
+	private static TinkerConfig config;
 	private ModManager manager;
 	private static ModLoader.MockMod mod, testMod1, testMod2;
 	private MockCR cr;

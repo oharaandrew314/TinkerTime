@@ -7,7 +7,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 
 import aohara.common.workflows.tasks.gen.PathGen;
-import aohara.tinkertime.Config;
+import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.controllers.WorkflowRunner;
 import aohara.tinkertime.crawlers.Constants;
 import aohara.tinkertime.crawlers.Crawler;
@@ -20,7 +20,7 @@ public class ModuleManagerUpdateController extends FileUpdateController {
 	public static final String MODULE_MANAGER = "ModuleManager";
 	private final Path destFolder;
 	
-	public ModuleManagerUpdateController(WorkflowRunner runner, Config config) throws UnsupportedHostException {
+	public ModuleManagerUpdateController(WorkflowRunner runner, TinkerConfig config) throws UnsupportedHostException {
 		super(runner, "Module Manager", Constants.getModuleManagerJenkinsUrl());
 		destFolder = config.getGameDataPath();
 	}

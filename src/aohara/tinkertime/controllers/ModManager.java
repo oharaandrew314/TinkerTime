@@ -12,7 +12,7 @@ import aohara.common.selectorPanel.ListListener;
 import aohara.common.workflows.ConflictResolver;
 import aohara.common.workflows.ProgressPanel;
 import aohara.common.workflows.Workflow;
-import aohara.tinkertime.Config;
+import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.views.DialogConflictResolver;
@@ -30,13 +30,13 @@ import aohara.tinkertime.workflows.ModWorkflowBuilder;
 public class ModManager extends Listenable<ModUpdateListener> implements WorkflowRunner, ListListener<Mod> {
 	
 	private final Executor downloadExecutor, enablerExecutor;
-	private final Config config;
+	private final TinkerConfig config;
 	private final ModStateManager sm;
 	private final ProgressPanel progressPanel;
 	private final ConflictResolver cr;
 	private Mod selectedMod;
 	
-	public static ModManager createDefaultModManager(Config config, ModStateManager sm, ProgressPanel pp){
+	public static ModManager createDefaultModManager(TinkerConfig config, ModStateManager sm, ProgressPanel pp){
 		
 		ModManager mm =  new ModManager(
 			sm, config, pp, new DialogConflictResolver(),
@@ -47,7 +47,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	}
 	
 	public ModManager(
-			ModStateManager sm, Config config, ProgressPanel progressPanel,
+			ModStateManager sm, TinkerConfig config, ProgressPanel progressPanel,
 			ConflictResolver cr, Executor downloadExecutor,
 			Executor enablerExecutor){
 		this.sm = sm;

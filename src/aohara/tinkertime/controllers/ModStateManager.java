@@ -11,7 +11,7 @@ import java.util.Set;
 
 import aohara.common.Listenable;
 import aohara.common.selectorPanel.SelectorInterface;
-import aohara.tinkertime.Config;
+import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.FileUpdateListener;
 
@@ -30,12 +30,12 @@ public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 		implements ModUpdateListener, FileUpdateListener {
 	
 	private final Gson gson;
-	private final Config config;
+	private final TinkerConfig config;
 	private final Type modsType = new TypeToken<Set<Mod>>() {}.getType();
 	
 	private final Set<Mod> modCache = new HashSet<>();
 	
-	public ModStateManager(Config config){
+	public ModStateManager(TinkerConfig config){
 		gson = new Gson();
 		this.config = config;
 	}

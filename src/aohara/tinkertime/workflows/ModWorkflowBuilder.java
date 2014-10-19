@@ -14,7 +14,7 @@ import aohara.common.workflows.tasks.UnzipTask;
 import aohara.common.workflows.tasks.gen.GenFactory;
 import aohara.common.workflows.tasks.gen.PathGen;
 import aohara.common.workflows.tasks.gen.URLGen;
-import aohara.tinkertime.Config;
+import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory;
@@ -80,7 +80,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	/**
 	 * Downloads the latest version of the mod referenced by the URL.
 	 */
-	public void downloadMod(URL pageUrl, Config config, ModStateManager sm) throws IOException, UnsupportedHostException {
+	public void downloadMod(URL pageUrl, TinkerConfig config, ModStateManager sm) throws IOException, UnsupportedHostException {
 		ModCrawler<?> crawler = factory.getModCrawler(pageUrl);
 		downloadFile(crawler, modZipPathGen(crawler, config));
 		addTask(new MarkModUpdatedTask(sm, crawler));
@@ -88,7 +88,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		addTask(new MarkModUpdatedTask(sm, crawler));
 	}
 	
-	public void deleteMod(Mod mod, Config config, ModStateManager sm) throws IOException {
+	public void deleteMod(Mod mod, TinkerConfig config, ModStateManager sm) throws IOException {
 		if (mod.isEnabled()){
 			for (ZipNode module : ModStructure.inspectArchive(config, mod).getModules()){
 				delete(GenFactory.fromPath(config.getGameDataPath().resolve(module.getName())));
@@ -98,7 +98,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		addTask(MarkModUpdatedTask.notifyDeletion(sm, mod));
 	}
 	
-	public void disableMod(Mod mod, Config config, ModStateManager sm) throws IOException{
+	public void disableMod(Mod mod, TinkerConfig config, ModStateManager sm) throws IOException{
 		for (ZipNode module : ModStructure.inspectArchive(config, mod).getModules()){
 			
 			if (!isDependency(module, config, sm)){
@@ -108,7 +108,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		addTask(new MarkModEnabledTask(mod, sm, false));
 	}
 	
-	public void enableMod(Mod mod, Config config, ModStateManager sm, ConflictResolver cr) throws IOException{
+	public void enableMod(Mod mod, TinkerConfig config, ModStateManager sm, ConflictResolver cr) throws IOException{
 		ModStructure structure = ModStructure.inspectArchive(config, mod);
 		for (ZipNode module : structure.getModules()){
 			addTask(new UnzipTask(config.getGameDataPath(), module, cr));
@@ -118,7 +118,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	
 	// helpers
 	
-	private boolean isDependency(ZipNode module, Config config, ModStateManager sm) throws IOException{
+	private boolean isDependency(ZipNode module, TinkerConfig config, ModStateManager sm) throws IOException{
 		int numDependencies = 0;
 		for (Mod mod : sm.getMods()){
 			try {
@@ -150,7 +150,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		};
 	}
 	
-	private static PathGen modZipPathGen(final Mod mod, final Config config){
+	private static PathGen modZipPathGen(final Mod mod, final TinkerConfig config){
 		return new PathGen(){
 			@Override
 			public URI getURI() throws URISyntaxException {
@@ -164,7 +164,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		};
 	}
 	
-	private static PathGen modZipPathGen(final ModCrawler<?> crawler, final Config config) throws IOException{
+	private static PathGen modZipPathGen(final ModCrawler<?> crawler, final TinkerConfig config) throws IOException{
 		return new PathGen(){
 			@Override
 			public URI getURI() throws URISyntaxException {
@@ -200,7 +200,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		};
 	}
 	
-	private static PathGen modImageCacheGen(final ModCrawler<?> crawler, final Config config){
+	private static PathGen modImageCacheGen(final ModCrawler<?> crawler, final TinkerConfig config){
 		return new PathGen(){
 			@Override
 			public URI getURI() throws URISyntaxException {

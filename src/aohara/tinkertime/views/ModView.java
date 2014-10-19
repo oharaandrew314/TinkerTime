@@ -16,7 +16,7 @@ import javax.swing.event.HyperlinkListener;
 import thirdParty.VerticalLayout;
 import aohara.common.Util;
 import aohara.common.selectorPanel.SelectorView;
-import aohara.tinkertime.Config;
+import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
 
@@ -61,7 +61,7 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 			panel.add(new UrlPanel("Go to Mod Page", mod.getPageUrl()).getComponent());		
 			
 			// Readme
-			Config config = new Config();
+			TinkerConfig config = TinkerConfig.create();
 			if (mod.getCachedZipPath(config).toFile().exists()){
 				String readmeText = ModStructure.getReadmeText(config, mod);				
 				if (readmeText != null && !readmeText.trim().isEmpty()){

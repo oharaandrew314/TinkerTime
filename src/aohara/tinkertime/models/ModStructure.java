@@ -11,7 +11,7 @@ import java.util.zip.ZipFile;
 
 import org.apache.commons.io.IOUtils;
 
-import aohara.tinkertime.Config;
+import aohara.tinkertime.TinkerConfig;
 import thirdParty.ZipNode;
 
 /**
@@ -48,7 +48,7 @@ public class ModStructure {
 	
 	// Factory Methods
 	
-	public static ModStructure inspectArchive(Config config, Mod mod) throws IOException {
+	public static ModStructure inspectArchive(TinkerConfig config, Mod mod) throws IOException {
 		return inspectArchive(mod.getCachedZipPath(config));
 	}
 	
@@ -65,7 +65,7 @@ public class ModStructure {
 		}
 	}
 	
-	public static String getReadmeText(final Config config, final Mod mod){
+	public static String getReadmeText(final TinkerConfig config, final Mod mod){
 		try(ZipFile zipFile = new ZipFile(mod.getCachedZipPath(config).toFile())){
 			return getReadmeText(zipFile);
 		} catch (IOException e) {}

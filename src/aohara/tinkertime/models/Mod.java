@@ -6,7 +6,7 @@ import java.util.Date;
 
 import org.apache.commons.io.FilenameUtils;
 
-import aohara.tinkertime.Config;
+import aohara.tinkertime.TinkerConfig;
 
 /**
  * Model for holding Mod information and status.
@@ -50,15 +50,15 @@ public class Mod extends UpdateableFile {
 		return imageUrl;
 	}
 	
-	public boolean isDownloaded(Config config){
+	public boolean isDownloaded(TinkerConfig config){
 		return getCachedZipPath(config).toFile().exists();
 	}
 	
-	public Path getCachedZipPath(Config config){
+	public Path getCachedZipPath(TinkerConfig config){
 		return config.getModsZipPath().resolve(getNewestFileName());
 	}
 	
-	public Path getCachedImagePath(Config config){
+	public Path getCachedImagePath(TinkerConfig config){
 		String imageName = FilenameUtils.getBaseName(getPageUrl().toString());
 		return config.getImageCachePath().resolve(imageName);
 	}

@@ -29,10 +29,8 @@ public class TinkerTime {
 		VERSION = "0.7",
 		AUTHOR = "Andrew O'Hara";
 	
-	public static void main(String[] args) {		
-		// Load and Verify Configuration
-		Config config = new Config();
-		config.verifyConfig();
+	public static void main(String[] args) {
+		TinkerConfig config = TinkerConfig.create();
 		
 		ProgressPanel pp = new ProgressPanel();
 		
