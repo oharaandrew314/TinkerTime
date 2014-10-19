@@ -26,7 +26,8 @@ public class Config extends AbstractConfig {
 	private static final String
 		GAMEDATA_PATH = "gamedataPath",
 		AUTO_UPDATE_MM = "autoUpdateMM",
-		AUTO_CHECK_FOR_MOD_UPDATES = "autoCheckForModUpdates";
+		AUTO_CHECK_FOR_MOD_UPDATES = "autoCheckForModUpdates",
+		NUM_CONCURRENT_DOWNLOADS = "numConcurrentDownloads";
 			
 	
 	public Config(){
@@ -64,6 +65,10 @@ public class Config extends AbstractConfig {
 		return Boolean.parseBoolean(getProperty(AUTO_CHECK_FOR_MOD_UPDATES)); 
 	}
 	
+	public int numConcurrentDownloads(){
+		return Integer.parseInt(getProperty(NUM_CONCURRENT_DOWNLOADS));
+	}
+	
 	// -- Setters ----------------------------------------------------------
 	
 	@Override
@@ -82,6 +87,10 @@ public class Config extends AbstractConfig {
 		
 		if (!hasProperty(AUTO_CHECK_FOR_MOD_UPDATES)){
 			setProperty(AUTO_CHECK_FOR_MOD_UPDATES, Boolean.toString(true));
+		}
+		
+		if (!hasProperty(NUM_CONCURRENT_DOWNLOADS)){
+			setProperty(NUM_CONCURRENT_DOWNLOADS, Integer.toString(4));
 		}
 		
 		if (!hasProperty(GAMEDATA_PATH) || getProperty(GAMEDATA_PATH) == null || getProperty(GAMEDATA_PATH).isEmpty()){
@@ -117,6 +126,15 @@ public class Config extends AbstractConfig {
 			new OptionSaveStrategy.ConfigStrategy(this, AUTO_CHECK_FOR_MOD_UPDATES) 
 		);
 		optionInputs.add(new OptionInput.TrueFalseInput(option));
+		
+		// Number of Concurrent Downloads Option
+		option = new Option(
+			"Number of Concurrent Downloads",
+			Integer.toString(numConcurrentDownloads()),
+			new OptionSaveStrategy.ConfigStrategy(this, NUM_CONCURRENT_DOWNLOADS)
+		);
+		option.addConstraint(new Constraints.EnsureIntRange(option, 0, Integer.MAX_VALUE));
+		optionInputs.add(new OptionInput.TextFieldInput(option));
 		
 		new OptionsWindow("Options", optionInputs, restartOnSuccess, exitOnCancel).toDialog();
 	}

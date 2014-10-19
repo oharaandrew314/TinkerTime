@@ -29,8 +29,6 @@ import aohara.tinkertime.workflows.ModWorkflowBuilder;
  */
 public class ModManager extends Listenable<ModUpdateListener> implements WorkflowRunner, ListListener<Mod> {
 	
-	public static final int NUM_CONCURRENT_DOWNLOADS = 4;
-	
 	private final Executor downloadExecutor, enablerExecutor;
 	private final Config config;
 	private final ModStateManager sm;
@@ -42,7 +40,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		
 		ModManager mm =  new ModManager(
 			sm, config, pp, new DialogConflictResolver(),
-			Executors.newFixedThreadPool(NUM_CONCURRENT_DOWNLOADS),
+			Executors.newFixedThreadPool(config.numConcurrentDownloads()),
 			Executors.newSingleThreadExecutor());
 		
 		return mm;
