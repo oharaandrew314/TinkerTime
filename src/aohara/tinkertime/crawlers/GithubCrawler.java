@@ -1,6 +1,8 @@
 package aohara.tinkertime.crawlers;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,7 +12,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
-import aohara.tinkertime.models.Mod;
 
 /**
  * Crawler for gathering Mod Data from a Github Project.
@@ -30,21 +31,18 @@ public class GithubCrawler extends ModCrawler<Document> {
 		}
 		return super.getPage(url);
 	}
-
-	@Override
-	public Mod createMod() throws IOException {
-		String creator = getLatestReleaseElement().select(" p.release-authorship a").first().text();
-		
-		return new Mod(getName(), getNewestFileName(), creator, getImageUrl(), url, getUpdatedOn());
-	}
 	
 	private Element getLatestReleaseElement() throws IOException {
-		Document doc = getPage(url);
+		Document doc = getPage(getApiUrl());
 		return doc.select("div.label-latest").first();
 	}
 	
 	private Element getDownloadElement() throws IOException {
-		return getLatestReleaseElement().select("div.release-body ul.release-downloads a").first();
+		try {
+			return getLatestReleaseElement().select("div.release-body ul.release-downloads a").first();
+		} catch (NullPointerException e){
+			throw new IOException("No Releases discovered for this mod");
+		}
 	}
 
 	@Override
@@ -76,7 +74,30 @@ public class GithubCrawler extends ModCrawler<Document> {
 
 	@Override
 	public String getName() throws IOException {
-		return getPage(url).select("h1.entry-title strong > a").text();
+		return getPage(getApiUrl()).select("h1.entry-title strong > a").text();
 	}
 
+	@Override
+	protected String getCreator() throws IOException {
+		return getLatestReleaseElement().select(" p.release-authorship a").first().text();
+	}
+
+	@Override
+	public String getSupportedVersion() throws IOException {
+		return null;  // Not Supported by Github
+	}
+
+	@Override
+	public String generateId() {
+		try { // Chop off releases from path
+			URI uri = getApiUrl().toURI();
+			if (getApiUrl().getPath().endsWith("releases")){
+				uri = uri.getPath().endsWith("/") ? uri.resolve("..") : uri.resolve(".");
+			}
+			String[] names = uri.getPath().split("/");
+			return names[names.length - 1];
+		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		}	
+	}
 }

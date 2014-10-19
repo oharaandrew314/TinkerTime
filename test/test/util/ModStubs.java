@@ -13,7 +13,9 @@ public enum ModStubs {
 	HotRockets("HotRockets", "http://www.curse.com/ksp-mods/kerbal/220207-hotrockets-particle-fx-replacement"),
 	Eve("EnvironmentalVisualEnhancements", "https://github.com/rbray89/EnvironmentalVisualEnhancements"),
 	ProceduralFairings("ProceduralFairings", "https://github.com/e-dog/ProceduralFairings"),
-	Near("NEAR", "https://github.com/ferram4/Ferram-Aerospace-Research");
+	Near("NEAR", "https://github.com/ferram4/Ferram-Aerospace-Research"),
+	RadialEngines("Radial Engine Mounts by PanaTee Parts International", "https://kerbalstuff.com/api/mod/153"),
+	TimeControl("Time Control", "https://kerbalstuff.com/api/mod/21");
 	
 	public final String name;
 	public final URL url;

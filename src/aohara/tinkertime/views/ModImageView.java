@@ -1,12 +1,13 @@
 package aohara.tinkertime.views;
 
-import java.awt.Image;
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
+import aohara.common.content.ImageManager;
 import aohara.common.selectorPanel.ControlPanel;
 import aohara.tinkertime.Config;
 import aohara.tinkertime.models.Mod;
@@ -18,6 +19,7 @@ import aohara.tinkertime.models.Mod;
  */
 public class ModImageView extends ControlPanel<Mod> {
 	
+	private final ImageManager imageManager = new ImageManager();
 	private final JLabel label = new JLabel();
 	private final Config config;
 	
@@ -28,14 +30,23 @@ public class ModImageView extends ControlPanel<Mod> {
 	
 	@Override
 	public void display(Mod element){
+		BufferedImage image = null;
 		if (element != null){
 			try {
 				super.display(element);
-				Image cachedImage = ImageIO.read(element.getCachedImagePath(config).toFile());
-				label.setIcon(cachedImage != null ? new ImageIcon(cachedImage) : null);
+				image = imageManager.getImage(element.getCachedImagePath(config));
 			} catch(IOException ex){
 				// Do Nothing
 			}
+			if (image != null){
+				Dimension size = imageManager.scaleToFit(image, new Dimension(panel.getWidth(), panel.getWidth()));
+				try{
+					image = imageManager.resizeImage(image, size);
+				} catch (IllegalArgumentException e){
+					
+				}
+			}
 		}
+		label.setIcon(image != null ? new ImageIcon(image) : null);
 	}
 }

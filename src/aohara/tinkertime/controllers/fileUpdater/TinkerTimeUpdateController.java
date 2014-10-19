@@ -3,8 +3,6 @@ package aohara.tinkertime.controllers.fileUpdater;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import aohara.common.workflows.Workflow;
-import aohara.common.workflows.tasks.BrowserGoToTask;
 import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.controllers.WorkflowRunner;
 import aohara.tinkertime.crawlers.Constants;
@@ -29,7 +27,7 @@ public class TinkerTimeUpdateController extends FileUpdateController {
 	}
 
 	@Override
-	public void buildWorkflowTask(Workflow workflow, Crawler<?> crawler, boolean downloadOnlyIfNewer) throws IOException {
-		workflow.addTask(new BrowserGoToTask(workflow, ModWorkflowBuilder.downloadLinkGen(crawler)));
+	public void buildWorkflowTask(ModWorkflowBuilder builder, Crawler<?> crawler, boolean downloadOnlyIfNewer) throws IOException {
+		builder.browserGoTo(ModWorkflowBuilder.downloadLinkGen(crawler));
 	}
 }

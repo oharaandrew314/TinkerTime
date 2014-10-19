@@ -13,6 +13,7 @@ sourceSets {
         }
         resources {
             srcDir 'res'
+             exclude('*/Thumbs.db')
         }
     }
 
@@ -26,6 +27,10 @@ sourceSets {
     }
 }
 
+task unitTest( type: Test ) {
+    exclude 'test/integration/*'
+}
+
 compileJava {
   sourceCompatibility = '1.7'
   targetCompatibility = '1.7'
@@ -34,7 +39,7 @@ compileJava {
 dependencies {
 
     compile 'commons-io:commons-io:2.4'
-    compile 'com.google.code.gson:gson:2.2.4'
+    compile 'com.google.code.gson:gson:2.3'
     compile 'org.jsoup:jsoup:1.7.3'
 
     testCompile 'org.hamcrest:hamcrest-all:1.3'

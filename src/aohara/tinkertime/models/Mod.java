@@ -19,18 +19,22 @@ import aohara.tinkertime.Config;
  */
 public class Mod extends UpdateableFile {
 	
-	private String name, creator;
+	public final String id;
+	private String name, creator, supportedVersion;
 	private URL imageUrl;
 	private boolean enabled = false;
 	private transient boolean updateAvailable = false;
 	
 	public Mod(
-			String modName, String newestFileName, String creator,
-			URL imageUrl, URL pageUrl, Date updatedOn){
+			String id, String modName, String newestFileName, String creator,
+			URL imageUrl, URL pageUrl, Date updatedOn, String supportedVersion){
 		super(newestFileName, updatedOn, pageUrl);
+		this.id = id;
+		update(newestFileName, updatedOn, pageUrl);
 		this.name = modName;
 		this.creator = creator;
 		this.imageUrl = imageUrl;
+		this.supportedVersion = supportedVersion;
 		updateAvailable = false;
 	}
 	
@@ -46,10 +50,6 @@ public class Mod extends UpdateableFile {
 		return imageUrl;
 	}
 	
-	public String getId(){
-		return FilenameUtils.getBaseName(getPageUrl().toString());	
-	}
-	
 	public boolean isDownloaded(Config config){
 		return getCachedZipPath(config).toFile().exists();
 	}
@@ -63,6 +63,14 @@ public class Mod extends UpdateableFile {
 		return config.getImageCachePath().resolve(imageName);
 	}
 	
+	/**
+	 * Returns the version of KSP that this mod version supports.
+	 * @return supported KSP version
+	 */
+	public String getSupportedVersion(){
+		return supportedVersion;
+	}
+	
 	// -- Other Methods --------------------
 	
 	public boolean isEnabled(){
@@ -71,16 +79,6 @@ public class Mod extends UpdateableFile {
 	
 	public void setEnabled(boolean enabled){
 		this.enabled = enabled;
-	}
-	
-	public void updateModData(
-			String modName, String newestFileName, String creator,
-			String currentFile, URL imageUrl, URL pageUrl, Date updatedOn) {
-		super.update(newestFileName, updatedOn, pageUrl);
-		this.name = modName;
-		this.creator = creator;
-		this.imageUrl = imageUrl;
-		updateAvailable = false;
 	}
 	
 	@Override

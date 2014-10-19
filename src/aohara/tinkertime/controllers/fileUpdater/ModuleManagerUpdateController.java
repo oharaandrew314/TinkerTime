@@ -6,7 +6,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 
-import aohara.common.workflows.Workflow;
 import aohara.common.workflows.tasks.gen.PathGen;
 import aohara.tinkertime.Config;
 import aohara.tinkertime.controllers.WorkflowRunner;
@@ -48,7 +47,7 @@ public class ModuleManagerUpdateController extends FileUpdateController {
 	}
 	
 	@Override
-	public void buildWorkflowTask(Workflow workflow, final Crawler<?> crawler, boolean downloadOnlyIfNewer) throws IOException {
+	public void buildWorkflowTask(ModWorkflowBuilder builder, final Crawler<?> crawler, boolean downloadOnlyIfNewer) throws IOException {
 		if (getCurrentPath() != null){
 			getCurrentPath().toFile().delete();
 		}
@@ -70,10 +69,10 @@ public class ModuleManagerUpdateController extends FileUpdateController {
 		};
 		
 		if (downloadOnlyIfNewer){
-			ModWorkflowBuilder.downloadFile(workflow, crawler, destGen);
+			builder.downloadFile(crawler, destGen);
 		} else {
 			try {
-				ModWorkflowBuilder.downloadFileIfNewer(workflow, new UpdateableFile(getCurrentVersion(), null, crawler.url), destGen);
+				builder.downloadFileIfNewer(new UpdateableFile(getCurrentVersion(), null, crawler.getApiUrl()), destGen);
 			} catch (UnsupportedHostException e) {
 				throw new RuntimeException(e);
 			}

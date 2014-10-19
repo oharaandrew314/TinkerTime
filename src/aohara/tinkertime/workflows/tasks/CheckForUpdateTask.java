@@ -3,8 +3,7 @@ package aohara.tinkertime.workflows.tasks;
 import java.io.IOException;
 import java.util.Date;
 
-import aohara.common.workflows.Workflow;
-import aohara.common.workflows.tasks.WorkflowTask;
+import aohara.common.workflows.Workflow.WorkflowTask;
 import aohara.tinkertime.crawlers.Crawler;
 
 /**
@@ -18,8 +17,7 @@ public class CheckForUpdateTask extends WorkflowTask {
 	private final String lastFileName;
 	private final Crawler<?> crawler;
 
-	public CheckForUpdateTask(Workflow workflow, Crawler<?> crawler, Date lastUpdated, String lastFileName) {
-		super(workflow);
+	public CheckForUpdateTask(Crawler<?> crawler, Date lastUpdated, String lastFileName) {
 		this.crawler = crawler;
 		this.lastUpdated = lastUpdated;
 		this.lastFileName = lastFileName;

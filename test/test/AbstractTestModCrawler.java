@@ -15,26 +15,31 @@ import aohara.tinkertime.models.Mod;
 public abstract class AbstractTestModCrawler {
 	
 	protected void compare(
-		ModStubs stub, Date updatedOn, String creator,
-		String newestFile, String downloadLink, String imageLink
+		ModStubs stub, String id, Date updatedOn, String creator,
+		String newestFile, String downloadLink, String imageLink, String supportedVersion
 	) throws IOException, UnsupportedHostException {
 		Mod actualMod = new MockCrawlerFactory().getModCrawler(stub.url).createMod();
 		
 		Mod expectedMod = new Mod(
+			id,
 			stub.name,
 			newestFile,
 			creator,
 			new URL(imageLink),
 			stub.url,
-			updatedOn
+			updatedOn,
+			supportedVersion
 		);
 		
-		assertEquals(actualMod.getName(), expectedMod.getName());
-		assertEquals(actualMod.getNewestFileName(), expectedMod.getNewestFileName());
-		assertEquals(actualMod.getCreator(), expectedMod.getCreator());
-		assertEquals(actualMod.getImageUrl(), expectedMod.getImageUrl());
-		assertEquals(actualMod.getPageUrl(), expectedMod.getPageUrl());
-		assertEquals(actualMod.getUpdatedOn().toString(), expectedMod.getUpdatedOn().toString());
+		assertEquals(expectedMod.getName(), actualMod.getName());
+		assertEquals(expectedMod.getNewestFileName(), actualMod.getNewestFileName());
+		assertEquals(expectedMod.getCreator(), actualMod.getCreator());
+		assertEquals(expectedMod.getImageUrl(), actualMod.getImageUrl());
+		assertEquals(expectedMod.getPageUrl(), actualMod.getPageUrl());
+		assertEquals(
+			expectedMod.getUpdatedOn() != null ? expectedMod.getUpdatedOn().toString() : null,
+			actualMod.getUpdatedOn() != null ? actualMod.getUpdatedOn().toString() : null			
+		);
 	}
 	
 	protected Date getDate(int year, int month, int date){

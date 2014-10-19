@@ -28,15 +28,13 @@ public class CrawlerFactory {
 	 * @param url url of the page to be crawled
 	 * @return A crawler for crawling the file data on the given url
 	 */
-	public ModCrawler<?> getModCrawler(URL url) throws UnsupportedHostException{
-		String host = url.getHost().toLowerCase();
-		
-		if (host.equals(Constants.HOST_CURSE)){
-			return new CurseCrawler(url, createHtmlLoader());
-		} else if (host.equals(Constants.HOST_GITHUB)){
-			return new GithubCrawler(url, createHtmlLoader());
+	public ModCrawler<?> getModCrawler(URL url) throws UnsupportedHostException{	
+		switch(url.getHost().toLowerCase()){
+		case Constants.HOST_CURSE: return new CurseCrawler(url, createHtmlLoader());
+		case Constants.HOST_GITHUB: return new GithubCrawler(url, createHtmlLoader());
+		case Constants.HOST_KERBAL_STUFF: return new KerbalStuffCrawler(url, createJsonLoader());
+		default: throw new UnsupportedHostException();
 		}
-		throw new UnsupportedHostException();
 	}
 	
 	public Crawler<?> getCrawler(URL url) throws UnsupportedHostException{
