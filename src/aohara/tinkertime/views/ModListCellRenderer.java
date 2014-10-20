@@ -29,8 +29,10 @@ public class ModListCellRenderer implements ListCellRenderer<Mod> {
 	private final ImageIcon checkIcon, xIcon, errorIcon, updateIcon;
 	private final DefaultListCellRenderer def = new DefaultListCellRenderer();
 	private final ImageManager imageManager = new ImageManager("icon/");
+	private final TinkerConfig config;
 	
-	public ModListCellRenderer(){
+	public ModListCellRenderer(TinkerConfig config){
+		this.config = config;
 		checkIcon = loadIcon("glyphicons_152_check.png", new Color(70, 210, 70));
 		xIcon = loadIcon("glyphicons_207_remove_2.png", new Color(205, 20, 20));
 		errorIcon = loadIcon("glyphicons_078_warning_sign.png", new Color(215, 160, 0));
@@ -50,7 +52,7 @@ public class ModListCellRenderer implements ListCellRenderer<Mod> {
 
 		// Compile list of icons
 		LinkedList<ImageIcon> icons = new LinkedList<>();
-		if (mod.isDownloaded(TinkerConfig.create())){
+		if (mod.isDownloaded(config)){
 			icons.add(mod.isEnabled() ? checkIcon : xIcon);
 		} else {
 			icons.add(errorIcon);

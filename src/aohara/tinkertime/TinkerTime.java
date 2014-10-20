@@ -42,10 +42,10 @@ public class TinkerTime {
 		System.setProperty("http.agent", "TinkerTime Bot");
 		
 		// Initialize GUI
-		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new ModView(), new ModComparator());
+		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new ModView(config), new ModComparator());
 		sp.addControlPanel(true, new ModImageView(config));
 		sp.addPopupMenu(MenuFactory.createPopupMenu(mm));
-		sp.setListCellRenderer(new ModListCellRenderer());
+		sp.setListCellRenderer(new ModListCellRenderer(config));
 		
 		// Add Listeners
 		sp.addListener(mm);

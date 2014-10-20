@@ -29,12 +29,14 @@ import aohara.tinkertime.models.ModStructure;
  */
 public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 	
+	private final TinkerConfig config;
 	private Mod mod;
 	private final JPanel panel = new JPanel();
 	private final SimpleDateFormat DATE_FORMAT = (
 			new SimpleDateFormat("yyyy/MM/dd"));
 	
-	public ModView(){
+	public ModView(TinkerConfig config){
+		this.config = config;
 		panel.setLayout(new VerticalLayout(0, VerticalLayout.BOTH));
 	}
 
@@ -61,7 +63,6 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 			panel.add(new UrlPanel("Go to Mod Page", mod.getPageUrl()).getComponent());		
 			
 			// Readme
-			TinkerConfig config = TinkerConfig.create();
 			if (mod.getCachedZipPath(config).toFile().exists()){
 				String readmeText = ModStructure.getReadmeText(config, mod);				
 				if (readmeText != null && !readmeText.trim().isEmpty()){

@@ -30,7 +30,7 @@ import aohara.tinkertime.workflows.ModWorkflowBuilder;
 public class ModManager extends Listenable<ModUpdateListener> implements WorkflowRunner, ListListener<Mod> {
 	
 	private final Executor downloadExecutor, enablerExecutor;
-	private final TinkerConfig config;
+	public final TinkerConfig config;
 	private final ModStateManager sm;
 	private final ProgressPanel progressPanel;
 	private final ConflictResolver cr;
