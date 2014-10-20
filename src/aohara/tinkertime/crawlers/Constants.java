@@ -12,7 +12,7 @@ public class Constants {
 	
 	// Host Names
 	public static final String
-		HOST_CURSE = "www.curse.com",
+		HOST_CURSE = "curse.com",
 		HOST_GITHUB = "github.com",
 		HOST_MODULE_MANAGER = "ksp.sarbian.com",
 		HOST_KERBAL_STUFF = "kerbalstuff.com";

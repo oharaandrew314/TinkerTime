@@ -85,7 +85,13 @@ public class Actions {
 			// Try to add Mod
 			try {
 				mm.downloadMod(new URL(urlString));
-			} catch (UnsupportedHostException | ModUpdateFailedException | MalformedURLException ex) {
+			} catch(MalformedURLException ex){
+				try {
+					mm.downloadMod(new URL("http://" + urlString));
+				} catch (MalformedURLException | ModUpdateFailedException| UnsupportedHostException e) {
+					errorMessage(ex);
+				}
+			} catch (UnsupportedHostException | ModUpdateFailedException ex) {
 				errorMessage(ex);
 			}
 		}
