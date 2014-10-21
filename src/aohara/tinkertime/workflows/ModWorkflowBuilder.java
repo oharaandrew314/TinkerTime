@@ -186,7 +186,8 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		return new URLGen(){
 			@Override
 			public URI getURI() throws URISyntaxException {
-				return getURL().toURI();
+				URL url = getURL();
+				return url != null ? url.toURI() : null;
 			}
 
 			@Override
