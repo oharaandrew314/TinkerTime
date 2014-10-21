@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
@@ -40,8 +41,11 @@ public class KerbalStuffCrawler extends ModCrawler<JsonObject>{
 
 	@Override
 	public URL getImageUrl() throws IOException {
-		String imagePath = getPage(getApiUrl()).get("background").getAsString();
-		return new URL("https", "cdn.mediacru.sh", imagePath);
+		JsonElement bgElement = getPage(getApiUrl()).get("background");
+		if (!bgElement.isJsonNull()){
+			return new URL("https", "cdn.mediacru.sh", bgElement.getAsString());
+		}
+		return null;
 	}
 	
 	@Override
