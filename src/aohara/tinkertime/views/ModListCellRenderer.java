@@ -40,7 +40,6 @@ public class ModListCellRenderer implements ListCellRenderer<Mod> {
 	}
 	
 	private ImageIcon loadIcon(String name, Color colour){
-		//return new ImageIcon(getClass().getClassLoader().getResource("icon/" + name));
 		BufferedImage image = imageManager.getImage(name);
 		image = colour != null ? imageManager.colorize(image, colour) : image;
 		return new ImageIcon(image);
