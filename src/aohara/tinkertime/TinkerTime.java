@@ -50,15 +50,6 @@ public class TinkerTime {
 		// Add Listeners
 		sp.addListener(mm);
 		sm.addListener(sp);
-		
-		// Initialize Frame
-		JFrame frame = new TinkerFrame();
-		frame.setJMenuBar(MenuFactory.creatMenuBar(mm));
-		frame.add(MenuFactory.createToolBar(mm), BorderLayout.NORTH);
-		frame.add(sp.getComponent(), BorderLayout.CENTER);
-		frame.add(pp.getComponent(), BorderLayout.SOUTH);
-		frame.pack();
-		frame.setVisible(true);
 
 		// Start Application
 		sm.getMods();  // Load mods (will notify selector panel)
@@ -75,5 +66,14 @@ public class TinkerTime {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		
+		// Initialize Frame
+		JFrame frame = new TinkerFrame();
+		frame.setJMenuBar(MenuFactory.creatMenuBar(mm));
+		frame.add(MenuFactory.createToolBar(mm), BorderLayout.NORTH);
+		frame.add(sp.getComponent(), BorderLayout.CENTER);
+		frame.add(pp.getComponent(), BorderLayout.SOUTH);
+		frame.pack();
+		frame.setVisible(true);
 	}
 }
