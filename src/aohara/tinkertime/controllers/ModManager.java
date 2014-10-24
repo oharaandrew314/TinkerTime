@@ -107,7 +107,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	public void updateMod(Mod mod) throws ModUpdateFailedException {
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Updating " + mod.getName());
 		try {
-			if (mod.isEnabled()){
+			if (mod.isEnabled() && mod.isDownloaded(config)){
 				builder.disableMod( mod, config, sm);
 			}
 			builder.downloadMod(mod.getPageUrl(), config, sm);

@@ -89,7 +89,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	}
 	
 	public void deleteMod(Mod mod, TinkerConfig config, ModStateManager sm) throws IOException {
-		if (mod.isEnabled()){
+		if (mod.isEnabled() && mod.isDownloaded(config)){
 			for (ZipNode module : ModStructure.inspectArchive(config, mod).getModules()){
 				delete(GenFactory.fromPath(config.getGameDataPath().resolve(module.getName())));
 			}
