@@ -32,9 +32,9 @@ public class TinkerConfig {
 		builder.addTrueFalseProperty(AUTO_UPDATE_MM, true, false);
 		builder.addTrueFalseProperty(AUTO_CHECK_FOR_MOD_UPDATES, true, false);
 		builder.addPathProperty(GAMEDATA_PATH, JFileChooser.DIRECTORIES_ONLY, null, false);
-		builder.addIntProperty(NUM_CONCURRENT_DOWNLOADS, 4, 1, null);
+		builder.addIntProperty(NUM_CONCURRENT_DOWNLOADS, 4, 1, null, false);
 		
-		Config config = builder.createConfigInDocuments(TinkerTime.NAME, "mods.json");
+		Config config = builder.createConfigInDocuments(TinkerTime.NAME, "TinkerTime.properties");
 		if (!config.isValid()){
 			config.openOptionsWindow(false, true);
 		}
