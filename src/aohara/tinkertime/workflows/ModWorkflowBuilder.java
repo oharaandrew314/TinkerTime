@@ -108,13 +108,14 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	}
 	
 	/**
-	 * Delete the mod and mark it as deleted
+	 * Fully delete the mod and mark it as deleted.
 	 * @param mod
 	 * @param config
 	 * @param sm
 	 */
 	public void deleteMod(Mod mod, TinkerConfig config, ModStateManager sm) {
 		deleteModZip(mod, config);
+		delete(GenFactory.fromPath(mod.getCachedImagePath(config)));
 		addTask(MarkModUpdatedTask.notifyDeletion(sm, mod));
 	}
 	
