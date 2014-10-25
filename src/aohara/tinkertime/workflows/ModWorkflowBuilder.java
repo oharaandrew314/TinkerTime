@@ -88,13 +88,33 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		addTask(new MarkModUpdatedTask(sm, crawler));
 	}
 	
-	public void deleteMod(Mod mod, TinkerConfig config, ModStateManager sm) throws IOException {
-		if (mod.isEnabled() && mod.isDownloaded(config)){
-			for (ZipNode module : ModStructure.inspectArchive(config, mod).getModules()){
-				delete(GenFactory.fromPath(config.getGameDataPath().resolve(module.getName())));
+	/**
+	 * Delete the mod's zip file, but do not mark the mod as deleted
+	 * @param mod
+	 * @param config
+	 */
+	public void deleteModZip(Mod mod, TinkerConfig config){
+		delete(new PathGen(){
+			@Override
+			public URI getURI() throws URISyntaxException {
+				return getPath().toUri();
 			}
-		}
-		delete( modZipPathGen(mod, config));
+
+			@Override
+			public Path getPath() {
+				return mod.getCachedZipPath(config);
+			}
+		});
+	}
+	
+	/**
+	 * Delete the mod and mark it as deleted
+	 * @param mod
+	 * @param config
+	 * @param sm
+	 */
+	public void deleteMod(Mod mod, TinkerConfig config, ModStateManager sm) {
+		deleteModZip(mod, config);
 		addTask(MarkModUpdatedTask.notifyDeletion(sm, mod));
 	}
 	
@@ -146,20 +166,6 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
-			}
-		};
-	}
-	
-	private static PathGen modZipPathGen(final Mod mod, final TinkerConfig config){
-		return new PathGen(){
-			@Override
-			public URI getURI() throws URISyntaxException {
-				return getPath().toUri();
-			}
-
-			@Override
-			public Path getPath() {
-				return mod.getCachedZipPath(config);
 			}
 		};
 	}
