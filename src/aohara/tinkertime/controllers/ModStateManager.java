@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -90,12 +91,25 @@ public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 			}
 		}
 		
-		// Save Mods
-		try(FileWriter writer = new FileWriter(config.getModsListPath().toFile())){
-			gson.toJson(modCache, modsType, writer);
+		saveMods(modCache, config.getModsListPath());
+	}
+	
+	private void saveMods(Set<Mod> mods, Path path){
+		try(FileWriter writer = new FileWriter(path.toFile())){
+			gson.toJson(mods, modsType, writer);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void exportEnabledMods(Path path){
+		Set<Mod> toExport = new HashSet<>();
+		for (Mod mod : getMods()){
+			if (mod.isEnabled()){
+				toExport.add(mod);
+			}
+		}
+		saveMods(toExport, path);
 	}
 
 	@Override

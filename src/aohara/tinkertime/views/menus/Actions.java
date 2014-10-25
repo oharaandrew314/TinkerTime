@@ -9,7 +9,9 @@ import java.util.Arrays;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import aohara.common.Util;
 import aohara.common.content.ImageManager;
@@ -334,6 +336,33 @@ public class Actions {
 				new TinkerTimeUpdateController(mm).showDialog();
 			} catch (UnsupportedHostException e1) {
 				errorMessage(e1);
+			}
+		}
+	}
+	
+	@SuppressWarnings("serial")
+	public static class ExportModList extends TinkerAction {
+		
+		public ExportModList(JComponent parent, ModManager mm){
+			super("Export Enabled Mod Data", "icon/glyphicons_359_file_export.png", parent, mm);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			JFileChooser chooser = new JFileChooser();
+			chooser.setDialogTitle("Choose a location to save the mod data");
+			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);  // Only accept files
+			chooser.addChoosableFileFilter(new FileNameExtensionFilter("Json File", "json"));  // Only accept JSON files
+			chooser.setAcceptAllFileFilterUsed(false);
+			chooser.setSelectedFile(new java.io.File("mods.json"));
+			if (chooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION){
+				mm.exportEnabledMods(chooser.getSelectedFile().toPath());
+				JOptionPane.showMessageDialog(
+					parent,
+					"Enabled mod data has been exported",
+					"Exported",
+					JOptionPane.INFORMATION_MESSAGE
+				);
 			}
 		}
 	}

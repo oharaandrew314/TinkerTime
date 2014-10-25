@@ -2,6 +2,7 @@ package aohara.tinkertime.controllers;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -178,6 +179,10 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		if (e != null){
 			throw e;
 		}
+	}
+	
+	public void exportEnabledMods(Path path){
+		sm.exportEnabledMods(path);
 	}
 	
 	// -- Exceptions ------------------------------------------------------

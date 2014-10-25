@@ -41,6 +41,7 @@ public class MenuFactory {
 		
 		JMenu fileMenu = new JMenu("File");
 		fileMenu.add(new JMenuItem(new Actions.OptionsAction(menuBar, mm)));
+		fileMenu.add(new JMenuItem(new Actions.ExportModList(menuBar, mm)));
 		fileMenu.add(new JMenuItem(new Actions.ExitAction(menuBar, mm)));
 		menuBar.add(fileMenu);
 		
