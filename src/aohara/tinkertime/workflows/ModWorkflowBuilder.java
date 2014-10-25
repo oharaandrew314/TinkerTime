@@ -93,7 +93,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	 * @param mod
 	 * @param config
 	 */
-	public void deleteModZip(Mod mod, TinkerConfig config){
+	public void deleteModZip(final Mod mod, final TinkerConfig config){
 		delete(new PathGen(){
 			@Override
 			public URI getURI() throws URISyntaxException {
