@@ -15,6 +15,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import aohara.common.Util;
 import aohara.common.content.ImageManager;
+import aohara.common.workflows.tasks.BrowserGoToTask;
 import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.CannotDisableModException;
@@ -25,8 +26,10 @@ import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
 import aohara.tinkertime.crawlers.Constants;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.DefaultMods;
+import aohara.tinkertime.models.FileUpdateListener;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.views.UrlPanel;
+import aohara.tinkertime.workflows.ModWorkflowBuilder;
 
 public class Actions {
 	
@@ -335,5 +338,38 @@ public class Actions {
 				);
 			}
 		}
+	}
+	
+	@SuppressWarnings("serial")
+	public static class UpdateTinkerTime extends TinkerAction implements FileUpdateListener {
+		
+		public UpdateTinkerTime(JComponent parent, ModManager mm){
+			super("Update Tinker Time", null, parent, mm);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			ModWorkflowBuilder builder = new ModWorkflowBuilder("Updating " + TinkerTime.NAME);
+			try {
+				builder.checkForUpdates(Constants.getTinkerTimeGithubUrl(), null, TinkerTime.NAME, this);
+				mm.submitDownloadWorkflow(builder.buildWorkflow());
+			} catch (UnsupportedHostException ex) {
+				errorMessage(ex);
+			}
+		}
+
+		@Override
+		public void setUpdateAvailable(URL pageUrl, URL downloadLink, String newestFileName) {
+			if (JOptionPane.showConfirmDialog(
+				parent, String.format("Current: %s\nAvailable: %s\nDownload?", TinkerTime.VERSION, newestFileName), "Update Tinker Time", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE
+			) == JOptionPane.YES_OPTION){
+				try {
+					new BrowserGoToTask(downloadLink).call(null);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+		
 	}
 }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Date;
 
 import thirdParty.ZipNode;
 import aohara.common.workflows.ConflictResolver;
@@ -35,10 +36,14 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	/**
 	 * Notifies the listeners if an update is available for the given file
 	 */
-	public void checkForUpdates(Mod mod, FileUpdateListener... listeners) throws IOException, UnsupportedHostException {	
-		DownloaderContext context = DirectDownloaderContext.fromUrl(mod.getPageUrl(), null, null);
+	public void checkForUpdates(Mod mod, FileUpdateListener... listeners) throws IOException, UnsupportedHostException {
+		checkForUpdates(mod.getPageUrl(), mod.getUpdatedOn(), mod.getNewestFileName());
+	}
+	
+	public void checkForUpdates(URL pageUrl, Date updatedOn, String newestFileName, FileUpdateListener... listeners) throws UnsupportedHostException{
+		DownloaderContext context = DirectDownloaderContext.fromUrl(pageUrl, null, null);
 		addTask(new CacheCrawlerPageTask(context));
-		addTask(new CheckForUpdateTask(context, mod.getUpdatedOn(), mod.getNewestFileName()));
+		addTask(new CheckForUpdateTask(context, updatedOn, newestFileName));
 		addTask(new NotfiyUpdateAvailableTask(context.crawler, listeners));
 	}
 	

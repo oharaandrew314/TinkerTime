@@ -55,6 +55,7 @@ public class MenuFactory {
 		JMenu updateMenu = new JMenu("Updates");
 		updateMenu.add(new JMenuItem(new Actions.UpdateAllAction(menuBar, mm)));
 		updateMenu.add(new JMenuItem(new Actions.CheckforUpdatesAction(menuBar, mm)));
+		updateMenu.add(new JMenuItem(new Actions.UpdateTinkerTime(menuBar, mm)));
 		menuBar.add(updateMenu);
 		
 		JMenu helpMenu = new JMenu("Help");

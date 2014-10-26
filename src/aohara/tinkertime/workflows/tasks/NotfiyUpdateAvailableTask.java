@@ -29,7 +29,7 @@ public class NotfiyUpdateAvailableTask extends WorkflowTask {
 		String newestFileName = crawler.getNewestFileName();
 		if (newestFileName != null){
 			for (FileUpdateListener l : listeners){
-				l.setUpdateAvailable(crawler.getPageUrl(), newestFileName);
+				l.setUpdateAvailable(crawler.getPageUrl(), crawler.getDownloadLink(), newestFileName);
 				progress(workflow, 1);
 			}
 			return true;

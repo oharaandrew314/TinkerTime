@@ -9,6 +9,6 @@ import java.net.URL;
  */
 public interface FileUpdateListener {
 	
-	public void setUpdateAvailable(URL pageUrl, String newestFileName);
+	public void setUpdateAvailable(URL pageUrl, URL downloadLink, String newestFileName);
 
 }

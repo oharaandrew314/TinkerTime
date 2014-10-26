@@ -97,7 +97,7 @@ public class Mod implements FileUpdateListener {
 	}
 	
 	@Override
-	public void setUpdateAvailable(URL pageUrl, String newestFileName){
+	public void setUpdateAvailable(URL pageUrl, URL downloadLink, String newestFileName){
 		updateAvailable = true;
 	}
 	

@@ -38,7 +38,7 @@ public class CrawlerFactory {
 			}
 		}
 		
-		throw new UnsupportedHostException();
+		throw new UnsupportedHostException(host);
 	}
 	
 	protected PageLoader<Document> createHtmlLoader(){
@@ -52,10 +52,16 @@ public class CrawlerFactory {
 	@SuppressWarnings("serial")
 	public static class UnsupportedHostException extends Exception {
 		
+		private final String host;
+		
+		public UnsupportedHostException(String host){
+			this.host = host;
+		}
+		
 		@Override
 		public String getMessage(){
 			return (
-				"Mod data could not be deciphered.\n"
+				"Mod data could not be deciphered for " + host + ".\n"
 				+ "Either the URL is invalid, or the site layout has been updated.\n"
 				+ " Valid hosts are: " + Arrays.asList(Constants.ACCEPTED_MOD_HOSTS)
 			);
