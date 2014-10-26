@@ -24,6 +24,7 @@ import aohara.tinkertime.controllers.ModManager.ModNotDownloadedException;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
 import aohara.tinkertime.crawlers.Constants;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.models.DefaultMods;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.views.UrlPanel;
 
@@ -107,6 +108,11 @@ public class Actions {
 		public void actionPerformed(ActionEvent e) {
 			Mod selectedMod = mm.getSelectedMod();
 			if (selectedMod != null){
+				if (DefaultMods.isBuiltIn(selectedMod)){
+					errorMessage("Cannot delete built-in mod: " + selectedMod.getName());
+					return;
+				}
+				
 				try {
 					if (JOptionPane.showConfirmDialog(
 						parent,

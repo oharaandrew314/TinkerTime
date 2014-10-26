@@ -29,6 +29,10 @@ public abstract class Crawler<T> {
 		return pageLoader.getPage(this, url);
 	}
 	
+	public boolean isSuccesful(){
+		return true;
+	}
+	
 	public abstract String generateId();
 	public abstract URL getDownloadLink() throws IOException;
 	public abstract String getNewestFileName() throws IOException;

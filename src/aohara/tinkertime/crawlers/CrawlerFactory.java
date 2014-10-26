@@ -32,7 +32,7 @@ public class CrawlerFactory {
 		} else if (host.equals(Constants.HOST_MODULE_MANAGER)){
 			try {
 				URL artifactUrl = new URL(Constants.MODULE_MANAGER_ARTIFACT_DL_URL);
-				return new JenkinsCrawler(url, createJsonLoader(), artifactUrl);
+				return new JenkinsCrawler(url, createJsonLoader(), "Module Manager", artifactUrl);
 			} catch (MalformedURLException e) {
 				throw new RuntimeException(e);
 			}

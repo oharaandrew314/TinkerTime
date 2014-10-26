@@ -8,5 +8,6 @@ import aohara.tinkertime.models.Mod;
  * @author Andrew O'Hara
  */
 public interface ModUpdateListener {
-	public void modUpdated(Mod mod, boolean deleted);
+	public void modUpdated(Mod mod);
+	public void modDeleted(Mod mod);
 }

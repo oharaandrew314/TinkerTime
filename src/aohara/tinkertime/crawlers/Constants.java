@@ -24,14 +24,6 @@ public class Constants {
 		"https://ksp.sarbian.com/jenkins/job/ModuleManager/lastSuccessfulBuild/artifact/"
 	);
 	
-	public static URL getModuleManagerJenkinsUrl(){
-		try {
-			return new URL("https://ksp.sarbian.com/jenkins/job/ModuleManager/lastSuccessfulBuild/api/json");
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
 	public static URL getTinkerTimeGithubUrl(){
 		try {
 			return new URL("https://github.com/oharaandrew314/TinkerTime/releases");

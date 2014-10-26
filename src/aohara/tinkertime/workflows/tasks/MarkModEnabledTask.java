@@ -30,7 +30,7 @@ public class MarkModEnabledTask extends WorkflowTask {
 	@Override
 	public boolean call(Workflow workflow) throws Exception {
 		mod.setEnabled(markEnabled);
-		sm.modUpdated(mod, false);
+		sm.modUpdated(mod);
 		return true;
 	}
 

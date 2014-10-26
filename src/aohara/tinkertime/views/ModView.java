@@ -2,6 +2,7 @@ package aohara.tinkertime.views;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -63,7 +64,8 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 			panel.add(new UrlPanel("Go to Mod Page", mod.getPageUrl()).getComponent());		
 			
 			// Readme
-			if (mod.getCachedZipPath(config).toFile().exists()){
+			Path zipPath = mod.getCachedImagePath(config);
+			if (zipPath != null && zipPath.toFile().exists()){
 				String readmeText = ModStructure.getReadmeText(config, mod);				
 				if (readmeText != null && !readmeText.trim().isEmpty()){
 					panel.add(new JLabel("<html><b>Readme:</b></html"));

@@ -69,9 +69,9 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	
 	// -- Listeners -----------------------
 	
-	public void notifyModUpdated(Mod mod, boolean deleted){
+	public void notifyModUpdated(Mod mod){
 		for (ModUpdateListener l : getListeners()){
-			l.modUpdated(mod, deleted);
+			l.modUpdated(mod);
 		}
 	}
 	

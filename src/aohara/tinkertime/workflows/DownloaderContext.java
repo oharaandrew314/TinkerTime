@@ -19,7 +19,9 @@ public abstract class DownloaderContext {
 	
 	public boolean isUpdateAvailable(Date lastUpdated, String lastFileName) {
 		try {
-			if (lastUpdated != null && crawler.getUpdatedOn() != null){
+			if (!crawler.isSuccesful()){
+				return false;
+			}else if (lastUpdated != null && crawler.getUpdatedOn() != null){
 				return crawler.getUpdatedOn().compareTo(lastUpdated) > 0;
 			} else if (lastFileName != null){
 				return !crawler.getNewestFileName().equals(lastFileName);

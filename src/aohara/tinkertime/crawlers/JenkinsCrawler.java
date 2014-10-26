@@ -7,6 +7,7 @@ import java.util.Date;
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -18,9 +19,11 @@ public class JenkinsCrawler extends Crawler<JsonObject> {
 	
 	private JsonObject cachedJson;
 	private final URL artifactDownloadUrl;
+	private final String name;
 	
-	public JenkinsCrawler(URL url, PageLoader<JsonObject> pageLoader, URL artifactDownloadUrl) {
+	public JenkinsCrawler(URL url, PageLoader<JsonObject> pageLoader, String name, URL artifactDownloadUrl) {
 		super(url, pageLoader);
+		this.name = name;
 		this.artifactDownloadUrl = artifactDownloadUrl;
 	}
 
@@ -61,12 +64,25 @@ public class JenkinsCrawler extends Crawler<JsonObject> {
 
 	@Override
 	public String getName() throws IOException {
-		return "Module Manager";
+		return name;
+	}
+	
+	@Override
+	public boolean isSuccesful(){
+		try {
+			String result = getJson().get("result").getAsString();
+			return result != null && result.toLowerCase().equals("success");
+		} catch (IOException e) {
+			return false;
+		}
 	}
 
 	@Override
 	public String getCreator() throws IOException {
-		return "sarbian";
+		for (JsonElement culprit : getJson().get("culprits").getAsJsonArray()){
+			return culprit.getAsJsonObject().get("fullName").getAsString();
+		}
+		return null;
 	}
 
 	@Override

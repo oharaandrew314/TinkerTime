@@ -16,7 +16,6 @@ import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.FileUpdateListener;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
-import aohara.tinkertime.models.UpdateableFile;
 import aohara.tinkertime.workflows.tasks.CacheCrawlerPageTask;
 import aohara.tinkertime.workflows.tasks.CheckForUpdateTask;
 import aohara.tinkertime.workflows.tasks.CrawlerDownloadTask;
@@ -36,19 +35,10 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	/**
 	 * Notifies the listeners if an update is available for the given file
 	 */
-	public void checkForUpdates(UpdateableFile file, FileUpdateListener... listeners) throws IOException, UnsupportedHostException {	
-		DownloaderContext context = DirectDownloaderContext.fromUrl(file.getPageUrl(), null, null);
+	public void checkForUpdates(Mod mod, FileUpdateListener... listeners) throws IOException, UnsupportedHostException {	
+		DownloaderContext context = DirectDownloaderContext.fromUrl(mod.getPageUrl(), null, null);
 		addTask(new CacheCrawlerPageTask(context));
-		addTask(new CheckForUpdateTask(context, file.getUpdatedOn(), file.getNewestFileName()));
-		addTask(new NotfiyUpdateAvailableTask(context.crawler, listeners));
-	}
-	
-	/**
-	 * Notifies the listener of the file's latest version available.
-	 */
-	public void checkLatestVersion(UpdateableFile file, FileUpdateListener... listeners) throws UnsupportedHostException {
-		DownloaderContext context = DirectDownloaderContext.fromUrl(file.getPageUrl(), null, null);
-		addTask(new CacheCrawlerPageTask(context));
+		addTask(new CheckForUpdateTask(context, mod.getUpdatedOn(), mod.getNewestFileName()));
 		addTask(new NotfiyUpdateAvailableTask(context.crawler, listeners));
 	}
 	
@@ -96,20 +86,29 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	}
 	
 	public void disableMod(Mod mod, TinkerConfig config, ModStateManager sm) throws IOException{
-		for (ZipNode module : ModStructure.inspectArchive(config, mod).getModules()){
-			
-			if (!isDependency(module, config, sm)){
-				delete(config.getGameDataPath().resolve(module.getName()));
+		if (mod.getNewestFileName().toLowerCase().endsWith(".zip")){
+			for (ZipNode module : ModStructure.inspectArchive(config, mod).getModules()){
+				
+				if (!isDependency(module, config, sm)){
+					delete(config.getGameDataPath().resolve(module.getName()));
+				}
 			}
+		} else {
+			delete(config.getGameDataPath().resolve(mod.getNewestFileName()));
 		}
 		addTask(new MarkModEnabledTask(mod, sm, false));
 	}
 	
 	public void enableMod(Mod mod, TinkerConfig config, ModStateManager sm, ConflictResolver cr) throws IOException{
-		ModStructure structure = ModStructure.inspectArchive(config, mod);
-		for (ZipNode module : structure.getModules()){
-			addTask(new UnzipTask(config.getGameDataPath(), module, cr));
+		if (mod.getNewestFileName().toLowerCase().endsWith(".zip")){
+			ModStructure structure = ModStructure.inspectArchive(config, mod);
+			for (ZipNode module : structure.getModules()){
+				addTask(new UnzipTask(config.getGameDataPath(), module, cr));
+			}
+		} else {
+			copy(mod.getCachedZipPath(config), config.getGameDataPath());
 		}
+		
 		addTask(new MarkModEnabledTask(mod, sm, true));
 	}
 	

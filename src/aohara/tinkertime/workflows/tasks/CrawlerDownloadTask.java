@@ -33,7 +33,11 @@ public class CrawlerDownloadTask extends WorkflowTask {
 
 	@Override
 	public int getTargetProgress() throws IOException {
-		return getUrl().openConnection().getContentLength();
+		URL url = getUrl();
+		if (url != null){
+			return url.openConnection().getContentLength();
+		}
+		return -1;
 	}
 
 	@Override
@@ -49,6 +53,6 @@ public class CrawlerDownloadTask extends WorkflowTask {
 
 	@Override
 	public boolean call(Workflow workflow) throws IOException, URISyntaxException {		
-		return new FileTransferTask(getUrl().toURI(), dest).call(workflow);
+		return new FileTransferTask(getUrl() != null ? getUrl().toURI() : null, dest).call(workflow);
 	}
 }

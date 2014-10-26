@@ -66,9 +66,12 @@ public class ModStructure {
 	}
 	
 	public static String getReadmeText(final TinkerConfig config, final Mod mod){
-		try(ZipFile zipFile = new ZipFile(mod.getCachedZipPath(config).toFile())){
-			return getReadmeText(zipFile);
-		} catch (IOException e) {}
+		Path zipPath = mod.getCachedZipPath(config);
+		if (zipPath != null){
+			try(ZipFile zipFile = new ZipFile(zipPath.toFile())){
+				return getReadmeText(zipFile);
+			} catch (IOException e) {}
+		}
 		return null;
 	}
 	

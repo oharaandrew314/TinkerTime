@@ -36,7 +36,11 @@ public class MarkModUpdatedTask extends WorkflowTask {
 
 	@Override
 	public boolean call(Workflow workflow) throws Exception {
-		listener.modUpdated(builder.createMod(), deleted);
+		if (deleted){
+			listener.modDeleted(builder.createMod());
+		} else {
+			listener.modUpdated(builder.createMod());
+		}
 		return true;
 	}
 

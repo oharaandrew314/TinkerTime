@@ -13,6 +13,7 @@ import java.util.Set;
 import aohara.common.Listenable;
 import aohara.common.selectorPanel.SelectorInterface;
 import aohara.tinkertime.TinkerConfig;
+import aohara.tinkertime.models.DefaultMods;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.FileUpdateListener;
 
@@ -42,17 +43,20 @@ public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 	}
 	
 	private synchronized Set<Mod> loadMods(){
+		Set<Mod> mods = new HashSet<>();
 		try(FileReader reader = new FileReader(config.getModsListPath().toFile())){
-			Set<Mod> mods = gson.fromJson(reader, modsType);
-			if (mods != null){
-				return mods;
+			Set<Mod> loadedMods = gson.fromJson(reader, modsType);
+			if(loadedMods != null){
+				mods.addAll(loadedMods);
 			}
 		} catch (FileNotFoundException e){
 			// No Action
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		return new HashSet<Mod>();
+		
+		mods.addAll(DefaultMods.getDefaults());
+		return mods;
 	}
 	
 	public synchronized Set<Mod> getMods(){
@@ -69,28 +73,23 @@ public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 	}
 
 	@Override
-	public synchronized void modUpdated(Mod mod, boolean deleted) {
-		// See if a mod needs to be removed
+	public synchronized void modUpdated(Mod mod) {
+		modCache.remove(mod);
+		modCache.add(mod);
 		
-		Set<Mod> toRemove = new HashSet<>();
-		for (Mod m : modCache){
-			if (m.equals(mod)){
-				toRemove.add(mod);
-				for (SelectorInterface<Mod> l : getListeners()){
-					l.removeElement(mod);
-				}
-			}
-		}
-		modCache.removeAll(toRemove);
-		
-		// Update Mod if it is not removed
-		if (!deleted){
-			modCache.add(mod);
-			for (SelectorInterface<Mod> l : getListeners()){
-				l.addElement(mod);
-			}
+		for (SelectorInterface<Mod> l : getListeners()){
+			l.removeElement(mod);
+			l.addElement(mod);
 		}
 		
+		saveMods(modCache, config.getModsListPath());
+	}
+	
+	public void modDeleted(Mod mod){
+		modCache.remove(mod);
+		for (SelectorInterface<Mod> l : getListeners()){
+			l.removeElement(mod);
+		}
 		saveMods(modCache, config.getModsListPath());
 	}
 	
@@ -116,7 +115,7 @@ public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 	public synchronized void setUpdateAvailable(URL pageUrl, String newestFileName) {
 		for (Mod mod : getMods()){
 			if (mod.getPageUrl().equals(pageUrl)){
-				modUpdated(mod, false);
+				modUpdated(mod);
 				break;
 			}
 		}
