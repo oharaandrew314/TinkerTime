@@ -17,7 +17,6 @@ public class TinkerConfig {
 	 
 	private static final String
 		GAMEDATA_PATH = "GamaData Path",
-		AUTO_UPDATE_MM = "Auto-Update Module Manager",
 		AUTO_CHECK_FOR_MOD_UPDATES = "Check for Mod Updates on Startup",
 		NUM_CONCURRENT_DOWNLOADS = "Number of Concurrent Downloads";
 		
@@ -29,7 +28,6 @@ public class TinkerConfig {
 	
 	public static TinkerConfig create(){
 		ConfigBuilder builder = new ConfigBuilder();
-		builder.addTrueFalseProperty(AUTO_UPDATE_MM, true, false);
 		builder.addTrueFalseProperty(AUTO_CHECK_FOR_MOD_UPDATES, true, false);
 		builder.addPathProperty(GAMEDATA_PATH, JFileChooser.DIRECTORIES_ONLY, null, false);
 		builder.addIntProperty(NUM_CONCURRENT_DOWNLOADS, 4, 1, null, false);
@@ -62,10 +60,6 @@ public class TinkerConfig {
 	
 	public Path getModsListPath(){
 		return getGameDataPath().resolve("TinkerTime.json");
-	}
-	
-	public boolean autoUpdateModuleManager(){
-		return Boolean.parseBoolean(config.getProperty(AUTO_UPDATE_MM));
 	}
 	
 	public boolean autoCheckForModUpdates(){
