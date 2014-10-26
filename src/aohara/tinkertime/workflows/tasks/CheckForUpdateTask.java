@@ -3,8 +3,9 @@ package aohara.tinkertime.workflows.tasks;
 import java.io.IOException;
 import java.util.Date;
 
+import aohara.common.workflows.Workflow;
 import aohara.common.workflows.Workflow.WorkflowTask;
-import aohara.tinkertime.crawlers.Crawler;
+import aohara.tinkertime.workflows.DownloaderContext;
 
 /**
  * Workflow Task that returns true if an update for a file is available.
@@ -15,17 +16,17 @@ public class CheckForUpdateTask extends WorkflowTask {
 	
 	private final Date lastUpdated;
 	private final String lastFileName;
-	private final Crawler<?> crawler;
+	private final DownloaderContext context;
 
-	public CheckForUpdateTask(Crawler<?> crawler, Date lastUpdated, String lastFileName) {
-		this.crawler = crawler;
+	public CheckForUpdateTask(DownloaderContext context, Date lastUpdated, String lastFileName) {
+		this.context = context;
 		this.lastUpdated = lastUpdated;
 		this.lastFileName = lastFileName;
 	}
 
 	@Override
-	public Boolean call() throws Exception {
-		return crawler.isUpdateAvailable(lastUpdated, lastFileName);
+	public boolean call(Workflow workflow) throws Exception {
+		return context.isUpdateAvailable(lastUpdated, lastFileName);
 	}
 
 	@Override

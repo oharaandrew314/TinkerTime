@@ -17,14 +17,14 @@ import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
  * 
  * @author Andrew O'Hara
  */
-public class CurseCrawler extends ModCrawler<Document> {
+public class CurseCrawler extends Crawler<Document> {
 	
 	public CurseCrawler(URL url, PageLoader<Document> pageLoader){
 		super(url, pageLoader);
 	}
 	
 	@Override
-	protected Date getUpdatedOn() throws IOException {
+	public Date getUpdatedOn() throws IOException {
 		Document mainPage = getPage(getApiUrl());
 		Element ele = mainPage.getElementById("project-overview");
 		ele = ele.getElementsContainingOwnText("Updated").first();
@@ -72,7 +72,7 @@ public class CurseCrawler extends ModCrawler<Document> {
 	}
 
 	@Override
-	protected String getCreator() throws IOException {
+	public String getCreator() throws IOException {
 		Element ele = getPage(getApiUrl()).getElementById("project-overview");
 		ele = ele.getElementsContainingOwnText("Manager").first();
 		return ele.text().split(":")[1].trim();

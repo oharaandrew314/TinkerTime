@@ -18,7 +18,7 @@ import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
  * 
  * @author Andrew O'Hara
  */
-public class GithubCrawler extends ModCrawler<Document> {
+public class GithubCrawler extends Crawler<Document> {
 
 	public GithubCrawler(URL url, PageLoader<Document> pageLoader) {
 		super(url, pageLoader);
@@ -56,7 +56,7 @@ public class GithubCrawler extends ModCrawler<Document> {
 	}
 
 	@Override
-	protected Date getUpdatedOn() throws IOException {
+	public Date getUpdatedOn() throws IOException {
 		Element dateElement = getLatestReleaseElement().select("p.release-authorship time").first();
 		String dateStr = dateElement.attr("datetime");
 		
@@ -78,7 +78,7 @@ public class GithubCrawler extends ModCrawler<Document> {
 	}
 
 	@Override
-	protected String getCreator() throws IOException {
+	public String getCreator() throws IOException {
 		return getLatestReleaseElement().select(" p.release-authorship a").first().text();
 	}
 

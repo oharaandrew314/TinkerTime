@@ -2,29 +2,30 @@ package aohara.tinkertime.workflows.tasks;
 
 import java.io.IOException;
 
+import aohara.common.workflows.Workflow;
 import aohara.common.workflows.Workflow.WorkflowTask;
+import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.controllers.ModUpdateListener;
-import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
-import aohara.tinkertime.crawlers.ModCrawler;
 import aohara.tinkertime.models.Mod;
+import aohara.tinkertime.workflows.ModDownloaderContext;
 
 public class MarkModUpdatedTask extends WorkflowTask {
 	
 	private final ModUpdateListener listener;
-	private final ModCrawler<?> crawler;
+	private final ModDownloaderContext builder;
 	private boolean deleted = false;
 
-	public MarkModUpdatedTask(ModUpdateListener listener, ModCrawler<?> crawler) {
+	public MarkModUpdatedTask(ModUpdateListener listener, ModDownloaderContext builder) {
 		this.listener = listener;
-		this.crawler = crawler;
+		this.builder = builder;
 	}
 	
-	public static MarkModUpdatedTask notifyDeletion(ModUpdateListener listener, Mod mod){
+	public static MarkModUpdatedTask notifyDeletion(ModUpdateListener listener, Mod mod, TinkerConfig config){
 		try {
 			MarkModUpdatedTask task = new MarkModUpdatedTask(
 				listener,
-				new CrawlerFactory().getModCrawler(mod.getPageUrl())
+				ModDownloaderContext.create(mod.getPageUrl(), config)
 			);
 			task.deleted = true;
 			return task;
@@ -34,8 +35,8 @@ public class MarkModUpdatedTask extends WorkflowTask {
 	}
 
 	@Override
-	public Boolean call() throws Exception {
-		listener.modUpdated(crawler.createMod(), deleted);
+	public boolean call(Workflow workflow) throws Exception {
+		listener.modUpdated(builder.createMod(), deleted);
 		return true;
 	}
 

@@ -20,34 +20,16 @@ import aohara.tinkertime.crawlers.pageLoaders.WebpageLoader;
  */
 public class CrawlerFactory {
 	
-	/**
-	 * Creates a ModCrawler based on the given URL.
-	 * 
-	 * An Unsupported host name will throw an Exception.
-	 * 
-	 * @param url url of the page to be crawled
-	 * @return A crawler for crawling the file data on the given url
-	 */
-	public ModCrawler<?> getModCrawler(URL url) throws UnsupportedHostException{
+	public Crawler<?> getCrawler(URL url) throws UnsupportedHostException{
+		String host = url.getHost();
 		
-		String host = url.getHost().toLowerCase();
 		if (host.contains(Constants.HOST_CURSE)){
 			return new CurseCrawler(url, createHtmlLoader());
 		} else if (host.contains(Constants.HOST_GITHUB)){
 			return new GithubCrawler(url, createHtmlLoader());
 		} else if (host.contains(Constants.HOST_KERBAL_STUFF)){
 			return new KerbalStuffCrawler(url, createJsonLoader());
-		}
-		throw new UnsupportedHostException();
-	}
-	
-	public Crawler<?> getCrawler(URL url) throws UnsupportedHostException{
-		try {
-			return getModCrawler(url);
-		} catch (UnsupportedHostException e){}
-		
-		String host = url.getHost();
-		if (host.equals(Constants.HOST_MODULE_MANAGER)){
+		} else if (host.equals(Constants.HOST_MODULE_MANAGER)){
 			try {
 				URL artifactUrl = new URL(Constants.MODULE_MANAGER_ARTIFACT_DL_URL);
 				return new JenkinsCrawler(url, createJsonLoader(), artifactUrl);
@@ -55,6 +37,7 @@ public class CrawlerFactory {
 				throw new RuntimeException(e);
 			}
 		}
+		
 		throw new UnsupportedHostException();
 	}
 	

@@ -22,8 +22,6 @@ import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledException;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledException;
 import aohara.tinkertime.controllers.ModManager.ModNotDownloadedException;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
-import aohara.tinkertime.controllers.fileUpdater.ModuleManagerUpdateController;
-import aohara.tinkertime.controllers.fileUpdater.TinkerTimeUpdateController;
 import aohara.tinkertime.crawlers.Constants;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
@@ -302,40 +300,6 @@ public class Actions {
 				Util.goToHyperlink(new URL("http://tinkertime.uservoice.com"));
 			} catch (IOException e1) {
 				errorMessage(e1.getMessage());
-			}
-		}
-	}
-	
-	@SuppressWarnings("serial")
-	public static class UpdateModuleManagerAction extends TinkerAction {
-		
-		public UpdateModuleManagerAction(JComponent parent, ModManager mm){
-			super("Update Module Manager", null, parent, mm);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			try {
-				new ModuleManagerUpdateController(mm, mm.config).showDialog();
-			} catch (UnsupportedHostException e1) {
-				errorMessage(e1);
-			}
-		}
-	}
-	
-	@SuppressWarnings("serial")
-	public static class UpdateTinkerTimeAction extends TinkerAction {
-		
-		public UpdateTinkerTimeAction(JComponent parent, ModManager mm){
-			super("Update Tinker Time", null, parent, mm);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			try {
-				new TinkerTimeUpdateController(mm).showDialog();
-			} catch (UnsupportedHostException e1) {
-				errorMessage(e1);
 			}
 		}
 	}

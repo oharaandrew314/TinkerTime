@@ -32,21 +32,11 @@ public abstract class Crawler<T> {
 	public abstract String generateId();
 	public abstract URL getDownloadLink() throws IOException;
 	public abstract String getNewestFileName() throws IOException;
-	protected abstract Date getUpdatedOn() throws IOException;
-	
-	public boolean isUpdateAvailable(Date lastUpdated, String lastFileName) {
-		try {
-			if (lastUpdated != null && getUpdatedOn() != null){
-				return getUpdatedOn().compareTo(lastUpdated) > 0;
-			} else if (lastFileName != null){
-				return !getNewestFileName().equals(lastFileName);
-			}
-			return true;
-		} catch (IOException e){
-			e.printStackTrace();
-			return false;
-		}
-	}
+	public abstract Date getUpdatedOn() throws IOException;
+	public abstract URL getImageUrl() throws IOException;
+	public abstract String getName() throws IOException;
+	public abstract String getCreator() throws IOException;
+	public abstract String getSupportedVersion() throws IOException;
 	
 	public URL getPageUrl(){
 		return url;

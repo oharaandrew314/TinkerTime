@@ -48,24 +48,30 @@ public class JenkinsCrawler extends Crawler<JsonObject> {
 		long timestamp = getJson().get("timestamp").getAsLong();
 		return new Date(timestamp);
 	}
-	
-	private boolean isBuildSuccess() throws IOException {
-		String result = getJson().get("result").getAsString();
-		return result != null && result.toLowerCase().equals("success");
-	}
-
-	@Override
-	public boolean isUpdateAvailable(Date lastUpdated, String lastFileName) {
-		try {
-			return isBuildSuccess() && super.isUpdateAvailable(lastUpdated, lastFileName);
-		} catch (IOException e) {
-			return false;
-		}
-	}
 
 	@Override
 	public String generateId() {
 		return getApiUrl().getHost();
+	}
+
+	@Override
+	public URL getImageUrl() throws IOException {
+		return null;
+	}
+
+	@Override
+	public String getName() throws IOException {
+		return "Module Manager";
+	}
+
+	@Override
+	public String getCreator() throws IOException {
+		return "sarbian";
+	}
+
+	@Override
+	public String getSupportedVersion() throws IOException {
+		return null;
 	}
 
 }

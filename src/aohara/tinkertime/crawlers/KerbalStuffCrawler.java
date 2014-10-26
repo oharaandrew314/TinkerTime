@@ -12,7 +12,7 @@ import com.google.gson.JsonObject;
 
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 
-public class KerbalStuffCrawler extends ModCrawler<JsonObject>{
+public class KerbalStuffCrawler extends Crawler<JsonObject>{
 	
 	private static Pattern ID_PATTERN = Pattern.compile("(mod/)(\\d+)(/*)");
 
@@ -74,12 +74,12 @@ public class KerbalStuffCrawler extends ModCrawler<JsonObject>{
 	}
 
 	@Override
-	protected Date getUpdatedOn() throws IOException {
+	public Date getUpdatedOn() throws IOException {
 		return null;  // Not Available
 	}
 
 	@Override
-	protected String getCreator() throws IOException {
+	public String getCreator() throws IOException {
 		return getPage(getApiUrl()).get("author").getAsString();
 	}
 

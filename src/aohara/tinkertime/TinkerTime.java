@@ -8,7 +8,6 @@ import aohara.common.selectorPanel.SelectorPanel;
 import aohara.common.workflows.ProgressPanel;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModStateManager;
-import aohara.tinkertime.controllers.fileUpdater.ModuleManagerUpdateController;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModComparator;
 import aohara.tinkertime.views.TinkerFrame;
@@ -53,12 +52,7 @@ public class TinkerTime {
 
 		// Start Application
 		sm.getMods();  // Load mods (will notify selector panel)
-		try {
-			// Check for ModuleManager Update
-			if (config.autoUpdateModuleManager()){
-				new ModuleManagerUpdateController(mm, config).downloadUpdate(true);
-			}
-			
+		try {			
 			// Check for Mod Updates
 			if (config.autoCheckForModUpdates()){
 				mm.checkForModUpdates();

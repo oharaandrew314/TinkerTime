@@ -2,37 +2,32 @@ package aohara.tinkertime.workflows;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import thirdParty.ZipNode;
 import aohara.common.workflows.ConflictResolver;
 import aohara.common.workflows.WorkflowBuilder;
 import aohara.common.workflows.tasks.UnzipTask;
-import aohara.common.workflows.tasks.gen.GenFactory;
-import aohara.common.workflows.tasks.gen.PathGen;
-import aohara.common.workflows.tasks.gen.URLGen;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.controllers.ModStateManager;
-import aohara.tinkertime.crawlers.Crawler;
-import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
-import aohara.tinkertime.crawlers.ModCrawler;
 import aohara.tinkertime.models.FileUpdateListener;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
 import aohara.tinkertime.models.UpdateableFile;
 import aohara.tinkertime.workflows.tasks.CacheCrawlerPageTask;
 import aohara.tinkertime.workflows.tasks.CheckForUpdateTask;
+import aohara.tinkertime.workflows.tasks.CrawlerDownloadTask;
 import aohara.tinkertime.workflows.tasks.MarkModEnabledTask;
 import aohara.tinkertime.workflows.tasks.MarkModUpdatedTask;
+import aohara.tinkertime.workflows.tasks.MoveCrawlerDownloadToDestTask;
 import aohara.tinkertime.workflows.tasks.NotfiyUpdateAvailableTask;
 
 public class ModWorkflowBuilder extends WorkflowBuilder {
 	
-	private final CrawlerFactory factory = new CrawlerFactory();
+	public static enum ModDownloadType { Page, File, Image };
 	
 	public ModWorkflowBuilder(String workflowName) {
 		super(workflowName);
@@ -42,50 +37,37 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	 * Notifies the listeners if an update is available for the given file
 	 */
 	public void checkForUpdates(UpdateableFile file, FileUpdateListener... listeners) throws IOException, UnsupportedHostException {	
-		Crawler<?> crawler = factory.getCrawler(file.getPageUrl());
-		
-		addTask(new CacheCrawlerPageTask(crawler));
-		addTask(new CheckForUpdateTask(crawler, file.getUpdatedOn(), file.getNewestFileName()));
-		addTask(new NotfiyUpdateAvailableTask(crawler, listeners));
+		DownloaderContext context = DirectDownloaderContext.fromUrl(file.getPageUrl(), null, null);
+		addTask(new CacheCrawlerPageTask(context));
+		addTask(new CheckForUpdateTask(context, file.getUpdatedOn(), file.getNewestFileName()));
+		addTask(new NotfiyUpdateAvailableTask(context.crawler, listeners));
 	}
 	
 	/**
 	 * Notifies the listener of the file's latest version available.
 	 */
 	public void checkLatestVersion(UpdateableFile file, FileUpdateListener... listeners) throws UnsupportedHostException {
-		Crawler<?> crawler = factory.getCrawler(file.getPageUrl());
-		addTask(new CacheCrawlerPageTask(crawler));
-		addTask(new NotfiyUpdateAvailableTask(crawler, listeners));
-	}
-	
-	/**
-	 * Downloads the file if a newer version is available.
-	 */
-	public void downloadFileIfNewer(UpdateableFile file, PathGen dest) throws UnsupportedHostException, IOException{
-		Crawler<?> crawler = factory.getCrawler(file.getPageUrl());
-		
-		addTask(new CacheCrawlerPageTask(crawler));
-		addTask(new CheckForUpdateTask(crawler, file.getUpdatedOn(), file.getNewestFileName()));
-		tempDownload(downloadLinkGen(crawler), dest);
-	}
-	
-	/**
-	 * Downloads the latest version of the file
-	 */
-	public void downloadFile(Crawler<?> crawler, PathGen dest) throws IOException {
-		addTask(new CacheCrawlerPageTask(crawler));
-		tempDownload(downloadLinkGen(crawler), dest);
+		DownloaderContext context = DirectDownloaderContext.fromUrl(file.getPageUrl(), null, null);
+		addTask(new CacheCrawlerPageTask(context));
+		addTask(new NotfiyUpdateAvailableTask(context.crawler, listeners));
 	}
 	
 	/**
 	 * Downloads the latest version of the mod referenced by the URL.
 	 */
 	public void downloadMod(URL pageUrl, TinkerConfig config, ModStateManager sm) throws IOException, UnsupportedHostException {
-		ModCrawler<?> crawler = factory.getModCrawler(pageUrl);
-		downloadFile(crawler, modZipPathGen(crawler, config));
-		addTask(new MarkModUpdatedTask(sm, crawler));
-		download(modImageLinkGen(crawler), modImageCacheGen(crawler, config));
-		addTask(new MarkModUpdatedTask(sm, crawler));
+		ModDownloaderContext context = ModDownloaderContext.create(pageUrl, config);
+		addTask(new CacheCrawlerPageTask(context));
+		downloadWithCrawler(context, ModDownloadType.File);
+		downloadWithCrawler(context, ModDownloadType.Image);
+		addTask(new MarkModUpdatedTask(sm, context));
+	}
+	
+	private void downloadWithCrawler(DownloaderContext context, ModDownloadType type) throws IOException{
+		Path temp = Files.createTempFile("temp", ".download");
+		temp.toFile().deleteOnExit();
+		addTask(new CrawlerDownloadTask(context.crawler, type, temp));
+		addTask(new MoveCrawlerDownloadToDestTask(context, type, temp));
 	}
 	
 	/**
@@ -94,17 +76,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	 * @param config
 	 */
 	public void deleteModZip(final Mod mod, final TinkerConfig config){
-		delete(new PathGen(){
-			@Override
-			public URI getURI() throws URISyntaxException {
-				return getPath().toUri();
-			}
-
-			@Override
-			public Path getPath() {
-				return mod.getCachedZipPath(config);
-			}
-		});
+		delete(mod.getCachedZipPath(config));
 	}
 	
 	/**
@@ -115,15 +87,15 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	 */
 	public void deleteMod(Mod mod, TinkerConfig config, ModStateManager sm) {
 		deleteModZip(mod, config);
-		delete(GenFactory.fromPath(mod.getCachedImagePath(config)));
-		addTask(MarkModUpdatedTask.notifyDeletion(sm, mod));
+		delete(mod.getCachedImagePath(config));
+		addTask(MarkModUpdatedTask.notifyDeletion(sm, mod, config));
 	}
 	
 	public void disableMod(Mod mod, TinkerConfig config, ModStateManager sm) throws IOException{
 		for (ZipNode module : ModStructure.inspectArchive(config, mod).getModules()){
 			
 			if (!isDependency(module, config, sm)){
-				delete(GenFactory.fromPath(config.getGameDataPath().resolve(module.getName())));
+				delete(config.getGameDataPath().resolve(module.getName()));
 			}
 		}
 		addTask(new MarkModEnabledTask(mod, sm, false));
@@ -149,80 +121,5 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 			} catch (FileNotFoundException ex){}
 		}
 		return numDependencies > 1;
-	}
-	
-	// Generators
-	
-	public static URLGen downloadLinkGen(final Crawler<?> crawler){
-		return new URLGen(){
-			@Override
-			public URI getURI() throws URISyntaxException {
-				return getURL().toURI();
-			}
-
-			@Override
-			public URL getURL() {
-				try {
-					return crawler.getDownloadLink();
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		};
-	}
-	
-	private static PathGen modZipPathGen(final ModCrawler<?> crawler, final TinkerConfig config) throws IOException{
-		return new PathGen(){
-			@Override
-			public URI getURI() throws URISyntaxException {
-				return getPath().toUri();
-			}
-
-			@Override
-			public Path getPath() {
-				try {
-					return crawler.createMod().getCachedZipPath(config);
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		};
-	}
-	
-	private static URLGen modImageLinkGen(final ModCrawler<?> crawler){
-		return new URLGen(){
-			@Override
-			public URI getURI() throws URISyntaxException {
-				URL url = getURL();
-				return url != null ? url.toURI() : null;
-			}
-
-			@Override
-			public URL getURL() {
-				try {
-					return crawler.getImageUrl();
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		};
-	}
-	
-	private static PathGen modImageCacheGen(final ModCrawler<?> crawler, final TinkerConfig config){
-		return new PathGen(){
-			@Override
-			public URI getURI() throws URISyntaxException {
-				return getPath().toUri();
-			}
-
-			@Override
-			public Path getPath() {
-				try {
-					return crawler.createMod().getCachedImagePath(config);
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		};
 	}
 }

@@ -5,8 +5,8 @@ import java.nio.file.Paths;
 
 import javax.swing.JFileChooser;
 
-import aohara.common.config.Config;
 import aohara.common.config.ConfigBuilder;
+import aohara.common.config.GuiConfig;
 
 /**
  * Stores and Retrieves User Configuration Data.
@@ -21,9 +21,9 @@ public class TinkerConfig {
 		AUTO_CHECK_FOR_MOD_UPDATES = "Check for Mod Updates on Startup",
 		NUM_CONCURRENT_DOWNLOADS = "Number of Concurrent Downloads";
 		
-	private final Config config;
+	private final GuiConfig config;
 	
-	protected TinkerConfig(Config config){
+	protected TinkerConfig(GuiConfig config){
 		this.config = config;
 	}
 	
@@ -34,7 +34,7 @@ public class TinkerConfig {
 		builder.addPathProperty(GAMEDATA_PATH, JFileChooser.DIRECTORIES_ONLY, null, false);
 		builder.addIntProperty(NUM_CONCURRENT_DOWNLOADS, 4, 1, null, false);
 		
-		Config config = builder.createConfigInDocuments(TinkerTime.NAME, "TinkerTime.properties");
+		GuiConfig config = builder.createGuiConfigInDocuments("TinkerTime Config", TinkerTime.NAME, "TinkerTime.json");
 		if (!config.isValid()){
 			config.openOptionsWindow(false, true);
 		}
@@ -76,8 +76,6 @@ public class TinkerConfig {
 		return Integer.parseInt(config.getProperty(NUM_CONCURRENT_DOWNLOADS));
 	}
 	
-	
-
 	// -- Verification ----------------------------------------------------
 	
 	public void updateConfig(boolean restartOnSuccess, boolean exitOnCancel){
