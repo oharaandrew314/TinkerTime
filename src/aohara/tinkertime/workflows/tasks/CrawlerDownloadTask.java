@@ -25,7 +25,6 @@ public class CrawlerDownloadTask extends WorkflowTask {
 	
 	private URL getUrl() throws IOException{
 		switch(type){
-		case Page: return crawler.getApiUrl();
 		case File: return crawler.getDownloadLink();
 		case Image: return crawler.getImageUrl();
 		default: return null;

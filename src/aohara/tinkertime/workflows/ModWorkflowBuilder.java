@@ -27,7 +27,7 @@ import aohara.tinkertime.workflows.tasks.NotfiyUpdateAvailableTask;
 
 public class ModWorkflowBuilder extends WorkflowBuilder {
 	
-	public static enum ModDownloadType { Page, File, Image };
+	public static enum ModDownloadType { File, Image };
 	
 	public ModWorkflowBuilder(String workflowName) {
 		super(workflowName);
@@ -58,16 +58,20 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	public void downloadMod(URL pageUrl, TinkerConfig config, ModStateManager sm) throws IOException, UnsupportedHostException {
 		ModDownloaderContext context = ModDownloaderContext.create(pageUrl, config);
 		addTask(new CacheCrawlerPageTask(context));
-		downloadWithCrawler(context, ModDownloadType.File);
-		downloadWithCrawler(context, ModDownloadType.Image);
+		
+		// Download File
+		Path tempFile = Files.createTempFile("temp", ".download");
+		tempFile.toFile().deleteOnExit();
+		addTask(new CrawlerDownloadTask(context.crawler, ModDownloadType.File, tempFile));
+		addTask(new MoveCrawlerDownloadToDestTask(context, ModDownloadType.File, tempFile));
+		
+		// Download Image
+		Path tempImage = Files.createTempFile("temp", ".download");
+		tempImage.toFile().deleteOnExit();
+		addTask(new CrawlerDownloadTask(context.crawler, ModDownloadType.Image, tempImage));
+		addTask(new MoveCrawlerDownloadToDestTask(context, ModDownloadType.Image, tempImage));
+		
 		addTask(new MarkModUpdatedTask(sm, context));
-	}
-	
-	private void downloadWithCrawler(DownloaderContext context, ModDownloadType type) throws IOException{
-		Path temp = Files.createTempFile("temp", ".download");
-		temp.toFile().deleteOnExit();
-		addTask(new CrawlerDownloadTask(context.crawler, type, temp));
-		addTask(new MoveCrawlerDownloadToDestTask(context, type, temp));
 	}
 	
 	/**
