@@ -8,12 +8,12 @@ import java.net.URL;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.crawlers.CurseCrawler;
 import aohara.tinkertime.crawlers.GithubCrawler;
 import aohara.tinkertime.crawlers.KerbalStuffCrawler;
-import aohara.tinkertime.crawlers.ModCrawler;
 
 public class TestCrawlerFactory {
 	
@@ -24,9 +24,9 @@ public class TestCrawlerFactory {
 		factory = new CrawlerFactory();
 	}
 	
-	private void test(String url, Class<? extends ModCrawler<?>> crawlerClass){
+	private void test(String url, Class<? extends Crawler<?>> crawlerClass){
 		try {
-			assertTrue(crawlerClass.isInstance(factory.getModCrawler(new URL(url))));
+			assertTrue(crawlerClass.isInstance(factory.getCrawler(new URL(url))));
 		} catch (MalformedURLException | UnsupportedHostException e) {
 			throw new RuntimeException(e);
 		}

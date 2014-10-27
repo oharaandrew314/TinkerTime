@@ -37,7 +37,11 @@ public class TestModStateManager {
 	}
 	
 	private void update(Mod mod, boolean deleted){
-		stateManager.modUpdated(mod, deleted);
+		if (deleted){
+			stateManager.modDeleted(mod);
+		} else {
+			stateManager.modUpdated(mod);
+		}
 		mods = new ArrayList<Mod>(stateManager.getMods());
 	}
 

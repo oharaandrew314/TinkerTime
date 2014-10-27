@@ -7,7 +7,7 @@ import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 
-import test.util.MockCrawlerFactory;
+import test.util.ModLoader;
 import test.util.ModStubs;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
@@ -18,7 +18,7 @@ public abstract class AbstractTestModCrawler {
 		ModStubs stub, String id, Date updatedOn, String creator,
 		String newestFile, String downloadLink, String imageLink, String supportedVersion
 	) throws IOException, UnsupportedHostException {
-		Mod actualMod = new MockCrawlerFactory().getModCrawler(stub.url).createMod();
+		Mod actualMod = ModLoader.loadMod(stub);
 		
 		Mod expectedMod = new Mod(
 			id,

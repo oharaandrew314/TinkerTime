@@ -5,9 +5,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Calendar;
 
 import thirdParty.ZipNode;
 import aohara.tinkertime.TinkerConfig;
+import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
@@ -16,7 +18,13 @@ public class ModLoader {
 	
 	public static MockMod loadMod(ModStubs stub) throws UnsupportedHostException{
 		try {
-			Mod mod = new MockCrawlerFactory().getModCrawler(stub.url).createMod();
+			Crawler<?> crawler = new MockCrawlerFactory().getCrawler(stub.url);
+			Mod mod = new Mod(
+				crawler.generateId(), crawler.getName(), crawler.getNewestFileName(),
+				crawler.getCreator(), crawler.getImageUrl(), crawler.getPageUrl(),
+				crawler.getUpdatedOn() != null ? crawler.getUpdatedOn() : Calendar.getInstance().getTime(),
+				crawler.getSupportedVersion()
+			);
 			return new MockMod(mod);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
