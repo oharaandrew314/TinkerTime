@@ -52,7 +52,7 @@ public class ModStructure {
 		return inspectArchive(mod.getCachedZipPath(config));
 	}
 	
-	public static ModStructure inspectArchive(final Path zipPath) throws IOException {		
+	public static ModStructure inspectArchive(final Path zipPath) throws IOException {
 		try(ZipFile zipFile = new ZipFile(zipPath.toFile())){
 			ZipNode root = ZipNode.fromZipFile(zipFile); // Get structure of zip
 			
