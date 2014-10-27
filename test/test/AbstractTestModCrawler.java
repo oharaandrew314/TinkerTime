@@ -1,6 +1,7 @@
 package test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.URL;
@@ -36,9 +37,8 @@ public abstract class AbstractTestModCrawler {
 		assertEquals(expectedMod.getCreator(), actualMod.getCreator());
 		assertEquals(expectedMod.getImageUrl(), actualMod.getImageUrl());
 		assertEquals(expectedMod.getPageUrl(), actualMod.getPageUrl());
-		assertEquals(
-			expectedMod.getUpdatedOn() != null ? expectedMod.getUpdatedOn().toString() : null,
-			actualMod.getUpdatedOn() != null ? actualMod.getUpdatedOn().toString() : null			
+		assertTrue(
+			expectedMod.getUpdatedOn().compareTo(actualMod.getUpdatedOn()) < 100
 		);
 	}
 	
