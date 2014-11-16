@@ -12,6 +12,10 @@ Beta (Nearing Feature Completion)
 ### Description
 Tinker Time is a Mod Manager for Kerbal Space Program that will allow you to automatically update, enable, and disable all of your mods.  All you have to do is enter the URL to the mod webpage, and Tinker Time will do the rest of the work for you.  It will even manage your ModuleManager Installation for you. :)
 
+### Requirements
+- [Oracle Java 7](https://java.com/en/download/index.jsp) or better
+  - OpenJDK is not supported, but it may work (however the missing Nimbus UI will default to Metal UI)
+
 #### Supported Mod Hosting Sites
 - Curse
 - Github (when compiled versions are released)
