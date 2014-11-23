@@ -59,11 +59,13 @@ public class TinkerTime {
 		frame.add(MenuFactory.createToolBar(mm), BorderLayout.NORTH);
 		frame.add(sp.getComponent(), BorderLayout.CENTER);
 		frame.add(pp.getComponent(), BorderLayout.SOUTH);
-		frame.pack();
-		frame.setVisible(true);
 
 		// Start Application
 		sm.getMods();  // Load mods (will notify selector panel)
+		
+		frame.pack();
+		frame.setVisible(true);
+		
 		try {
 			// Check for ModuleManager Update
 			if (config.autoUpdateModuleManager()){
