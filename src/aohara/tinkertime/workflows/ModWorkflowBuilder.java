@@ -104,7 +104,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	}
 	
 	public void disableMod(Mod mod, TinkerConfig config, ModStateManager sm) throws IOException{
-		if (modHasArchive(mod)){
+		if (modHasArchive(mod, config)){			
 			for (ZipNode module : ModStructure.inspectArchive(config, mod).getModules()){
 				
 				if (!isDependency(module, config, sm)){
@@ -118,7 +118,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	}
 	
 	public void enableMod(Mod mod, TinkerConfig config, ModStateManager sm, ConflictResolver cr) throws IOException{
-		if (modHasArchive(mod)){
+		if (modHasArchive(mod, config)){
 			ModStructure structure = ModStructure.inspectArchive(config, mod);
 			for (ZipNode module : structure.getModules()){
 				addTask(new UnzipTask(config.getGameDataPath(), module, cr));
@@ -136,7 +136,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		int numDependencies = 0;
 		for (Mod mod : sm.getMods()){
 			try {
-				if (mod.isEnabled() && modHasArchive(mod) && ModStructure.inspectArchive(config, mod).usesModule(module)){
+				if (mod.isEnabled() && modHasArchive(mod, config) && ModStructure.inspectArchive(config, mod).usesModule(module)){
 					numDependencies++;
 				}
 			} catch (FileNotFoundException ex){}
@@ -144,7 +144,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		return numDependencies > 1;
 	}
 	
-	private boolean modHasArchive(Mod mod){
-		return mod.getNewestFileName().toLowerCase().endsWith(".zip");
+	private boolean modHasArchive(Mod mod, TinkerConfig config){
+		return mod.getNewestFileName().toLowerCase().endsWith(".zip") && mod.isDownloaded(config);
 	}
 }

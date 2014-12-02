@@ -6,7 +6,6 @@ import aohara.common.workflows.Workflow;
 import aohara.common.workflows.Workflow.WorkflowTask;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.controllers.ModUpdateListener;
-import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.workflows.ModDownloaderContext;
 
@@ -50,16 +49,9 @@ public class MarkModUpdatedTask extends WorkflowTask {
 	}
 	
 	public static MarkModUpdatedTask notifyDeletion(ModUpdateListener listener, Mod mod, TinkerConfig config){
-		try {
-			MarkModUpdatedTask task = createFromDownloaderContext(
-				listener,
-				ModDownloaderContext.create(mod.getPageUrl(), config)
-			);
-			task.deleted = true;
-			return task;
-		} catch (UnsupportedHostException e) {
-			throw new IllegalStateException("This should not happen");
-		}
+		MarkModUpdatedTask task = createFromMod(listener, mod);
+		task.deleted = true;
+		return task;
 	}
 
 	@Override

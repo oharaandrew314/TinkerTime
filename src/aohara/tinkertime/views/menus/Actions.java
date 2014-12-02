@@ -18,11 +18,11 @@ import aohara.common.content.ImageManager;
 import aohara.common.workflows.tasks.BrowserGoToTask;
 import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.controllers.ModManager;
-import aohara.tinkertime.controllers.ModManager.CannotDisableModException;
-import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledException;
-import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledException;
-import aohara.tinkertime.controllers.ModManager.ModNotDownloadedException;
-import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
+import aohara.tinkertime.controllers.ModManager.CannotDisableModError;
+import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledError;
+import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledError;
+import aohara.tinkertime.controllers.ModManager.ModNotDownloadedError;
+import aohara.tinkertime.controllers.ModManager.ModUpdateFailedError;
 import aohara.tinkertime.crawlers.Constants;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.DefaultMods;
@@ -49,14 +49,13 @@ class Actions {
 			putValue(Action.SHORT_DESCRIPTION, title);
 		}
 		
-		protected void errorMessage(Exception ex){
+		protected void errorMessage(Throwable ex){
 			ex.printStackTrace();
-			errorMessage(ex.toString());
+			errorMessage(ex.getClass().getSimpleName() + " - " + ex.getMessage());
 		}
 		
 		protected void errorMessage(String message){
-			JOptionPane.showMessageDialog(
-				null, message, "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	
@@ -91,10 +90,10 @@ class Actions {
 			} catch(MalformedURLException ex){
 				try {
 					mm.downloadMod(new URL("http://" + urlString));
-				} catch (MalformedURLException | ModUpdateFailedException| UnsupportedHostException e) {
+				} catch (MalformedURLException | ModUpdateFailedError| UnsupportedHostException e) {
 					errorMessage(ex);
 				}
-			} catch (UnsupportedHostException | ModUpdateFailedException ex) {
+			} catch (UnsupportedHostException | ModUpdateFailedError ex) {
 				errorMessage(ex);
 			}
 		}
@@ -126,7 +125,7 @@ class Actions {
 					) == JOptionPane.YES_OPTION){
 						mm.deleteMod(selectedMod);
 					}
-				} catch (CannotDisableModException | IOException e1) {
+				} catch (CannotDisableModError | IOException e1) {
 					errorMessage(selectedMod.getName() + " could not be disabled.");
 				}
 			}
@@ -149,7 +148,7 @@ class Actions {
 			if (mm.getSelectedMod() != null){
 				try {
 					mm.updateMod(mm.getSelectedMod());
-				} catch (ModUpdateFailedException e1) {
+				} catch (ModUpdateFailedError e1) {
 					errorMessage(e1);
 				}
 			}
@@ -167,7 +166,7 @@ class Actions {
 		public void actionPerformed(ActionEvent e) {
 			try {
 				mm.updateMods();
-			} catch (ModUpdateFailedException e1) {
+			} catch (ModUpdateFailedError e1) {
 				errorMessage("One or more mods failed to update");
 			}
 		}
@@ -204,13 +203,13 @@ class Actions {
 			if (selectedMod != null && selectedMod.isEnabled()){
 				try {
 					mm.disableMod(selectedMod);
-				} catch (ModAlreadyDisabledException | IOException e1) {
+				} catch (ModAlreadyDisabledError | IOException e1) {
 					errorMessage(e1);
 				}
 			} else if (selectedMod != null){
 				try {
 					mm.enableMod(selectedMod);
-				} catch (ModAlreadyEnabledException | ModNotDownloadedException | IOException e1) {
+				} catch (ModAlreadyEnabledError | ModNotDownloadedError | IOException e1) {
 					errorMessage(e1);
 				}
 			}

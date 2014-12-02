@@ -99,7 +99,11 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		enablerExecutor.execute(workflow);
 	}
 	
-	public void updateMod(Mod mod) throws ModUpdateFailedException {
+	public void updateMod(Mod mod) throws ModUpdateFailedError {
+		if (mod.getPageUrl() == null){
+			throw new ModUpdateFailedError(mod, "Mod is a local zip only, and cannot be updated.");
+		}
+		
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Updating " + mod.getName());
 		try {
 			// Cleanup operations prior to update
@@ -113,17 +117,17 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 			builder.downloadMod(mod.getPageUrl(), config, sm);
 			submitDownloadWorkflow(builder.buildWorkflow());
 		} catch (IOException | UnsupportedHostException e) {
-			throw new ModUpdateFailedException(e);
+			throw new ModUpdateFailedError(e);
 		}
 	}
 	
-	public void downloadMod(URL url) throws ModUpdateFailedException, UnsupportedHostException {
+	public void downloadMod(URL url) throws ModUpdateFailedError, UnsupportedHostException {
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Downloading " + FilenameUtils.getBaseName(url.toString()));
 		try {
 			builder.downloadMod(url, config, sm);
 			submitDownloadWorkflow(builder.buildWorkflow());
 		} catch (IOException e) {
-			throw new ModUpdateFailedException(e);
+			throw new ModUpdateFailedError(e);
 		}
 	}
 	
@@ -133,17 +137,17 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		submitDownloadWorkflow(builder.buildWorkflow());
 	}
 	
-	public void updateMods() throws ModUpdateFailedException{
+	public void updateMods() throws ModUpdateFailedError{
 		for (Mod mod : sm.getMods()){
 			updateMod(mod);
 		}
 	}
 	
-	public void enableMod(Mod mod) throws ModAlreadyEnabledException, ModNotDownloadedException, IOException {
+	public void enableMod(Mod mod) throws ModAlreadyEnabledError, ModNotDownloadedError, IOException {
 		if (mod.isEnabled()){
-			throw new ModAlreadyEnabledException();
+			throw new ModAlreadyEnabledError();
 		} else if (!mod.isDownloaded(config)){
-			throw new ModNotDownloadedException();
+			throw new ModNotDownloadedError(mod, "Cannot enable since not downloaded");
 		}
 		
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Enabling " + mod);
@@ -151,9 +155,9 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		submitEnablerWorkflow(builder.buildWorkflow());
 	}
 	
-	public void disableMod(Mod mod) throws ModAlreadyDisabledException, IOException {
+	public void disableMod(Mod mod) throws ModAlreadyDisabledError, IOException {
 		if (!mod.isEnabled()){
-			throw new ModAlreadyDisabledException();
+			throw new ModAlreadyDisabledError();
 		}
 		
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Disabling " + mod);
@@ -161,9 +165,9 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		submitEnablerWorkflow(builder.buildWorkflow());
 	}
 	
-	public void deleteMod(Mod mod) throws CannotDisableModException, IOException {
+	public void deleteMod(Mod mod) throws CannotDisableModError, IOException {
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Deleting " + mod);
-		builder.deleteMod(mod, config, sm);		
+		builder.deleteMod(mod, config, sm);
 		submitEnablerWorkflow(builder.buildWorkflow());
 	}
 	
@@ -192,20 +196,27 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		sm.exportEnabledMods(path);
 	}
 	
-	// -- Exceptions ------------------------------------------------------
+	// -- Exceptions/Errors --------------------------------------------------
 	
 	@SuppressWarnings("serial")
-	public static class ModAlreadyEnabledException extends Exception {}
+	public static class ModAlreadyEnabledError extends Error {}
 	@SuppressWarnings("serial")
-	public static class ModAlreadyDisabledException extends Exception {}
+	public static class ModAlreadyDisabledError extends Error {}
 	@SuppressWarnings("serial")
-	public static class ModNotDownloadedException extends Exception {}
+	public static class ModNotDownloadedError extends Error {
+		private ModNotDownloadedError(Mod mod, String message){
+			super("Error for " + mod + ": " + message);
+		}
+	}
 	@SuppressWarnings("serial")
-	public static class CannotDisableModException extends Exception {}
+	public static class CannotDisableModError extends Error {}
 	@SuppressWarnings("serial")
-	public static class ModUpdateFailedException extends Exception {
-		private ModUpdateFailedException(Exception e){
+	public static class ModUpdateFailedError extends Error {
+		private ModUpdateFailedError(Exception e){
 			super(e);
+		}
+		private ModUpdateFailedError(Mod mod, String message){
+			super("Error for " + mod + ": " + message);
 		}
 	}
 }
