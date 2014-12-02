@@ -2,7 +2,7 @@ TinkerTime
 ==========
 
 Automatically Updating Mod Manager for Kerbal Space Program
- 
+
 ### Development Status
 
 Master: [![Build Status](https://travis-ci.org/oharaandrew314/TinkerTime.svg?branch=master)](https://travis-ci.org/oharaandrew314/TinkerTime)
@@ -30,6 +30,15 @@ The [Tinker Time Wiki](https://github.com/oharaandrew314/TinkerTime/wiki) contai
 - Beta Testers ([foonix](https://github.com/foonix) and [jcsntoll](https://github.com/jcsntoll))
 
 ### Change Log
+v1.0
+- Full Adoption of glyphicons
+- Fixed issue where variations of supported domains were not supported. e.g. beta.kerbalstuff.com
+- Export data for enabled mods
+- Fixed issue where mod list would not always load on startup
+- Will now delete old images and zip when updating or deleting mods
+- Module Manager to be considered an updateable (but permanent) mod
+- Simplify Tinker Time Updater
+
 v0.7
 - KerbalStuff Mod Support
 - Graphical Toolbar
@@ -52,6 +61,6 @@ v0.6
 v0.5
 - Initial Release
 - Curse.com support
- 
+
 ### License
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/InteractiveResource" property="dct:title" rel="dct:type">Tinker Time</span> by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Andrew O'Hara</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.<br />Based on a work at <a xmlns:dct="http://purl.org/dc/terms/" href="https://github.com/oharaandrew314/TinkerTime" rel="dct:source">https://github.com/oharaandrew314/TinkerTime</a>.
