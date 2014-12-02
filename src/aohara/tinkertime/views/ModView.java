@@ -50,6 +50,11 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 			// Set Border
 			panel.setBorder(BorderFactory.createTitledBorder(mod.getName() + " - by " + mod.getCreator()));
 			
+			// Warning if non-updateable
+			if (!mod.isUpdateable()){
+				panel.add(new JLabel("<html><b>Warning:</b> Local File Only.  Not updateable.</html>"));
+			}
+			
 			// Supported KSP Version
 			String kspVersion =  mod.getSupportedVersion();
 			panel.add(new JLabel("KSP Version: " + (kspVersion != null ? kspVersion : "Unknown")));

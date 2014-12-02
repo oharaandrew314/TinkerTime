@@ -86,6 +86,10 @@ public class Mod implements FileUpdateListener {
 		return supportedVersion;
 	}
 	
+	public boolean isUpdateable(){
+		return getPageUrl() != null;
+	}
+	
 	// -- Other Methods --------------------
 	
 	public boolean isEnabled(){
