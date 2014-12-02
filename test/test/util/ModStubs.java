@@ -10,7 +10,7 @@ public enum ModStubs {
 	Mechjeb("MechJeb", "http://www.curse.com/ksp-mods/kerbal/220221-mechjeb"),
 	AlarmClock("Kerbal Alarm Clock", "http://www.curse.com/ksp-mods/kerbal/220289-kerbal-alarm-clock"),
 	NavBall("Enhanced Navball", "http://www.curse.com/ksp-mods/kerbal/220469-enhanced-navball-v1-2"),
-	HotRockets("HotRockets", "http://www.curse.com/ksp-mods/kerbal/220207-hotrockets-particle-fx-replacement"),
+	HotRockets("HotRockets! Particle FX Replacement", "http://www.curse.com/ksp-mods/kerbal/220207-hotrockets-particle-fx-replacement"),
 	Eve("EnvironmentalVisualEnhancements", "https://github.com/rbray89/EnvironmentalVisualEnhancements"),
 	ProceduralFairings("ProceduralFairings", "https://github.com/e-dog/ProceduralFairings"),
 	Near("NEAR", "https://github.com/ferram4/Ferram-Aerospace-Research"),

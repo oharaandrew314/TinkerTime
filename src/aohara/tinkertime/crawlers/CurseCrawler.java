@@ -38,10 +38,17 @@ public class CurseCrawler extends Crawler<Document> {
 	
 	@Override
 	public String getNewestFileName() throws IOException{
+		// Get File Name From Main Page
 		Document mainPage = getPage(getApiUrl());
 		Element ele = mainPage.getElementById("project-overview");
 		ele = ele.getElementsContainingOwnText("Newest File").first();
-		return ele.text().split(":")[1].trim();
+		
+		// Add zip extension if author did not add it
+		String fileName = ele.text().split(":")[1].trim();
+		if (!fileName.toLowerCase().endsWith(".zip")){
+			fileName += ".zip";
+		}
+		return fileName;
 	}
 	
 	@Override

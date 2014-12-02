@@ -39,5 +39,20 @@ public class TestCurseCrawler extends AbstractTestModCrawler {
 			"0.24.2"
 		);
 	}
+	
+	@Test
+	public void testHotRockets() throws IOException, UnsupportedHostException {
+		compare(
+			ModStubs.HotRockets,
+			"220207-hotrockets-particle-fx-replacement",
+			getDate(2014, 4, 12),
+			"Nazari1382",
+			"HotRockets for 0.25.zip",
+			"",
+			"http://media-curse.cursecdn.com/attachments/thumbnails/110/932/"
+			+ "190/130/313962a1a7206912f215151ea7f7b8d8.png",
+			"0.24.2"
+		);
+	}
 
 }
