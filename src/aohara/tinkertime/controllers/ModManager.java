@@ -69,12 +69,6 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	
 	// -- Listeners -----------------------
 	
-	public void notifyModUpdated(Mod mod){
-		for (ModUpdateListener l : getListeners()){
-			l.modUpdated(mod);
-		}
-	}
-	
 	@Override
 	public void elementClicked(Mod mod, int numTimes) throws Exception{
 		if (numTimes == 2){
@@ -201,8 +195,6 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	// -- Exceptions ------------------------------------------------------
 	
 	@SuppressWarnings("serial")
-	public static class CannotAddModException extends Exception {}
-	@SuppressWarnings("serial")
 	public static class ModAlreadyEnabledException extends Exception {}
 	@SuppressWarnings("serial")
 	public static class ModAlreadyDisabledException extends Exception {}
@@ -211,10 +203,8 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	@SuppressWarnings("serial")
 	public static class CannotDisableModException extends Exception {}
 	@SuppressWarnings("serial")
-	public static class CannotEnableModException extends Exception {}
-	@SuppressWarnings("serial")
 	public static class ModUpdateFailedException extends Exception {
-		public ModUpdateFailedException(Exception e){
+		private ModUpdateFailedException(Exception e){
 			super(e);
 		}
 	}

@@ -11,7 +11,7 @@ import java.net.URL;
 public class Constants {
 	
 	// Host Names
-	public static final String
+	static final String
 		HOST_CURSE = "curse.com",
 		HOST_GITHUB = "github.com",
 		HOST_MODULE_MANAGER = "ksp.sarbian.com",

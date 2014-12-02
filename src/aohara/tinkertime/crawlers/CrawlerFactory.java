@@ -54,7 +54,7 @@ public class CrawlerFactory {
 		
 		private final String host;
 		
-		public UnsupportedHostException(String host){
+		private UnsupportedHostException(String host){
 			this.host = host;
 		}
 		

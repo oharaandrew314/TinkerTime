@@ -17,7 +17,7 @@ import aohara.tinkertime.crawlers.Crawler;
  */
 public class WebpageLoader implements PageLoader<Document>{
 	
-	public static final int TIMEOUT_MS = 10000;
+	private static final int TIMEOUT_MS = 10000;
 		
 	private final Map<URL, Document> documentCache = new HashMap<>();
 	

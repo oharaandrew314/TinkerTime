@@ -24,10 +24,6 @@ public class UrlPanel extends MouseAdapter implements DecoratedComponent<JLabel>
 	private final URL url;
 	private final JLabel label = new JLabel();
 	
-	public UrlPanel(URL url){
-		this(url.toString(), url);
-	}
-	
 	public UrlPanel(String text, URL url){
 		this.url = url;
 		label.setText(url != null ? String.format("<html><a href='%s'>%s</a></html>", url.toString(), text) : "");

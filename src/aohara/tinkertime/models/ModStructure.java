@@ -25,12 +25,10 @@ import thirdParty.ZipNode;
  */
 public class ModStructure {
 	
-	public final String readmeText;
 	private final Set<ZipNode> modules;
 	
-	public ModStructure(Set<ZipNode> modules, String readmeText){
+	private ModStructure(Set<ZipNode> modules){
 		this.modules = modules;
-		this.readmeText = readmeText;
 	}
 	
 	public boolean usesModule(ZipNode module){
@@ -61,7 +59,7 @@ public class ModStructure {
 			gameData = gameData != null ? gameData : root;
 			
 			// Discover structure
-			return new ModStructure(getModules(gameData), getReadmeText(zipFile));
+			return new ModStructure(getModules(gameData));
 		}
 	}
 	
