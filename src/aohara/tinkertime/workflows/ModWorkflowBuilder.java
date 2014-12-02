@@ -38,7 +38,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	 * Notifies the listeners if an update is available for the given file
 	 */
 	public void checkForUpdates(Mod mod, FileUpdateListener... listeners) throws IOException, UnsupportedHostException {
-		checkForUpdates(mod.getPageUrl(), mod.getUpdatedOn(), mod.getNewestFileName());
+		checkForUpdates(mod.getPageUrl(), mod.getUpdatedOn(), mod.getNewestFileName(), listeners);
 	}
 	
 	public void checkForUpdates(URL pageUrl, Date updatedOn, String newestFileName, FileUpdateListener... listeners) throws UnsupportedHostException{
