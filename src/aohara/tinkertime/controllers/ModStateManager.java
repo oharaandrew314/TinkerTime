@@ -85,7 +85,7 @@ public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 		saveMods(modCache, config.getModsListPath());
 	}
 	
-	public void modDeleted(Mod mod){
+	public synchronized void modDeleted(Mod mod){
 		modCache.remove(mod);
 		for (SelectorInterface<Mod> l : getListeners()){
 			l.removeElement(mod);

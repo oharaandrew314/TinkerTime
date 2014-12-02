@@ -1,6 +1,7 @@
 package aohara.tinkertime.models;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -76,8 +77,8 @@ public class ModStructure {
 	private static String getReadmeText(final ZipFile zipFile){
 		for (ZipEntry entry : new HashSet<ZipEntry>(Collections.list(zipFile.entries()))){
 			if (!entry.isDirectory() && entry.getName().toLowerCase().contains("readme")){
-				try(StringWriter writer = new StringWriter()){
-					IOUtils.copy(zipFile.getInputStream(entry), writer);
+				try(StringWriter writer = new StringWriter(); InputStream is = zipFile.getInputStream(entry)){
+					IOUtils.copy(is, writer);
 					return writer.toString();
 				} catch (IOException e) {}
 			}
