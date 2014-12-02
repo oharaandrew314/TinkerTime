@@ -35,15 +35,17 @@ The [Tinker Time Wiki](https://github.com/oharaandrew314/TinkerTime/wiki) contai
 
 ### Change Log
 v1.0
-- Full Adoption of glyphicons
-- Fixed issue where variations of supported domains were not supported. e.g. beta.kerbalstuff.com
-- Export data for enabled mods
-- Fixed issue where mod list would not always load on startup
-- Will now delete old images and zip when updating or deleting mods
-- Module Manager to be considered an updateable (but permanent) mod
-- Simplify Tinker Time Updater
-- Fixed an issue where a module with a dependent mod would not be disabled even
-  if the dependent mod was disabled
+- New Features:
+  - Now fully using glyphicons
+  - Export JSON data for enabled mods
+  - Will now delete old image caches and mods
+  - Module Manager is now considered a (non-removable) mod
+  - Tinker Time Updater is simplified
+- Fixes:
+  - Fixed issue where variations of supported domains were not supported. e.g. beta.kerbalstuff.com
+  - Fixed issue where mod list would not always load on startup
+  - Fixed an issue where a module with a dependent mod would not be disabled even
+    if the dependent mod was disabled
 
 v0.7
 - KerbalStuff Mod Support
