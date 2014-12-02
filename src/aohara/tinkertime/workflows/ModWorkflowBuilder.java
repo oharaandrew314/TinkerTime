@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Calendar;
 import java.util.Date;
 
 import thirdParty.ZipNode;
@@ -66,7 +67,19 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		addTask(new CrawlerDownloadTask(context.crawler, ModDownloadType.Image, tempImage));
 		addTask(new MoveCrawlerDownloadToDestTask(context, ModDownloadType.Image, tempImage));
 		
-		addTask(new MarkModUpdatedTask(sm, context));
+		addTask(MarkModUpdatedTask.createFromDownloaderContext(sm, context));
+	}
+	
+	public void addLocalMod(Path zipPath, TinkerConfig config, ModStateManager sm){
+		String fileName = zipPath.getFileName().toString();
+		
+		Mod newMod = new Mod(
+			fileName, fileName, fileName, null, null, null,
+			Calendar.getInstance().getTime(), null
+		);
+		
+		copy(zipPath, newMod.getCachedZipPath(config));
+		addTask(MarkModUpdatedTask.createFromMod(sm, newMod));
 	}
 	
 	/**

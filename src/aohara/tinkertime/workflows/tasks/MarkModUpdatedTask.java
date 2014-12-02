@@ -12,18 +12,46 @@ import aohara.tinkertime.workflows.ModDownloaderContext;
 
 public class MarkModUpdatedTask extends WorkflowTask {
 	
+	private static interface ModBuilder {
+		Mod buildMod() throws IOException;
+	}
+	
 	private final ModUpdateListener listener;
-	private final ModDownloaderContext builder;
+	private final ModBuilder modBuilder;
 	private boolean deleted = false;
 
-	public MarkModUpdatedTask(ModUpdateListener listener, ModDownloaderContext builder) {
+	private MarkModUpdatedTask(ModUpdateListener listener, ModBuilder builder) {
 		this.listener = listener;
-		this.builder = builder;
+		this.modBuilder = builder;
+	}
+	
+	public static MarkModUpdatedTask createFromDownloaderContext(ModUpdateListener listener, final ModDownloaderContext context){
+		return new MarkModUpdatedTask(
+			listener,
+			new ModBuilder(){
+				@Override
+				public Mod buildMod() throws IOException {
+					return context.createMod();
+				}
+			}
+		);
+	}
+	
+	public static MarkModUpdatedTask createFromMod(ModUpdateListener listener, final Mod mod){
+		return new MarkModUpdatedTask(
+			listener,
+			new ModBuilder(){
+				@Override
+				public Mod buildMod() throws IOException {
+					return mod;
+				}
+			}
+		);
 	}
 	
 	public static MarkModUpdatedTask notifyDeletion(ModUpdateListener listener, Mod mod, TinkerConfig config){
 		try {
-			MarkModUpdatedTask task = new MarkModUpdatedTask(
+			MarkModUpdatedTask task = createFromDownloaderContext(
 				listener,
 				ModDownloaderContext.create(mod.getPageUrl(), config)
 			);
@@ -37,9 +65,9 @@ public class MarkModUpdatedTask extends WorkflowTask {
 	@Override
 	public boolean call(Workflow workflow) throws Exception {
 		if (deleted){
-			listener.modDeleted(builder.createMod());
+			listener.modDeleted(modBuilder.buildMod());
 		} else {
-			listener.modUpdated(builder.createMod());
+			listener.modUpdated(modBuilder.buildMod());
 		}
 		return true;
 	}

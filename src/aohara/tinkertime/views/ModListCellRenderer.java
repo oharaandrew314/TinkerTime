@@ -26,7 +26,7 @@ import aohara.tinkertime.models.Mod;
  */
 public class ModListCellRenderer implements ListCellRenderer<Mod> {
 	
-	private final ImageIcon checkIcon, xIcon, errorIcon, updateIcon;
+	private final ImageIcon checkIcon, xIcon, errorIcon, updateIcon, localIcon;
 	private final DefaultListCellRenderer def = new DefaultListCellRenderer();
 	private final ImageManager imageManager = new ImageManager("icon/");
 	private final TinkerConfig config;
@@ -37,6 +37,7 @@ public class ModListCellRenderer implements ListCellRenderer<Mod> {
 		xIcon = loadIcon("glyphicons_207_remove_2.png", new Color(205, 20, 20));
 		errorIcon = loadIcon("glyphicons_078_warning_sign.png", new Color(215, 160, 0));
 		updateIcon = loadIcon("glyphicons_213_up_arrow.png", new Color(255, 200, 0));
+		localIcon = loadIcon("glyphicons_410_compressed.png", new Color(0, 0, 0));
 	}
 	
 	private ImageIcon loadIcon(String name, Color colour){
@@ -59,6 +60,10 @@ public class ModListCellRenderer implements ListCellRenderer<Mod> {
 		
 		if (mod.isUpdateAvailable()){
 			icons.add(updateIcon);
+		}
+		
+		if (mod.getPageUrl() == null){
+			icons.add(localIcon);
 		}
 		
 		// Create cell label

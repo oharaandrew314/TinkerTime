@@ -133,6 +133,12 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		}
 	}
 	
+	public void addModZip(Path zipPath){
+		ModWorkflowBuilder builder = new ModWorkflowBuilder("Adding " + zipPath);
+		builder.addLocalMod(zipPath, config, sm);
+		submitDownloadWorkflow(builder.buildWorkflow());
+	}
+	
 	public void updateMods() throws ModUpdateFailedException{
 		for (Mod mod : sm.getMods()){
 			updateMod(mod);
@@ -172,9 +178,11 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		
 		for (Mod mod : sm.getMods()){
 			try {
-				ModWorkflowBuilder builder = new ModWorkflowBuilder("Checking for update for " + mod);
-				builder.checkForUpdates(mod, mod, sm);
-				submitDownloadWorkflow(builder.buildWorkflow());
+				if (mod.getPageUrl() != null){
+					ModWorkflowBuilder builder = new ModWorkflowBuilder("Checking for update for " + mod);
+					builder.checkForUpdates(mod, mod, sm);
+					submitDownloadWorkflow(builder.buildWorkflow());
+				}
 			} catch (IOException | UnsupportedHostException ex) {
 				ex.printStackTrace();
 				e = ex;

@@ -325,8 +325,7 @@ public class Actions {
 			JFileChooser chooser = new JFileChooser();
 			chooser.setDialogTitle("Choose a location to save the mod data");
 			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);  // Only accept files
-			chooser.addChoosableFileFilter(new FileNameExtensionFilter("Json File", "json"));  // Only accept JSON files
-			chooser.setAcceptAllFileFilterUsed(false);
+			chooser.setFileFilter(new FileNameExtensionFilter("Json File", "json"));  // Only accept JSON files
 			chooser.setSelectedFile(new java.io.File("mods.json"));
 			if (chooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION){
 				mm.exportEnabledMods(chooser.getSelectedFile().toPath());
@@ -368,6 +367,26 @@ public class Actions {
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
+			}
+		}
+		
+	}
+	
+	@SuppressWarnings("serial")
+	public static class AddModZip extends TinkerAction {
+		
+		public AddModZip(JComponent parent, ModManager mm){
+			super("Add Mod from Zip File", "icon/glyphicons_410_compressed.png", parent, mm);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {			
+			JFileChooser chooser = new JFileChooser();
+			chooser.setDialogTitle("Please select the mod zip to add.");
+			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);  // Only accept files
+			chooser.setFileFilter(new FileNameExtensionFilter("Zip Archive", "zip"));
+			if (chooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION){
+				mm.addModZip(chooser.getSelectedFile().toPath());
 			}
 		}
 		

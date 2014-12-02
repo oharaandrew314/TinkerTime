@@ -19,6 +19,7 @@ public class MenuFactory {
 		toolBar.addSeparator();
 		
 		toolBar.add(new Actions.AddModAction(toolBar, mm));
+		toolBar.add(new Actions.AddModZip(toolBar, mm));
 		toolBar.add(new Actions.EnableDisableModAction(toolBar, mm));
 		toolBar.add(new Actions.DeleteModAction(toolBar, mm));
 
@@ -47,6 +48,7 @@ public class MenuFactory {
 		
 		JMenu modMenu = new JMenu("Mod");
 		modMenu.add(new JMenuItem(new Actions.AddModAction(menuBar, mm)));
+		modMenu.add(new JMenuItem(new Actions.AddModZip(menuBar, mm)));
 		modMenu.add(new JMenuItem(new Actions.EnableDisableModAction(menuBar, mm)));
 		modMenu.add(new JMenuItem(new Actions.DeleteModAction(menuBar, mm)));
 		modMenu.add(new JMenuItem(new Actions.UpdateModAction(menuBar, mm)));
