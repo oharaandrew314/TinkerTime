@@ -38,6 +38,8 @@ v1.0
 - Will now delete old images and zip when updating or deleting mods
 - Module Manager to be considered an updateable (but permanent) mod
 - Simplify Tinker Time Updater
+- Fixed an issue where a module with a dependent mod would not be disabled even
+  if the dependent mod was disabled
 
 v0.7
 - KerbalStuff Mod Support
