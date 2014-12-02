@@ -98,6 +98,14 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	 * @param sm
 	 */
 	public void deleteMod(Mod mod, TinkerConfig config, ModStateManager sm) {
+		if (mod.isEnabled()){
+			try {
+				disableMod(mod, config, sm);
+			} catch (IOException e) {
+				// No Action
+			}
+		}
+		
 		deleteModZip(mod, config);
 		delete(mod.getCachedImagePath(config));
 		addTask(MarkModUpdatedTask.notifyDeletion(sm, mod, config));
