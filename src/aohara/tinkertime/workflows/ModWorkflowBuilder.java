@@ -136,7 +136,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		int numDependencies = 0;
 		for (Mod mod : sm.getMods()){
 			try {
-				if (modHasArchive(mod) && ModStructure.inspectArchive(config, mod).usesModule(module)){
+				if (mod.isEnabled() && modHasArchive(mod) && ModStructure.inspectArchive(config, mod).usesModule(module)){
 					numDependencies++;
 				}
 			} catch (FileNotFoundException ex){}
