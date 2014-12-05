@@ -114,7 +114,7 @@ public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 	@Override
 	public synchronized void setUpdateAvailable(URL pageUrl, URL downloadLink, String newestFileName) {
 		for (Mod mod : getMods()){
-			if (mod.getPageUrl().equals(pageUrl)){
+			if (mod.isUpdateable() && mod.getPageUrl().equals(pageUrl)){
 				modUpdated(mod);
 				break;
 			}
