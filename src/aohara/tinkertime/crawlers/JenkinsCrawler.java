@@ -2,6 +2,7 @@ package aohara.tinkertime.crawlers;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Calendar;
 import java.util.Date;
 
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
@@ -49,7 +50,13 @@ public class JenkinsCrawler extends Crawler<JsonObject> {
 	@Override
 	public Date getUpdatedOn() throws IOException {
 		long timestamp = getJson().get("timestamp").getAsLong();
-		return new Date(timestamp);
+		
+		// ignore milliseconds
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(timestamp);
+		cal.set(Calendar.MILLISECOND, 0);
+		
+		return cal.getTime();
 	}
 
 	@Override
