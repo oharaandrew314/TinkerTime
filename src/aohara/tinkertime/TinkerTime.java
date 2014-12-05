@@ -68,6 +68,7 @@ public class TinkerTime {
 		frame.add(sp.getComponent(), BorderLayout.CENTER);
 		frame.add(pp.getComponent(), BorderLayout.SOUTH);
 		frame.pack();
+		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
 }
