@@ -53,6 +53,8 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 			// Warning if non-updateable
 			if (!mod.isUpdateable()){
 				panel.add(new JLabel("<html><b>Warning:</b> Local File Only.  Not updateable.</html>"));
+			} else if(mod.isUpdateAvailable()) {
+				panel.add(new JLabel("<html><b>An update for this mod is available.</b></html>"));
 			}
 			
 			// Supported KSP Version
