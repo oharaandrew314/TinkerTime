@@ -2,11 +2,13 @@ package aohara.tinkertime.crawlers;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Calendar;
 import java.util.Date;
 
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -18,9 +20,11 @@ public class JenkinsCrawler extends Crawler<JsonObject> {
 	
 	private JsonObject cachedJson;
 	private final URL artifactDownloadUrl;
+	private final String name;
 	
-	public JenkinsCrawler(URL url, PageLoader<JsonObject> pageLoader, URL artifactDownloadUrl) {
+	public JenkinsCrawler(URL url, PageLoader<JsonObject> pageLoader, String name, URL artifactDownloadUrl) {
 		super(url, pageLoader);
+		this.name = name;
 		this.artifactDownloadUrl = artifactDownloadUrl;
 	}
 
@@ -46,26 +50,51 @@ public class JenkinsCrawler extends Crawler<JsonObject> {
 	@Override
 	public Date getUpdatedOn() throws IOException {
 		long timestamp = getJson().get("timestamp").getAsLong();
-		return new Date(timestamp);
-	}
-	
-	private boolean isBuildSuccess() throws IOException {
-		String result = getJson().get("result").getAsString();
-		return result != null && result.toLowerCase().equals("success");
+		
+		// ignore milliseconds
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(timestamp);
+		cal.set(Calendar.MILLISECOND, 0);
+		
+		return cal.getTime();
 	}
 
 	@Override
-	public boolean isUpdateAvailable(Date lastUpdated, String lastFileName) {
+	public String generateId() {
+		return getApiUrl().getHost();
+	}
+
+	@Override
+	public URL getImageUrl() throws IOException {
+		return null;
+	}
+
+	@Override
+	public String getName() throws IOException {
+		return name;
+	}
+	
+	@Override
+	public boolean isSuccesful(){
 		try {
-			return isBuildSuccess() && super.isUpdateAvailable(lastUpdated, lastFileName);
+			String result = getJson().get("result").getAsString();
+			return result != null && result.toLowerCase().equals("success");
 		} catch (IOException e) {
 			return false;
 		}
 	}
 
 	@Override
-	public String generateId() {
-		return getApiUrl().getHost();
+	public String getCreator() throws IOException {
+		for (JsonElement culprit : getJson().get("culprits").getAsJsonArray()){
+			return culprit.getAsJsonObject().get("fullName").getAsString();
+		}
+		return null;
+	}
+
+	@Override
+	public String getSupportedVersion() throws IOException {
+		return null;
 	}
 
 }

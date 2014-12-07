@@ -26,7 +26,7 @@ public class JsonLoader implements PageLoader<JsonObject> {
 	public JsonObject getPage(Crawler<JsonObject> crawler, URL url) throws IOException {
 		if (!cache.containsKey(url)){
 			try(Reader r = new InputStreamReader(url.openStream())){
-				return parser.parse(r).getAsJsonObject();
+				cache.put(url, parser.parse(r).getAsJsonObject());
 			}
 		}
 		return cache.get(url);

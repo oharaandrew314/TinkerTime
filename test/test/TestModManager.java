@@ -24,17 +24,17 @@ import aohara.common.workflows.ConflictResolver;
 import aohara.common.workflows.ConflictResolver.Resolution;
 import aohara.common.workflows.ProgressPanel;
 import aohara.common.workflows.Workflow;
-import aohara.tinkertime.Config;
+import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.controllers.ModManager;
-import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledException;
-import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledException;
-import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
+import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledError;
+import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledError;
+import aohara.tinkertime.controllers.ModManager.ModUpdateFailedError;
 import aohara.tinkertime.controllers.ModStateManager;
 import aohara.tinkertime.models.Mod;
 
 public class TestModManager {
 	
-	private static Config config;
+	private static TinkerConfig config;
 	private ModManager manager;
 	private static ModLoader.MockMod mod, testMod1, testMod2;
 	private MockCR cr;
@@ -96,7 +96,7 @@ public class TestModManager {
 		enableMod(mod);
 	}
 	
-	@Test(expected=ModAlreadyEnabledException.class)
+	@Test(expected=ModAlreadyEnabledError.class)
 	public void testEnableEnabledMod() throws Throwable {
 		cr.res = ConflictResolver.Resolution.Overwrite;
 		
@@ -131,7 +131,7 @@ public class TestModManager {
 		verify(enablerExecutor, times(1)).execute(any(Workflow.class));
 	}
 	
-	@Test(expected = ModAlreadyDisabledException.class)
+	@Test(expected = ModAlreadyDisabledError.class)
 	public void testDisableDisabledMod() throws Throwable {
 		assertFalse(mod.isEnabled());
 		manager.disableMod(mod);
@@ -141,7 +141,7 @@ public class TestModManager {
 	// -- Update Tests ---------------------------------------------------
 	
 	@Test
-	public void testUpdate() throws ModUpdateFailedException{
+	public void testUpdate() throws ModUpdateFailedError{
 		manager.updateMod(mod);
 		verify(downloedExecutor, times(1)).execute(any(Workflow.class));
 	}

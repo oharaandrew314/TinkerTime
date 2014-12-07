@@ -2,6 +2,7 @@ package aohara.tinkertime.controllers;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -12,7 +13,7 @@ import aohara.common.selectorPanel.ListListener;
 import aohara.common.workflows.ConflictResolver;
 import aohara.common.workflows.ProgressPanel;
 import aohara.common.workflows.Workflow;
-import aohara.tinkertime.Config;
+import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.views.DialogConflictResolver;
@@ -29,27 +30,25 @@ import aohara.tinkertime.workflows.ModWorkflowBuilder;
  */
 public class ModManager extends Listenable<ModUpdateListener> implements WorkflowRunner, ListListener<Mod> {
 	
-	public static final int NUM_CONCURRENT_DOWNLOADS = 4;
-	
 	private final Executor downloadExecutor, enablerExecutor;
-	private final Config config;
+	public final TinkerConfig config;
 	private final ModStateManager sm;
 	private final ProgressPanel progressPanel;
 	private final ConflictResolver cr;
 	private Mod selectedMod;
 	
-	public static ModManager createDefaultModManager(Config config, ModStateManager sm, ProgressPanel pp){
+	public static ModManager createDefaultModManager(TinkerConfig config, ModStateManager sm, ProgressPanel pp){
 		
 		ModManager mm =  new ModManager(
 			sm, config, pp, new DialogConflictResolver(),
-			Executors.newFixedThreadPool(NUM_CONCURRENT_DOWNLOADS),
+			Executors.newFixedThreadPool(config.numConcurrentDownloads()),
 			Executors.newSingleThreadExecutor());
 		
 		return mm;
 	}
 	
 	public ModManager(
-			ModStateManager sm, Config config, ProgressPanel progressPanel,
+			ModStateManager sm, TinkerConfig config, ProgressPanel progressPanel,
 			ConflictResolver cr, Executor downloadExecutor,
 			Executor enablerExecutor){
 		this.sm = sm;
@@ -69,12 +68,6 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	}
 	
 	// -- Listeners -----------------------
-	
-	public void notifyModUpdated(Mod mod, boolean deleted){
-		for (ModUpdateListener l : getListeners()){
-			l.modUpdated(mod, deleted);
-		}
-	}
 	
 	@Override
 	public void elementClicked(Mod mod, int numTimes) throws Exception{
@@ -106,40 +99,55 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		enablerExecutor.execute(workflow);
 	}
 	
-	public void updateMod(Mod mod) throws ModUpdateFailedException {
+	public void updateMod(Mod mod) throws ModUpdateFailedError {
+		if (mod.getPageUrl() == null){
+			throw new ModUpdateFailedError(mod, "Mod is a local zip only, and cannot be updated.");
+		}
+		
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Updating " + mod.getName());
 		try {
-			if (mod.isEnabled()){
-				builder.disableMod( mod, config, sm);
+			// Cleanup operations prior to update
+			if (mod.isDownloaded(config)){
+				if (mod.isEnabled()){
+					builder.disableMod( mod, config, sm);
+				}
+				
+				builder.deleteModZip(mod, config);
 			}
 			builder.downloadMod(mod.getPageUrl(), config, sm);
 			submitDownloadWorkflow(builder.buildWorkflow());
 		} catch (IOException | UnsupportedHostException e) {
-			throw new ModUpdateFailedException(e);
+			throw new ModUpdateFailedError(e);
 		}
 	}
 	
-	public void downloadMod(URL url) throws ModUpdateFailedException, UnsupportedHostException {
+	public void downloadMod(URL url) throws ModUpdateFailedError, UnsupportedHostException {
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Downloading " + FilenameUtils.getBaseName(url.toString()));
 		try {
 			builder.downloadMod(url, config, sm);
 			submitDownloadWorkflow(builder.buildWorkflow());
 		} catch (IOException e) {
-			throw new ModUpdateFailedException(e);
+			throw new ModUpdateFailedError(e);
 		}
 	}
 	
-	public void updateMods() throws ModUpdateFailedException{
+	public void addModZip(Path zipPath){
+		ModWorkflowBuilder builder = new ModWorkflowBuilder("Adding " + zipPath);
+		builder.addLocalMod(zipPath, config, sm);
+		submitDownloadWorkflow(builder.buildWorkflow());
+	}
+	
+	public void updateMods() throws ModUpdateFailedError{
 		for (Mod mod : sm.getMods()){
 			updateMod(mod);
 		}
 	}
 	
-	public void enableMod(Mod mod) throws ModAlreadyEnabledException, ModNotDownloadedException, IOException {
+	public void enableMod(Mod mod) throws ModAlreadyEnabledError, ModNotDownloadedError, IOException {
 		if (mod.isEnabled()){
-			throw new ModAlreadyEnabledException();
+			throw new ModAlreadyEnabledError();
 		} else if (!mod.isDownloaded(config)){
-			throw new ModNotDownloadedException();
+			throw new ModNotDownloadedError(mod, "Cannot enable since not downloaded");
 		}
 		
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Enabling " + mod);
@@ -147,9 +155,9 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		submitEnablerWorkflow(builder.buildWorkflow());
 	}
 	
-	public void disableMod(Mod mod) throws ModAlreadyDisabledException, IOException {
+	public void disableMod(Mod mod) throws ModAlreadyDisabledError, IOException {
 		if (!mod.isEnabled()){
-			throw new ModAlreadyDisabledException();
+			throw new ModAlreadyDisabledError();
 		}
 		
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Disabling " + mod);
@@ -157,9 +165,9 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		submitEnablerWorkflow(builder.buildWorkflow());
 	}
 	
-	public void deleteMod(Mod mod) throws CannotDisableModException, IOException {
+	public void deleteMod(Mod mod) throws CannotDisableModError, IOException {
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Deleting " + mod);
-		builder.deleteMod(mod, config, sm);		
+		builder.deleteMod(mod, config, sm);
 		submitEnablerWorkflow(builder.buildWorkflow());
 	}
 	
@@ -168,9 +176,11 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		
 		for (Mod mod : sm.getMods()){
 			try {
-				ModWorkflowBuilder builder = new ModWorkflowBuilder("Checking for update for " + mod);
-				builder.checkForUpdates(mod, mod, sm);
-				submitDownloadWorkflow(builder.buildWorkflow());
+				if (mod.getPageUrl() != null){
+					ModWorkflowBuilder builder = new ModWorkflowBuilder("Checking for update for " + mod);
+					builder.checkForUpdates(mod, mod, sm);
+					submitDownloadWorkflow(builder.buildWorkflow());
+				}
 			} catch (IOException | UnsupportedHostException ex) {
 				ex.printStackTrace();
 				e = ex;
@@ -182,24 +192,31 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		}
 	}
 	
-	// -- Exceptions ------------------------------------------------------
+	public void exportEnabledMods(Path path){
+		sm.exportEnabledMods(path);
+	}
+	
+	// -- Exceptions/Errors --------------------------------------------------
 	
 	@SuppressWarnings("serial")
-	public static class CannotAddModException extends Exception {}
+	public static class ModAlreadyEnabledError extends Error {}
 	@SuppressWarnings("serial")
-	public static class ModAlreadyEnabledException extends Exception {}
+	public static class ModAlreadyDisabledError extends Error {}
 	@SuppressWarnings("serial")
-	public static class ModAlreadyDisabledException extends Exception {}
+	public static class ModNotDownloadedError extends Error {
+		private ModNotDownloadedError(Mod mod, String message){
+			super("Error for " + mod + ": " + message);
+		}
+	}
 	@SuppressWarnings("serial")
-	public static class ModNotDownloadedException extends Exception {}
+	public static class CannotDisableModError extends Error {}
 	@SuppressWarnings("serial")
-	public static class CannotDisableModException extends Exception {}
-	@SuppressWarnings("serial")
-	public static class CannotEnableModException extends Exception {}
-	@SuppressWarnings("serial")
-	public static class ModUpdateFailedException extends Exception {
-		public ModUpdateFailedException(Exception e){
+	public static class ModUpdateFailedError extends Error {
+		private ModUpdateFailedError(Exception e){
 			super(e);
+		}
+		private ModUpdateFailedError(Mod mod, String message){
+			super("Error for " + mod + ": " + message);
 		}
 	}
 }

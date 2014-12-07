@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Calendar;
-import java.util.Date;
 
 import org.junit.Test;
 
@@ -20,18 +19,7 @@ public class TestModuleManagerCrawler {
 	
 	private static JenkinsCrawler loadTestPage(int num) throws IOException, UnsupportedHostException {
 		URL url = TestModuleManagerCrawler.class.getClassLoader().getResource(String.format("json/moduleManagerPage%d.json", num));
-		return new JenkinsCrawler(url, new JsonLoader(), new URL(Constants.MODULE_MANAGER_ARTIFACT_DL_URL));
-	}
-	
-	private Date getDateDelta(JenkinsCrawler crawler, int delta){
-		try {
-			Date date = (Date) crawler.getUpdatedOn().clone();
-			date.setTime(date.getTime() + delta);
-			return date;
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		
+		return new JenkinsCrawler(url, new JsonLoader(), "Module Manager", new URL(Constants.MODULE_MANAGER_ARTIFACT_DL_URL));
 	}
 
 	@Test
@@ -64,31 +52,14 @@ public class TestModuleManagerCrawler {
 	}
 	
 	@Test
-	public void testIsUpdateAvailableForPassedBuild() throws IOException, UnsupportedHostException{
+	public void testIsSuccesfulForPassedBuild() throws IOException, UnsupportedHostException{
 		JenkinsCrawler crawler = loadTestPage(1);
-		
-		assertTrue(crawler.isUpdateAvailable(getDateDelta(crawler, -1000000), null));
+		assertTrue(crawler.isSuccesful());
 	}
 	
 	@Test
-	public void testIsUpdateAvailableForOldBuild() throws Exception {
-		JenkinsCrawler crawler = loadTestPage(1);
-		
-		assertFalse(crawler.isUpdateAvailable(getDateDelta(crawler, 1000000), null));
-	}
-	
-	@Test
-	public void testIsUpdateAvailableForFailedBuild() throws Exception {
+	public void testIsSuccesfulForFailedBuild() throws IOException, UnsupportedHostException{
 		JenkinsCrawler crawler = loadTestPage(2);
-		
-		assertFalse(crawler.isUpdateAvailable(getDateDelta(crawler, -1000000), null));
+		assertFalse(crawler.isSuccesful());
 	}
-	
-	@Test
-	public void testIsUpdateAvailableForFailedOldBuild() throws Exception {
-		JenkinsCrawler crawler = loadTestPage(2);
-		
-		assertFalse(crawler.isUpdateAvailable(getDateDelta(crawler, +1000000), null));
-	}
-
 }

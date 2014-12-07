@@ -2,6 +2,7 @@ package aohara.tinkertime.views;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -16,7 +17,7 @@ import javax.swing.event.HyperlinkListener;
 import thirdParty.VerticalLayout;
 import aohara.common.Util;
 import aohara.common.selectorPanel.SelectorView;
-import aohara.tinkertime.Config;
+import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
 
@@ -29,12 +30,14 @@ import aohara.tinkertime.models.ModStructure;
  */
 public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 	
+	private final TinkerConfig config;
 	private Mod mod;
 	private final JPanel panel = new JPanel();
 	private final SimpleDateFormat DATE_FORMAT = (
 			new SimpleDateFormat("yyyy/MM/dd"));
 	
-	public ModView(){
+	public ModView(TinkerConfig config){
+		this.config = config;
 		panel.setLayout(new VerticalLayout(0, VerticalLayout.BOTH));
 	}
 
@@ -45,7 +48,14 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 		
 		if (mod != null){
 			// Set Border
-			panel.setBorder(BorderFactory.createTitledBorder(mod.getName() + " - by " + mod.getCreator()));
+			panel.setBorder(BorderFactory.createTitledBorder(mod.getName() + (mod.isUpdateable()? " - by " + mod.getCreator() : " - added from zip")));
+			
+			// Warning if non-updateable
+			if (!mod.isUpdateable()){
+				panel.add(new JLabel("<html><b>Warning:</b> Local File Only.  Not updateable.</html>"));
+			} else if(mod.isUpdateAvailable()) {
+				panel.add(new JLabel("<html><b>An update for this mod is available.</b></html>"));
+			}
 			
 			// Supported KSP Version
 			String kspVersion =  mod.getSupportedVersion();
@@ -61,8 +71,8 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 			panel.add(new UrlPanel("Go to Mod Page", mod.getPageUrl()).getComponent());		
 			
 			// Readme
-			Config config = new Config();
-			if (mod.getCachedZipPath(config).toFile().exists()){
+			Path zipPath = mod.getCachedImagePath(config);
+			if (zipPath != null && zipPath.toFile().exists()){
 				String readmeText = ModStructure.getReadmeText(config, mod);				
 				if (readmeText != null && !readmeText.trim().isEmpty()){
 					panel.add(new JLabel("<html><b>Readme:</b></html"));

@@ -2,7 +2,7 @@ TinkerTime
 ==========
 
 Automatically Updating Mod Manager for Kerbal Space Program
- 
+
 ### Development Status
 
 Master: [![Build Status](https://travis-ci.org/oharaandrew314/TinkerTime.svg?branch=master)](https://travis-ci.org/oharaandrew314/TinkerTime)
@@ -31,9 +31,27 @@ https://github.com/oharaandrew314/TinkerTime/releases
 The [Tinker Time Wiki](https://github.com/oharaandrew314/TinkerTime/wiki) contains many useful resources with instructions and known issues.
 
 ### Special Thanks
-- Beta Testers ([foonix](https://github.com/foonix) and [jcsntoll](https://github.com/jcsntoll))
+- Beta Testers ([foonix](https://github.com/foonix), [jcsntoll](https://github.com/jcsntoll), and [apemanzilla](https://github.com/apemanzilla))
 
 ### Change Log
+v1.0
+- New Features:
+  - Module Manager is now considered a (non-removable) mod
+  - Can now add local mod zip files (non-updateable)
+  - Now fully using glyphicons (license in about)
+  - Windows are now centered in the screen
+  - Button to export JSON data for enabled mods
+  - Will now delete old image caches and mods
+  - Tinker Time Updater is simplified
+  - When mod update is available, add message to mod description
+- Fixes:
+  - Fixed issue where variations of supported domains were not supported. e.g. beta.kerbalstuff.com
+  - Fixed issue where mod list would not always load on startup
+  - Fixed an issue where a module with a dependent mod would not be disabled even
+    if the dependent mod was disabled
+  - Improve Github mod URL analysis robustness
+  - Fix Json caching for Jenkins crawler (less annoyance for [sarbian](https://github.com/sarbian))
+
 v0.7
 - KerbalStuff Mod Support
 - Graphical Toolbar
@@ -56,6 +74,6 @@ v0.6
 v0.5
 - Initial Release
 - Curse.com support
- 
+
 ### License
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/InteractiveResource" property="dct:title" rel="dct:type">Tinker Time</span> by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Andrew O'Hara</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.<br />Based on a work at <a xmlns:dct="http://purl.org/dc/terms/" href="https://github.com/oharaandrew314/TinkerTime" rel="dct:source">https://github.com/oharaandrew314/TinkerTime</a>.

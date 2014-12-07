@@ -8,7 +8,6 @@ import aohara.common.selectorPanel.SelectorPanel;
 import aohara.common.workflows.ProgressPanel;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModStateManager;
-import aohara.tinkertime.controllers.fileUpdater.ModuleManagerUpdateController;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModComparator;
 import aohara.tinkertime.views.TinkerFrame;
@@ -26,13 +25,11 @@ public class TinkerTime {
 	
 	public static final String
 		NAME = "Tinker Time",
-		VERSION = "0.7",
+		VERSION = "1.0",
 		AUTHOR = "Andrew O'Hara";
 	
-	public static void main(String[] args) {		
-		// Load and Verify Configuration
-		Config config = new Config();
-		config.verifyConfig();
+	public static void main(String[] args) {
+		TinkerConfig config = TinkerConfig.create();
 		
 		ProgressPanel pp = new ProgressPanel();
 		
@@ -44,14 +41,25 @@ public class TinkerTime {
 		System.setProperty("http.agent", "TinkerTime Bot");
 		
 		// Initialize GUI
-		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new ModView(), new ModComparator());
+		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new ModView(config), new ModComparator(), new java.awt.Dimension(500, 600), 0.4f);
 		sp.addControlPanel(true, new ModImageView(config));
 		sp.addPopupMenu(MenuFactory.createPopupMenu(mm));
-		sp.setListCellRenderer(new ModListCellRenderer());
+		sp.setListCellRenderer(new ModListCellRenderer(config));
 		
 		// Add Listeners
 		sp.addListener(mm);
 		sm.addListener(sp);
+
+		// Start Application
+		sm.getMods();  // Load mods (will notify selector panel)
+		try {			
+			// Check for Mod Updates
+			if (config.autoCheckForModUpdates()){
+				mm.checkForModUpdates();
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 		
 		// Initialize Frame
 		JFrame frame = new TinkerFrame();
@@ -60,22 +68,7 @@ public class TinkerTime {
 		frame.add(sp.getComponent(), BorderLayout.CENTER);
 		frame.add(pp.getComponent(), BorderLayout.SOUTH);
 		frame.pack();
+		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
-
-		// Start Application
-		sm.getMods();  // Load mods (will notify selector panel)
-		try {
-			// Check for ModuleManager Update
-			if (config.autoUpdateModuleManager()){
-				new ModuleManagerUpdateController(mm, config).downloadUpdate(true);
-			}
-			
-			// Check for Mod Updates
-			if (config.autoCheckForModUpdates()){
-				mm.checkForModUpdates();
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
 	}
 }

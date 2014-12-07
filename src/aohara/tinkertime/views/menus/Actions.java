@@ -9,26 +9,29 @@ import java.util.Arrays;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import aohara.common.Util;
 import aohara.common.content.ImageManager;
-import aohara.tinkertime.Config;
+import aohara.common.workflows.tasks.BrowserGoToTask;
 import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.controllers.ModManager;
-import aohara.tinkertime.controllers.ModManager.CannotDisableModException;
-import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledException;
-import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledException;
-import aohara.tinkertime.controllers.ModManager.ModNotDownloadedException;
-import aohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
-import aohara.tinkertime.controllers.fileUpdater.ModuleManagerUpdateController;
-import aohara.tinkertime.controllers.fileUpdater.TinkerTimeUpdateController;
+import aohara.tinkertime.controllers.ModManager.CannotDisableModError;
+import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledError;
+import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledError;
+import aohara.tinkertime.controllers.ModManager.ModNotDownloadedError;
+import aohara.tinkertime.controllers.ModManager.ModUpdateFailedError;
 import aohara.tinkertime.crawlers.Constants;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.models.DefaultMods;
+import aohara.tinkertime.models.FileUpdateListener;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.views.UrlPanel;
+import aohara.tinkertime.workflows.ModWorkflowBuilder;
 
-public class Actions {
+class Actions {
 	
 	// -- Helpers ---------------------------------------------------------
 	
@@ -46,23 +49,22 @@ public class Actions {
 			putValue(Action.SHORT_DESCRIPTION, title);
 		}
 		
-		protected void errorMessage(Exception ex){
+		protected void errorMessage(Throwable ex){
 			ex.printStackTrace();
-			errorMessage(ex.toString());
+			errorMessage(ex.getClass().getSimpleName() + " - " + ex.getMessage());
 		}
 		
 		protected void errorMessage(String message){
-			JOptionPane.showMessageDialog(
-				null, message, "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	
 	// -- Actions -----------------------------------------------------------
 	
 	@SuppressWarnings("serial")
-	public static class AddModAction extends TinkerAction {
+	static class AddModAction extends TinkerAction {
 		
-		public AddModAction(JComponent parent, ModManager mm){
+		AddModAction(JComponent parent, ModManager mm){
 			super("Add Mod", "icon/glyphicons_432_plus.png", parent, mm);
 		}
 
@@ -85,16 +87,22 @@ public class Actions {
 			// Try to add Mod
 			try {
 				mm.downloadMod(new URL(urlString));
-			} catch (UnsupportedHostException | ModUpdateFailedException | MalformedURLException ex) {
+			} catch(MalformedURLException ex){
+				try {
+					mm.downloadMod(new URL("http://" + urlString));
+				} catch (MalformedURLException | ModUpdateFailedError| UnsupportedHostException e) {
+					errorMessage(ex);
+				}
+			} catch (UnsupportedHostException | ModUpdateFailedError ex) {
 				errorMessage(ex);
 			}
 		}
 	}
 	
 	@SuppressWarnings("serial")
-	public static class DeleteModAction extends TinkerAction {
+	static class DeleteModAction extends TinkerAction {
 		
-		public DeleteModAction(JComponent parent, ModManager mm){
+		DeleteModAction(JComponent parent, ModManager mm){
 			super("Delete Mod", "icon/glyphicons_433_minus.png", parent, mm);
 		}
 
@@ -102,6 +110,11 @@ public class Actions {
 		public void actionPerformed(ActionEvent e) {
 			Mod selectedMod = mm.getSelectedMod();
 			if (selectedMod != null){
+				if (DefaultMods.isBuiltIn(selectedMod)){
+					errorMessage("Cannot delete built-in mod: " + selectedMod.getName());
+					return;
+				}
+				
 				try {
 					if (JOptionPane.showConfirmDialog(
 						parent,
@@ -112,7 +125,7 @@ public class Actions {
 					) == JOptionPane.YES_OPTION){
 						mm.deleteMod(selectedMod);
 					}
-				} catch (CannotDisableModException | IOException e1) {
+				} catch (CannotDisableModError | IOException e1) {
 					errorMessage(selectedMod.getName() + " could not be disabled.");
 				}
 			}
@@ -120,13 +133,13 @@ public class Actions {
 	}
 	
 	@SuppressWarnings("serial")
-	public static class UpdateModAction extends TinkerAction {
+	static class UpdateModAction extends TinkerAction {
 		
-		public UpdateModAction(JComponent parent, ModManager mm){
+		UpdateModAction(JComponent parent, ModManager mm){
 			this("Update Mod", parent, mm);
 		}
 		
-		protected UpdateModAction(String title, JComponent parent, ModManager mm){
+		private UpdateModAction(String title, JComponent parent, ModManager mm){
 			super(title, "icon/glyphicons_181_download_alt.png", parent, mm);
 		}
 
@@ -135,7 +148,7 @@ public class Actions {
 			if (mm.getSelectedMod() != null){
 				try {
 					mm.updateMod(mm.getSelectedMod());
-				} catch (ModUpdateFailedException e1) {
+				} catch (ModUpdateFailedError e1) {
 					errorMessage(e1);
 				}
 			}
@@ -143,7 +156,7 @@ public class Actions {
 	}
 	
 	@SuppressWarnings("serial")
-	public static class UpdateAllAction extends UpdateModAction {
+	static class UpdateAllAction extends UpdateModAction {
 		
 		UpdateAllAction(JComponent parent, ModManager mm) {
 			super("Update All", parent, mm);
@@ -153,14 +166,14 @@ public class Actions {
 		public void actionPerformed(ActionEvent e) {
 			try {
 				mm.updateMods();
-			} catch (ModUpdateFailedException e1) {
+			} catch (ModUpdateFailedError e1) {
 				errorMessage("One or more mods failed to update");
 			}
 		}
 	}
 	
 	@SuppressWarnings("serial")
-	public static class CheckforUpdatesAction extends TinkerAction {
+	static class CheckforUpdatesAction extends TinkerAction {
 		
 		CheckforUpdatesAction(JComponent parent, ModManager mm){
 			super("Check for Updates", "icon/glyphicons_027_search.png", parent, mm);
@@ -178,7 +191,7 @@ public class Actions {
 	}
 	
 	@SuppressWarnings("serial")
-	public static class EnableDisableModAction extends TinkerAction {
+	static class EnableDisableModAction extends TinkerAction {
 		
 		EnableDisableModAction(JComponent parent, ModManager mm){
 			super("Enable/Disable", "icon/glyphicons_457_transfer.png", parent, mm);
@@ -190,13 +203,13 @@ public class Actions {
 			if (selectedMod != null && selectedMod.isEnabled()){
 				try {
 					mm.disableMod(selectedMod);
-				} catch (ModAlreadyDisabledException | IOException e1) {
+				} catch (ModAlreadyDisabledError | IOException e1) {
 					errorMessage(e1);
 				}
 			} else if (selectedMod != null){
 				try {
 					mm.enableMod(selectedMod);
-				} catch (ModAlreadyEnabledException | ModNotDownloadedException | IOException e1) {
+				} catch (ModAlreadyEnabledError | ModNotDownloadedError | IOException e1) {
 					errorMessage(e1);
 				}
 			}
@@ -204,22 +217,22 @@ public class Actions {
 	}
 	
 	@SuppressWarnings("serial")
-	public static class OptionsAction extends TinkerAction {
+	static class OptionsAction extends TinkerAction {
 		
-		public OptionsAction(JComponent parent, ModManager mm){
+		OptionsAction(JComponent parent, ModManager mm){
 			super("Options", "icon/glyphicons_439_wrench.png", parent, mm);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			new Config().updateConfig(true, false);
+			mm.config.updateConfig(true, false);
 		}
 	}
 	
 	@SuppressWarnings("serial")
-	public static class ExitAction extends TinkerAction {
+	static class ExitAction extends TinkerAction {
 		
-		public ExitAction(JComponent parent, ModManager mm){
+		ExitAction(JComponent parent, ModManager mm){
 			super("Exit", "icon/glyphicons_063_power.png", parent, mm);
 		}
 
@@ -230,9 +243,9 @@ public class Actions {
 	}
 	
 	@SuppressWarnings("serial")
-	public static class HelpAction extends TinkerAction {
+	static class HelpAction extends TinkerAction {
 		
-		public HelpAction(JComponent parent, ModManager mm){
+		HelpAction(JComponent parent, ModManager mm){
 			super("Help", "icon/glyphicons_194_circle_question_mark.png", parent, mm);
 		}
 
@@ -247,9 +260,9 @@ public class Actions {
 	}
 	
 	@SuppressWarnings("serial")
-	public static class AboutAction extends TinkerAction {
+	static class AboutAction extends TinkerAction {
 		
-		public AboutAction(JComponent parent, ModManager mm){
+		AboutAction(JComponent parent, ModManager mm){
 			super("About", "icon/glyphicons_003_user.png", parent, mm);
 		}
 
@@ -283,9 +296,9 @@ public class Actions {
 	}
 	
 	@SuppressWarnings("serial")
-	public static class ContactAction extends TinkerAction {
+	static class ContactAction extends TinkerAction {
 		
-		public ContactAction(JComponent parent, ModManager mm){
+		ContactAction(JComponent parent, ModManager mm){
 			super("Contact Me", "icon/glyphicons_010_envelope.png", parent, mm);
 		}
 
@@ -300,36 +313,81 @@ public class Actions {
 	}
 	
 	@SuppressWarnings("serial")
-	public static class UpdateModuleManagerAction extends TinkerAction {
+	static class ExportModList extends TinkerAction {
 		
-		public UpdateModuleManagerAction(JComponent parent, ModManager mm){
-			super("Update Module Manager", null, parent, mm);
+		ExportModList(JComponent parent, ModManager mm){
+			super("Export Enabled Mod Data", "icon/glyphicons_359_file_export.png", parent, mm);
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent e) {
-			try {
-				new ModuleManagerUpdateController(mm, new Config()).showDialog();
-			} catch (UnsupportedHostException e1) {
-				errorMessage(e1);
+		public void actionPerformed(ActionEvent arg0) {
+			JFileChooser chooser = new JFileChooser();
+			chooser.setDialogTitle("Choose a location to save the mod data");
+			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);  // Only accept files
+			chooser.setFileFilter(new FileNameExtensionFilter("Json File", "json"));  // Only accept JSON files
+			chooser.setSelectedFile(new java.io.File("mods.json"));
+			if (chooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION){
+				mm.exportEnabledMods(chooser.getSelectedFile().toPath());
+				JOptionPane.showMessageDialog(
+					parent,
+					"Enabled mod data has been exported",
+					"Exported",
+					JOptionPane.INFORMATION_MESSAGE
+				);
 			}
 		}
 	}
 	
 	@SuppressWarnings("serial")
-	public static class UpdateTinkerTimeAction extends TinkerAction {
+	static class UpdateTinkerTime extends TinkerAction implements FileUpdateListener {
 		
-		public UpdateTinkerTimeAction(JComponent parent, ModManager mm){
+		UpdateTinkerTime(JComponent parent, ModManager mm){
 			super("Update Tinker Time", null, parent, mm);
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent arg0) {
+			ModWorkflowBuilder builder = new ModWorkflowBuilder("Updating " + TinkerTime.NAME);
 			try {
-				new TinkerTimeUpdateController(mm).showDialog();
-			} catch (UnsupportedHostException e1) {
-				errorMessage(e1);
+				builder.checkForUpdates(Constants.getTinkerTimeGithubUrl(), null, TinkerTime.NAME, this);
+				mm.submitDownloadWorkflow(builder.buildWorkflow());
+			} catch (UnsupportedHostException ex) {
+				errorMessage(ex);
 			}
 		}
+
+		@Override
+		public void setUpdateAvailable(URL pageUrl, URL downloadLink, String newestFileName) {
+			if (JOptionPane.showConfirmDialog(
+				parent, String.format("Current: %s\nAvailable: %s\nDownload?", TinkerTime.VERSION, newestFileName), "Update Tinker Time", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE
+			) == JOptionPane.YES_OPTION){
+				try {
+					new BrowserGoToTask(downloadLink).call(null);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+		
+	}
+	
+	@SuppressWarnings("serial")
+	static class AddModZip extends TinkerAction {
+		
+		AddModZip(JComponent parent, ModManager mm){
+			super("Add Mod from Zip File", "icon/glyphicons_410_compressed.png", parent, mm);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {			
+			JFileChooser chooser = new JFileChooser();
+			chooser.setDialogTitle("Please select the mod zip to add.");
+			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);  // Only accept files
+			chooser.setFileFilter(new FileNameExtensionFilter("Zip Archive", "zip"));
+			if (chooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION){
+				mm.addModZip(chooser.getSelectedFile().toPath());
+			}
+		}
+		
 	}
 }

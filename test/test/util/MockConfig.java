@@ -4,11 +4,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import test.UnitTestSuite;
-import aohara.tinkertime.Config;
+import aohara.tinkertime.TinkerConfig;
 
-public class MockConfig extends Config {
+public class MockConfig extends TinkerConfig {
 	
 	private final Path modsListPath = UnitTestSuite.getTempFile("mods", ".json");
+	
+	public MockConfig(){
+		super(null);
+	}
 	
 	@Override
 	public Path getGameDataPath(){

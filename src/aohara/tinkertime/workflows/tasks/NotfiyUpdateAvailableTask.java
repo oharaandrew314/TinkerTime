@@ -2,6 +2,7 @@ package aohara.tinkertime.workflows.tasks;
 
 import java.io.IOException;
 
+import aohara.common.workflows.Workflow;
 import aohara.common.workflows.Workflow.WorkflowTask;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.models.FileUpdateListener;
@@ -23,13 +24,13 @@ public class NotfiyUpdateAvailableTask extends WorkflowTask {
 	}
 
 	@Override
-	public Boolean call() throws Exception {		
+	public boolean call(Workflow workflow) throws Exception {		
 		// Notify update listeners
 		String newestFileName = crawler.getNewestFileName();
 		if (newestFileName != null){
 			for (FileUpdateListener l : listeners){
-				l.setUpdateAvailable(crawler.getPageUrl(), newestFileName);
-				progress(1);
+				l.setUpdateAvailable(crawler.getPageUrl(), crawler.getDownloadLink(), newestFileName);
+				progress(workflow, 1);
 			}
 			return true;
 		}

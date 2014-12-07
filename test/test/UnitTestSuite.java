@@ -19,7 +19,8 @@ import test.TestModStateManager;
    TestModManager.class,
    TestModStateManager.class,
    TestModuleManagerCrawler.class,
-   TestGithubCrawler.class
+   TestGithubCrawler.class,
+   TestCrawlerFactory.class
 })
 
 public class UnitTestSuite {

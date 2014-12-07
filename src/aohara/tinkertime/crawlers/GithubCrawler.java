@@ -6,7 +6,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -18,7 +20,9 @@ import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
  * 
  * @author Andrew O'Hara
  */
-public class GithubCrawler extends ModCrawler<Document> {
+public class GithubCrawler extends Crawler<Document> {
+	
+	private static final String RELEASES = "releases";
 
 	public GithubCrawler(URL url, PageLoader<Document> pageLoader) {
 		super(url, pageLoader);
@@ -26,9 +30,21 @@ public class GithubCrawler extends ModCrawler<Document> {
 	
 	@Override
 	public Document getPage(URL url) throws IOException {
-		if (!url.getPath().endsWith("/releases")){
+		/* Groom the Github Releases URL before getting it */
+		
+		List<String> paths = Arrays.asList(url.getPath().split("/"));
+		if (paths.contains(RELEASES)){
+			// If path contains releases, but isn't last element, strip url
+			if (!paths.get(paths.size() - 1).equals(RELEASES)){
+				url = new URL(url.toString().split(RELEASES)[0]);
+			}
+		}
+		
+		// If path does not contain releases, try appending it to end 
+		else {
 			url = new URL(url.toString() + "/releases");
 		}
+		
 		return super.getPage(url);
 	}
 	
@@ -56,7 +72,7 @@ public class GithubCrawler extends ModCrawler<Document> {
 	}
 
 	@Override
-	protected Date getUpdatedOn() throws IOException {
+	public Date getUpdatedOn() throws IOException {
 		Element dateElement = getLatestReleaseElement().select("p.release-authorship time").first();
 		String dateStr = dateElement.attr("datetime");
 		
@@ -78,7 +94,7 @@ public class GithubCrawler extends ModCrawler<Document> {
 	}
 
 	@Override
-	protected String getCreator() throws IOException {
+	public String getCreator() throws IOException {
 		return getLatestReleaseElement().select(" p.release-authorship a").first().text();
 	}
 

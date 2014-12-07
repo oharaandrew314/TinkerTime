@@ -1,6 +1,8 @@
 package aohara.tinkertime.views;
 
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 
 import javax.swing.DefaultListCellRenderer;
@@ -11,7 +13,8 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
 import thirdParty.CompoundIcon;
-import aohara.tinkertime.Config;
+import aohara.common.content.ImageManager;
+import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.models.Mod;
 
 /**
@@ -23,18 +26,24 @@ import aohara.tinkertime.models.Mod;
  */
 public class ModListCellRenderer implements ListCellRenderer<Mod> {
 	
-	private final ImageIcon checkIcon, xIcon, errorIcon, updateIcon;
+	private final ImageIcon checkIcon, xIcon, errorIcon, updateIcon, localIcon;
 	private final DefaultListCellRenderer def = new DefaultListCellRenderer();
+	private final ImageManager imageManager = new ImageManager("icon/");
+	private final TinkerConfig config;
 	
-	public ModListCellRenderer(){
-		checkIcon = loadImage("check.png");
-		xIcon = loadImage("x.png");
-		errorIcon = loadImage("exclamation.png");
-		updateIcon = loadImage("upArrow.gif");
+	public ModListCellRenderer(TinkerConfig config){
+		this.config = config;
+		checkIcon = loadIcon("glyphicons_152_check.png", new Color(70, 210, 70));
+		xIcon = loadIcon("glyphicons_207_remove_2.png", new Color(205, 20, 20));
+		errorIcon = loadIcon("glyphicons_078_warning_sign.png", new Color(215, 160, 0));
+		updateIcon = loadIcon("glyphicons_213_up_arrow.png", new Color(255, 200, 0));
+		localIcon = loadIcon("glyphicons_410_compressed.png", new Color(0, 0, 0));
 	}
 	
-	private ImageIcon loadImage(String name){
-		return new ImageIcon(getClass().getClassLoader().getResource("icon/" + name));
+	private ImageIcon loadIcon(String name, Color colour){
+		BufferedImage image = imageManager.getImage(name);
+		image = colour != null ? imageManager.colorize(image, colour) : image;
+		return new ImageIcon(image);
 	}
 
 	@Override
@@ -43,7 +52,7 @@ public class ModListCellRenderer implements ListCellRenderer<Mod> {
 
 		// Compile list of icons
 		LinkedList<ImageIcon> icons = new LinkedList<>();
-		if (mod.isDownloaded(new Config())){
+		if (mod.isDownloaded(config)){
 			icons.add(mod.isEnabled() ? checkIcon : xIcon);
 		} else {
 			icons.add(errorIcon);
@@ -51,6 +60,10 @@ public class ModListCellRenderer implements ListCellRenderer<Mod> {
 		
 		if (mod.isUpdateAvailable()){
 			icons.add(updateIcon);
+		}
+		
+		if (mod.getPageUrl() == null){
+			icons.add(localIcon);
 		}
 		
 		// Create cell label

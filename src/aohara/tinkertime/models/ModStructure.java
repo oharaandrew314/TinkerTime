@@ -1,6 +1,7 @@
 package aohara.tinkertime.models;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -11,7 +12,7 @@ import java.util.zip.ZipFile;
 
 import org.apache.commons.io.IOUtils;
 
-import aohara.tinkertime.Config;
+import aohara.tinkertime.TinkerConfig;
 import thirdParty.ZipNode;
 
 /**
@@ -25,12 +26,10 @@ import thirdParty.ZipNode;
  */
 public class ModStructure {
 	
-	public final String readmeText;
 	private final Set<ZipNode> modules;
 	
-	public ModStructure(Set<ZipNode> modules, String readmeText){
+	private ModStructure(Set<ZipNode> modules){
 		this.modules = modules;
-		this.readmeText = readmeText;
 	}
 	
 	public boolean usesModule(ZipNode module){
@@ -48,11 +47,11 @@ public class ModStructure {
 	
 	// Factory Methods
 	
-	public static ModStructure inspectArchive(Config config, Mod mod) throws IOException {
+	public static ModStructure inspectArchive(TinkerConfig config, Mod mod) throws IOException {
 		return inspectArchive(mod.getCachedZipPath(config));
 	}
 	
-	public static ModStructure inspectArchive(final Path zipPath) throws IOException {		
+	public static ModStructure inspectArchive(final Path zipPath) throws IOException {
 		try(ZipFile zipFile = new ZipFile(zipPath.toFile())){
 			ZipNode root = ZipNode.fromZipFile(zipFile); // Get structure of zip
 			
@@ -61,22 +60,25 @@ public class ModStructure {
 			gameData = gameData != null ? gameData : root;
 			
 			// Discover structure
-			return new ModStructure(getModules(gameData), getReadmeText(zipFile));
+			return new ModStructure(getModules(gameData));
 		}
 	}
 	
-	public static String getReadmeText(final Config config, final Mod mod){
-		try(ZipFile zipFile = new ZipFile(mod.getCachedZipPath(config).toFile())){
-			return getReadmeText(zipFile);
-		} catch (IOException e) {}
+	public static String getReadmeText(final TinkerConfig config, final Mod mod){
+		Path zipPath = mod.getCachedZipPath(config);
+		if (zipPath != null){
+			try(ZipFile zipFile = new ZipFile(zipPath.toFile())){
+				return getReadmeText(zipFile);
+			} catch (IOException e) {}
+		}
 		return null;
 	}
 	
 	private static String getReadmeText(final ZipFile zipFile){
 		for (ZipEntry entry : new HashSet<ZipEntry>(Collections.list(zipFile.entries()))){
 			if (!entry.isDirectory() && entry.getName().toLowerCase().contains("readme")){
-				try(StringWriter writer = new StringWriter()){
-					IOUtils.copy(zipFile.getInputStream(entry), writer);
+				try(StringWriter writer = new StringWriter(); InputStream is = zipFile.getInputStream(entry)){
+					IOUtils.copy(is, writer);
 					return writer.toString();
 				} catch (IOException e) {}
 			}
