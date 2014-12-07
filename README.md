@@ -31,21 +31,26 @@ https://github.com/oharaandrew314/TinkerTime/releases
 The [Tinker Time Wiki](https://github.com/oharaandrew314/TinkerTime/wiki) contains many useful resources with instructions and known issues.
 
 ### Special Thanks
-- Beta Testers ([foonix](https://github.com/foonix) and [jcsntoll](https://github.com/jcsntoll))
+- Beta Testers ([foonix](https://github.com/foonix), [jcsntoll](https://github.com/jcsntoll), and [apemanzilla](https://github.com/apemanzilla))
 
 ### Change Log
 v1.0
 - New Features:
-  - Now fully using glyphicons
-  - Export JSON data for enabled mods
-  - Will now delete old image caches and mods
   - Module Manager is now considered a (non-removable) mod
+  - Can now add local mod zip files (non-updateable)
+  - Now fully using glyphicons (license in about)
+  - Windows are now centered in the screen
+  - Button to export JSON data for enabled mods
+  - Will now delete old image caches and mods
   - Tinker Time Updater is simplified
+  - When mod update is available, add message to mod description
 - Fixes:
   - Fixed issue where variations of supported domains were not supported. e.g. beta.kerbalstuff.com
   - Fixed issue where mod list would not always load on startup
   - Fixed an issue where a module with a dependent mod would not be disabled even
     if the dependent mod was disabled
+  - Improve Github mod URL analysis robustness
+  - Fix Json caching for Jenkins crawler (less annoyance for [sarbian](https://github.com/sarbian))
 
 v0.7
 - KerbalStuff Mod Support
