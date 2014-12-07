@@ -48,7 +48,7 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 		
 		if (mod != null){
 			// Set Border
-			panel.setBorder(BorderFactory.createTitledBorder(mod.getName() + " - by " + mod.getCreator()));
+			panel.setBorder(BorderFactory.createTitledBorder(mod.getName() + (mod.isUpdateable()? " - by " + mod.getCreator() : " - added from zip")));
 			
 			// Warning if non-updateable
 			if (!mod.isUpdateable()){
