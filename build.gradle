@@ -14,7 +14,7 @@ sourceSets {
         }
         resources {
             srcDir 'res'
-             exclude('*/Thumbs.db')
+            exclude('*/Thumbs.db')
         }
     }
 
@@ -55,4 +55,11 @@ jar {
     manifest {
         attributes 'Main-Class': 'aohara.tinkertime.TinkerTime'
     }
+}
+
+task release(type:Zip,dependsOn:jar) {
+	jar.outputs.files.each {
+		from it.getPath()
+	}
+	from "readme.md"
 }
