@@ -9,19 +9,13 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
-
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 
 /**
