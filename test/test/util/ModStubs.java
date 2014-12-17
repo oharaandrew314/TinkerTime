@@ -12,6 +12,7 @@ public enum ModStubs {
 	NavBall("Enhanced Navball", "http://www.curse.com/ksp-mods/kerbal/220469-enhanced-navball-v1-2"),
 	HotRockets("HotRockets! Particle FX Replacement", "http://www.curse.com/ksp-mods/kerbal/220207-hotrockets-particle-fx-replacement"),
 	Eve("EnvironmentalVisualEnhancements", "https://github.com/rbray89/EnvironmentalVisualEnhancements"),
+	KerbalAlarmClock("KerbalAlarmClock", "https://github.com/TriggerAu/KerbalAlarmClock"),
 	ProceduralFairings("ProceduralFairings", "https://github.com/e-dog/ProceduralFairings"),
 	Near("NEAR", "https://github.com/ferram4/Ferram-Aerospace-Research"),
 	RadialEngines("Radial Engine Mounts by PanaTee Parts International", "https://kerbalstuff.com/api/mod/153"),

@@ -9,16 +9,30 @@ import test.util.ModStubs;
 
 public class TestGithubCrawler extends AbstractTestModCrawler {
 
+//	@Test
+//	public void testVisualEnhancements() throws IOException, UnsupportedHostException{
+//		compare(
+//			ModStubs.Eve,
+//			"EnvironmentalVisualEnhancements",
+//			getDate(2014, 8, 5),
+//			"rbray89",
+//			"EnvironmentalVisualEnhancements-7-4-LR.zip",
+//			"https://github.com/rbray89/EnvironmentalVisualEnhancements/releases/download/Release-7-4/EnvironmentalVisualEnhancements-7-4.zip",
+//			"https://avatars2.githubusercontent.com/u/1095572?v=2&s=40",
+//			null
+//		);
+//	}
+	
 	@Test
-	public void testVisualEnhancements() throws IOException, UnsupportedHostException{
+	public void testKerbalAlarmClock() throws IOException, UnsupportedHostException {
 		compare(
-			ModStubs.Eve,
-			"EnvironmentalVisualEnhancements",
-			getDate(2014, 8, 5),
-			"rbray89",
-			"EnvironmentalVisualEnhancements-7-4-LR.zip",
-			"https://github.com/rbray89/EnvironmentalVisualEnhancements/releases/download/Release-7-4/EnvironmentalVisualEnhancements-7-4.zip",
-			"https://avatars2.githubusercontent.com/u/1095572?v=2&s=40",
+			ModStubs.KerbalAlarmClock,
+			"KerbalAlarmClock",
+			getDate(2014, 12, 16),
+			"TriggerAu",
+			"KerbalAlarmClock_3.0.5.0.zip",
+			"https://github.com/TriggerAu/KerbalAlarmClock/releases",
+			"https://avatars1.githubusercontent.com/u/3683611?v=3&s=40",
 			null
 		);
 	}

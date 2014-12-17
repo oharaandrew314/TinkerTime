@@ -8,11 +8,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 
 /**
@@ -24,6 +27,8 @@ public class GithubCrawler extends Crawler<Document> {
 	
 	private static final String RELEASES = "releases";
 
+	private String downloadAsset;
+	
 	public GithubCrawler(URL url, PageLoader<Document> pageLoader) {
 		super(url, pageLoader);
 	}
@@ -54,10 +59,43 @@ public class GithubCrawler extends Crawler<Document> {
 	}
 	
 	private Element getDownloadElement() throws IOException {
-		try {
-			return getLatestReleaseElement().select("div.release-body ul.release-downloads a").first();
-		} catch (NullPointerException e){
-			throw new IOException("No Releases discovered for this mod");
+		// Linked hash set to preserve order (So it matches the order on GitHub)
+		LinkedHashSet<Element> assets = new LinkedHashSet<>(getLatestReleaseElement().select("div.release-body ul.release-downloads").first().select("li a.primary"));
+		
+		switch (assets.size()) {
+			case 0: {
+				// No non-source downloads
+				throw new IOException("No releases found for this mod");
+			}
+			case 1: {
+				// One non-source download; use it by default
+				return assets.iterator().next();
+			}
+			default: {
+				// More than one non-source download
+				// Convert set to map
+				HashMap<String, Element> releases = new HashMap<>();
+				for (Element dl : assets){
+					releases.put(dl.attr("href").substring(dl.attr("href").lastIndexOf('/') + 1), dl);
+				}
+				
+				// Check if we already have a selected asset
+				if (downloadAsset != null && releases.containsKey(downloadAsset))
+					return releases.get(downloadAsset);
+				
+				// Ask user
+				downloadAsset = (String) JOptionPane.showInputDialog(null,
+						"Which variant of the mod should be used?",
+						"Multiple Downloads Available",
+						JOptionPane.QUESTION_MESSAGE,
+						null,
+						releases.keySet().toArray(),
+						releases.keySet().toArray()[0]);
+				
+				if (downloadAsset == null)
+					throw new IOException("You must select a download to use the mod!");
+				return releases.get(downloadAsset);
+			}	
 		}
 	}
 
