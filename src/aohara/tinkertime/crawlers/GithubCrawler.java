@@ -59,16 +59,8 @@ public class GithubCrawler extends Crawler<Document> {
 	}
 	
 	private Element getDownloadElement() throws IOException {
-		//Search for releases
-		Element releaseContainer = getLatestReleaseElement().select("div.release-body ul.release-downloads").first();
-		
-		// Set to store downloads in
 		// Linked hash set to preserve order (So it matches the order on GitHub)
-		LinkedHashSet<Element> assets = new LinkedHashSet<>();
-		
-		for (Element button : releaseContainer.select("li a.primary")) {
-			assets.add(button);
-		}
+		LinkedHashSet<Element> assets = new LinkedHashSet<>(getLatestReleaseElement().select("div.release-body ul.release-downloads").first().select("li a.primary"));
 		
 		switch (assets.size()) {
 			case 0: {
