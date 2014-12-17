@@ -62,35 +62,28 @@ public class GithubCrawler extends Crawler<Document> {
 		//Search for releases
 		Element releaseContainer = getLatestReleaseElement().select("div.release-body ul.release-downloads").first();
 		
-		Iterator<Element> iter = releaseContainer.select("li a").iterator();
-		
 		// Set to store downloads in
 		// Linked hash set to preserve order (So it matches the order on GitHub)
-		LinkedHashSet<Element> assets = new LinkedHashSet<Element>();
+		LinkedHashSet<Element> assets = new LinkedHashSet<>();
 		
-		while (iter.hasNext()) {
-			Element button = iter.next();
-			if (button.hasClass("button") &&
-					button.hasClass("primary") &&
-					button.hasAttr("href"))			//They should always have this attribute, but just in case.
-				assets.add(button);	//Add link as potential download
+		for (Element button : releaseContainer.select("li a.primary")) {
+			assets.add(button);
 		}
 		
 		switch (assets.size()) {
-			case 0:
+			case 0: {
 				// No non-source downloads
 				throw new IOException("No releases found for this mod");
-			case 1:
+			}
+			case 1: {
 				// One non-source download; use it by default
-				Iterator<Element> i = assets.iterator();
-				return i.next();
-			default:
+				return assets.iterator().next();
+			}
+			default: {
 				// More than one non-source download
 				// Convert set to map
-				Iterator<Element> j = assets.iterator();
-				HashMap<String, Element> releases = new HashMap<String, Element>();
-				while (j.hasNext()) {
-					Element dl = j.next();
+				HashMap<String, Element> releases = new HashMap<>();
+				for (Element dl : assets){
 					releases.put(dl.attr("href").substring(dl.attr("href").lastIndexOf('/') + 1), dl);
 				}
 				
@@ -110,7 +103,7 @@ public class GithubCrawler extends Crawler<Document> {
 				if (downloadAsset == null)
 					throw new IOException("You must select a download to use the mod!");
 				return releases.get(downloadAsset);
-				
+			}	
 		}
 	}
 
