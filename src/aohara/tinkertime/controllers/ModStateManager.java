@@ -18,6 +18,7 @@ import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.FileUpdateListener;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -38,7 +39,7 @@ public class ModStateManager extends Listenable<SelectorInterface<Mod>>
 	private final Set<Mod> modCache = new HashSet<>();
 	
 	public ModStateManager(TinkerConfig config){
-		gson = new Gson();
+		gson = new GsonBuilder().setPrettyPrinting().create();
 		this.config = config;
 	}
 	
