@@ -32,7 +32,7 @@ public class TestGithubCrawler extends AbstractTestModCrawler {
 			"TriggerAu",
 			"KerbalAlarmClock_3.0.5.0.zip",
 			"https://github.com/TriggerAu/KerbalAlarmClock/releases",
-			"https://avatars1.githubusercontent.com/u/3683611?v=3&s=40",
+			null,
 			null
 		);
 	}
@@ -46,7 +46,7 @@ public class TestGithubCrawler extends AbstractTestModCrawler {
 			"e-dog",
 			"ProcFairings_3.09.zip",
 			"https://github.com/e-dog/ProceduralFairings/releases",
-			"https://avatars0.githubusercontent.com/u/5958584?v=2&s=40",
+			null,
 			null
 		);
 	}

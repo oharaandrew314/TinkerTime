@@ -26,12 +26,11 @@ public abstract class AbstractTestModCrawler {
 			stub.name,
 			newestFile,
 			creator,
-			new URL(imageLink),
+			imageLink != null ? new URL(imageLink) : null,
 			stub.url,
 			updatedOn,
 			supportedVersion
 		);
-		
 		assertEquals(expectedMod.getName(), actualMod.getName());
 		assertEquals(expectedMod.getNewestFileName(), actualMod.getNewestFileName());
 		assertEquals(expectedMod.getCreator(), actualMod.getCreator());
