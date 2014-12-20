@@ -84,7 +84,7 @@ public class GithubCrawler extends Crawler<Document> {
 				
 				// Ask user
 				downloadAsset = (String) JOptionPane.showInputDialog(null,
-						"Which variant of the mod should be used?",
+						"Which variant of the mod '" + getName() + "' should be used?",
 						"Multiple Downloads Available",
 						JOptionPane.QUESTION_MESSAGE,
 						null,
@@ -122,7 +122,7 @@ public class GithubCrawler extends Crawler<Document> {
 
 	@Override
 	public URL getImageUrl() throws IOException {
-		return new URL(getLatestReleaseElement().select("img.avatar").first().attr("src"));
+		return null;
 	}
 
 	@Override
