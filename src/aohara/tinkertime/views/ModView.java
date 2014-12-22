@@ -57,6 +57,9 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 				panel.add(new JLabel("<html><b>An update for this mod is available.</b></html>"));
 			}
 			
+			// Current Mod Version
+			panel.add(new JLabel("Mod Version: " + mod.getNewestFileName()));
+			
 			// Supported KSP Version
 			String kspVersion =  mod.getSupportedVersion();
 			panel.add(new JLabel("KSP Version: " + (kspVersion != null ? kspVersion : "Unknown")));
