@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 import javax.swing.AbstractAction;
@@ -387,7 +388,28 @@ class Actions {
 			if (chooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION){
 				mm.addModZip(chooser.getSelectedFile().toPath());
 			}
-		}
+		}	
+	}
+	
+	@SuppressWarnings("serial")
+	static class LaunchKspAction extends TinkerAction {
 		
+		LaunchKspAction(JComponent parent, ModManager mm){
+			super("Launch KSP", "icon/rocket.png", parent, mm);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			Path execPath = mm.config.getExecPath();
+			if (execPath != null){
+				try {
+					Runtime.getRuntime().exec(execPath.toString());
+				} catch (IOException e) {
+					errorMessage(e);
+				}
+			} else {
+				errorMessage("Please set the KSP executable path in the settings.");
+			}
+		}
 	}
 }

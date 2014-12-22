@@ -14,6 +14,10 @@ public class MenuFactory {
 		JToolBar toolBar = new JToolBar();
 		toolBar.setFloatable(false);
 		
+		toolBar.add(new Actions.LaunchKspAction(toolBar, mm));
+		
+		toolBar.addSeparator();
+		
 		toolBar.add(new Actions.OptionsAction(toolBar, mm));
 		
 		toolBar.addSeparator();
@@ -41,6 +45,7 @@ public class MenuFactory {
 		JMenuBar menuBar = new JMenuBar();
 		
 		JMenu fileMenu = new JMenu("File");
+		fileMenu.add(new JMenuItem(new Actions.LaunchKspAction(menuBar, mm)));
 		fileMenu.add(new JMenuItem(new Actions.OptionsAction(menuBar, mm)));
 		fileMenu.add(new JMenuItem(new Actions.ExportModList(menuBar, mm)));
 		fileMenu.add(new JMenuItem(new Actions.ExitAction(menuBar, mm)));

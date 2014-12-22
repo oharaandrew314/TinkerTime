@@ -18,7 +18,8 @@ public class TinkerConfig {
 	private static final String
 		GAMEDATA_PATH = "GamaData Path",
 		AUTO_CHECK_FOR_MOD_UPDATES = "Check for Mod Updates on Startup",
-		NUM_CONCURRENT_DOWNLOADS = "Number of Concurrent Downloads";
+		NUM_CONCURRENT_DOWNLOADS = "Number of Concurrent Downloads",
+		EXEC_PATH = "KSP Executable Path";
 		
 	private final GuiConfig config;
 	
@@ -31,6 +32,7 @@ public class TinkerConfig {
 		builder.addTrueFalseProperty(AUTO_CHECK_FOR_MOD_UPDATES, true, false);
 		builder.addPathProperty(GAMEDATA_PATH, JFileChooser.DIRECTORIES_ONLY, null, false);
 		builder.addIntProperty(NUM_CONCURRENT_DOWNLOADS, 4, 1, null, false);
+		builder.addPathProperty(EXEC_PATH, JFileChooser.FILES_ONLY, null, true);
 		
 		GuiConfig config = builder.createGuiConfigInDocuments("TinkerTime Config", TinkerTime.NAME, "TinkerTime.json");
 		if (!config.isValid()){
@@ -68,6 +70,11 @@ public class TinkerConfig {
 	
 	public int numConcurrentDownloads(){
 		return Integer.parseInt(config.getProperty(NUM_CONCURRENT_DOWNLOADS));
+	}
+	
+	public Path getExecPath(){
+		String path = config.getProperty(EXEC_PATH);
+		return path != null && !path.isEmpty() ? Paths.get(path) : null;
 	}
 	
 	// -- Verification ----------------------------------------------------
