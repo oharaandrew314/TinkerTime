@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.util.Date;
 
 import aohara.tinkertime.TinkerConfig;
+import aohara.tinkertime.crawlers.Constants;
 
 /**
  * Model for holding Mod information and status.
@@ -91,7 +92,22 @@ public class Mod implements FileUpdateListener {
 	}
 	
 	// -- Other Methods --------------------
-	
+
+	public String getOriginSite() {
+		if(getPageUrl() == null || getPageUrl().getHost() ==null) {
+			return "unknown";
+		}
+
+		String host = getPageUrl().getHost();
+		for (String modHost : Constants.ACCEPTED_MOD_HOSTS) {
+			if (host.endsWith(modHost)) {
+				return modHost;
+			}
+		}
+
+		return "unknown";
+	}
+
 	public boolean isEnabled(){
 		return enabled;
 	}
