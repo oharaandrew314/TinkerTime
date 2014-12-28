@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Path;
 import java.util.Arrays;
 
 import javax.swing.AbstractAction;
@@ -24,6 +23,7 @@ import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledError;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledError;
 import aohara.tinkertime.controllers.ModManager.ModNotDownloadedError;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedError;
+import aohara.tinkertime.controllers.launcher.GameLauncher;
 import aohara.tinkertime.crawlers.Constants;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.DefaultMods;
@@ -394,21 +394,19 @@ class Actions {
 	@SuppressWarnings("serial")
 	static class LaunchKspAction extends TinkerAction {
 		
+		private final GameLauncher launcher;
+		
 		LaunchKspAction(JComponent parent, ModManager mm){
 			super("Launch KSP", "icon/rocket.png", parent, mm);
+			launcher = GameLauncher.create(mm.config);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			Path execPath = mm.config.getExecPath();
-			if (execPath != null){
-				try {
-					Runtime.getRuntime().exec(execPath.toString());
-				} catch (IOException e) {
-					errorMessage(e);
-				}
-			} else {
-				errorMessage("Please set the KSP executable path in the settings.");
+			try {
+				launcher.launchGame();
+			} catch (IOException e) {
+				errorMessage(e);
 			}
 		}
 	}
