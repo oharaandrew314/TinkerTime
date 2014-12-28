@@ -71,7 +71,7 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 			panel.add(updatedLabel);
 
 			// Origin site
-			panel.add(new JLabel("Mod origin: " + mod.getOriginSite()));
+			panel.add(new JLabel("Mod origin: " + (mod.getOriginSite() != null ? mod.getOriginSite() : "unknown")));
 
 			// Mod Page Link
 			panel.add(new UrlPanel("Go to Mod Page", mod.getPageUrl()).getComponent());		

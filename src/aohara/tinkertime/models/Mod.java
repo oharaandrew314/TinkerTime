@@ -93,19 +93,21 @@ public class Mod implements FileUpdateListener {
 	
 	// -- Other Methods --------------------
 
+	/**
+	 * Get this mod origin domain (from {@link aohara.tinkertime.crawlers.Constants#ACCEPTED_MOD_HOSTS})
+	 * @return mod origin domain or {@code null} if not in {@code ACCEPTED_MOD_HOSTS}
+	 */
 	public String getOriginSite() {
-		if(getPageUrl() == null || getPageUrl().getHost() ==null) {
-			return "unknown";
-		}
-
-		String host = getPageUrl().getHost();
-		for (String modHost : Constants.ACCEPTED_MOD_HOSTS) {
-			if (host.endsWith(modHost)) {
-				return modHost;
+		if(getPageUrl() != null && getPageUrl().getHost() != null) {
+			String host = getPageUrl().getHost();
+			for (String modHost : Constants.ACCEPTED_MOD_HOSTS) {
+				if (host.endsWith(modHost)) {
+					return modHost;
+				}
 			}
 		}
 
-		return "unknown";
+		return null;
 	}
 
 	public boolean isEnabled(){
