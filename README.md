@@ -24,8 +24,7 @@ Tinker Time is a Mod Manager for Kerbal Space Program that will allow you to aut
 
 
 ### Downloads
-See the "Releases" section on the Tinker Time repository
-https://github.com/oharaandrew314/TinkerTime/releases
+Please download the latest version from [KerbalStuff](https://kerbalstuff.com/mod/243)
 
 ### Wiki
 The [Tinker Time Wiki](https://github.com/oharaandrew314/TinkerTime/wiki) contains many useful resources with instructions and known issues.
