@@ -2,7 +2,9 @@ package aohara.tinkertime.crawlers;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,29 +50,12 @@ public class KerbalStuffCrawler extends Crawler<JsonObject>{
 		return null;
 	}
 	
-	@Override
-	public URL getDownloadLink() throws IOException {
-		return new URL(
-			"https",
-			Constants.HOST_KERBAL_STUFF,
-			getLatestVersion().get("download_path").getAsString()
-		);
-	}
-	
 	private JsonObject getLatestVersion() throws IOException {
 		JsonArray versions = getPage(getApiUrl()).get("versions").getAsJsonArray();
 		if (versions.size() > 0){
 			return versions.get(0).getAsJsonObject();
 		}
 		throw new IOException("No latest version available");
-	}
-
-	@Override
-	public String getNewestFileName() throws IOException {
-		return String.format(
-			"%s %s.zip", getName(),
-			getLatestVersion().get("friendly_version").getAsString()
-		);
 	}
 
 	@Override
@@ -99,5 +84,23 @@ public class KerbalStuffCrawler extends Crawler<JsonObject>{
 			return m.group(2);
 		}
 		return null;
+	}
+
+	@Override
+	protected Collection<Asset> getNewestAssets() throws IOException {
+		String fileName = String.format(
+			"%s %s.zip", getName(),
+			getLatestVersion().get("friendly_version").getAsString()
+		);
+		
+		URL downloadLink = new URL(
+			"https",
+			Constants.HOST_KERBAL_STUFF,
+			getLatestVersion().get("download_path").getAsString()
+		);
+		
+		Collection<Asset> assets = new LinkedList<>();
+		assets.add(new Asset(fileName, downloadLink));
+		return assets;
 	}
 }

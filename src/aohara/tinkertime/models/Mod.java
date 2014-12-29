@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.util.Date;
 
 import aohara.tinkertime.TinkerConfig;
+import aohara.tinkertime.crawlers.Crawler;
 
 /**
  * Model for holding Mod information and status.
@@ -112,7 +113,7 @@ public class Mod implements FileUpdateListener {
 	}
 	
 	@Override
-	public void setUpdateAvailable(URL pageUrl, URL downloadLink, String newestFileName){
+	public void setUpdateAvailable(Crawler<?> crawler){
 		updateAvailable = true;
 	}
 	

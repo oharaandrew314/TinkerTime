@@ -5,7 +5,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.net.URL;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,6 +14,7 @@ import javax.swing.JOptionPane;
 import aohara.common.Listenable;
 import aohara.common.selectorPanel.SelectorInterface;
 import aohara.tinkertime.TinkerConfig;
+import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.models.DefaultMods;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.FileUpdateListener;
@@ -119,10 +119,10 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>>
 	}
 
 	@Override
-	public synchronized void setUpdateAvailable(URL pageUrl, URL downloadLink, String newestFileName) {
+	public synchronized void setUpdateAvailable(Crawler<?> crawler) {
 		for (Mod mod : modCache){
-			if (mod.isUpdateable() && mod.getPageUrl().equals(pageUrl)){
-				mod.setUpdateAvailable(pageUrl, downloadLink, newestFileName);
+			if (mod.isUpdateable() && mod.id.equals(crawler.generateId())){
+				mod.setUpdateAvailable(crawler);
 				break;
 			}
 		}
