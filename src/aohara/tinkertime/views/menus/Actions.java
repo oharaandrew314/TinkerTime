@@ -316,7 +316,7 @@ class Actions {
 	static class ExportMods extends TinkerAction {
 		
 		ExportMods(JComponent parent, ModManager mm){
-			super("Export Enabled Mod Data", "icon/glyphicons_359_file_export.png", parent, mm);
+			super("Export Enabled Mods", "icon/glyphicons_359_file_export.png", parent, mm);
 		}
 
 		@Override
@@ -326,7 +326,7 @@ class Actions {
 				mm.exportEnabledMods(exportPath);
 				JOptionPane.showMessageDialog(
 					parent,
-					"Enabled mod data has been exported",
+					"Enabled mod data has been exported.",
 					"Exported",
 					JOptionPane.INFORMATION_MESSAGE
 				);
@@ -346,6 +346,12 @@ class Actions {
 			Path importPath = FileChoosers.chooseJsonFile(false);
 			if (importPath != null){
 				mm.importMods(importPath);
+				JOptionPane.showMessageDialog(
+					parent,
+					"The Mods have been imported.",
+					"Imported",
+					JOptionPane.INFORMATION_MESSAGE
+				);
 			}
 		}
 		
