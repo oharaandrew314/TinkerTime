@@ -20,8 +20,11 @@ public class MenuFactory {
 		
 		toolBar.add(new Actions.AddModAction(toolBar, mm));
 		toolBar.add(new Actions.AddModZip(toolBar, mm));
-		toolBar.add(new Actions.EnableDisableModAction(toolBar, mm));
 		toolBar.add(new Actions.DeleteModAction(toolBar, mm));
+		
+		toolBar.addSeparator();
+		
+		toolBar.add(new Actions.EnableDisableModAction(toolBar, mm));
 
 		toolBar.addSeparator();
 		
@@ -30,9 +33,7 @@ public class MenuFactory {
 
 		toolBar.addSeparator();
 		
-		toolBar.add(new Actions.AboutAction(toolBar, mm));
 		toolBar.add(new Actions.HelpAction(toolBar, mm));
-		toolBar.add(new Actions.ContactAction(toolBar, mm));
 		
 		return toolBar;
 	}
