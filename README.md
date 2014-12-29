@@ -34,6 +34,12 @@ The [Tinker Time Wiki](https://github.com/oharaandrew314/TinkerTime/wiki) contai
 - Beta Testers ([foonix](https://github.com/foonix), [jcsntoll](https://github.com/jcsntoll), and [apemanzilla](https://github.com/apemanzilla))
 
 ### Change Log
+v1.1
+- New Features
+  - Add Mod Import/Export Functionality (to share mod packs)
+  - Mod Host and Version is now displayed in Mod View
+  - Support for Github Mods with multiple assets per release
+
 v1.0
 - New Features:
   - Module Manager is now considered a (non-removable) mod
