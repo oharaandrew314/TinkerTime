@@ -5,7 +5,6 @@ import java.nio.file.Path;
 import java.util.Date;
 
 import aohara.tinkertime.TinkerConfig;
-import aohara.tinkertime.crawlers.Constants;
 
 /**
  * Model for holding Mod information and status.
