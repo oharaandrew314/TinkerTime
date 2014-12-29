@@ -71,7 +71,10 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 			panel.add(updatedLabel);
 
 			// Mod Page Link
-			panel.add(new UrlPanel("Go to Mod Page (on " + String.valueOf(mod.getOriginSite()) + ")", mod.getPageUrl()).getComponent());
+			panel.add(new UrlPanel(
+				String.format("Go to Mod Page (on %s)", mod.getOriginSite()),
+				mod.getPageUrl()
+			).getComponent());
 
 			// Readme
 			Path zipPath = mod.getCachedImagePath(config);
