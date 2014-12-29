@@ -99,14 +99,8 @@ public class Mod implements FileUpdateListener {
 	 */
 	public String getOriginSite() {
 		if(getPageUrl() != null && getPageUrl().getHost() != null) {
-			String host = getPageUrl().getHost();
-			for (String modHost : Constants.ACCEPTED_MOD_HOSTS) {
-				if (host.endsWith(modHost)) {
-					return modHost;
-				}
-			}
+			return getPageUrl().getHost();
 		}
-
 		return null;
 	}
 
