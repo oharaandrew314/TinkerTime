@@ -41,6 +41,15 @@ public abstract class Crawler<T> {
 	public abstract String getSupportedVersion() throws IOException;
 	protected abstract Collection<Asset> getNewestAssets() throws IOException;
 	
+	public boolean isAssetsAvailable(){
+		try {
+			return !getNewestAssets().isEmpty();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	public URL getPageUrl(){
 		return url;
 	}

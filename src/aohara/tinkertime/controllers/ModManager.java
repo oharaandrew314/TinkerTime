@@ -38,19 +38,18 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	private Mod selectedMod;
 	
 	public static ModManager createDefaultModManager(TinkerConfig config, ModLoader sm, ProgressPanel pp){
-		
-		ModManager mm =  new ModManager(
+		return new ModManager(
 			sm, config, pp, new DialogConflictResolver(),
 			Executors.newFixedThreadPool(config.numConcurrentDownloads()),
-			Executors.newSingleThreadExecutor());
-		
-		return mm;
+			Executors.newSingleThreadExecutor()
+		);
 	}
 	
 	public ModManager(
 			ModLoader loader, TinkerConfig config, ProgressPanel progressPanel,
 			ConflictResolver cr, Executor downloadExecutor,
-			Executor enablerExecutor){
+			Executor enablerExecutor
+	){
 		this.loader = loader;
 		this.config = config;
 		this.progressPanel = progressPanel;
