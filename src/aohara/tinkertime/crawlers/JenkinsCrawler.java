@@ -3,7 +3,9 @@ package aohara.tinkertime.crawlers;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedList;
 
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 
@@ -36,18 +38,6 @@ public class JenkinsCrawler extends Crawler<JsonObject> {
 	}
 
 	@Override
-	public URL getDownloadLink() throws IOException {
-		return new URL(artifactDownloadUrl, getNewestFileName());
-	}
-
-	@Override
-	public String getNewestFileName() throws IOException {
-		JsonArray artifacts = getJson().get("artifacts").getAsJsonArray();
-		JsonObject dllArtifact = artifacts.get(artifacts.size() - 1).getAsJsonObject();
-		return dllArtifact.get("relativePath").getAsString();
-	}
-
-	@Override
 	public Date getUpdatedOn() throws IOException {
 		long timestamp = getJson().get("timestamp").getAsLong();
 		
@@ -75,11 +65,16 @@ public class JenkinsCrawler extends Crawler<JsonObject> {
 	}
 	
 	@Override
-	public boolean isSuccesful(){
+	public boolean isUpdateAvailable(Date lastUpdated, String lastFileName) {
+		return isSuccesful() && super.isUpdateAvailable(lastUpdated, lastFileName);
+	}
+	
+	public boolean isSuccesful() {
 		try {
 			String result = getJson().get("result").getAsString();
-			return result != null && result.toLowerCase().equals("success");
+			return (result != null && result.toLowerCase().equals("success"));
 		} catch (IOException e) {
+			e.printStackTrace();
 			return false;
 		}
 	}
@@ -97,4 +92,16 @@ public class JenkinsCrawler extends Crawler<JsonObject> {
 		return null;
 	}
 
+	@Override
+	protected Collection<Asset> getNewestAssets() throws IOException {
+		Collection<Asset> assets = new LinkedList<>();
+		
+		JsonArray artifacts = getJson().get("artifacts").getAsJsonArray();
+		JsonObject dllArtifact = artifacts.get(artifacts.size() - 1).getAsJsonObject();
+		String fileName = dllArtifact.get("relativePath").getAsString();
+		
+		assets.add(new Asset(fileName, new URL(artifactDownloadUrl, fileName)));
+		
+		return assets;
+	}
 }

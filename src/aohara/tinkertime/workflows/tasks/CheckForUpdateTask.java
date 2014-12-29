@@ -26,7 +26,7 @@ public class CheckForUpdateTask extends WorkflowTask {
 
 	@Override
 	public boolean call(Workflow workflow) throws Exception {
-		return context.isUpdateAvailable(lastUpdated, lastFileName);
+		return context.crawler.isUpdateAvailable(lastUpdated, lastFileName);
 	}
 
 	@Override

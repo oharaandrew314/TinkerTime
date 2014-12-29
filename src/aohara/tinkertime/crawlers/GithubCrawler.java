@@ -7,14 +7,15 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
-import javax.swing.JOptionPane;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 
 /**
@@ -26,7 +27,7 @@ public class GithubCrawler extends Crawler<Document> {
 	
 	private static final String RELEASES = "releases";
 
-	private String downloadAsset;
+	//private Entry<String, URL> cachedAsset;
 	
 	public GithubCrawler(URL url, PageLoader<Document> pageLoader) {
 		super(url, pageLoader);
@@ -56,56 +57,22 @@ public class GithubCrawler extends Crawler<Document> {
 		Document doc = getPage(getApiUrl());
 		return doc.select("div.label-latest").first();
 	}
-	
-	private Element getDownloadElement() throws IOException {
-		// Linked hash set to preserve order (So it matches the order on GitHub)
-		LinkedHashSet<Element> assets = new LinkedHashSet<>(getLatestReleaseElement().select("div.release-body ul.release-downloads").first().select("li a.primary"));
+
+	@Override
+	protected Collection<Asset> getNewestAssets() throws IOException {
+		// Get List of Asset Elements
+		Element assetsElement = getLatestReleaseElement().select("div.release-body ul.release-downloads").first();
+		LinkedHashSet<Element> assetElements = new LinkedHashSet<>(assetsElement.select("li a.primary"));
 		
-		switch (assets.size()) {
-			case 0: {
-				// No non-source downloads
-				throw new IOException("No releases found for this mod");
-			}
-			case 1: {
-				// One non-source download; use it by default
-				return assets.iterator().next();
-			}
-			default: {
-				// More than one non-source download
-				// Convert set to map
-				HashMap<String, Element> releases = new HashMap<>();
-				for (Element dl : assets){
-					releases.put(dl.attr("href").substring(dl.attr("href").lastIndexOf('/') + 1), dl);
-				}
-				
-				// Check if we already have a selected asset
-				if (downloadAsset != null && releases.containsKey(downloadAsset))
-					return releases.get(downloadAsset);
-				
-				// Ask user
-				downloadAsset = (String) JOptionPane.showInputDialog(null,
-						"Which variant of the mod '" + getName() + "' should be used?",
-						"Multiple Downloads Available",
-						JOptionPane.QUESTION_MESSAGE,
-						null,
-						releases.keySet().toArray(),
-						releases.keySet().toArray()[0]);
-				
-				if (downloadAsset == null)
-					throw new IOException("You must select a download to use the mod!");
-				return releases.get(downloadAsset);
-			}	
+		// Get File Names from Elements
+		Collection<Asset> assets = new LinkedList<>();
+		for (Element assetEle : assetElements){
+			assets.add(new Asset(
+					assetEle.attr("href").substring(assetEle.attr("href").lastIndexOf('/') + 1),
+					new URL(assetEle.absUrl("href"))
+			));
 		}
-	}
-
-	@Override
-	public URL getDownloadLink() throws IOException {
-		return new URL(getDownloadElement().absUrl("href"));
-	}
-
-	@Override
-	public String getNewestFileName() throws IOException {
-		return getDownloadElement().text();
+		return assets;
 	}
 
 	@Override

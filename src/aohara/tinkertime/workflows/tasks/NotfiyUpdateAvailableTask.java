@@ -26,10 +26,9 @@ public class NotfiyUpdateAvailableTask extends WorkflowTask {
 	@Override
 	public boolean call(Workflow workflow) throws Exception {		
 		// Notify update listeners
-		String newestFileName = crawler.getNewestFileName();
-		if (newestFileName != null){
+		if (crawler.isAssetsAvailable()){
 			for (FileUpdateListener l : listeners){
-				l.setUpdateAvailable(crawler.getPageUrl(), crawler.getDownloadLink(), newestFileName);
+				l.setUpdateAvailable(crawler);
 				progress(workflow, 1);
 			}
 			return true;

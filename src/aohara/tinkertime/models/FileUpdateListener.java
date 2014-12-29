@@ -1,6 +1,6 @@
 package aohara.tinkertime.models;
 
-import java.net.URL;
+import aohara.tinkertime.crawlers.Crawler;
 
 /**
  * Public Interface for notfiying a Class that an updated version of a file is available.
@@ -9,6 +9,6 @@ import java.net.URL;
  */
 public interface FileUpdateListener {
 	
-	public void setUpdateAvailable(URL pageUrl, URL downloadLink, String newestFileName);
+	public void setUpdateAvailable(Crawler<?> crawler);
 
 }
