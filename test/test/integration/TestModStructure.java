@@ -11,7 +11,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import test.util.ModLoader;
+import test.util.TestModLoader;
 import test.util.ModStubs;
 import thirdParty.ZipNode;
 import aohara.tinkertime.models.ModStructure;
@@ -19,7 +19,7 @@ import aohara.tinkertime.models.ModStructure;
 public class TestModStructure {
 	
 	private void testModules(ModStubs stub, String... expectedModuleNames) throws IOException{
-		ModStructure struct = ModLoader.getStructure(stub);
+		ModStructure struct = TestModLoader.getStructure(stub);
 		
 		// Get Actual Module Names
 		Set<String> actualNames = new HashSet<>();
@@ -34,7 +34,7 @@ public class TestModStructure {
 	}
 	
 	private void testModuleFiles(ModStructure struct, String moduleName, String... expectedFileNames){
-		ZipNode module = ModLoader.getModule(struct, moduleName);	
+		ZipNode module = TestModLoader.getModule(struct, moduleName);	
 		
 		Set<String> actual = new HashSet<>();
 		getFilePaths(actual, module.getParent(), module);
@@ -55,7 +55,7 @@ public class TestModStructure {
 	public void testMod1() throws IOException{
 		testModules(ModStubs.TestMod1, "TestMod1/", "Dependency/");
 		testModuleFiles(
-			ModLoader.getStructure(ModStubs.TestMod1),
+			TestModLoader.getStructure(ModStubs.TestMod1),
 			"TestMod1/",
 			"TestMod1/Plugins/Foo.dll",
 			"TestMod1/Icons/icon.ico",
@@ -68,7 +68,7 @@ public class TestModStructure {
 	public void testMod2() throws IOException{
 		testModules(ModStubs.TestMod2, "TestMod2/", "Dependency/");
 		testModuleFiles(
-			ModLoader.getStructure(ModStubs.TestMod2),
+			TestModLoader.getStructure(ModStubs.TestMod2),
 			"TestMod2/",
 			"TestMod2/Plugins/Foo.dll",
 			"TestMod2/Icons/icon.ico",

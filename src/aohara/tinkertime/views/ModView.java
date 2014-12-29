@@ -69,10 +69,13 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 			Date updatedOn = mod.getUpdatedOn();
 			updatedLabel.setText("Last Updated: " + (updatedOn != null ? DATE_FORMAT.format(updatedOn) : "N/A"));
 			panel.add(updatedLabel);
-			
+
 			// Mod Page Link
-			panel.add(new UrlPanel("Go to Mod Page", mod.getPageUrl()).getComponent());		
-			
+			panel.add(new UrlPanel(
+				String.format("Go to Mod Page (on %s)", mod.getOriginSite()),
+				mod.getPageUrl()
+			).getComponent());
+
 			// Readme
 			Path zipPath = mod.getCachedImagePath(config);
 			if (zipPath != null && zipPath.toFile().exists()){

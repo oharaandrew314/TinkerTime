@@ -14,7 +14,7 @@ import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
 
-public class ModLoader {
+public class TestModLoader {
 	
 	public static MockMod loadMod(ModStubs stub) throws UnsupportedHostException{
 		try {
@@ -32,7 +32,7 @@ public class ModLoader {
 	}
 	
 	private static URL getZipUrl(String modName){
-		return ModLoader.class.getClassLoader().getResource(
+		return TestModLoader.class.getClassLoader().getResource(
 			String.format("zips/%s.zip", modName)
 		);
 	}
@@ -81,7 +81,7 @@ public class ModLoader {
 		
 		@Override
 		public Path getCachedZipPath(TinkerConfig config){
-			return downloaded ? ModLoader.getZipPath(getName()) : Paths.get("/");
+			return downloaded ? TestModLoader.getZipPath(getName()) : Paths.get("/");
 		}
 	}
 }

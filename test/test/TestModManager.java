@@ -18,7 +18,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import test.util.MockConfig;
-import test.util.ModLoader;
+import test.util.TestModLoader;
 import test.util.ModStubs;
 import aohara.common.workflows.ConflictResolver;
 import aohara.common.workflows.ConflictResolver.Resolution;
@@ -29,23 +29,23 @@ import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledError;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledError;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedError;
-import aohara.tinkertime.controllers.ModStateManager;
+import aohara.tinkertime.controllers.ModLoader;
 import aohara.tinkertime.models.Mod;
 
 public class TestModManager {
 	
 	private static TinkerConfig config;
 	private ModManager manager;
-	private static ModLoader.MockMod mod, testMod1, testMod2;
+	private static TestModLoader.MockMod mod, testMod1, testMod2;
 	private MockCR cr;
 	private Executor downloedExecutor, enablerExecutor;
 	
 	@BeforeClass
 	public static void setUpClass() throws Throwable{
 		config = spy(new MockConfig());
-		mod = ModLoader.loadMod(ModStubs.Mechjeb);
-		testMod1 = ModLoader.loadMod(ModStubs.TestMod1);
-		testMod2 = ModLoader.loadMod(ModStubs.TestMod2);
+		mod = TestModLoader.loadMod(ModStubs.Mechjeb);
+		testMod1 = TestModLoader.loadMod(ModStubs.TestMod1);
+		testMod2 = TestModLoader.loadMod(ModStubs.TestMod2);
 		
 		mod.setDownloaded(true);
 		testMod1.setDownloaded(true);
@@ -55,7 +55,7 @@ public class TestModManager {
 	@Before
 	public void setUp() throws Throwable {
 		manager = new ModManager(
-			mock(ModStateManager.class),
+			mock(ModLoader.class),
 			config,
 			mock(ProgressPanel.class),
 			cr = spy(new MockCR()),
