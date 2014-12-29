@@ -1,7 +1,6 @@
 package aohara.tinkertime.controllers.launcher;
 
 import java.io.IOException;
-import java.nio.file.Path;
 
 import aohara.tinkertime.TinkerConfig;
 
@@ -20,8 +19,7 @@ public class GameLauncher {
 	}
 	
 	public void launchGame() throws IOException{
-		Path execPath = strategy.getPath(config);
-		new ProcessBuilder(execPath.toString()).start();
+		strategy.getExecCommand(config).start();
 	}
 	
 	private static GameExecStrategy getExecStrategy(){
