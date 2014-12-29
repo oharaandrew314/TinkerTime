@@ -4,14 +4,13 @@ import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 import aohara.common.Util;
 import aohara.common.content.ImageManager;
@@ -28,6 +27,7 @@ import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.DefaultMods;
 import aohara.tinkertime.models.FileUpdateListener;
 import aohara.tinkertime.models.Mod;
+import aohara.tinkertime.views.FileChoosers;
 import aohara.tinkertime.views.UrlPanel;
 import aohara.tinkertime.workflows.ModWorkflowBuilder;
 
@@ -313,21 +313,17 @@ class Actions {
 	}
 	
 	@SuppressWarnings("serial")
-	static class ExportModList extends TinkerAction {
+	static class ExportMods extends TinkerAction {
 		
-		ExportModList(JComponent parent, ModManager mm){
+		ExportMods(JComponent parent, ModManager mm){
 			super("Export Enabled Mod Data", "icon/glyphicons_359_file_export.png", parent, mm);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			JFileChooser chooser = new JFileChooser();
-			chooser.setDialogTitle("Choose a location to save the mod data");
-			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);  // Only accept files
-			chooser.setFileFilter(new FileNameExtensionFilter("Json File", "json"));  // Only accept JSON files
-			chooser.setSelectedFile(new java.io.File("mods.json"));
-			if (chooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION){
-				mm.exportEnabledMods(chooser.getSelectedFile().toPath());
+			Path exportPath = FileChoosers.chooseJsonFile(true);
+			if (exportPath != null){
+				mm.exportEnabledMods(exportPath);
 				JOptionPane.showMessageDialog(
 					parent,
 					"Enabled mod data has been exported",
@@ -336,6 +332,23 @@ class Actions {
 				);
 			}
 		}
+	}
+	
+	@SuppressWarnings("serial")
+	static class ImportMods extends TinkerAction {
+		
+		ImportMods(JComponent parent, ModManager mm){
+			super("Import Mods", "icon/glyphicons-359-file-import.png", parent, mm);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			Path importPath = FileChoosers.chooseJsonFile(false);
+			if (importPath != null){
+				mm.importMods(importPath);
+			}
+		}
+		
 	}
 	
 	@SuppressWarnings("serial")
@@ -380,14 +393,10 @@ class Actions {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {			
-			JFileChooser chooser = new JFileChooser();
-			chooser.setDialogTitle("Please select the mod zip to add.");
-			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);  // Only accept files
-			chooser.setFileFilter(new FileNameExtensionFilter("Zip Archive", "zip"));
-			if (chooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION){
-				mm.addModZip(chooser.getSelectedFile().toPath());
+			Path modPath = FileChoosers.chooseModZip();
+			if (modPath != null){
+				mm.addModZip(modPath);
 			}
 		}
-		
 	}
 }

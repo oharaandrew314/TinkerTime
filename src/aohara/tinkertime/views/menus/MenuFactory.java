@@ -42,7 +42,6 @@ public class MenuFactory {
 		
 		JMenu fileMenu = new JMenu("File");
 		fileMenu.add(new JMenuItem(new Actions.OptionsAction(menuBar, mm)));
-		fileMenu.add(new JMenuItem(new Actions.ExportModList(menuBar, mm)));
 		fileMenu.add(new JMenuItem(new Actions.ExitAction(menuBar, mm)));
 		menuBar.add(fileMenu);
 		
@@ -59,6 +58,11 @@ public class MenuFactory {
 		updateMenu.add(new JMenuItem(new Actions.CheckforUpdatesAction(menuBar, mm)));
 		updateMenu.add(new JMenuItem(new Actions.UpdateTinkerTime(menuBar, mm)));
 		menuBar.add(updateMenu);
+		
+		JMenu importExportMenu = new JMenu("Import/Export Mods");
+		importExportMenu.add(new JMenuItem(new Actions.ExportMods(menuBar, mm)));
+		importExportMenu.add(new JMenuItem(new Actions.ImportMods(menuBar, mm)));
+		menuBar.add(importExportMenu);
 		
 		JMenu helpMenu = new JMenu("Help");
 		helpMenu.add(new JMenuItem(new Actions.AboutAction(menuBar, mm)));

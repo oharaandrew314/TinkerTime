@@ -13,7 +13,7 @@ import aohara.common.workflows.ConflictResolver;
 import aohara.common.workflows.WorkflowBuilder;
 import aohara.common.workflows.tasks.UnzipTask;
 import aohara.tinkertime.TinkerConfig;
-import aohara.tinkertime.controllers.ModStateManager;
+import aohara.tinkertime.controllers.ModLoader;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.FileUpdateListener;
 import aohara.tinkertime.models.Mod;
@@ -51,7 +51,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	/**
 	 * Downloads the latest version of the mod referenced by the URL.
 	 */
-	public void downloadMod(URL pageUrl, TinkerConfig config, ModStateManager sm) throws IOException, UnsupportedHostException {
+	public void downloadMod(URL pageUrl, TinkerConfig config, ModLoader sm) throws IOException, UnsupportedHostException {
 		ModDownloaderContext context = ModDownloaderContext.create(pageUrl, config);
 		addTask(new CacheCrawlerPageTask(context));
 		
@@ -70,7 +70,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		addTask(MarkModUpdatedTask.createFromDownloaderContext(sm, context));
 	}
 	
-	public void addLocalMod(Path zipPath, TinkerConfig config, ModStateManager sm){
+	public void addLocalMod(Path zipPath, TinkerConfig config, ModLoader sm){
 		String fileName = zipPath.getFileName().toString();
 		String prettyName = fileName;
 		if (prettyName.indexOf(".") > 0)
@@ -100,7 +100,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	 * @param config
 	 * @param sm
 	 */
-	public void deleteMod(Mod mod, TinkerConfig config, ModStateManager sm) {
+	public void deleteMod(Mod mod, TinkerConfig config, ModLoader sm) {
 		if (mod.isEnabled()){
 			try {
 				disableMod(mod, config, sm);
@@ -114,7 +114,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		addTask(MarkModUpdatedTask.notifyDeletion(sm, mod, config));
 	}
 	
-	public void disableMod(Mod mod, TinkerConfig config, ModStateManager sm) throws IOException{
+	public void disableMod(Mod mod, TinkerConfig config, ModLoader sm) throws IOException{
 		if (modHasArchive(mod, config)){			
 			for (ZipNode module : ModStructure.inspectArchive(config, mod).getModules()){
 				
@@ -128,7 +128,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		addTask(new MarkModEnabledTask(mod, sm, false));
 	}
 	
-	public void enableMod(Mod mod, TinkerConfig config, ModStateManager sm, ConflictResolver cr) throws IOException{
+	public void enableMod(Mod mod, TinkerConfig config, ModLoader sm, ConflictResolver cr) throws IOException{
 		if (modHasArchive(mod, config)){
 			ModStructure structure = ModStructure.inspectArchive(config, mod);
 			for (ZipNode module : structure.getModules()){
@@ -143,7 +143,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	
 	// helpers
 	
-	private boolean isDependency(ZipNode module, TinkerConfig config, ModStateManager sm) throws IOException{
+	private boolean isDependency(ZipNode module, TinkerConfig config, ModLoader sm) throws IOException{
 		int numDependencies = 0;
 		for (Mod mod : sm.getMods()){
 			try {

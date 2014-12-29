@@ -31,7 +31,7 @@ public class MockCrawlerFactory extends CrawlerFactory{
 		@Override
 		public Document getPage(Crawler<Document> crawler, URL url) throws IOException {
 			String resourceName = String.format("html/%s.html", crawler.generateId());
-			try(InputStream is = ModLoader.class.getClassLoader().getResourceAsStream(resourceName)){
+			try(InputStream is = TestModLoader.class.getClassLoader().getResourceAsStream(resourceName)){
 				return Jsoup.parse(is, null, url.toString());
 			}
 		}
