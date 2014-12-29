@@ -7,7 +7,7 @@ import javax.swing.JFrame;
 import aohara.common.selectorPanel.SelectorPanel;
 import aohara.common.workflows.ProgressPanel;
 import aohara.tinkertime.controllers.ModManager;
-import aohara.tinkertime.controllers.ModStateManager;
+import aohara.tinkertime.controllers.ModLoader;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModComparator;
 import aohara.tinkertime.views.TinkerFrame;
@@ -34,8 +34,8 @@ public class TinkerTime {
 		ProgressPanel pp = new ProgressPanel();
 		
 		// Initialize Controllers
-		ModStateManager sm = new ModStateManager(config);
-		ModManager mm = ModManager.createDefaultModManager(config, sm, pp);
+		ModLoader modLoader = ModLoader.create(config);
+		ModManager mm = ModManager.createDefaultModManager(config, modLoader, pp);
 		
 		// Set HTTP User-agent
 		System.setProperty("http.agent", "TinkerTime Bot");
@@ -48,10 +48,10 @@ public class TinkerTime {
 		
 		// Add Listeners
 		sp.addListener(mm);
-		sm.addListener(sp);
+		modLoader.addListener(sp);
 
 		// Start Application
-		sm.getMods();  // Load mods (will notify selector panel)
+		modLoader.init(mm);  // Load mods (will notify selector panel)
 		try {			
 			// Check for Mod Updates
 			if (config.autoCheckForModUpdates()){

@@ -11,15 +11,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 import test.util.MockConfig;
-import test.util.ModLoader;
+import test.util.TestModLoader;
 import test.util.ModStubs;
-import aohara.tinkertime.controllers.ModStateManager;
+import aohara.tinkertime.controllers.ModLoader;
 import aohara.tinkertime.models.Mod;
 
 public class TestModStateManager {
 
 	private Mod mod1, mod2;
-	private ModStateManager stateManager;
+	private ModLoader modLoader;
 	private List<Mod> mods;
 	
 	private static Mod getUpdatedMod(final Mod mod, final String newestFile){
@@ -38,19 +38,19 @@ public class TestModStateManager {
 	
 	private void update(Mod mod, boolean deleted){
 		if (deleted){
-			stateManager.modDeleted(mod);
+			modLoader.modDeleted(mod);
 		} else {
-			stateManager.modUpdated(mod);
+			modLoader.modUpdated(mod);
 		}
-		mods = new ArrayList<Mod>(stateManager.getMods());
+		mods = new ArrayList<Mod>(modLoader.getMods());
 	}
 
 	@Before
 	public void setUp() throws Throwable {
-		mod1 = ModLoader.loadMod(ModStubs.Mechjeb);
-		mod2 = ModLoader.loadMod(ModStubs.Engineer);
+		mod1 = TestModLoader.loadMod(ModStubs.Mechjeb);
+		mod2 = TestModLoader.loadMod(ModStubs.Engineer);
 
-		stateManager = new ModStateManager(new MockConfig());
+		modLoader = ModLoader.create(new MockConfig());
 	}
 
 	@Test
