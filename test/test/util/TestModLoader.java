@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Calendar;
 
-import thirdParty.ZipNode;
+import aohara.common.tree.TreeNode;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
@@ -49,8 +49,8 @@ public class TestModLoader {
 		return ModStructure.inspectArchive(getZipPath(stub.name));
 	}
 	
-	public static ZipNode getModule(ModStructure struct, String moduleName){
-		for (ZipNode module : struct.getModules()){
+	public static TreeNode getModule(ModStructure struct, String moduleName){
+		for (TreeNode module : struct.getModules()){
 			if (module.getName().equals(moduleName)){
 				return module;
 			}

@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import java.util.Calendar;
 import java.util.Date;
 
-import thirdParty.ZipNode;
+import aohara.common.tree.TreeNode;
 import aohara.common.workflows.ConflictResolver;
 import aohara.common.workflows.WorkflowBuilder;
 import aohara.common.workflows.tasks.UnzipTask;
@@ -116,7 +116,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	
 	public void disableMod(Mod mod, TinkerConfig config, ModLoader sm) throws IOException{
 		if (modHasArchive(mod, config)){			
-			for (ZipNode module : ModStructure.inspectArchive(config, mod).getModules()){
+			for (TreeNode module : ModStructure.inspectArchive(config, mod).getModules()){
 				
 				if (!isDependency(module, config, sm)){
 					delete(config.getGameDataPath().resolve(module.getName()));
@@ -131,8 +131,8 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	public void enableMod(Mod mod, TinkerConfig config, ModLoader sm, ConflictResolver cr) throws IOException{
 		if (modHasArchive(mod, config)){
 			ModStructure structure = ModStructure.inspectArchive(config, mod);
-			for (ZipNode module : structure.getModules()){
-				addTask(new UnzipTask(config.getGameDataPath(), module, cr));
+			for (TreeNode module : structure.getModules()){
+				addTask(new UnzipTask(mod.getCachedZipPath(config), config.getGameDataPath(), module, cr));
 			}
 		} else {
 			copy(mod.getCachedZipPath(config), config.getGameDataPath());
@@ -143,7 +143,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	
 	// helpers
 	
-	private boolean isDependency(ZipNode module, TinkerConfig config, ModLoader sm) throws IOException{
+	private boolean isDependency(TreeNode module, TinkerConfig config, ModLoader sm) throws IOException{
 		int numDependencies = 0;
 		for (Mod mod : sm.getMods()){
 			try {
