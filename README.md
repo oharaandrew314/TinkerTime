@@ -3,11 +3,7 @@ TinkerTime
 
 Automatically Updating Mod Manager for Kerbal Space Program
 
-### Development Status
-
 Master: [![Build Status](https://travis-ci.org/oharaandrew314/TinkerTime.svg?branch=master)](https://travis-ci.org/oharaandrew314/TinkerTime)
-
-Currently at Version 1.1
 
 ### Description
 Tinker Time is a Mod Manager for Kerbal Space Program that will allow you to automatically update, enable, and disable all of your mods.  All you have to do is enter the URL to the mod webpage, and Tinker Time will do the rest of the work for you.  It will even manage your ModuleManager Installation for you. :)
@@ -37,7 +33,7 @@ The [Tinker Time Wiki](https://github.com/oharaandrew314/TinkerTime/wiki) contai
 ### Change Log
 v1.1
 - New Features
-  - KSP Launcher (supports Windows OSX, and Linux)
+  - KSP Launcher (supports Windows, OSX, and Linux)
     - On Windows, will ask user if they wish to use 64-bit, otherwise, automatic
   - Add Mod Import/Export Functionality (to share mod packs)
   - Mod Host and Version is now displayed in Mod View
