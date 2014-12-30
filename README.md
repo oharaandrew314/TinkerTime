@@ -40,7 +40,7 @@ v1.1
   - Support for Github Mods with multiple assets per release
 - Fixes
   - Overhauled Zip Archive Analysis for more accurate mod installations
-  - Fix Typo in Mod Options Window
+  - Fix Typo in TinkerTime Options Window
 
 v1.0
 - New Features:
