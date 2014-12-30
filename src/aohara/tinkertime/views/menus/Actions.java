@@ -22,6 +22,7 @@ import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledError;
 import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledError;
 import aohara.tinkertime.controllers.ModManager.ModNotDownloadedError;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedError;
+import aohara.tinkertime.controllers.launcher.GameLauncher;
 import aohara.tinkertime.crawlers.Constants;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
@@ -407,6 +408,26 @@ class Actions {
 			Path modPath = FileChoosers.chooseModZip();
 			if (modPath != null){
 				mm.addModZip(modPath);
+			}
+		}	
+	}
+	
+	@SuppressWarnings("serial")
+	static class LaunchKspAction extends TinkerAction {
+		
+		private final GameLauncher launcher;
+		
+		LaunchKspAction(JComponent parent, ModManager mm){
+			super("Launch KSP", "icon/rocket.png", parent, mm);
+			launcher = GameLauncher.create(mm.config);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			try {
+				launcher.launchGame();
+			} catch (IOException e) {
+				errorMessage(e);
 			}
 		}
 	}
