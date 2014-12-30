@@ -30,14 +30,21 @@ Please download the latest version from [KerbalStuff](https://kerbalstuff.com/mo
 The [Tinker Time Wiki](https://github.com/oharaandrew314/TinkerTime/wiki) contains many useful resources with instructions and known issues.
 
 ### Special Thanks
+- Contributors ([apemanzilla](https://github.com/apemanzilla)[grossws](https://github.com/grossws))
+
 - Beta Testers ([foonix](https://github.com/foonix), [jcsntoll](https://github.com/jcsntoll), and [apemanzilla](https://github.com/apemanzilla))
 
 ### Change Log
 v1.1
 - New Features
+  - KSP Launcher (supports Windows OSX, and Linux)
+    - On Windows, will ask user if they wish to use 64-bit, otherwise, automatic
   - Add Mod Import/Export Functionality (to share mod packs)
   - Mod Host and Version is now displayed in Mod View
   - Support for Github Mods with multiple assets per release
+- Fixes
+  - Overhauled Zip Archive Analysis for more accurate mod installations
+  - Fix Typo in Mod Options Window
 
 v1.0
 - New Features:
