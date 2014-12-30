@@ -1,4 +1,4 @@
-package test;
+package test.crawlers;
 
 import static org.junit.Assert.*;
 

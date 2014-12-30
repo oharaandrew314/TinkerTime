@@ -8,9 +8,10 @@ import org.apache.commons.io.FileUtils;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-import test.TestModManager;
-import test.TestCurseCrawler;
 import test.TestModStateManager;
+import test.crawlers.TestCrawlerFactory;
+import test.crawlers.TestCurseCrawler;
+import test.crawlers.TestGithubCrawler;
 
 
 @RunWith(Suite.class)
@@ -20,7 +21,8 @@ import test.TestModStateManager;
    TestModStateManager.class,
    TestModuleManagerCrawler.class,
    TestGithubCrawler.class,
-   TestCrawlerFactory.class
+   TestCrawlerFactory.class,
+   TestZipTreeBuilder.class
 })
 
 public class UnitTestSuite {

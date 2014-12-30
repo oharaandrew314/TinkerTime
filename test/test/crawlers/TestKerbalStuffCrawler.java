@@ -1,4 +1,4 @@
-package test;
+package test.crawlers;
 
 import java.io.IOException;
 import java.util.Calendar;
