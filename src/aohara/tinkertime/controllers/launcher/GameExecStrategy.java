@@ -34,7 +34,7 @@ interface GameExecStrategy {
 		@Override
 		public ProcessBuilder getExecCommand(TinkerConfig config) {
 			Path path = config.getGameDataPath().resolve("../KSP.app");
-			return new ProcessBuilder("open " + path.toString());
+			return new ProcessBuilder("open", path.toString());
 		}
 	}
 }
