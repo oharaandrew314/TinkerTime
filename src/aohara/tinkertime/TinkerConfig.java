@@ -22,7 +22,7 @@ import aohara.tinkertime.controllers.OS;
 public class TinkerConfig {
 	 
 	private static final String
-		GAMEDATA_PATH = "GamaData Path",
+		GAMEDATA_PATH = "GameData Path",
 		AUTO_CHECK_FOR_MOD_UPDATES = "Check for Mod Updates on Startup",
 		NUM_CONCURRENT_DOWNLOADS = "Number of Concurrent Downloads",
 		WIN_64 = "win64";
