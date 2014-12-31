@@ -138,8 +138,8 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>>
 			Set<Mod> newMods = gson.fromJson(reader, modsType);
 			for (Mod newMod : newMods){
 				// If mod is updateable, or if the local zip file is available, add mod
-				if (newMod.isUpdateable() || (!newMod.isDownloaded(config) && trySatisfyLocalFiles(newMod, mm))){
-					mods.add(newMod);	
+				if (newMod.isUpdateable() || newMod.isDownloaded(config) || trySatisfyLocalFiles(newMod, mm)){
+					mods.add(newMod);
 				}
 			}
 		} catch (FileNotFoundException e){
