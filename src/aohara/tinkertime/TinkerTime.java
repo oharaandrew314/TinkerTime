@@ -63,7 +63,7 @@ public class TinkerTime {
 		
 		// Initialize Frame
 		JFrame frame = new TinkerFrame();
-		frame.setJMenuBar(MenuFactory.creatMenuBar(mm));
+		frame.setJMenuBar(MenuFactory.createMenuBar(mm));
 		frame.add(MenuFactory.createToolBar(mm), BorderLayout.NORTH);
 		frame.add(sp.getComponent(), BorderLayout.CENTER);
 		frame.add(pp.getComponent(), BorderLayout.SOUTH);

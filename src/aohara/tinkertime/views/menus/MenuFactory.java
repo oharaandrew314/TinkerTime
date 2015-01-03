@@ -42,7 +42,7 @@ public class MenuFactory {
 		return toolBar;
 	}
 	
-	public static JMenuBar creatMenuBar(ModManager mm){
+	public static JMenuBar createMenuBar(ModManager mm){
 		JMenuBar menuBar = new JMenuBar();
 		
 		JMenu fileMenu = new JMenu("File");
