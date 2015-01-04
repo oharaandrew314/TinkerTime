@@ -25,7 +25,7 @@ public class TinkerConfig {
 		GAMEDATA_PATH = "GameData Path",
 		AUTO_CHECK_FOR_MOD_UPDATES = "Check for Mod Updates on Startup",
 		NUM_CONCURRENT_DOWNLOADS = "Number of Concurrent Downloads",
-		USE_BORDERLESS_WINDOW = "Launch KSP in borderless window",
+		USE_BORDERLESS_WINDOW = "Launch KSP in borderless window (Will not work if fullscreen is enabled)",
 		WIN_64 = "win64";
 		
 	private final GuiConfig config;
