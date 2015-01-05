@@ -19,6 +19,7 @@ import aohara.tinkertime.models.Mod;
  */
 public class ModImageView extends ControlPanel<Mod> {
 	
+	private static final Dimension MAX_IMAGE_SIZE = new Dimension(250, 250);
 	private final ImageManager imageManager = new ImageManager();
 	private final JLabel label = new JLabel();
 	private final TinkerConfig config;
@@ -26,6 +27,7 @@ public class ModImageView extends ControlPanel<Mod> {
 	public ModImageView(TinkerConfig config){
 		this.config = config;
 		panel.add(label);
+		panel.setMaximumSize(MAX_IMAGE_SIZE);
 	}
 	
 	@Override

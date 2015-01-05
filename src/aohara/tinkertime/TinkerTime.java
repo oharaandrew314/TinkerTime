@@ -25,7 +25,7 @@ public class TinkerTime {
 	
 	public static final String
 		NAME = "Tinker Time",
-		VERSION = "1.0",
+		VERSION = "1.1",
 		AUTHOR = "Andrew O'Hara";
 	
 	public static void main(String[] args) {
@@ -63,7 +63,7 @@ public class TinkerTime {
 		
 		// Initialize Frame
 		JFrame frame = new TinkerFrame();
-		frame.setJMenuBar(MenuFactory.creatMenuBar(mm));
+		frame.setJMenuBar(MenuFactory.createMenuBar(mm));
 		frame.add(MenuFactory.createToolBar(mm), BorderLayout.NORTH);
 		frame.add(sp.getComponent(), BorderLayout.CENTER);
 		frame.add(pp.getComponent(), BorderLayout.SOUTH);

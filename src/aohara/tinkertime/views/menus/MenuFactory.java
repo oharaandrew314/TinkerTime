@@ -14,35 +14,35 @@ public class MenuFactory {
 		JToolBar toolBar = new JToolBar();
 		toolBar.setFloatable(false);
 		
-		toolBar.add(new Actions.LaunchKspAction(toolBar, mm));
+		toolBar.add(new Actions.LaunchKspAction(toolBar, mm)).setFocusPainted(false);
 		
 		toolBar.addSeparator();
 		
-		toolBar.add(new Actions.OptionsAction(toolBar, mm));
+		toolBar.add(new Actions.OptionsAction(toolBar, mm)).setFocusPainted(false);
 		
 		toolBar.addSeparator();
 		
-		toolBar.add(new Actions.AddModAction(toolBar, mm));
-		toolBar.add(new Actions.AddModZip(toolBar, mm));
-		toolBar.add(new Actions.DeleteModAction(toolBar, mm));
+		toolBar.add(new Actions.AddModAction(toolBar, mm)).setFocusPainted(false);
+		toolBar.add(new Actions.AddModZip(toolBar, mm)).setFocusPainted(false);
+		toolBar.add(new Actions.DeleteModAction(toolBar, mm)).setFocusPainted(false);
 		
 		toolBar.addSeparator();
 		
-		toolBar.add(new Actions.EnableDisableModAction(toolBar, mm));
+		toolBar.add(new Actions.EnableDisableModAction(toolBar, mm)).setFocusPainted(false);
 
 		toolBar.addSeparator();
 		
-		toolBar.add(new Actions.UpdateModAction(toolBar, mm));
-		toolBar.add(new Actions.CheckforUpdatesAction(toolBar, mm));
+		toolBar.add(new Actions.UpdateModAction(toolBar, mm)).setFocusPainted(false);
+		toolBar.add(new Actions.CheckforUpdatesAction(toolBar, mm)).setFocusPainted(false);
 
 		toolBar.addSeparator();
 		
-		toolBar.add(new Actions.HelpAction(toolBar, mm));
+		toolBar.add(new Actions.HelpAction(toolBar, mm)).setFocusPainted(false);
 		
 		return toolBar;
 	}
 	
-	public static JMenuBar creatMenuBar(ModManager mm){
+	public static JMenuBar createMenuBar(ModManager mm){
 		JMenuBar menuBar = new JMenuBar();
 		
 		JMenu fileMenu = new JMenu("File");

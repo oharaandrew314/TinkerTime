@@ -15,7 +15,11 @@ interface GameExecStrategy {
 		public ProcessBuilder getExecCommand(TinkerConfig config) {
 			Path path = config.getGameDataPath();
 			path = path.resolve(config.use64BitGame() ? "../KSP_x64.exe" : "../KSP.exe");
-			return new ProcessBuilder(path.toString());
+			if (config.useBorderlessWindow()) {
+				return new ProcessBuilder(path.toString(), "-popupwindow");
+			} else {
+				return new ProcessBuilder(path.toString());
+			}
 		}
 	}
 	
