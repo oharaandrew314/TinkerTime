@@ -25,7 +25,7 @@ public class TinkerConfig {
 		GAMEDATA_PATH = "GameData Path",
 		AUTO_CHECK_FOR_MOD_UPDATES = "Check for Mod Updates on Startup",
 		NUM_CONCURRENT_DOWNLOADS = "Number of Concurrent Downloads",
-		USE_BORDERLESS_WINDOW = "Launch KSP in borderless window (Will not work if fullscreen is enabled)",
+		USE_BORDERLESS_WINDOW = "Borderless KSP",
 		WIN_64 = "win64";
 		
 	private final GuiConfig config;
@@ -39,7 +39,9 @@ public class TinkerConfig {
 		builder.addTrueFalseProperty(AUTO_CHECK_FOR_MOD_UPDATES, true, false, false);
 		builder.addPathProperty(GAMEDATA_PATH, JFileChooser.DIRECTORIES_ONLY, null, false, false);
 		builder.addIntProperty(NUM_CONCURRENT_DOWNLOADS, 4, 1, null, false, false);
-		builder.addTrueFalseProperty(USE_BORDERLESS_WINDOW, false, false, !OS.getOs().equals(OS.OsType.Windows));
+		builder.addTrueFalseProperty(
+			USE_BORDERLESS_WINDOW, false, false, !OS.getOs().equals(OS.OsType.Windows)
+		).setDisplayName("Launch KSP in borderless window<br/>(Only relavent if KSP is set to windowed)");
 		builder.addTextProperty(WIN_64, null, true, true);
 		
 		GuiConfig config = builder.createGuiConfigInDocuments("TinkerTime Config", TinkerTime.NAME, "TinkerTime.json");
