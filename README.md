@@ -36,11 +36,14 @@ v1.1
   - KSP Launcher (supports Windows, OSX, and Linux)
     - On Windows, will ask user if they wish to use 64-bit, otherwise, automatic
   - Add Mod Import/Export Functionality (to share mod packs)
+  - Add option to set windowed mode of KSP to borderless
   - Mod Host and Version is now displayed in Mod View
   - Support for Github Mods with multiple assets per release
 - Fixes
   - Overhauled Zip Archive Analysis for more accurate mod installations
+  - Set maximum size for Mod Image preview
   - Fix Typo in TinkerTime Options Window
+  - Fix highlighting of toolbar buttons after clicking
 
 v1.0
 - New Features:
