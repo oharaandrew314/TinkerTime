@@ -26,7 +26,7 @@ Please download the latest version from [KerbalStuff](https://kerbalstuff.com/mo
 The [Tinker Time Wiki](https://github.com/oharaandrew314/TinkerTime/wiki) contains many useful resources with instructions and known issues.
 
 ### Special Thanks
-- Contributors ([apemanzilla](https://github.com/apemanzilla)[grossws](https://github.com/grossws))
+- Contributors ([apemanzilla](https://github.com/apemanzilla), [grossws](https://github.com/grossws))
 
 - Beta Testers ([foonix](https://github.com/foonix), [jcsntoll](https://github.com/jcsntoll), and [apemanzilla](https://github.com/apemanzilla))
 
