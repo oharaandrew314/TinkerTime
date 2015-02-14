@@ -20,7 +20,7 @@ public class TestKerbalStuffCrawler extends AbstractTestModCrawler {
 			"Radial Engine Mounts by PanaTee Parts International v0.30.zip",
 			"https://kerbalstuff.com/mod/153/Radial%20Engine%20Mounts%20by%"
 			+ "20PanaTee%20Parts%20International/download/v0.30",
-			"https://cdn.mediacru.sh/1ATqqe1TChQV.png",
+			"https://kerbalstuff.com/1ATqqe1TChQV.png",
 			"0.24.2"
 		);
 	}
@@ -34,7 +34,7 @@ public class TestKerbalStuffCrawler extends AbstractTestModCrawler {
 			"Xaiier",
 			"Time Control 13.2.zip",
 			"https://kerbalstuff.com/mod/21/Time%20Control/download/13.2",
-			"https://cdn.mediacru.sh/NSBC0_9jcVmk.png",
+			"https://kerbalstuff.com/NSBC0_9jcVmk.png",
 			"0.24.2"
 		);
 	}
