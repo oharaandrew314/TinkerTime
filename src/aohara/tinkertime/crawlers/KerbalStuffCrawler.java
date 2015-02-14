@@ -45,7 +45,7 @@ public class KerbalStuffCrawler extends Crawler<JsonObject>{
 	public URL getImageUrl() throws IOException {
 		JsonElement bgElement = getPage(getApiUrl()).get("background");
 		if (!bgElement.isJsonNull()){
-			return new URL("https", "cdn.mediacru.sh", bgElement.getAsString());
+			return new URL("https", getApiUrl().getHost(), bgElement.getAsString());
 		}
 		return null;
 	}
