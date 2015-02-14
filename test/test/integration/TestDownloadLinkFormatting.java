@@ -36,11 +36,6 @@ public class TestDownloadLinkFormatting {
 	}
 	
 	@Test
-	public void testKolonization() throws IOException, UnsupportedHostException{
-		test("http://www.curse.com/ksp-mods/kerbal/220668-modular-kolonization-system");
-	}
-	
-	@Test
 	public void testMechjeb() throws IOException, UnsupportedHostException{
 		test("http://www.curse.com/ksp-mods/kerbal/220221-mechjeb");
 	}

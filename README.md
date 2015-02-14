@@ -31,6 +31,10 @@ The [Tinker Time Wiki](https://github.com/oharaandrew314/TinkerTime/wiki) contai
 - Beta Testers ([foonix](https://github.com/foonix), [jcsntoll](https://github.com/jcsntoll), and [apemanzilla](https://github.com/apemanzilla))
 
 ### Change Log
+
+v1.1.1
+- Updated for KerbalStuff content-provider change
+
 v1.1
 - New Features
   - KSP Launcher (supports Windows, OSX, and Linux)
