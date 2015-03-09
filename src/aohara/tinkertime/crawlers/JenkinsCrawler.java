@@ -18,13 +18,13 @@ import com.google.gson.JsonObject;
  * 
  * @author Andrew O'Hara
  */
-public class JenkinsCrawler extends Crawler<JsonObject> {
+public class JenkinsCrawler extends Crawler<JsonElement> {
 	
 	private JsonObject cachedJson;
 	private final URL artifactDownloadUrl;
 	private final String name;
 	
-	public JenkinsCrawler(URL url, PageLoader<JsonObject> pageLoader, String name, URL artifactDownloadUrl) {
+	public JenkinsCrawler(URL url, PageLoader<JsonElement> pageLoader, String name, URL artifactDownloadUrl) {
 		super(url, pageLoader);
 		this.name = name;
 		this.artifactDownloadUrl = artifactDownloadUrl;
@@ -32,7 +32,7 @@ public class JenkinsCrawler extends Crawler<JsonObject> {
 
 	private JsonObject getJson() throws IOException {
 		if (cachedJson == null){
-			cachedJson = getPage(getApiUrl());
+			cachedJson = getPage(getApiUrl()).getAsJsonObject();
 		}
 		return cachedJson;
 	}

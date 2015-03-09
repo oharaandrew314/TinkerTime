@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 
+import com.google.gson.JsonElement;
 import org.jsoup.nodes.Document;
 
 import com.google.gson.JsonObject;
@@ -26,7 +27,7 @@ public class CrawlerFactory {
 		if (host.contains(Constants.HOST_CURSE)){
 			return new CurseCrawler(url, createHtmlLoader());
 		} else if (host.contains(Constants.HOST_GITHUB)){
-			return new GithubCrawler(url, createHtmlLoader());
+			return new GithubCrawler(url, createJsonLoader());
 		} else if (host.contains(Constants.HOST_KERBAL_STUFF)){
 			return new KerbalStuffCrawler(url, createJsonLoader());
 		} else if (host.equals(Constants.HOST_MODULE_MANAGER)){
@@ -45,7 +46,7 @@ public class CrawlerFactory {
 		return new WebpageLoader();
 	}
 	
-	protected PageLoader<JsonObject> createJsonLoader(){
+	protected PageLoader<JsonElement> createJsonLoader(){
 		return new JsonLoader();
 	}
 	

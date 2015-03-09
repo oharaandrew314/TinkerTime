@@ -14,11 +14,11 @@ import com.google.gson.JsonObject;
 
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 
-public class KerbalStuffCrawler extends Crawler<JsonObject>{
+public class KerbalStuffCrawler extends Crawler<JsonElement>{
 	
 	private static Pattern ID_PATTERN = Pattern.compile("(mod/)(\\d+)(/*)");
 
-	public KerbalStuffCrawler(URL url, PageLoader<JsonObject> pageLoader) {
+	public KerbalStuffCrawler(URL url, PageLoader<JsonElement> pageLoader) {
 		super(url, pageLoader);
 	}
 	
@@ -38,12 +38,12 @@ public class KerbalStuffCrawler extends Crawler<JsonObject>{
 
 	@Override
 	public String getName() throws IOException {
-		return getPage(getApiUrl()).get("name").getAsString();
+		return getPage(getApiUrl()).getAsJsonObject().get("name").getAsString();
 	}
 
 	@Override
 	public URL getImageUrl() throws IOException {
-		JsonElement bgElement = getPage(getApiUrl()).get("background");
+		JsonElement bgElement = getPage(getApiUrl()).getAsJsonObject().get("background");
 		if (!bgElement.isJsonNull()){
 			return new URL("https", getApiUrl().getHost(), bgElement.getAsString());
 		}
@@ -51,7 +51,7 @@ public class KerbalStuffCrawler extends Crawler<JsonObject>{
 	}
 	
 	private JsonObject getLatestVersion() throws IOException {
-		JsonArray versions = getPage(getApiUrl()).get("versions").getAsJsonArray();
+		JsonArray versions = getPage(getApiUrl()).getAsJsonObject().get("versions").getAsJsonArray();
 		if (versions.size() > 0){
 			return versions.get(0).getAsJsonObject();
 		}
@@ -65,7 +65,7 @@ public class KerbalStuffCrawler extends Crawler<JsonObject>{
 
 	@Override
 	public String getCreator() throws IOException {
-		return getPage(getApiUrl()).get("author").getAsString();
+		return getPage(getApiUrl()).getAsJsonObject().get("author").getAsString();
 	}
 
 	@Override
