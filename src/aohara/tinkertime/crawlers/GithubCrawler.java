@@ -13,6 +13,8 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -116,6 +118,14 @@ public class GithubCrawler extends Crawler<JsonElement> {
 	@Override
 	public String getName() throws IOException {
         JsonObject assetsElement = getLatestReleaseElement();
+        Pattern pattern = Pattern.compile("https://api.github.com/repos/[A-Za-z-0-9]*/([A-Za-z-0-9]*)/.*");
+
+        Matcher matcher = pattern.matcher(assetsElement.get("url").getAsString());
+
+        if(matcher.matches()) {
+            return matcher.group(1);
+        }
+
         return assetsElement.get("name").getAsString();
 	}
 

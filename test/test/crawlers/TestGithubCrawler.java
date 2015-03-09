@@ -30,7 +30,7 @@ public class TestGithubCrawler extends AbstractTestModCrawler {
 			"KerbalAlarmClock",
 			getDate(2014, 12, 16),
 			"TriggerAu",
-			"KerbalAlarmClock_3.0.5.0.zip",
+			"KerbalAlarmClock_3.2.3.0.zip",
 			"https://github.com/TriggerAu/KerbalAlarmClock/releases",
 			null,
 			null
@@ -44,7 +44,7 @@ public class TestGithubCrawler extends AbstractTestModCrawler {
 			"ProceduralFairings",
 			getDate(2014, 7, 3),
 			"e-dog",
-			"ProcFairings_3.09.zip",
+			"ProcFairings_3.11.zip",
 			"https://github.com/e-dog/ProceduralFairings/releases",
 			null,
 			null
