@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import com.google.gson.JsonElement;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -11,8 +12,6 @@ import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.pageLoaders.JsonLoader;
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
-
-import com.google.gson.JsonObject;
 
 public class MockCrawlerFactory extends CrawlerFactory{
 	
@@ -22,7 +21,7 @@ public class MockCrawlerFactory extends CrawlerFactory{
 	}
 	
 	@Override
-	protected PageLoader<JsonObject> createJsonLoader(){
+	protected PageLoader<JsonElement> createJsonLoader(){
 		return new MockJsonLoader();
 	}
 	
@@ -38,10 +37,10 @@ public class MockCrawlerFactory extends CrawlerFactory{
 		}
 	}
 	
-	private static class MockJsonLoader implements PageLoader<JsonObject>{
+	private static class MockJsonLoader implements PageLoader<JsonElement>{
 
 		@Override
-		public JsonObject getPage(Crawler<JsonObject> crawler, URL url) throws IOException {			
+		public JsonElement getPage(Crawler<JsonElement> crawler, URL url) throws IOException {
 			String resourceName = String.format("json/%s.json", crawler.generateId());
 			return new JsonLoader().getPage(crawler, this.getClass().getClassLoader().getResource(resourceName));
 		}
