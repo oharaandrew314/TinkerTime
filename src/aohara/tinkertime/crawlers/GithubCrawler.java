@@ -10,7 +10,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -19,8 +18,6 @@ import java.util.regex.Pattern;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 

@@ -7,8 +7,6 @@ import java.util.Arrays;
 import com.google.gson.JsonElement;
 import org.jsoup.nodes.Document;
 
-import com.google.gson.JsonObject;
-
 import aohara.tinkertime.crawlers.pageLoaders.JsonLoader;
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 import aohara.tinkertime.crawlers.pageLoaders.WebpageLoader;

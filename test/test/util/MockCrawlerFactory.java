@@ -13,8 +13,6 @@ import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.pageLoaders.JsonLoader;
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 
-import com.google.gson.JsonObject;
-
 public class MockCrawlerFactory extends CrawlerFactory{
 	
 	@Override

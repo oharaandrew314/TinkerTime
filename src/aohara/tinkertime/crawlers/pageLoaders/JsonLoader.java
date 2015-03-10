@@ -3,17 +3,13 @@ package aohara.tinkertime.crawlers.pageLoaders;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 
 import aohara.tinkertime.crawlers.Crawler;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
