@@ -68,8 +68,8 @@ public class GithubCrawler extends Crawler<JsonElement> {
 	
 	private JsonObject getLatestReleaseElement() throws IOException {
         JsonElement doc = getPage(getApiUrl());
-        for(int index = 0; index < doc.getAsJsonArray().size(); index++) {
-            JsonObject jsonObject = (JsonObject) doc.getAsJsonArray().get(index);
+        for(JsonElement jsonElement:  doc.getAsJsonArray()) {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
             if(jsonObject.get("zipball_url") != null)
                 return jsonObject;
         }
@@ -86,14 +86,13 @@ public class GithubCrawler extends Crawler<JsonElement> {
 
         JsonArray jsonArray = assetsElement.get("assets").getAsJsonArray();
 
-        for(int index = 0; index < jsonArray.size(); index++) {
-            JsonObject jsonObject = jsonArray.get(index).getAsJsonObject();
+        for(JsonElement element: jsonArray) {
+            JsonObject jsonObject = element.getAsJsonObject();
             assets.add(new Asset(
                     jsonObject.get("name").getAsString(),
                     new URL( jsonObject.get("browser_download_url").getAsString())
             ));
         }
-
 
 		return assets;
 	}
