@@ -1,10 +1,10 @@
 package aohara.tinkertime.workflows.tasks;
 
 import java.io.IOException;
-import java.util.Date;
 
 import aohara.common.workflows.Workflow;
 import aohara.common.workflows.Workflow.WorkflowTask;
+import aohara.tinkertime.crawlers.VersionInfo;
 import aohara.tinkertime.workflows.DownloaderContext;
 
 /**
@@ -14,19 +14,17 @@ import aohara.tinkertime.workflows.DownloaderContext;
  */
 public class CheckForUpdateTask extends WorkflowTask {
 	
-	private final Date lastUpdated;
-	private final String lastFileName;
 	private final DownloaderContext context;
+	private final VersionInfo currentVersion;
 
-	public CheckForUpdateTask(DownloaderContext context, Date lastUpdated, String lastFileName) {
+	public CheckForUpdateTask(DownloaderContext context, VersionInfo currentVersion) {
 		this.context = context;
-		this.lastUpdated = lastUpdated;
-		this.lastFileName = lastFileName;
+		this.currentVersion = currentVersion;
 	}
 
 	@Override
 	public boolean call(Workflow workflow) throws Exception {
-		return context.crawler.isUpdateAvailable(lastUpdated, lastFileName);
+		return context.crawler.isUpdateAvailable(currentVersion);
 	}
 
 	@Override

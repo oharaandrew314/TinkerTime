@@ -199,6 +199,15 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		loader.importMods(path, this);
 	}
 	
+	/**
+	 * Launches an update task to check for the latest update to the Mod Manager.
+	 * 
+	 * If an update is available from Github, then the user is given a choice to update.
+	 */
+	public void tryUpdateModManager(){
+		
+	}
+	
 	// -- Exceptions/Errors --------------------------------------------------
 	
 	@SuppressWarnings("serial")

@@ -26,6 +26,7 @@ import aohara.tinkertime.controllers.launcher.GameLauncher;
 import aohara.tinkertime.crawlers.Constants;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.crawlers.VersionInfo;
 import aohara.tinkertime.models.DefaultMods;
 import aohara.tinkertime.models.FileUpdateListener;
 import aohara.tinkertime.models.Mod;
@@ -370,7 +371,8 @@ class Actions {
 		public void actionPerformed(ActionEvent arg0) {
 			ModWorkflowBuilder builder = new ModWorkflowBuilder("Updating " + TinkerTime.NAME);
 			try {
-				builder.checkForUpdates(Constants.getTinkerTimeGithubUrl(), null, TinkerTime.NAME, this);
+				VersionInfo currentVersion = new VersionInfo(TinkerTime.VERSION, null, TinkerTime.FULL_NAME);
+				builder.checkForUpdates(Constants.getTinkerTimeGithubUrl(), currentVersion, this);
 				mm.submitDownloadWorkflow(builder.buildWorkflow());
 			} catch (UnsupportedHostException ex) {
 				errorMessage(ex);
