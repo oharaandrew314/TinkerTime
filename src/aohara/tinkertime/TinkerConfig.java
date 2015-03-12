@@ -27,7 +27,7 @@ public class TinkerConfig {
 		NUM_CONCURRENT_DOWNLOADS = "Number of Concurrent Downloads",
 		USE_BORDERLESS_WINDOW = "Borderless KSP",
 		WIN_64 = "win64",
-		STARTUP_CHECK_MM_UPDATES = "startupCheckMMUpdates";
+		STARTUP_CHECK_MM_UPDATES = "Check for App Updates on Startup";
 		
 	private final GuiConfig config;
 	

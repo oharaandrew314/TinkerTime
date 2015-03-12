@@ -11,6 +11,7 @@ import aohara.common.selectorPanel.SelectorPanel;
 import aohara.common.workflows.ProgressPanel;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModLoader;
+import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModComparator;
 import aohara.tinkertime.views.TinkerFrame;
@@ -29,7 +30,7 @@ public class TinkerTime {
 	public static final String
 		NAME = "Tinker Time",
 		AUTHOR = "Andrew O'Hara";
-	public static final Version VERSION = Version.valueOf("1.1.0");
+	public static final Version VERSION = Version.valueOf("1.1.1");
 	public static final String FULL_NAME = String.format("%s v%s", NAME, VERSION);
 	
 	public static void main(String[] args) {
@@ -59,7 +60,11 @@ public class TinkerTime {
 		
 		// Check for App update on Startup
 		if (config.isCheckForMMUpdatesOnStartup()){
-			mm.tryUpdateModManager();
+			try {
+				mm.tryUpdateModManager();
+			} catch (UnsupportedHostException e) {
+				JOptionPane.showMessageDialog(null, e.toString(), "Error Checking for App Updates", JOptionPane.ERROR_MESSAGE);
+			}
 		}
 		
 		// Check for Mod Updates on Startup

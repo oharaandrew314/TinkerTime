@@ -18,6 +18,7 @@ import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.views.DialogConflictResolver;
 import aohara.tinkertime.workflows.ModWorkflowBuilder;
+import aohara.tinkertime.workflows.contexts.AppUpdateContext;
 
 /**
  * Controller for initiating Asynchronous Tasks for Mod Processing.
@@ -203,9 +204,10 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	 * Launches an update task to check for the latest update to the Mod Manager.
 	 * 
 	 * If an update is available from Github, then the user is given a choice to update.
+	 * @throws UnsupportedHostException 
 	 */
-	public void tryUpdateModManager(){
-		
+	public void tryUpdateModManager() throws UnsupportedHostException{
+		AppUpdateContext.checkForUpdates(this);
 	}
 	
 	// -- Exceptions/Errors --------------------------------------------------

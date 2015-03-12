@@ -5,7 +5,7 @@ import java.io.IOException;
 import aohara.common.workflows.Workflow;
 import aohara.common.workflows.Workflow.WorkflowTask;
 import aohara.tinkertime.crawlers.VersionInfo;
-import aohara.tinkertime.workflows.DownloaderContext;
+import aohara.tinkertime.workflows.contexts.DownloaderContext;
 
 /**
  * Workflow Task that returns true if an update for a file is available.
