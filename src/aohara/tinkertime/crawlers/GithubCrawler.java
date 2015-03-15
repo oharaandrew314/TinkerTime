@@ -57,7 +57,7 @@ public class GithubCrawler extends Crawler<JsonElement> {
 		
 		// If path does not contain releases, try appending it to end 
 		else {
-			url = new URL(url.toString() + "/" + RELEASES);
+			url = new URL(String.format("%s/%s", url, RELEASES));
 		}
 		
 		return super.getPage(url);

@@ -37,7 +37,7 @@ public class ModDownloaderContext extends DownloaderContext {
 	}
 	
 	public Mod createMod() throws IOException{
-		if (cachedMod != null){
+		if (cachedMod == null){
 			cachedMod = new Mod(
 				crawler.generateId(), crawler.getName(), crawler.getNewestFileName(),
 				crawler.getCreator(), crawler.getImageUrl(), crawler.getPageUrl(),
