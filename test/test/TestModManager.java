@@ -142,7 +142,7 @@ public class TestModManager {
 	
 	@Test
 	public void testUpdate() throws ModUpdateFailedError{
-		manager.updateMod(mod);
+		manager.updateMod(mod, true);
 		verify(downloedExecutor, times(1)).execute(any(Workflow.class));
 	}
 	

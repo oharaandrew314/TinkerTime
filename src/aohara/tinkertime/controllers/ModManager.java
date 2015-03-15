@@ -99,7 +99,13 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		enablerExecutor.execute(workflow);
 	}
 	
-	public void updateMod(Mod mod) throws ModUpdateFailedError {
+	/**
+	 * 
+	 * @param mod mod to be updated 
+	 * @param forceUpdate update even if newer update is not available
+	 * @throws ModUpdateFailedError
+	 */
+	public void updateMod(Mod mod, boolean forceUpdate) throws ModUpdateFailedError {
 		if (mod.getPageUrl() == null){
 			throw new ModUpdateFailedError(mod, "Mod is a local zip only, and cannot be updated.");
 		}
@@ -108,6 +114,10 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		try {
 			// Cleanup operations prior to update
 			if (mod.isDownloaded(config)){
+				if (!forceUpdate){
+					builder.checkForUpdates(mod, mod, loader);
+				}
+				
 				if (mod.isEnabled()){
 					builder.disableMod( mod, config, loader);
 				}
@@ -139,7 +149,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	
 	public void updateMods() throws ModUpdateFailedError{
 		for (Mod mod : loader.getMods()){
-			updateMod(mod);
+			updateMod(mod, false);
 		}
 	}
 	

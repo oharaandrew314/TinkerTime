@@ -145,7 +145,7 @@ class Actions {
 		public void actionPerformed(ActionEvent e) {
 			if (mm.getSelectedMod() != null){
 				try {
-					mm.updateMod(mm.getSelectedMod());
+					mm.updateMod(mm.getSelectedMod(), true);
 				} catch (ModUpdateFailedError e1) {
 					errorMessage(e1);
 				}
