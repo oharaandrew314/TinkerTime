@@ -22,7 +22,8 @@ import test.crawlers.TestGithubCrawler;
    TestModuleManagerCrawler.class,
    TestGithubCrawler.class,
    TestCrawlerFactory.class,
-   TestZipTreeBuilder.class
+   TestZipTreeBuilder.class,
+   TestMod.class
 })
 
 public class UnitTestSuite {

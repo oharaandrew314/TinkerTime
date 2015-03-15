@@ -72,7 +72,11 @@ public class Mod implements FileUpdateListener {
 	}
 	
 	public Path getCachedZipPath(TinkerConfig config){
-		return getNewestFileName() != null ? config.getModsZipPath().resolve(getNewestFileName()) : null;
+		if (getNewestFileName() != null){
+			String safePathFileName = getNewestFileName().replaceAll(":", "").replaceAll("/", "");
+			return config.getModsZipPath().resolve(safePathFileName);
+		}
+		return null;
 	}
 	
 	public Path getCachedImagePath(TinkerConfig config){
