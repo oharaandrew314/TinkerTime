@@ -7,7 +7,7 @@ import aohara.common.workflows.Workflow.WorkflowTask;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.controllers.ModUpdateListener;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.workflows.ModDownloaderContext;
+import aohara.tinkertime.workflows.contexts.ModDownloaderContext;
 
 public class MarkModUpdatedTask extends WorkflowTask {
 	

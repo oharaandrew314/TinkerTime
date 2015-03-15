@@ -1,4 +1,4 @@
-package aohara.tinkertime.workflows;
+package aohara.tinkertime.workflows.contexts;
 
 import java.io.IOException;
 import java.net.URL;
@@ -15,6 +15,7 @@ public class ModDownloaderContext extends DownloaderContext {
 	
 	private static final CrawlerFactory factory = new CrawlerFactory();
 	private final TinkerConfig config;
+	private Mod cachedMod;
 	
 	private ModDownloaderContext(Crawler<?> crawler, TinkerConfig config){
 		super(crawler);
@@ -36,11 +37,14 @@ public class ModDownloaderContext extends DownloaderContext {
 	}
 	
 	public Mod createMod() throws IOException{
-		return new Mod(
-			crawler.generateId(), crawler.getName(), crawler.getNewestFileName(),
-			crawler.getCreator(), crawler.getImageUrl(), crawler.getPageUrl(),
-			crawler.getUpdatedOn() != null ? crawler.getUpdatedOn() : Calendar.getInstance().getTime(),
-			crawler.getSupportedVersion()
-		);
+		if (cachedMod == null){
+			cachedMod = new Mod(
+				crawler.generateId(), crawler.getName(), crawler.getNewestFileName(),
+				crawler.getCreator(), crawler.getImageUrl(), crawler.getPageUrl(),
+				crawler.getUpdatedOn() != null ? crawler.getUpdatedOn() : Calendar.getInstance().getTime(),
+				crawler.getSupportedVersion()
+			);
+		}
+		return cachedMod;
 	}
 }

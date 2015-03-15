@@ -26,7 +26,8 @@ public class TinkerConfig {
 		AUTO_CHECK_FOR_MOD_UPDATES = "Check for Mod Updates on Startup",
 		NUM_CONCURRENT_DOWNLOADS = "Number of Concurrent Downloads",
 		USE_BORDERLESS_WINDOW = "Borderless KSP",
-		WIN_64 = "win64";
+		WIN_64 = "win64",
+		STARTUP_CHECK_MM_UPDATES = "Check for App Updates on Startup";
 		
 	private final GuiConfig config;
 	
@@ -43,6 +44,7 @@ public class TinkerConfig {
 			USE_BORDERLESS_WINDOW, false, false, !OS.getOs().equals(OS.OsType.Windows)
 		).setDisplayName("Launch KSP in borderless window<br/>(Only relavent if KSP is set to windowed)");
 		builder.addTextProperty(WIN_64, null, true, true);
+		builder.addTrueFalseProperty(STARTUP_CHECK_MM_UPDATES, true, false, false);
 		
 		GuiConfig config = builder.createGuiConfigInDocuments("TinkerTime Config", TinkerTime.NAME, "TinkerTime.json");
 		if (!config.isValid()){
@@ -131,6 +133,10 @@ public class TinkerConfig {
 	
 	public boolean useBorderlessWindow() {
 		return Boolean.parseBoolean(config.getProperty(USE_BORDERLESS_WINDOW));
+	}
+	
+	public boolean isCheckForMMUpdatesOnStartup(){
+		return Boolean.parseBoolean(config.getProperty(STARTUP_CHECK_MM_UPDATES));
 	}
 	
 	// -- Verification ----------------------------------------------------

@@ -50,7 +50,7 @@ public class KerbalStuffCrawler extends Crawler<JsonElement>{
 		return null;
 	}
 	
-	private JsonObject getLatestVersion() throws IOException {
+	protected JsonObject getLatestVersion() throws IOException {
 		JsonArray versions = getPage(getApiUrl()).getAsJsonObject().get("versions").getAsJsonArray();
 		if (versions.size() > 0){
 			return versions.get(0).getAsJsonObject();
@@ -71,6 +71,11 @@ public class KerbalStuffCrawler extends Crawler<JsonElement>{
 	@Override
 	public String getSupportedVersion() throws IOException {
 		return getLatestVersion().get("ksp_version").getAsString();
+	}
+	
+	@Override
+	public String getVersionString() throws IOException{
+		return getLatestVersion().get("friendly_version").getAsString();
 	}
 
 	@Override

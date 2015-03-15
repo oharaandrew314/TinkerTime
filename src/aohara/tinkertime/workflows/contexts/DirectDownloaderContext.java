@@ -1,4 +1,4 @@
-package aohara.tinkertime.workflows;
+package aohara.tinkertime.workflows.contexts;
 
 import java.io.IOException;
 import java.net.URL;
@@ -8,7 +8,7 @@ import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 
-class DirectDownloaderContext extends DownloaderContext {
+public class DirectDownloaderContext extends DownloaderContext {
 	
 	private static final CrawlerFactory factory = new CrawlerFactory();
 	private final Path imagePath, downloadPath;
@@ -19,7 +19,7 @@ class DirectDownloaderContext extends DownloaderContext {
 		this.downloadPath = downloadPath;
 	}
 	
-	static DownloaderContext fromUrl(URL pageUrl, Path imagePath, Path downloadPath) throws UnsupportedHostException{
+	public static DownloaderContext fromUrl(URL pageUrl, Path imagePath, Path downloadPath) throws UnsupportedHostException{
 		return new DirectDownloaderContext(factory.getCrawler(pageUrl), imagePath, downloadPath);
 	}
 

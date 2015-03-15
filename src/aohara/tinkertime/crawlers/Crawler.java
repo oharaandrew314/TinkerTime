@@ -7,6 +7,8 @@ import java.util.Date;
 
 import javax.swing.JOptionPane;
 
+import com.github.zafarkhaja.semver.Version;
+
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 
 /**
@@ -39,6 +41,7 @@ public abstract class Crawler<T> {
 	public abstract String getName() throws IOException;
 	public abstract String getCreator() throws IOException;
 	public abstract String getSupportedVersion() throws IOException;
+	public abstract String getVersionString() throws IOException;
 	protected abstract Collection<Asset> getNewestAssets() throws IOException;
 	
 	public boolean isAssetsAvailable(){
@@ -58,19 +61,22 @@ public abstract class Crawler<T> {
 		return url;
 	}
 	
-	public boolean isUpdateAvailable(Date lastUpdated, String lastFileName) {
+	public Version getVersion(){
 		try {
-			if (lastUpdated != null && getUpdatedOn() != null){  // Prefer to compare update dates
-				return getUpdatedOn().compareTo(lastUpdated) > 0;
-			} else if (lastFileName != null){ // Alternately, compare file names
-				for (Asset asset : getNewestAssets()){
-					if (asset.fileName.equals(lastFileName)){
-						return false;
-					}
-				}
-			}
-			return true;  // Finally, just assume an update is available
-		} catch (IOException e){
+			return Version.valueOf(getVersionString());
+		} catch(
+			com.github.zafarkhaja.semver.UnexpectedCharacterException
+			| IOException  | IllegalArgumentException e
+		){
+			return null;
+		}
+	}
+	
+	public boolean isUpdateAvailable(VersionInfo currentVersion) {
+		try {
+			VersionInfo crawledVersion = new VersionInfo(getVersion(), getUpdatedOn(), getNewestAssets());
+			return crawledVersion.compareTo(currentVersion) > 0;
+		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
 		}

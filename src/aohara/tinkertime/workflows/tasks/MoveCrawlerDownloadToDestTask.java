@@ -6,8 +6,8 @@ import java.nio.file.Path;
 import aohara.common.workflows.Workflow;
 import aohara.common.workflows.Workflow.WorkflowTask;
 import aohara.common.workflows.tasks.FileTransferTask;
-import aohara.tinkertime.workflows.DownloaderContext;
 import aohara.tinkertime.workflows.ModWorkflowBuilder.ModDownloadType;
+import aohara.tinkertime.workflows.contexts.DownloaderContext;
 
 public class MoveCrawlerDownloadToDestTask extends WorkflowTask {
 	

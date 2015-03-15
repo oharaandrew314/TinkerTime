@@ -57,7 +57,7 @@ public class GithubCrawler extends Crawler<JsonElement> {
 		
 		// If path does not contain releases, try appending it to end 
 		else {
-			url = new URL(url.toString() + "/releases");
+			url = new URL(String.format("%s/%s", url, RELEASES));
 		}
 		
 		return super.getPage(url);
@@ -134,6 +134,11 @@ public class GithubCrawler extends Crawler<JsonElement> {
 	@Override
 	public String getSupportedVersion() throws IOException {
 		return null;  // Not Supported by Github
+	}
+	
+	@Override
+	public String getVersionString() throws IOException{
+		return getLatestReleaseElement().get("tag_name").getAsString();
 	}
 
 	@Override

@@ -3,11 +3,15 @@ package aohara.tinkertime;
 import java.awt.BorderLayout;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
+import com.github.zafarkhaja.semver.Version;
 
 import aohara.common.selectorPanel.SelectorPanel;
 import aohara.common.workflows.ProgressPanel;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModLoader;
+import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModComparator;
 import aohara.tinkertime.views.TinkerFrame;
@@ -25,8 +29,9 @@ public class TinkerTime {
 	
 	public static final String
 		NAME = "Tinker Time",
-		VERSION = "1.1.1",
 		AUTHOR = "Andrew O'Hara";
+	public static final Version VERSION = Version.valueOf("1.1.1");
+	public static final String FULL_NAME = String.format("%s v%s", NAME, VERSION);
 	
 	public static void main(String[] args) {
 		TinkerConfig config = TinkerConfig.create();
@@ -52,13 +57,23 @@ public class TinkerTime {
 
 		// Start Application
 		modLoader.init(mm);  // Load mods (will notify selector panel)
+		
+		// Check for App update on Startup
+		if (config.isCheckForMMUpdatesOnStartup()){
+			try {
+				mm.tryUpdateModManager();
+			} catch (UnsupportedHostException e) {
+				JOptionPane.showMessageDialog(null, e.toString(), "Error Checking for App Updates", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+		
+		// Check for Mod Updates on Startup
 		try {			
-			// Check for Mod Updates
 			if (config.autoCheckForModUpdates()){
 				mm.checkForModUpdates();
 			}
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			JOptionPane.showMessageDialog(null, e.toString(), "Error Checking for Mod Updates", JOptionPane.ERROR_MESSAGE);
 		}
 		
 		// Initialize Frame

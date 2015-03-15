@@ -5,7 +5,7 @@ import java.io.IOException;
 import aohara.common.workflows.Workflow;
 import aohara.common.workflows.Workflow.WorkflowTask;
 import aohara.tinkertime.crawlers.Crawler;
-import aohara.tinkertime.workflows.DownloaderContext;
+import aohara.tinkertime.workflows.contexts.DownloaderContext;
 
 public class CacheCrawlerPageTask extends WorkflowTask {
 	

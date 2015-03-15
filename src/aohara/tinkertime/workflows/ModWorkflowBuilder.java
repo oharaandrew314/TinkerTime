@@ -6,7 +6,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Calendar;
-import java.util.Date;
 
 import aohara.common.tree.TreeNode;
 import aohara.common.workflows.ConflictResolver;
@@ -15,9 +14,13 @@ import aohara.common.workflows.tasks.UnzipTask;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.controllers.ModLoader;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.crawlers.VersionInfo;
 import aohara.tinkertime.models.FileUpdateListener;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
+import aohara.tinkertime.workflows.contexts.DirectDownloaderContext;
+import aohara.tinkertime.workflows.contexts.DownloaderContext;
+import aohara.tinkertime.workflows.contexts.ModDownloaderContext;
 import aohara.tinkertime.workflows.tasks.CacheCrawlerPageTask;
 import aohara.tinkertime.workflows.tasks.CheckForUpdateTask;
 import aohara.tinkertime.workflows.tasks.CrawlerDownloadTask;
@@ -38,13 +41,13 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	 * Notifies the listeners if an update is available for the given file
 	 */
 	public void checkForUpdates(Mod mod, FileUpdateListener... listeners) throws IOException, UnsupportedHostException {
-		checkForUpdates(mod.getPageUrl(), mod.getUpdatedOn(), mod.getNewestFileName(), listeners);
+		checkForUpdates(mod.getPageUrl(), new VersionInfo(null, mod.getUpdatedOn(), mod.getNewestFileName()), listeners);
 	}
 	
-	public void checkForUpdates(URL pageUrl, Date updatedOn, String newestFileName, FileUpdateListener... listeners) throws UnsupportedHostException{
+	public void checkForUpdates(URL pageUrl, VersionInfo currentVersion, FileUpdateListener... listeners) throws UnsupportedHostException{
 		DownloaderContext context = DirectDownloaderContext.fromUrl(pageUrl, null, null);
 		addTask(new CacheCrawlerPageTask(context));
-		addTask(new CheckForUpdateTask(context, updatedOn, newestFileName));
+		addTask(new CheckForUpdateTask(context, currentVersion));
 		addTask(new NotfiyUpdateAvailableTask(context.crawler, listeners));
 	}
 	

@@ -65,8 +65,8 @@ public class JenkinsCrawler extends Crawler<JsonElement> {
 	}
 	
 	@Override
-	public boolean isUpdateAvailable(Date lastUpdated, String lastFileName) {
-		return isSuccesful() && super.isUpdateAvailable(lastUpdated, lastFileName);
+	public boolean isUpdateAvailable(VersionInfo currentVersion) {
+		return isSuccesful() && super.isUpdateAvailable(currentVersion);
 	}
 	
 	public boolean isSuccesful() {
@@ -103,5 +103,11 @@ public class JenkinsCrawler extends Crawler<JsonElement> {
 		assets.add(new Asset(fileName, new URL(artifactDownloadUrl, fileName)));
 		
 		return assets;
+	}
+
+	@Override
+	public String getVersionString() throws IOException {
+		// No reliable way of getting semantic version
+		return null;
 	}
 }

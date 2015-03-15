@@ -98,4 +98,9 @@ public class CurseCrawler extends Crawler<Document> {
 		assets.add(new Asset(fileName, downloadUrl));
 		return assets;
 	}
+
+	@Override
+	public String getVersionString() throws IOException {
+		return null;
+	}
 }

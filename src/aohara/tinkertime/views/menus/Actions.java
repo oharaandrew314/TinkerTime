@@ -14,7 +14,6 @@ import javax.swing.JOptionPane;
 
 import aohara.common.Util;
 import aohara.common.content.ImageManager;
-import aohara.common.workflows.tasks.BrowserGoToTask;
 import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.CannotDisableModError;
@@ -24,14 +23,11 @@ import aohara.tinkertime.controllers.ModManager.ModNotDownloadedError;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedError;
 import aohara.tinkertime.controllers.launcher.GameLauncher;
 import aohara.tinkertime.crawlers.Constants;
-import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.DefaultMods;
-import aohara.tinkertime.models.FileUpdateListener;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.views.FileChoosers;
 import aohara.tinkertime.views.UrlPanel;
-import aohara.tinkertime.workflows.ModWorkflowBuilder;
 
 class Actions {
 	
@@ -360,7 +356,7 @@ class Actions {
 	}
 	
 	@SuppressWarnings("serial")
-	static class UpdateTinkerTime extends TinkerAction implements FileUpdateListener {
+	static class UpdateTinkerTime extends TinkerAction {
 		
 		UpdateTinkerTime(JComponent parent, ModManager mm){
 			super("Update Tinker Time", null, parent, mm);
@@ -368,29 +364,10 @@ class Actions {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			ModWorkflowBuilder builder = new ModWorkflowBuilder("Updating " + TinkerTime.NAME);
 			try {
-				builder.checkForUpdates(Constants.getTinkerTimeGithubUrl(), null, TinkerTime.NAME, this);
-				mm.submitDownloadWorkflow(builder.buildWorkflow());
-			} catch (UnsupportedHostException ex) {
-				errorMessage(ex);
-			}
-		}
-
-		@Override
-		public void setUpdateAvailable(Crawler<?> crawler) {
-			try {
-				if (JOptionPane.showConfirmDialog(
-					parent,
-					String.format("Current: %s\nAvailable: %s\nDownload?", TinkerTime.VERSION, crawler.getNewestFileName()),
-					"Update Tinker Time",
-					JOptionPane.YES_NO_OPTION,
-					JOptionPane.QUESTION_MESSAGE
-				) == JOptionPane.YES_OPTION){
-					new BrowserGoToTask(crawler.getDownloadLink()).call(null);
-				}
-			} catch (IOException e) {
-				throw new RuntimeException(e);
+				mm.tryUpdateModManager();
+			} catch (UnsupportedHostException e) {
+				errorMessage(e);
 			}
 		}
 		
