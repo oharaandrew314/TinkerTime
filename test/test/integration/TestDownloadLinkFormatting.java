@@ -8,10 +8,11 @@ import java.net.URL;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import test.util.MockHelper;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.crawlers.pageLoaders.JsonLoader;
+import aohara.tinkertime.crawlers.pageLoaders.WebpageLoader;
 
 /**
  * WARNING! THIS TEST REQUIRES AN INTERNET CONNECTION!
@@ -21,7 +22,7 @@ import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 
 public class TestDownloadLinkFormatting {
 	
-	private final CrawlerFactory crawlerFactory = MockHelper.newCrawlerFactory();
+	private final CrawlerFactory crawlerFactory = new CrawlerFactory(new WebpageLoader(), new JsonLoader());
 	
 	@BeforeClass
 	public static void setUpClass(){
