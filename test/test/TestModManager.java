@@ -42,7 +42,7 @@ public class TestModManager {
 	
 	@BeforeClass
 	public static void setUpClass() throws Throwable{
-		config = spy(MockHelper.newConfig());
+		config = MockHelper.newConfig();
 		mod = TestModLoader.loadMod(ModStubs.Mechjeb);
 		testMod1 = TestModLoader.loadMod(ModStubs.TestMod1);
 		testMod2 = TestModLoader.loadMod(ModStubs.TestMod2);
