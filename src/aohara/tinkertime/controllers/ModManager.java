@@ -14,7 +14,11 @@ import aohara.common.workflows.ConflictResolver;
 import aohara.common.workflows.ProgressPanel;
 import aohara.common.workflows.Workflow;
 import aohara.tinkertime.TinkerConfig;
+import aohara.tinkertime.crawlers.Crawler;
+import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.crawlers.pageLoaders.JsonLoader;
+import aohara.tinkertime.crawlers.pageLoaders.WebpageLoader;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.views.DialogConflictResolver;
 import aohara.tinkertime.workflows.ModWorkflowBuilder;
@@ -31,6 +35,7 @@ import aohara.tinkertime.workflows.contexts.AppUpdateContext;
  */
 public class ModManager extends Listenable<ModUpdateListener> implements WorkflowRunner, ListListener<Mod> {
 	
+	private final CrawlerFactory crawlerFactory;
 	private final Executor downloadExecutor, enablerExecutor;
 	public final TinkerConfig config;
 	private final ModLoader loader;
@@ -42,14 +47,15 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		return new ModManager(
 			sm, config, pp, new DialogConflictResolver(),
 			Executors.newFixedThreadPool(config.numConcurrentDownloads()),
-			Executors.newSingleThreadExecutor()
+			Executors.newSingleThreadExecutor(),
+			new CrawlerFactory(new WebpageLoader(), new JsonLoader())
 		);
 	}
 	
 	public ModManager(
 			ModLoader loader, TinkerConfig config, ProgressPanel progressPanel,
 			ConflictResolver cr, Executor downloadExecutor,
-			Executor enablerExecutor
+			Executor enablerExecutor, CrawlerFactory crawlerFactory
 	){
 		this.loader = loader;
 		this.config = config;
@@ -57,6 +63,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		this.cr = cr;
 		this.downloadExecutor = downloadExecutor;
 		this.enablerExecutor = enablerExecutor;
+		this.crawlerFactory = crawlerFactory;
 		
 		addListener(loader);
 	}
@@ -115,7 +122,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 			// Cleanup operations prior to update
 			if (mod.isDownloaded(config)){
 				if (!forceUpdate){
-					builder.checkForUpdates(mod, mod, loader);
+					builder.checkForUpdates(mod, getCrawler(mod), mod, loader);
 				}
 				
 				if (mod.isEnabled()){
@@ -124,7 +131,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 				
 				builder.deleteModZip(mod, config);
 			}
-			builder.downloadMod(mod.getPageUrl(), config, loader);
+			builder.downloadMod(getCrawler(mod), config, loader);
 			submitDownloadWorkflow(builder.buildWorkflow());
 		} catch (IOException | UnsupportedHostException e) {
 			throw new ModUpdateFailedError(e);
@@ -134,7 +141,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	public void downloadMod(URL url) throws ModUpdateFailedError, UnsupportedHostException {
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Downloading " + FilenameUtils.getBaseName(url.toString()));
 		try {
-			builder.downloadMod(url, config, loader);
+			builder.downloadMod(getCrawler(url), config, loader);
 			submitDownloadWorkflow(builder.buildWorkflow());
 		} catch (IOException e) {
 			throw new ModUpdateFailedError(e);
@@ -188,7 +195,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 			try {
 				if (mod.getPageUrl() != null){
 					ModWorkflowBuilder builder = new ModWorkflowBuilder("Checking for update for " + mod);
-					builder.checkForUpdates(mod, mod, loader);
+					builder.checkForUpdates(mod, getCrawler(mod), mod, loader);
 					submitDownloadWorkflow(builder.buildWorkflow());
 				}
 			} catch (IOException | UnsupportedHostException ex) {
@@ -218,6 +225,16 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	 */
 	public void tryUpdateModManager() throws UnsupportedHostException{
 		AppUpdateContext.checkForUpdates(this);
+	}
+	
+	// -- Helpers -----------------------------------------------------------
+	
+	public Crawler<?> getCrawler(URL url) throws UnsupportedHostException{
+		return crawlerFactory.getCrawler(url);
+	}
+	
+	protected Crawler<?> getCrawler(Mod mod) throws UnsupportedHostException{
+		return getCrawler(mod.getPageUrl());
 	}
 	
 	// -- Exceptions/Errors --------------------------------------------------

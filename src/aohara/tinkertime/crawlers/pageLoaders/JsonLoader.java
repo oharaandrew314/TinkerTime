@@ -4,10 +4,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-
-import aohara.tinkertime.crawlers.Crawler;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -17,20 +13,14 @@ import com.google.gson.JsonParser;
  * 
  * @author Andrew O'Hara
  */
-public class JsonLoader implements PageLoader<JsonElement> {
-	
-	private final Map<URL, JsonElement> cache = new HashMap<>();
+public class JsonLoader extends PageLoader<JsonElement> {
+
 	private final JsonParser parser = new JsonParser();
 
 	@Override
-	public JsonElement getPage(Crawler<JsonElement> crawler, URL url) throws IOException {
-		if (!cache.containsKey(url)){
-			try(Reader r = new InputStreamReader(url.openStream())){
-                JsonElement jsonElement = parser.parse(r);
-				cache.put(url, jsonElement);
-			}
+	protected JsonElement loadPage(String pageId, URL url) throws IOException {
+		try(Reader r = new InputStreamReader(url.openStream())){
+			return parser.parse(r);
 		}
-		return cache.get(url);
 	}
-
 }

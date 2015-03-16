@@ -3,6 +3,7 @@ package aohara.tinkertime.crawlers.pageLoaders;
 import java.io.IOException;
 import java.net.URL;
 
+import aohara.common.SimpleCache;
 import aohara.tinkertime.crawlers.Crawler;
 
 /**
@@ -15,8 +16,17 @@ import aohara.tinkertime.crawlers.Crawler;
  *
  * @param <T> Model which contains the Page
  */
-public interface PageLoader<T> {
-	public T getPage(Crawler<T> crawler, URL url) throws IOException;
+public abstract class PageLoader<T> {
+	
+	public static final int CACHING_TIME_MS = 10 * 60 * 1000;
+	private final SimpleCache<URL, T> cache = new SimpleCache<>(CACHING_TIME_MS);
+	
+	protected abstract T loadPage(String pageId, URL url) throws IOException;
+	
+	public final T getPage(Crawler<?> crawler, URL url) throws IOException {
+		if (!cache.containsKey(url)){
+			cache.put(url, loadPage(crawler.generateId(), url));
+		}
+		return cache.get(url);	
+	}
 }
-
-

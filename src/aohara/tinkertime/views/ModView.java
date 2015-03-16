@@ -1,8 +1,6 @@
 package aohara.tinkertime.views;
 
 import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -77,8 +75,7 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 			).getComponent());
 
 			// Readme
-			Path zipPath = mod.getCachedImagePath(config);
-			if (zipPath != null && zipPath.toFile().exists()){
+			if (mod.isDownloaded(config)){
 				String readmeText = ModStructure.getReadmeText(config, mod);				
 				if (readmeText != null && !readmeText.trim().isEmpty()){
 					panel.add(new JLabel("<html><b>Readme:</b></html"));
@@ -108,16 +105,12 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 	@Override
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 		if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-			goToHyperlink(e.getURL());
-        }
-	}
-	
-	private void goToHyperlink(URL url){
-        try {
-            Util.goToHyperlink(url);
-        } catch (IOException e1) {
-        	JOptionPane.showMessageDialog(
-        		panel, "Could not open hyperlink:\n" + url);
+			try {
+	            Util.goToHyperlink(e.getURL());
+	        } catch (IOException e1) {
+	        	JOptionPane.showMessageDialog(
+	        		panel, "Could not open hyperlink:\n" + e.getURL());
+	        }
         }
 	}
 }

@@ -1,7 +1,6 @@
 package aohara.tinkertime.crawlers;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -10,14 +9,12 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 
@@ -26,25 +23,16 @@ import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
  * 
  * @author Andrew O'Hara
  */
-public class GithubCrawler extends Crawler<JsonElement> {
+public class GithubCrawler extends Crawler<Document> {
 	
 	private static final String RELEASES = "releases";
-
-	public GithubCrawler(URL url, PageLoader<JsonElement> pageLoader) {
+	
+	public GithubCrawler(URL url, PageLoader<Document> pageLoader) {
 		super(url, pageLoader);
 	}
-
-    public URL getApiUrl(){
-        try {
-            return new URL("https://api.github.com/repos" + getPageUrl().getPath());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
+	
 	@Override
-	public JsonElement getPage(URL url) throws IOException {
+	public Document getPage(URL url) throws IOException {
 		/* Groom the Github Releases URL before getting it */
 		
 		List<String> paths = Arrays.asList(url.getPath().split("/"));
@@ -57,48 +45,41 @@ public class GithubCrawler extends Crawler<JsonElement> {
 		
 		// If path does not contain releases, try appending it to end 
 		else {
-			url = new URL(String.format("%s/%s", url, RELEASES));
+			url = new URL(url.toString() + "/releases");
 		}
 		
 		return super.getPage(url);
 	}
 	
-	private JsonObject getLatestReleaseElement() throws IOException {
-        JsonElement doc = getPage(getApiUrl());
-        for(JsonElement jsonElement:  doc.getAsJsonArray()) {
-            JsonObject jsonObject = jsonElement.getAsJsonObject();
-            if(jsonObject.get("zipball_url") != null)
-                return jsonObject;
-        }
-		return null;
+	private Element getLatestReleaseElement() throws IOException {
+		Document doc = getPage(getApiUrl());
+		return doc.select("div[class~=label-latest]").first();
 	}
 
 	@Override
 	protected Collection<Asset> getNewestAssets() throws IOException {
 		// Get List of Asset Elements
-        JsonObject assetsElement = getLatestReleaseElement();
-
+		Element assetsElement = getLatestReleaseElement().select("ul.release-downloads").first();
+		LinkedHashSet<Element> assetLinks = new LinkedHashSet<>(assetsElement.select("li a"));
+		
 		// Get File Names from Elements
 		Collection<Asset> assets = new LinkedList<>();
-
-        JsonArray jsonArray = assetsElement.get("assets").getAsJsonArray();
-
-        for(JsonElement element: jsonArray) {
-            JsonObject jsonObject = element.getAsJsonObject();
-            assets.add(new Asset(
-                    jsonObject.get("name").getAsString(),
-                    new URL( jsonObject.get("browser_download_url").getAsString())
-            ));
-        }
-
+		for (Element assetLink : assetLinks){
+			if (assetLink.html().contains("octicon-package")){
+				assets.add(new Asset(
+					assetLink.attr("href").substring(assetLink.attr("href").lastIndexOf('/') + 1),
+					new URL(assetLink.absUrl("href"))
+				));
+			}
+		}
 		return assets;
 	}
 
 	@Override
 	public Date getUpdatedOn() throws IOException {
-        JsonObject assetsElement = getLatestReleaseElement();
-		String dateStr = assetsElement.get("published_at").getAsString();
-
+		Element dateElement = getLatestReleaseElement().select("p.release-authorship time").first();
+		String dateStr = dateElement.attr("datetime");
+		
 		try {
 			return new SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
 		} catch (ParseException e) {
@@ -113,32 +94,17 @@ public class GithubCrawler extends Crawler<JsonElement> {
 
 	@Override
 	public String getName() throws IOException {
-        JsonObject assetsElement = getLatestReleaseElement();
-        Pattern pattern = Pattern.compile("https://api.github.com/repos/[A-Za-z-0-9]*/([A-Za-z-0-9]*)/.*");
-
-        Matcher matcher = pattern.matcher(assetsElement.get("url").getAsString());
-
-        if(matcher.matches()) {
-            return matcher.group(1);
-        }
-
-        return assetsElement.get("name").getAsString();
+		return getPage(getApiUrl()).select("h1.entry-title strong > a").text();
 	}
 
 	@Override
 	public String getCreator() throws IOException {
-        JsonObject assetsElement = getLatestReleaseElement();
-        return assetsElement.get("author").getAsJsonObject().get("login").getAsString();
+		return getLatestReleaseElement().select(" p.release-authorship a").first().text();
 	}
 
 	@Override
 	public String getSupportedVersion() throws IOException {
 		return null;  // Not Supported by Github
-	}
-	
-	@Override
-	public String getVersionString() throws IOException{
-		return getLatestReleaseElement().get("tag_name").getAsString();
 	}
 
 	@Override
@@ -153,5 +119,10 @@ public class GithubCrawler extends Crawler<JsonElement> {
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
 		}	
+	}
+
+	@Override
+	public String getVersionString() throws IOException {
+		return getLatestReleaseElement().select("span.css-truncate-target").text();
 	}
 }

@@ -5,9 +5,9 @@ import static org.junit.Assert.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
+import test.util.MockHelper;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
@@ -17,12 +17,7 @@ import aohara.tinkertime.crawlers.KerbalStuffCrawler;
 
 public class TestCrawlerFactory {
 	
-	private static CrawlerFactory factory;
-	
-	@BeforeClass
-	public static void beforeClass(){
-		factory = new CrawlerFactory();
-	}
+	private static CrawlerFactory factory = MockHelper.newCrawlerFactory();
 	
 	private void test(String url, Class<? extends Crawler<?>> crawlerClass){
 		try {
