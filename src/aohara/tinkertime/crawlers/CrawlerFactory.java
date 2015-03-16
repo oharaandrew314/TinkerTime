@@ -32,7 +32,7 @@ public class CrawlerFactory {
 		if (host.contains(Constants.HOST_CURSE)){
 			return new CurseCrawler(url, htmlLoader);
 		} else if (host.contains(Constants.HOST_GITHUB)){
-			return new GithubCrawler(url, jsonLoader);
+			return new GithubCrawler(url, htmlLoader);
 		} else if (host.contains(Constants.HOST_KERBAL_STUFF)){
 			return new KerbalStuffCrawler(url, jsonLoader);
 		} else if (host.equals(Constants.HOST_MODULE_MANAGER)){
