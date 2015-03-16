@@ -4,21 +4,15 @@ import static org.junit.Assert.assertEquals;
 
 import java.nio.file.Paths;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import test.util.MockConfig;
+import test.util.MockHelper;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.models.Mod;
 
 public class TestMod {
 	
-	private static TinkerConfig config;
-	
-	@BeforeClass
-	public static void setUpClass(){
-		config = new MockConfig();
-	}
+	private static TinkerConfig config = MockHelper.newConfig();
 	
 	private void checkZipPath(String expectedFileName, String originalFileName){
 		checkZipPath(

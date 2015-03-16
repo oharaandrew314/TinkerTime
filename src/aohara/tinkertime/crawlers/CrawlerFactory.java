@@ -4,12 +4,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 
-import com.google.gson.JsonElement;
 import org.jsoup.nodes.Document;
 
-import aohara.tinkertime.crawlers.pageLoaders.JsonLoader;
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
-import aohara.tinkertime.crawlers.pageLoaders.WebpageLoader;
+
+import com.google.gson.JsonElement;
 
 /**
  * Factory for creating crawlers.
@@ -19,33 +18,33 @@ import aohara.tinkertime.crawlers.pageLoaders.WebpageLoader;
  */
 public class CrawlerFactory {
 	
+	private final PageLoader<Document> htmlLoader;
+	private final PageLoader<JsonElement> jsonLoader;
+	
+	public CrawlerFactory(PageLoader<Document> htmlLoader, PageLoader<JsonElement> jsonLoader){
+		this.htmlLoader = htmlLoader;
+		this.jsonLoader = jsonLoader;
+	}
+	
 	public Crawler<?> getCrawler(URL url) throws UnsupportedHostException{
 		String host = url.getHost();
 		
 		if (host.contains(Constants.HOST_CURSE)){
-			return new CurseCrawler(url, createHtmlLoader());
+			return new CurseCrawler(url, htmlLoader);
 		} else if (host.contains(Constants.HOST_GITHUB)){
-			return new GithubCrawler(url, createJsonLoader());
+			return new GithubCrawler(url, jsonLoader);
 		} else if (host.contains(Constants.HOST_KERBAL_STUFF)){
-			return new KerbalStuffCrawler(url, createJsonLoader());
+			return new KerbalStuffCrawler(url, jsonLoader);
 		} else if (host.equals(Constants.HOST_MODULE_MANAGER)){
 			try {
 				URL artifactUrl = new URL(Constants.MODULE_MANAGER_ARTIFACT_DL_URL);
-				return new JenkinsCrawler(url, createJsonLoader(), "Module Manager", artifactUrl);
+				return new JenkinsCrawler(url, jsonLoader, "Module Manager", artifactUrl);
 			} catch (MalformedURLException e) {
 				throw new RuntimeException(e);
 			}
 		}
 		
 		throw new UnsupportedHostException(host);
-	}
-	
-	protected PageLoader<Document> createHtmlLoader(){
-		return new WebpageLoader();
-	}
-	
-	protected PageLoader<JsonElement> createJsonLoader(){
-		return new JsonLoader();
 	}
 	
 	@SuppressWarnings("serial")

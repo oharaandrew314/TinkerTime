@@ -8,6 +8,7 @@ import java.net.URL;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import test.util.MockHelper;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
@@ -19,6 +20,8 @@ import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
  */
 
 public class TestDownloadLinkFormatting {
+	
+	private final CrawlerFactory crawlerFactory = MockHelper.newCrawlerFactory();
 	
 	@BeforeClass
 	public static void setUpClass(){
@@ -46,7 +49,7 @@ public class TestDownloadLinkFormatting {
 	}
 	
 	private void test(String modUrl) throws IOException, UnsupportedHostException{
-		Crawler<?> crawler = new CrawlerFactory().getCrawler(new URL(modUrl));
+		Crawler<?> crawler = crawlerFactory.getCrawler(new URL(modUrl));
 		assertTrue(crawler.getDownloadLink().openConnection().getContentLength() > 0);
 	}
 }

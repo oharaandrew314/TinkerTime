@@ -27,7 +27,7 @@ public class AppUpdateContext implements FileUpdateListener {
 	public static void checkForUpdates(ModManager mm) throws UnsupportedHostException {
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Updating " + TinkerTime.NAME);
 		VersionInfo currentVersion = new VersionInfo(TinkerTime.VERSION, null, TinkerTime.FULL_NAME);
-		builder.checkForUpdates(Constants.getTinkerTimeGithubUrl(), currentVersion, new AppUpdateContext());
+		builder.checkForUpdates(mm.getCrawler(Constants.getTinkerTimeGithubUrl()), currentVersion, new AppUpdateContext());
 		mm.submitDownloadWorkflow(builder.buildWorkflow());
 	}
 	
@@ -43,9 +43,6 @@ public class AppUpdateContext implements FileUpdateListener {
 					"You currently have v%s",
 					TinkerTime.NAME, crawler.getVersion(), TinkerTime.VERSION
 				),
-				
-				
-				//String.format("Current: %s\nAvailable: %s\nDownload?", TinkerTime.VERSION, crawler.getVersion()),
 				"Update Tinker Time",
 				JOptionPane.YES_NO_OPTION,
 				JOptionPane.QUESTION_MESSAGE

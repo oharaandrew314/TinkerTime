@@ -18,7 +18,7 @@ public class TestModLoader {
 	
 	public static MockMod loadMod(ModStubs stub) throws UnsupportedHostException{
 		try {
-			Crawler<?> crawler = new MockCrawlerFactory().getCrawler(stub.url);
+			Crawler<?> crawler = MockHelper.newCrawlerFactory().getCrawler(stub.url);
 			Mod mod = new Mod(
 				crawler.generateId(), crawler.getName(), crawler.getNewestFileName(),
 				crawler.getCreator(), crawler.getImageUrl(), crawler.getPageUrl(),

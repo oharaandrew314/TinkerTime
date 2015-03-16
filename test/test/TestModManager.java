@@ -17,7 +17,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import test.util.MockConfig;
+import test.util.MockHelper;
 import test.util.TestModLoader;
 import test.util.ModStubs;
 import aohara.common.workflows.ConflictResolver;
@@ -42,7 +42,7 @@ public class TestModManager {
 	
 	@BeforeClass
 	public static void setUpClass() throws Throwable{
-		config = spy(new MockConfig());
+		config = spy(MockHelper.newConfig());
 		mod = TestModLoader.loadMod(ModStubs.Mechjeb);
 		testMod1 = TestModLoader.loadMod(ModStubs.TestMod1);
 		testMod2 = TestModLoader.loadMod(ModStubs.TestMod2);
@@ -60,7 +60,8 @@ public class TestModManager {
 			mock(ProgressPanel.class),
 			cr = spy(new MockCR()),
 			downloedExecutor = mock(Executor.class),
-			enablerExecutor = mock(Executor.class)
+			enablerExecutor = mock(Executor.class),
+			MockHelper.newCrawlerFactory()
 		);
 		
 		mod.setEnabled(false);
