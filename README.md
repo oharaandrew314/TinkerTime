@@ -39,6 +39,7 @@ v1.2
 - Fixes
   - Update Github Crawler to match new DOM
   - Fix issue where illegal file characters were causing some mods to fail to download
+  - "Update All" button to only update mods which have an update available
 
 v1.1.1
 - Updated for KerbalStuff content-provider change
