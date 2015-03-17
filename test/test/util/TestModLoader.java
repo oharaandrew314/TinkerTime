@@ -5,20 +5,36 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 
 import aohara.common.tree.TreeNode;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.crawlers.Crawler;
+import aohara.tinkertime.crawlers.Crawler.Asset;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
 
 public class TestModLoader {
 	
+	/**
+	 * Load a mod with the given ModStub.
+	 * 
+	 * Requires the html or json to be in the testRes html or json folders.
+	 * 
+	 * If there are multiple assets available in the latest release, will select
+	 * the first one.
+	 * 
+	 * @param stub
+	 * @return
+	 * @throws UnsupportedHostException
+	 */
 	public static MockMod loadMod(ModStubs stub) throws UnsupportedHostException{
 		try {
 			Crawler<?> crawler = MockHelper.newCrawlerFactory().getCrawler(stub.url);
+			crawler.setAssetSelector(new StaticAssetSelector());
 			Mod mod = new Mod(
 				crawler.generateId(), crawler.getName(), crawler.getNewestFileName(),
 				crawler.getCreator(), crawler.getImageUrl(), crawler.getPageUrl(),
@@ -83,5 +99,14 @@ public class TestModLoader {
 		public Path getCachedZipPath(TinkerConfig config){
 			return downloaded ? TestModLoader.getZipPath(getName()) : Paths.get("/");
 		}
+	}
+	
+	private static class StaticAssetSelector implements Crawler.AssetSelector {
+
+		@Override
+		public Asset selectAsset(String modName, Collection<Asset> assets) {
+			return new ArrayList<>(assets).get(0);
+		}
+		
 	}
 }

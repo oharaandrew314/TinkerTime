@@ -17,7 +17,9 @@ public enum ModStubs {
 	Near("NEAR", "https://github.com/ferram4/Ferram-Aerospace-Research"),
 	RadialEngines("Radial Engine Mounts by PanaTee Parts International", "https://kerbalstuff.com/api/mod/153"),
 	TimeControl("Time Control", "https://kerbalstuff.com/api/mod/21"),
-	CollisionFx("Collision FX 2.1", "https://kerbalstuff.com/mod/381");
+	CollisionFx("Collision FX 2.1", "https://kerbalstuff.com/mod/381"),
+	StockFixes("KSP-Stock-Bug-Fix-Modules", "https://github.com/ClawKSP/KSP-Stock-Bug-Fix-Modules"),
+	ActiveTextureManagement("ActiveTextureManagement", "https://github.com/rbray89/ActiveTextureManagement");
 	
 	public final String name;
 	public final URL url;

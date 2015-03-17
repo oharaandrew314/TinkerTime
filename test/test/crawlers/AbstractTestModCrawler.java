@@ -1,7 +1,6 @@
 package test.crawlers;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.URL;
@@ -36,9 +35,16 @@ public abstract class AbstractTestModCrawler {
 		assertEquals(expectedMod.getCreator(), actualMod.getCreator());
 		assertEquals(expectedMod.getImageUrl(), actualMod.getImageUrl());
 		assertEquals(expectedMod.getPageUrl(), actualMod.getPageUrl());
-		assertTrue(
-			expectedMod.getUpdatedOn().compareTo(actualMod.getUpdatedOn()) < 100
-		);
+
+		Calendar expectedDate = Calendar.getInstance();
+		expectedDate.setTime(expectedMod.getUpdatedOn());
+		
+		Calendar actualDate = Calendar.getInstance();
+		actualDate.setTime(actualMod.getUpdatedOn());
+		
+		assertEquals(expectedDate.get(Calendar.YEAR), actualDate.get(Calendar.YEAR));
+		assertEquals(expectedDate.get(Calendar.MONTH), actualDate.get(Calendar.MONTH));
+		assertEquals(expectedDate.get(Calendar.DATE), actualDate.get(Calendar.DATE));
 	}
 	
 	protected Date getDate(int year, int month, int date){

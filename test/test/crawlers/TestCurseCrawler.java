@@ -45,7 +45,7 @@ public class TestCurseCrawler extends AbstractTestModCrawler {
 		compare(
 			ModStubs.HotRockets,
 			"220207-hotrockets-particle-fx-replacement",
-			getDate(2014, 4, 12),
+			getDate(2014, 7, 1),
 			"Nazari1382",
 			"HotRockets for 0.25.zip",
 			"",
