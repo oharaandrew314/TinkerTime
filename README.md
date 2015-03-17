@@ -38,6 +38,7 @@ v1.2
   - Mod Page Caching to now persist for 10 minutes (rather than just for a single workflow)
 - Fixes
   - Update Github Crawler to match new DOM
+  - Github Crawler to skip latest release if it does not contain a user-uploaded asset
   - Fix issue where illegal file characters were causing some mods to fail to download
   - "Update All" button to only update mods which have an update available
 
