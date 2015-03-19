@@ -23,6 +23,7 @@ import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 public abstract class Crawler<T> {
 	
 	private Asset cachedAsset;
+	private AssetSelector assetSelector = new DialogAssetSelector();
 	private final PageLoader<T> pageLoader;
 	private final URL url;
 	
@@ -95,15 +96,7 @@ public abstract class Crawler<T> {
 				return assets.iterator().next();
 			default:
 				// Ask user which asset to use
-				cachedAsset = (Asset) JOptionPane.showInputDialog(null,
-						"Which variant of the mod '" + getName() + "' should be used?",
-						"Multiple Downloads Available",
-						JOptionPane.QUESTION_MESSAGE,
-						null,
-						assets.toArray(),
-						assets.iterator().next()
-				);
-				
+				cachedAsset = assetSelector.selectAsset(getName(), assets);
 				if (cachedAsset == null){
 					throw new IOException("You must select a download to use the mod!");
 				}
@@ -121,9 +114,13 @@ public abstract class Crawler<T> {
 		return getSelectedAsset().downloadLink;
 	}
 	
+	public void setAssetSelector(AssetSelector assetSelector){
+		this.assetSelector = assetSelector;
+	}
+	
 	// -- Inner Asset Class ---------------------------------------------------
 	
-	static class Asset {
+	public static class Asset {
 		public final String fileName;
 		public final URL downloadLink;
 		
@@ -135,6 +132,27 @@ public abstract class Crawler<T> {
 		@Override
 		public String toString(){
 			return fileName;
+		}
+	}
+	
+	public static interface AssetSelector {
+		
+		public Asset selectAsset(String modName, Collection<Asset> assets);
+		
+	}
+	
+	static class DialogAssetSelector implements AssetSelector {
+
+		@Override
+		public Asset selectAsset(String modName, Collection<Asset> assets) {
+			return (Asset) JOptionPane.showInputDialog(null,
+				"Which variant of the mod '" + modName + "' should be used?",
+				"Multiple Downloads Available",
+				JOptionPane.QUESTION_MESSAGE,
+				null,
+				assets.toArray(),
+				assets.iterator().next()
+			);
 		}
 	}
 }

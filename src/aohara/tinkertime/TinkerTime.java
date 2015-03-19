@@ -30,7 +30,7 @@ public class TinkerTime {
 	public static final String
 		NAME = "Tinker Time",
 		AUTHOR = "Andrew O'Hara";
-	public static final Version VERSION = Version.valueOf("1.1.1");
+	public static final Version VERSION = Version.valueOf("1.2.0");
 	public static final String FULL_NAME = String.format("%s v%s", NAME, VERSION);
 	
 	public static void main(String[] args) {

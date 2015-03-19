@@ -9,12 +9,12 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 
@@ -53,19 +53,44 @@ public class GithubCrawler extends Crawler<Document> {
 	
 	private Element getLatestReleaseElement() throws IOException {
 		Document doc = getPage(getApiUrl());
-		return doc.select("div[class~=label-latest]").first();
+		
+		// For all the releases, get the latest one that has user-uploaded releases
+		for (Element releaseElement : doc.select("div[class~=release label]")){
+			
+			// Skip pre-releases
+			if (releaseElement.classNames().contains("label-prerelease")){
+				continue;
+			}
+			
+			for (Element assetLink : getAssetLinks(releaseElement)){
+				if (isUserAssetLink(assetLink)){
+					return releaseElement;
+				}
+				
+			}
+		}
+		return null;
+	}
+	
+	private boolean isUserAssetLink(Element element){
+		return element.html().contains("octicon-package");
+	}
+	
+	private Elements getAssetLinks(Element element){
+		return element.select("ul.release-downloads li a");
 	}
 
 	@Override
 	protected Collection<Asset> getNewestAssets() throws IOException {
-		// Get List of Asset Elements
-		Element assetsElement = getLatestReleaseElement().select("ul.release-downloads").first();
-		LinkedHashSet<Element> assetLinks = new LinkedHashSet<>(assetsElement.select("li a"));
-		
-		// Get File Names from Elements
 		Collection<Asset> assets = new LinkedList<>();
-		for (Element assetLink : assetLinks){
-			if (assetLink.html().contains("octicon-package")){
+		
+		Element releaseElement  = getLatestReleaseElement();
+		if (releaseElement == null){
+			return assets;
+		}
+		
+		for (Element assetLink : getAssetLinks(releaseElement)){
+			if (isUserAssetLink(assetLink)){
 				assets.add(new Asset(
 					assetLink.attr("href").substring(assetLink.attr("href").lastIndexOf('/') + 1),
 					new URL(assetLink.absUrl("href"))
