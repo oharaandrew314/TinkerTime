@@ -6,6 +6,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -39,7 +40,8 @@ import aohara.tinkertime.workflows.contexts.AppUpdateContext;
 public class ModManager extends Listenable<ModUpdateListener> implements WorkflowRunner, ListListener<Mod> {
 	
 	private final CrawlerFactory crawlerFactory;
-	private final Executor downloadExecutor, enablerExecutor;
+	private final ThreadPoolExecutor downloadExecutor;
+	private final Executor enablerExecutor;
 	public final TinkerConfig config;
 	private final ModLoader loader;
 	private final ProgressPanel progressPanel;
@@ -49,7 +51,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	public static ModManager createDefaultModManager(TinkerConfig config, ModLoader sm, ProgressPanel pp){
 		return new ModManager(
 			sm, config, pp, new DialogConflictResolver(),
-			Executors.newFixedThreadPool(config.numConcurrentDownloads()),
+			(ThreadPoolExecutor) Executors.newFixedThreadPool(config.numConcurrentDownloads()),
 			Executors.newSingleThreadExecutor(),
 			new CrawlerFactory(new WebpageLoader(), new JsonLoader())
 		);
@@ -57,7 +59,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	
 	public ModManager(
 			ModLoader loader, TinkerConfig config, ProgressPanel progressPanel,
-			ConflictResolver cr, Executor downloadExecutor,
+			ConflictResolver cr, ThreadPoolExecutor downloadExecutor,
 			Executor enablerExecutor, CrawlerFactory crawlerFactory
 	){
 		this.loader = loader;
@@ -100,6 +102,14 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	@Override
 	public void submitDownloadWorkflow(Workflow workflow){
 		workflow.addListener(progressPanel);
+		
+		// Reset thread pool size if size in options has changed
+		int numDownloadThreads = config.numConcurrentDownloads();
+		if (downloadExecutor.getMaximumPoolSize() != numDownloadThreads){
+			downloadExecutor.setCorePoolSize(numDownloadThreads);
+			downloadExecutor.setMaximumPoolSize(numDownloadThreads);
+		}
+		
 		downloadExecutor.execute(workflow);
 	}
 	
@@ -237,6 +247,11 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 			);
 			submitDownloadWorkflow(builder.buildWorkflow());
 		} catch (MalformedURLException e) { /* Ignore */ }
+	}
+	
+	public void openConfigWindow(){
+		config.updateConfig(false);
+		loader.init(this);  // Reload mods (top update views)
 	}
 	
 	// -- Helpers -----------------------------------------------------------

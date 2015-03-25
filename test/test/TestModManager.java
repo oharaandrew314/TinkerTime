@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 
 import java.nio.file.Path;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -38,7 +39,8 @@ public class TestModManager {
 	private ModManager manager;
 	private static TestModLoader.MockMod mod, testMod1, testMod2;
 	private MockCR cr;
-	private Executor downloedExecutor, enablerExecutor;
+	private ThreadPoolExecutor downloadExecutor;
+	private Executor enablerExecutor;
 	
 	@BeforeClass
 	public static void setUpClass() throws Throwable{
@@ -59,7 +61,7 @@ public class TestModManager {
 			config,
 			mock(ProgressPanel.class),
 			cr = spy(new MockCR()),
-			downloedExecutor = mock(Executor.class),
+			downloadExecutor = mock(ThreadPoolExecutor.class),
 			enablerExecutor = mock(Executor.class),
 			MockHelper.newCrawlerFactory()
 		);
@@ -74,13 +76,13 @@ public class TestModManager {
 	@Test
 	public void testAddMod() throws Throwable {
 		manager.downloadMod(mod.getPageUrl());
-		verify(downloedExecutor, times(1)).execute(any(Workflow.class));
+		verify(downloadExecutor, times(1)).execute(any(Workflow.class));
 	}
 	
 	// -- Enable Tests ------------------------------------
 	
 	private void enableMod(Mod mod) throws Throwable {
-			reset(downloedExecutor);
+			reset(downloadExecutor);
 			assertTrue(mod.isDownloaded(config));
 			
 			manager.enableMod(mod);
@@ -144,7 +146,7 @@ public class TestModManager {
 	@Test
 	public void testUpdate() throws ModUpdateFailedError{
 		manager.updateMod(mod, true);
-		verify(downloedExecutor, times(1)).execute(any(Workflow.class));
+		verify(downloadExecutor, times(1)).execute(any(Workflow.class));
 	}
 	
 	// -- Mock Objects -------------------------------------

@@ -223,7 +223,7 @@ class Actions {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			mm.config.updateConfig(true, false);
+			mm.openConfigWindow();
 		}
 	}
 	

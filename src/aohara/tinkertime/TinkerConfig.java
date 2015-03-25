@@ -47,7 +47,7 @@ public class TinkerConfig {
 		
 		GuiConfig config = builder.createGuiConfigInDocuments("TinkerTime Config", TinkerTime.NAME, "TinkerTime.json");
 		if (!config.isValid()){
-			config.openOptionsWindow(false, true);
+			config.openOptionsWindow(true);
 		}
 		
 		return new TinkerConfig(config);
@@ -140,7 +140,7 @@ public class TinkerConfig {
 	
 	// -- Verification ----------------------------------------------------
 	
-	public void updateConfig(boolean restartOnSuccess, boolean exitOnCancel){
-		config.openOptionsWindow(restartOnSuccess, exitOnCancel);
+	public void updateConfig(boolean exitOnCancel){
+		config.openOptionsWindow(exitOnCancel);
 	}
 }
