@@ -1,6 +1,7 @@
 package aohara.tinkertime.controllers;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.concurrent.Executor;
@@ -14,8 +15,10 @@ import aohara.common.workflows.ConflictResolver;
 import aohara.common.workflows.ProgressPanel;
 import aohara.common.workflows.Workflow;
 import aohara.tinkertime.TinkerConfig;
+import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory;
+import aohara.tinkertime.crawlers.VersionInfo;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.crawlers.pageLoaders.JsonLoader;
 import aohara.tinkertime.crawlers.pageLoaders.WebpageLoader;
@@ -224,7 +227,16 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	 * @throws UnsupportedHostException 
 	 */
 	public void tryUpdateModManager() throws UnsupportedHostException{
-		AppUpdateContext.checkForUpdates(this);
+		ModWorkflowBuilder builder = new ModWorkflowBuilder("Updating " + TinkerTime.NAME);
+		VersionInfo currentVersion = new VersionInfo(TinkerTime.VERSION, null, TinkerTime.FULL_NAME);
+		try {
+			builder.checkForUpdates(
+				getCrawler(new URL(AppUpdateContext.APP_UPDATE_URL)),
+				currentVersion,
+				new AppUpdateContext()
+			);
+			submitDownloadWorkflow(builder.buildWorkflow());
+		} catch (MalformedURLException e) { /* Ignore */ }
 	}
 	
 	// -- Helpers -----------------------------------------------------------

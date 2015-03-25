@@ -1,19 +1,13 @@
 package aohara.tinkertime.workflows.contexts;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import javax.swing.JOptionPane;
 
 import aohara.common.workflows.tasks.BrowserGoToTask;
 import aohara.tinkertime.TinkerTime;
-import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.crawlers.Crawler;
-import aohara.tinkertime.crawlers.VersionInfo;
-import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.FileUpdateListener;
-import aohara.tinkertime.workflows.ModWorkflowBuilder;
 
 /**
  * Used to receive the callback when an app update is available.
@@ -25,20 +19,7 @@ import aohara.tinkertime.workflows.ModWorkflowBuilder;
  */
 public class AppUpdateContext implements FileUpdateListener {
 	
-	private static final String APP_UPDATE_URL = "https://github.com/oharaandrew314/TinkerTime/releases";
-	
-	public static void checkForUpdates(ModManager mm) throws UnsupportedHostException {
-		ModWorkflowBuilder builder = new ModWorkflowBuilder("Updating " + TinkerTime.NAME);
-		VersionInfo currentVersion = new VersionInfo(TinkerTime.VERSION, null, TinkerTime.FULL_NAME);
-		try {
-			builder.checkForUpdates(
-				mm.getCrawler(new URL(APP_UPDATE_URL)),
-				currentVersion,
-				new AppUpdateContext()
-			);
-			mm.submitDownloadWorkflow(builder.buildWorkflow());
-		} catch (MalformedURLException e) { /* Ignore */ }
-	}
+	public static final String APP_UPDATE_URL = "https://kerbalstuff.com/mod/243";
 	
 	@Override
 	public void setUpdateAvailable(Crawler<?> crawler) {
