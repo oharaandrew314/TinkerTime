@@ -18,6 +18,20 @@ import com.google.gson.JsonElement;
  */
 public class CrawlerFactory {
 	
+	static final String
+		HOST_CURSE = "curse.com",
+		HOST_GITHUB = "github.com",
+		HOST_MODULE_MANAGER = "ksp.sarbian.com",
+		HOST_KERBAL_STUFF = "kerbalstuff.com";
+
+	public static final String[] ACCEPTED_MOD_HOSTS	 = new String[]{
+		HOST_CURSE, HOST_GITHUB, HOST_KERBAL_STUFF
+	};
+	
+	public static final String MODULE_MANAGER_ARTIFACT_DL_URL = (
+		"https://ksp.sarbian.com/jenkins/job/ModuleManager/lastSuccessfulBuild/artifact/"
+	);
+	
 	private final PageLoader<Document> htmlLoader;
 	private final PageLoader<JsonElement> jsonLoader;
 	
@@ -29,15 +43,15 @@ public class CrawlerFactory {
 	public Crawler<?> getCrawler(URL url) throws UnsupportedHostException{
 		String host = url.getHost();
 		
-		if (host.contains(Constants.HOST_CURSE)){
+		if (host.contains(HOST_CURSE)){
 			return new CurseCrawler(url, htmlLoader);
-		} else if (host.contains(Constants.HOST_GITHUB)){
+		} else if (host.contains(HOST_GITHUB)){
 			return new GithubCrawler(url, htmlLoader);
-		} else if (host.contains(Constants.HOST_KERBAL_STUFF)){
+		} else if (host.contains(HOST_KERBAL_STUFF)){
 			return new KerbalStuffCrawler(url, jsonLoader);
-		} else if (host.equals(Constants.HOST_MODULE_MANAGER)){
+		} else if (host.equals(HOST_MODULE_MANAGER)){
 			try {
-				URL artifactUrl = new URL(Constants.MODULE_MANAGER_ARTIFACT_DL_URL);
+				URL artifactUrl = new URL(MODULE_MANAGER_ARTIFACT_DL_URL);
 				return new JenkinsCrawler(url, jsonLoader, "Module Manager", artifactUrl);
 			} catch (MalformedURLException e) {
 				throw new RuntimeException(e);
@@ -61,7 +75,7 @@ public class CrawlerFactory {
 			return (
 				"Mod data could not be deciphered for " + host + ".\n"
 				+ "Either the URL is invalid, or the site layout has been updated.\n"
-				+ " Valid hosts are: " + Arrays.asList(Constants.ACCEPTED_MOD_HOSTS)
+				+ " Valid hosts are: " + Arrays.asList(ACCEPTED_MOD_HOSTS)
 			);
 		}
 	}

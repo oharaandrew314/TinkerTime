@@ -27,7 +27,7 @@ public class KerbalStuffCrawler extends Crawler<JsonElement>{
 		try {
 			return new URL(
 				"https",
-				Constants.HOST_KERBAL_STUFF,
+				CrawlerFactory.HOST_KERBAL_STUFF,
 				String.format("/api/mod/%s", generateId(getPageUrl()))
 			);
 		} catch (IOException e) {
@@ -100,7 +100,7 @@ public class KerbalStuffCrawler extends Crawler<JsonElement>{
 		
 		URL downloadLink = new URL(
 			"https",
-			Constants.HOST_KERBAL_STUFF,
+			CrawlerFactory.HOST_KERBAL_STUFF,
 			getLatestVersion().get("download_path").getAsString()
 		);
 		

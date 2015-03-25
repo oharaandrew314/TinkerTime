@@ -22,7 +22,7 @@ import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledError;
 import aohara.tinkertime.controllers.ModManager.ModNotDownloadedError;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedError;
 import aohara.tinkertime.controllers.launcher.GameLauncher;
-import aohara.tinkertime.crawlers.Constants;
+import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.DefaultMods;
 import aohara.tinkertime.models.Mod;
@@ -73,7 +73,7 @@ class Actions {
 				parent,
 				"Please enter the URL of the mod you would like to"
 				+ " add.\ne.g. http://www.curse.com/ksp-mods/kerbal/220221-mechjeb\n\n"
-				+ "Supported Hosts are " + Arrays.asList(Constants.ACCEPTED_MOD_HOSTS),
+				+ "Supported Hosts are " + Arrays.asList(CrawlerFactory.ACCEPTED_MOD_HOSTS),
 				"Enter Mod Page URL",
 				JOptionPane.QUESTION_MESSAGE
 			);
