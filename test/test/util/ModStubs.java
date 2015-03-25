@@ -19,7 +19,8 @@ public enum ModStubs {
 	TimeControl("Time Control", "https://kerbalstuff.com/api/mod/21"),
 	CollisionFx("Collision FX 2.1", "https://kerbalstuff.com/mod/381"),
 	StockFixes("KSP-Stock-Bug-Fix-Modules", "https://github.com/ClawKSP/KSP-Stock-Bug-Fix-Modules"),
-	ActiveTextureManagement("ActiveTextureManagement", "https://github.com/rbray89/ActiveTextureManagement");
+	ActiveTextureManagement("ActiveTextureManagement", "https://github.com/rbray89/ActiveTextureManagement"),
+	ModuleManagerBuild1("moduleManagerPage1", "https://ksp.sarbian.com/jenkins/job/moduleManagerPage1");
 	
 	public final String name;
 	public final URL url;

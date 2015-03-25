@@ -1,6 +1,7 @@
 package aohara.tinkertime.crawlers;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Collection;
@@ -21,13 +22,29 @@ import com.google.gson.JsonObject;
 public class JenkinsCrawler extends Crawler<JsonElement> {
 	
 	private JsonObject cachedJson;
-	private final URL artifactDownloadUrl;
-	private final String name;
+	private final String jobName;
 	
-	public JenkinsCrawler(URL url, PageLoader<JsonElement> pageLoader, String name, URL artifactDownloadUrl) {
-		super(url, pageLoader);
-		this.name = name;
-		this.artifactDownloadUrl = artifactDownloadUrl;
+	public JenkinsCrawler(URL jenkinsUrl, String jobName, PageLoader<JsonElement> pageLoader) throws MalformedURLException{
+		super(jenkinsUrl, pageLoader);
+		this.jobName = jobName;
+	}
+	
+	public static JenkinsCrawler getCrawler(URL jobUrl, PageLoader<JsonElement> pageLoader) throws MalformedURLException{
+		String jobName = jobUrl.getPath().split("job/")[1];
+		if (jobName.contains("/")){
+			jobName = jobName.split("/")[0];
+		}
+		return new JenkinsCrawler(jobUrl, jobName, pageLoader);
+	}
+	
+	@Override
+	public URL getApiUrl(){
+		try {
+			return new URL(getPageUrl(), String.format("job/%s/lastSuccesfulBuild/api/json", jobName)
+			);
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private JsonObject getJson() throws IOException {
@@ -51,7 +68,7 @@ public class JenkinsCrawler extends Crawler<JsonElement> {
 
 	@Override
 	public String generateId() {
-		return getApiUrl().getHost();
+		return jobName;
 	}
 
 	@Override
@@ -61,30 +78,12 @@ public class JenkinsCrawler extends Crawler<JsonElement> {
 
 	@Override
 	public String getName() throws IOException {
-		return name;
-	}
-	
-	@Override
-	public boolean isUpdateAvailable(VersionInfo currentVersion) {
-		return isSuccesful() && super.isUpdateAvailable(currentVersion);
-	}
-	
-	public boolean isSuccesful() {
-		try {
-			String result = getJson().get("result").getAsString();
-			return (result != null && result.toLowerCase().equals("success"));
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
+		return jobName;
 	}
 
 	@Override
 	public String getCreator() throws IOException {
-		for (JsonElement culprit : getJson().get("culprits").getAsJsonArray()){
-			return culprit.getAsJsonObject().get("fullName").getAsString();
-		}
-		return null;
+		return getPageUrl().getHost();
 	}
 
 	@Override
@@ -100,14 +99,16 @@ public class JenkinsCrawler extends Crawler<JsonElement> {
 		JsonObject dllArtifact = artifacts.get(artifacts.size() - 1).getAsJsonObject();
 		String fileName = dllArtifact.get("relativePath").getAsString();
 		
-		assets.add(new Asset(fileName, new URL(artifactDownloadUrl, fileName)));
+		assets.add(new Asset(
+			fileName,
+			new URL(getPageUrl(), String.format("job/%s/lastSuccesfulBuild/artifact", fileName))
+		));
 		
 		return assets;
 	}
 
 	@Override
 	public String getVersionString() throws IOException {
-		// No reliable way of getting semantic version
-		return null;
+		return getJson().get("number").getAsString();
 	}
 }

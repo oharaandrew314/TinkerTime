@@ -20,24 +20,17 @@ public abstract class AbstractTestModCrawler {
 	) throws IOException, UnsupportedHostException {
 		Mod actualMod = TestModLoader.loadMod(stub);
 		
-		Mod expectedMod = new Mod(
-			id,
-			stub.name,
-			newestFile,
-			creator,
-			imageLink != null ? new URL(imageLink) : null,
-			stub.url,
-			updatedOn,
-			supportedVersion
-		);
-		assertEquals(expectedMod.getName(), actualMod.getName());
-		assertEquals(expectedMod.getNewestFileName(), actualMod.getNewestFileName());
-		assertEquals(expectedMod.getCreator(), actualMod.getCreator());
-		assertEquals(expectedMod.getImageUrl(), actualMod.getImageUrl());
-		assertEquals(expectedMod.getPageUrl(), actualMod.getPageUrl());
+		assertEquals(id, actualMod.id);
+		assertEquals(stub.name, actualMod.getName());
+		assertEquals(newestFile, actualMod.getNewestFileName());
+		assertEquals(creator, actualMod.getCreator());
+		assertEquals(newestFile, actualMod.getNewestFileName());
+		assertEquals(creator, actualMod.getCreator());
+		assertEquals(imageLink != null ? new URL(imageLink) : null, actualMod.getImageUrl());
+		assertEquals(stub.url, actualMod.getPageUrl());
 
 		Calendar expectedDate = Calendar.getInstance();
-		expectedDate.setTime(expectedMod.getUpdatedOn());
+		expectedDate.setTime(updatedOn);
 		
 		Calendar actualDate = Calendar.getInstance();
 		actualDate.setTime(actualMod.getUpdatedOn());

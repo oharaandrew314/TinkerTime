@@ -28,16 +28,20 @@ public class CrawlerFactory {
 		HOST_CURSE, HOST_GITHUB, HOST_KERBAL_STUFF
 	};
 	
-	public static final String MODULE_MANAGER_ARTIFACT_DL_URL = (
-		"https://ksp.sarbian.com/jenkins/job/ModuleManager/lastSuccessfulBuild/artifact/"
-	);
-	
 	private final PageLoader<Document> htmlLoader;
 	private final PageLoader<JsonElement> jsonLoader;
 	
 	public CrawlerFactory(PageLoader<Document> htmlLoader, PageLoader<JsonElement> jsonLoader){
 		this.htmlLoader = htmlLoader;
 		this.jsonLoader = jsonLoader;
+	}
+	
+	public static URL getModuleManagerApiUrl(){
+		try {
+			return new URL("https", HOST_MODULE_MANAGER, "jenkins");
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e); // Programming error if this occurs
+		}
 	}
 	
 	public Crawler<?> getCrawler(URL url) throws UnsupportedHostException{
@@ -51,8 +55,7 @@ public class CrawlerFactory {
 			return new KerbalStuffCrawler(url, jsonLoader);
 		} else if (host.equals(HOST_MODULE_MANAGER)){
 			try {
-				URL artifactUrl = new URL(MODULE_MANAGER_ARTIFACT_DL_URL);
-				return new JenkinsCrawler(url, jsonLoader, "Module Manager", artifactUrl);
+				return JenkinsCrawler.getCrawler(url, jsonLoader);
 			} catch (MalformedURLException e) {
 				throw new RuntimeException(e);
 			}
