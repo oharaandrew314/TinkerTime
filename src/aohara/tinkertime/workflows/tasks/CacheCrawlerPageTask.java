@@ -1,6 +1,7 @@
 package aohara.tinkertime.workflows.tasks;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 import aohara.common.workflows.Workflow;
 import aohara.common.workflows.Workflow.WorkflowTask;
@@ -29,6 +30,12 @@ public class CacheCrawlerPageTask extends WorkflowTask {
 
 	@Override
 	public String getTitle() {
-		return String.format("Crawling %s page", context.crawler.getApiUrl().getHost());
+		String pageName = "Unknown Page";
+		try {
+			pageName = context.crawler.getApiUrl().getHost();
+		} catch (MalformedURLException e) {
+			// Do Nothing
+		}
+		return String.format("Crawling %s page", pageName);
 	}
 }

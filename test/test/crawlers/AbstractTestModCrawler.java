@@ -16,9 +16,10 @@ public abstract class AbstractTestModCrawler {
 	
 	protected void compare(
 		ModStubs stub, String id, Date updatedOn, String creator,
-		String newestFile, String downloadLink, String imageLink, String supportedVersion
+		String newestFile, String downloadLink, String imageLink, String supportedVersion,
+		boolean fallback
 	) throws IOException, UnsupportedHostException {
-		Mod actualMod = TestModLoader.loadMod(stub);
+		Mod actualMod = TestModLoader.loadMod(stub, fallback);
 		
 		assertEquals(id, actualMod.id);
 		assertEquals(stub.name, actualMod.getName());
@@ -38,6 +39,13 @@ public abstract class AbstractTestModCrawler {
 		assertEquals(expectedDate.get(Calendar.YEAR), actualDate.get(Calendar.YEAR));
 		assertEquals(expectedDate.get(Calendar.MONTH), actualDate.get(Calendar.MONTH));
 		assertEquals(expectedDate.get(Calendar.DATE), actualDate.get(Calendar.DATE));
+	}
+	
+	protected void compare(
+		ModStubs stub, String id, Date updatedOn, String creator,
+		String newestFile, String downloadLink, String imageLink, String supportedVersion
+	) throws IOException, UnsupportedHostException {
+		compare(stub, id, updatedOn, creator, newestFile, downloadLink, imageLink, supportedVersion, false);
 	}
 	
 	protected Date getDate(int year, int month, int date){

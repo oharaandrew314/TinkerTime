@@ -1,6 +1,7 @@
 package aohara.tinkertime.crawlers;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
@@ -27,16 +28,16 @@ public abstract class Crawler<T> {
 	private final PageLoader<T> pageLoader;
 	private final URL url;
 	
-	public Crawler(URL url, PageLoader<T> pageLoader){
+	public Crawler(URL url, PageLoader<T> pageLoader) {
 		this.url = url;
 		this.pageLoader = pageLoader;
 	}
 	
 	public T getPage(URL url) throws IOException {
-		return pageLoader.getPage(this, url);
+		return pageLoader.getPage(url);
 	}
 
-	public abstract String generateId();
+	public abstract String generateId() throws IOException;
 	public abstract Date getUpdatedOn() throws IOException;
 	public abstract URL getImageUrl() throws IOException;
 	public abstract String getName() throws IOException;
@@ -58,7 +59,7 @@ public abstract class Crawler<T> {
 		return url;
 	}
 	
-	public URL getApiUrl(){
+	public URL getApiUrl() throws MalformedURLException{
 		return url;
 	}
 	

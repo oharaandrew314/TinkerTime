@@ -19,27 +19,33 @@ import com.google.gson.JsonElement;
 
 public class MockHelper {
 	
+	private static String urlToPath(URL url){
+		return url.toString().split("://")[1].replace("/", "-");
+	}
+	
 	public static CrawlerFactory newCrawlerFactory(){
-		return new CrawlerFactory(
+		CrawlerFactory factory = new CrawlerFactory(
 			new PageLoader<Document>(){
 				@Override
-				protected Document loadPage(String pageId, URL url) throws IOException {
-					String resourceName = "html/" + url.toString().split("//")[1].replace("/", "-");
-					try(InputStream is = TestModLoader.class.getClassLoader().getResourceAsStream(resourceName)){
-						Document doc = Jsoup.parse(is, null, url.toString());
-						return doc;
+				protected Document loadPage(URL url) throws IOException {
+					String resourceName = "html/" + urlToPath(url);
+					try(InputStream is = getClass().getClassLoader().getResourceAsStream(resourceName)){
+						return Jsoup.parse(is, null, url.toString());
 					}
 				}
 				
 			},
 			new JsonLoader(){
 				@Override
-				protected JsonElement loadPage(String pageId, URL url) throws IOException {
-					String resourceName = String.format("json/%s.json", pageId);
-					return super.loadPage(pageId, this.getClass().getClassLoader().getResource(resourceName));
+				protected JsonElement loadPage(URL url) throws IOException {
+					String resourceName = "json/" + urlToPath(url);
+					URL resourceUrl = getClass().getClassLoader().getResource(resourceName);
+					return super.loadPage(resourceUrl);
 				}
 			}
 		);
+		factory.setFallbacksEnabled(false);
+		return factory;
 	}
 	
 	public static TinkerConfig newConfig(){
@@ -59,6 +65,10 @@ public class MockHelper {
 			
 			public Path getModsListPath(){
 				return modsListPath;
+			}
+			
+			public int numConcurrentDownloads(){
+				return 4;
 			}
 		};
 	}

@@ -18,7 +18,7 @@ public class JsonLoader extends PageLoader<JsonElement> {
 	private final JsonParser parser = new JsonParser();
 
 	@Override
-	protected JsonElement loadPage(String pageId, URL url) throws IOException {
+	protected JsonElement loadPage(URL url) throws IOException {
 		try(Reader r = new InputStreamReader(url.openStream())){
 			return parser.parse(r);
 		}

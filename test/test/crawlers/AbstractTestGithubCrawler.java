@@ -1,13 +1,24 @@
 package test.crawlers;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.junit.Test;
 
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import test.util.ModStubs;
 
-public class TestGithubCrawler extends AbstractTestModCrawler {
+public abstract class AbstractTestGithubCrawler extends AbstractTestModCrawler {
+	
+	protected abstract boolean isTestingFallbackCrawler();
+	
+	@Override
+	protected void compare(
+		ModStubs stub, String id, Date updatedOn, String creator,
+		String newestFile, String downloadLink, String imageLink, String supportedVersion
+	) throws IOException, UnsupportedHostException {
+		compare(stub, id, updatedOn, creator, newestFile, downloadLink, imageLink, supportedVersion, isTestingFallbackCrawler());
+	}
 	
 	@Test
 	public void testKerbalAlarmClock() throws IOException, UnsupportedHostException {

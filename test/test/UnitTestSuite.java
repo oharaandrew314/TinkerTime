@@ -11,7 +11,8 @@ import org.junit.runners.Suite;
 import test.TestModStateManager;
 import test.crawlers.TestCrawlerFactory;
 import test.crawlers.TestCurseCrawler;
-import test.crawlers.TestGithubCrawler;
+import test.crawlers.TestGithubHtmlCrawler;
+import test.crawlers.TestGithubJsonCrawler;
 
 
 @RunWith(Suite.class)
@@ -20,7 +21,8 @@ import test.crawlers.TestGithubCrawler;
    TestModManager.class,
    TestModStateManager.class,
    TestModuleManagerCrawler.class,
-   TestGithubCrawler.class,
+   TestGithubHtmlCrawler.class,
+   TestGithubJsonCrawler.class,
    TestCrawlerFactory.class,
    TestZipTreeBuilder.class,
    TestMod.class

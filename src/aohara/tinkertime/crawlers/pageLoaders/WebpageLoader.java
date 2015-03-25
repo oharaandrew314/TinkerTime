@@ -16,7 +16,7 @@ public class WebpageLoader extends PageLoader<Document>{
 	private static final int TIMEOUT_MS = 10 * 1000;
 
 	@Override
-	protected Document loadPage(String pageId, URL url) throws IOException {
+	protected Document loadPage(URL url) throws IOException {
 		return Jsoup.parse(url, TIMEOUT_MS);
 	}
 }

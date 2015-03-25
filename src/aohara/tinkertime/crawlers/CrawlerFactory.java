@@ -1,5 +1,6 @@
 package aohara.tinkertime.crawlers;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
@@ -30,10 +31,15 @@ public class CrawlerFactory {
 	
 	private final PageLoader<Document> htmlLoader;
 	private final PageLoader<JsonElement> jsonLoader;
+	private boolean fallbacksEnabled = true;
 	
 	public CrawlerFactory(PageLoader<Document> htmlLoader, PageLoader<JsonElement> jsonLoader){
 		this.htmlLoader = htmlLoader;
 		this.jsonLoader = jsonLoader;
+	}
+	
+	public void setFallbacksEnabled(boolean enabled){
+		this.fallbacksEnabled = enabled;
 	}
 	
 	public static URL getModuleManagerUrl(){
@@ -45,12 +51,27 @@ public class CrawlerFactory {
 	}
 	
 	public Crawler<?> getCrawler(URL url) throws UnsupportedHostException{
+		return getCrawler(url, false);
+	}
+	
+	public Crawler<?> getCrawler(URL url, boolean fallback) throws UnsupportedHostException{
 		String host = url.getHost();
 		
 		if (host.contains(HOST_CURSE)){
 			return new CurseCrawler(url, htmlLoader);
 		} else if (host.contains(HOST_GITHUB)){
-			return new GithubCrawler(url, htmlLoader);
+			if (!fallback || !fallbacksEnabled){
+				try {
+					Crawler<?> crawler = new GithubJsonCrawler(url, jsonLoader);
+					if (fallbacksEnabled){
+						crawler.getPage(crawler.getApiUrl());  // Test connection; throw IOException if failure
+					}
+					return crawler;
+				} catch (IOException e) {
+					return getCrawler(url, true);
+				}
+			}
+			return new GithubHtmlCrawler(url, htmlLoader);
 		} else if (host.contains(HOST_KERBAL_STUFF)){
 			return new KerbalStuffCrawler(url, jsonLoader);
 		} else if (host.equals(HOST_MODULE_MANAGER)){

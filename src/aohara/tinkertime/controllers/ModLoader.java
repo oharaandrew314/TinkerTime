@@ -121,9 +121,13 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>>
 	@Override
 	public synchronized void setUpdateAvailable(Crawler<?> crawler) {
 		for (Mod mod : modCache){
-			if (mod.isUpdateable() && mod.id.equals(crawler.generateId())){
-				mod.setUpdateAvailable(crawler);
-				break;
+			try {
+				if (mod.isUpdateable() && mod.id.equals(crawler.generateId())){
+					mod.setUpdateAvailable(crawler);
+					break;
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}

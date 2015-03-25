@@ -23,18 +23,17 @@ import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
  * 
  * @author Andrew O'Hara
  */
-public class GithubCrawler extends Crawler<Document> {
+public class GithubHtmlCrawler extends Crawler<Document> {
 	
 	private static final String RELEASES = "releases";
 	
-	public GithubCrawler(URL url, PageLoader<Document> pageLoader) {
+	public GithubHtmlCrawler(URL url, PageLoader<Document> pageLoader) {
 		super(url, pageLoader);
 	}
 	
 	@Override
 	public Document getPage(URL url) throws IOException {
 		/* Groom the Github Releases URL before getting it */
-		
 		List<String> paths = Arrays.asList(url.getPath().split("/"));
 		if (paths.contains(RELEASES)){
 			// If path contains releases, but isn't last element, strip url
@@ -133,7 +132,7 @@ public class GithubCrawler extends Crawler<Document> {
 	}
 
 	@Override
-	public String generateId() {
+	public String generateId() throws IOException {
 		try { // Chop off releases from path
 			URI uri = getApiUrl().toURI();
 			if (getApiUrl().getPath().endsWith("releases")){

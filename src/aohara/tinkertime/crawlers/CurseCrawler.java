@@ -66,7 +66,7 @@ public class CurseCrawler extends Crawler<Document> {
 	}
 
 	@Override
-	public String generateId() {
+	public String generateId() throws IOException {
 		return FilenameUtils.getBaseName(getApiUrl().getPath());
 	}
 

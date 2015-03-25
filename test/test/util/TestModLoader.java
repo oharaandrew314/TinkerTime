@@ -31,9 +31,9 @@ public class TestModLoader {
 	 * @return
 	 * @throws UnsupportedHostException
 	 */
-	public static MockMod loadMod(ModStubs stub) throws UnsupportedHostException{
+	public static MockMod loadMod(ModStubs stub, boolean fallback) throws UnsupportedHostException{
 		try {
-			Crawler<?> crawler = MockHelper.newCrawlerFactory().getCrawler(stub.url);
+			Crawler<?> crawler = MockHelper.newCrawlerFactory().getCrawler(stub.url, fallback);
 			crawler.setAssetSelector(new StaticAssetSelector());
 			Mod mod = new Mod(
 				crawler.generateId(), crawler.getName(), crawler.getNewestFileName(),
@@ -45,6 +45,10 @@ public class TestModLoader {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public static MockMod loadMod(ModStubs stub) throws UnsupportedHostException{
+		return loadMod(stub, false);
 	}
 	
 	private static URL getZipUrl(String modName){
