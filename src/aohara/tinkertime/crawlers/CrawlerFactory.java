@@ -36,9 +36,9 @@ public class CrawlerFactory {
 		this.jsonLoader = jsonLoader;
 	}
 	
-	public static URL getModuleManagerApiUrl(){
+	public static URL getModuleManagerUrl(){
 		try {
-			return new URL("https", HOST_MODULE_MANAGER, "jenkins");
+			return new URL("https", HOST_MODULE_MANAGER, "/jenkins/job/ModuleManager");
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e); // Programming error if this occurs
 		}
@@ -55,7 +55,7 @@ public class CrawlerFactory {
 			return new KerbalStuffCrawler(url, jsonLoader);
 		} else if (host.equals(HOST_MODULE_MANAGER)){
 			try {
-				return JenkinsCrawler.getCrawler(url, jsonLoader);
+				return new JenkinsCrawler(url, jsonLoader);
 			} catch (MalformedURLException e) {
 				throw new RuntimeException(e);
 			}

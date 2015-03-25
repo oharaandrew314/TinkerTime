@@ -1,27 +1,45 @@
 package aohara.tinkertime.models;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import aohara.tinkertime.crawlers.CrawlerFactory;
+
 public class DefaultMods {
 	
-	public static Collection<Mod> getDefaults() {
+	private static final String[] DEPRECATED_DEFAULT_IDS = new String[]{ "ksp.sarbian.com" };
+	
+	private static Collection<Mod> getDefaults() {
 		Collection<Mod> defaults = new LinkedList<>();
 		
 		// Add Module Manager to Defaults
-		 try {
-			 defaults.add(new Mod(
-				"ksp.sarbian.com", "Module Manager", null, null, null,
-				new URL("https://ksp.sarbian.com/jenkins/job/ModuleManager/lastSuccessfulBuild/api/json"),
-				null, null
-			));
-		 } catch (MalformedURLException e){
-			 throw new RuntimeException(e);
-		 }
+		 defaults.add(new Mod(
+			"ModuleManager", "Module Manager", null, null, null,
+			CrawlerFactory.getModuleManagerUrl(),
+			null, null
+		));
 		
 		return defaults;
+	}
+	
+	public static void ensureDefaults(Collection<Mod> mods){
+		// Remove Deprecated Default Mods
+		Collection<String> deprecatedIds = Arrays.asList(DEPRECATED_DEFAULT_IDS);
+		Collection<Mod> modsToBeDeleted = new LinkedList<>();
+		for (Mod mod : mods){
+			if (deprecatedIds.contains(mod.id)){
+				modsToBeDeleted.add(mod);
+			}
+		}
+		mods.removeAll(modsToBeDeleted);
+		
+		// Ensure Existence of Default Mods
+		for (Mod builtIn : getDefaults()){
+			if (!mods.contains(builtIn)){
+				mods.add(builtIn);
+			}
+		}
 	}
 
 	public static boolean isBuiltIn(Mod mod){

@@ -22,26 +22,15 @@ import com.google.gson.JsonObject;
 public class JenkinsCrawler extends Crawler<JsonElement> {
 	
 	private JsonObject cachedJson;
-	private final String jobName;
 	
-	public JenkinsCrawler(URL jenkinsUrl, String jobName, PageLoader<JsonElement> pageLoader) throws MalformedURLException{
+	public JenkinsCrawler(URL jenkinsUrl, PageLoader<JsonElement> pageLoader) throws MalformedURLException{
 		super(jenkinsUrl, pageLoader);
-		this.jobName = jobName;
-	}
-	
-	public static JenkinsCrawler getCrawler(URL jobUrl, PageLoader<JsonElement> pageLoader) throws MalformedURLException{
-		String jobName = jobUrl.getPath().split("job/")[1];
-		if (jobName.contains("/")){
-			jobName = jobName.split("/")[0];
-		}
-		return new JenkinsCrawler(jobUrl, jobName, pageLoader);
 	}
 	
 	@Override
 	public URL getApiUrl(){
 		try {
-			return new URL(getPageUrl(), String.format("job/%s/lastSuccesfulBuild/api/json", jobName)
-			);
+			return new URL(String.format("%s/lastSuccessfulBuild/api/json", getPageUrl()));
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
 		}
@@ -68,7 +57,7 @@ public class JenkinsCrawler extends Crawler<JsonElement> {
 
 	@Override
 	public String generateId() {
-		return jobName;
+		return getName();
 	}
 
 	@Override
@@ -77,7 +66,11 @@ public class JenkinsCrawler extends Crawler<JsonElement> {
 	}
 
 	@Override
-	public String getName() throws IOException {
+	public String getName() {
+		String jobName = getPageUrl().getPath().split("job/")[1];
+		if (jobName.contains("/")){
+			jobName = jobName.split("/")[0];
+		}
 		return jobName;
 	}
 
@@ -101,7 +94,7 @@ public class JenkinsCrawler extends Crawler<JsonElement> {
 		
 		assets.add(new Asset(
 			fileName,
-			new URL(getPageUrl(), String.format("job/%s/lastSuccesfulBuild/artifact", fileName))
+			new URL(String.format("%s/lastSuccessfulBuild/artifact/%s", getPageUrl(), fileName))
 		));
 		
 		return assets;

@@ -42,7 +42,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>>
 	
 	// -- Initializers ----------------------------------------
 	
-	public ModLoader(TinkerConfig config, Gson gson){
+	private ModLoader(TinkerConfig config, Gson gson){
 		this.config = config;
 		this.gson = gson;
 	}
@@ -148,7 +148,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>>
 			e1.printStackTrace();
 		}
 		
-		mods.addAll(DefaultMods.getDefaults());
+		DefaultMods.ensureDefaults(mods);
 		return mods;
 	}
 	
