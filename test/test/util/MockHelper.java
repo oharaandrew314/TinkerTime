@@ -14,6 +14,7 @@ import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.pageLoaders.JsonLoader;
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
+import aohara.tinkertime.models.Mod;
 
 import com.google.gson.JsonElement;
 
@@ -72,5 +73,44 @@ public class MockHelper {
 			}
 		};
 	}
+	
+	public static class MockMod extends Mod {
+			
+		private boolean downloaded = false;
+		private boolean enabled = false;
 
+		public MockMod(Mod mod) {
+			super(
+				mod.id,
+				mod.getName(),
+				mod.getNewestFileName(),
+				mod.getCreator(),
+				mod.getPageUrl(),
+				mod.getUpdatedOn(),
+				mod.getSupportedVersion()
+			);
+		}
+		
+		public void setDownloaded(boolean downloaded){
+			this.downloaded = downloaded;
+		}
+		
+		@Override
+		public Path getCachedZipPath(TinkerConfig config){
+			return downloaded ? TestModLoader.getZipPath(getName()) : Paths.get("/");
+		}
+		
+		@Override
+		public boolean isEnabled(TinkerConfig config){
+			return enabled;
+		}
+		
+		public boolean isEnabled(){
+			return isEnabled(null);
+		}
+		
+		public void setEnabled(boolean enabled){
+			this.enabled = enabled;
+		}
+	}
 }

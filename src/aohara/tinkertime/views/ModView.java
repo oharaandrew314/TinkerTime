@@ -69,8 +69,11 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 			panel.add(updatedLabel);
 
 			// Mod Page Link
-			panel.add(new UrlPanel(
-				String.format("Go to Mod Page (on %s)", mod.getOriginSite()),
+			panel.add(new UrlPanel(				
+				String.format(
+					"Go to Mod Page (on %s)",
+					mod.isUpdateable() ? mod.getPageUrl().getHost() : null
+				),
 				mod.getPageUrl()
 			).getComponent());
 

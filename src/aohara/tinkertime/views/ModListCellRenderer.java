@@ -53,7 +53,7 @@ public class ModListCellRenderer implements ListCellRenderer<Mod> {
 		// Compile list of icons
 		LinkedList<ImageIcon> icons = new LinkedList<>();
 		if (mod.isDownloaded(config)){
-			icons.add(mod.isEnabled() ? checkIcon : xIcon);
+			icons.add(mod.isEnabled(config) ? checkIcon : xIcon);
 		} else {
 			icons.add(errorIcon);
 		}

@@ -84,7 +84,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	@Override
 	public void elementClicked(Mod mod, int numTimes) throws Exception{
 		if (numTimes == 2){
-			if (mod.isEnabled()){
+			if (mod.isEnabled(config)){
 				disableMod(mod);
 			} else {
 				enableMod(mod);
@@ -138,7 +138,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 					builder.checkForUpdates(mod, getCrawler(mod), mod, loader);
 				}
 				
-				if (mod.isEnabled()){
+				if (mod.isEnabled(config)){
 					builder.disableMod( mod, config, loader);
 				}
 				
@@ -174,7 +174,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	}
 	
 	public void enableMod(Mod mod) throws ModAlreadyEnabledError, ModNotDownloadedError, IOException {
-		if (mod.isEnabled()){
+		if (mod.isEnabled(config)){
 			throw new ModAlreadyEnabledError();
 		} else if (!mod.isDownloaded(config)){
 			throw new ModNotDownloadedError(mod, "Cannot enable since not downloaded");
@@ -186,7 +186,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	}
 	
 	public void disableMod(Mod mod) throws ModAlreadyDisabledError, IOException {
-		if (!mod.isEnabled()){
+		if (!mod.isEnabled(config)){
 			throw new ModAlreadyDisabledError();
 		}
 		

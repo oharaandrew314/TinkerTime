@@ -1,8 +1,12 @@
 package aohara.tinkertime.models;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.crawlers.Crawler;
@@ -22,7 +26,6 @@ public class Mod implements FileUpdateListener {
 	private Date updatedOn;
 	private String name, creator, supportedVersion, newestFileName;
 	private URL pageUrl;
-	private boolean enabled = false;
 	private transient boolean updateAvailable = false;
 	
 	public Mod(
@@ -92,23 +95,27 @@ public class Mod implements FileUpdateListener {
 	
 	// -- Other Methods --------------------
 
-	/**
-	 * Get this mod origin domain (from {@link aohara.tinkertime.crawlers.Constants#ACCEPTED_MOD_HOSTS})
-	 * @return mod origin domain or {@code null} if not in {@code ACCEPTED_MOD_HOSTS}
-	 */
-	public String getOriginSite() {
-		if(getPageUrl() != null && getPageUrl().getHost() != null) {
-			return getPageUrl().getHost();
+	public boolean isEnabled(TinkerConfig config){
+		// Cannot decide if the mod is enabled if the zip is missing
+		if (!isDownloaded(config)){
+			return false;
 		}
-		return null;
-	}
-
-	public boolean isEnabled(){
-		return enabled;
-	}
-	
-	public void setEnabled(boolean enabled){
-		this.enabled = enabled;
+		
+		// Find all installed module names
+		Set<String> installedModuleNames = new HashSet<>();
+		for (File dirEntry : config.getGameDataPath().toFile().listFiles()){
+			installedModuleNames.add(dirEntry.getName());
+		}
+		
+		// If all modules in the mod are installed, then the mod is enabled
+		try {
+			return installedModuleNames.containsAll(
+				ModStructure.inspectArchive(config, this).getModuleNames()
+			);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 	
 	@Override

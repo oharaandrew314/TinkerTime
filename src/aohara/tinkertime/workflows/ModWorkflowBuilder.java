@@ -24,7 +24,6 @@ import aohara.tinkertime.workflows.contexts.ModDownloaderContext;
 import aohara.tinkertime.workflows.tasks.CacheCrawlerPageTask;
 import aohara.tinkertime.workflows.tasks.CheckForUpdateTask;
 import aohara.tinkertime.workflows.tasks.CrawlerDownloadTask;
-import aohara.tinkertime.workflows.tasks.MarkModEnabledTask;
 import aohara.tinkertime.workflows.tasks.MarkModUpdatedTask;
 import aohara.tinkertime.workflows.tasks.MoveCrawlerDownloadToDestTask;
 import aohara.tinkertime.workflows.tasks.NotfiyUpdateAvailableTask;
@@ -104,7 +103,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	 * @param sm
 	 */
 	public void deleteMod(Mod mod, TinkerConfig config, ModLoader sm) {
-		if (mod.isEnabled()){
+		if (mod.isEnabled(config)){
 			try {
 				disableMod(mod, config, sm);
 			} catch (IOException e) {
@@ -128,7 +127,6 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		} else {
 			delete(config.getGameDataPath().resolve(mod.getNewestFileName()));
 		}
-		addTask(new MarkModEnabledTask(mod, sm, false));
 	}
 	
 	public void enableMod(Mod mod, TinkerConfig config, ModLoader sm, ConflictResolver cr) throws IOException{
@@ -141,7 +139,6 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 			copy(mod.getCachedZipPath(config), config.getGameDataPath());
 		}
 		
-		addTask(new MarkModEnabledTask(mod, sm, true));
 	}
 	
 	// helpers
@@ -150,7 +147,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		int numDependencies = 0;
 		for (Mod mod : sm.getMods()){
 			try {
-				if (mod.isEnabled() && modHasArchive(mod, config) && ModStructure.inspectArchive(config, mod).usesModule(module)){
+				if (mod.isEnabled(config) && modHasArchive(mod, config) && ModStructure.inspectArchive(config, mod).usesModule(module)){
 					numDependencies++;
 				}
 			} catch (FileNotFoundException ex){}

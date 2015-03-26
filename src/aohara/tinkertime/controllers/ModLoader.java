@@ -99,7 +99,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>>
 	public synchronized void exportEnabledMods(Path path){
 		Set<Mod> toExport = new HashSet<>();
 		for (Mod mod : modCache){
-			if (mod.isEnabled()){
+			if (mod.isEnabled(config)){
 				toExport.add(mod);
 			}
 		}

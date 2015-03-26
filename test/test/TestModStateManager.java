@@ -4,8 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +19,7 @@ public class TestModStateManager {
 
 	private Mod mod1, mod2;
 	private ModLoader modLoader;
-	private List<Mod> mods;
+	private Set<Mod> mods;
 	
 	private static Mod getUpdatedMod(final Mod mod, final String newestFile){
 		return new Mod(
@@ -41,7 +40,8 @@ public class TestModStateManager {
 		} else {
 			modLoader.modUpdated(mod);
 		}
-		mods = new ArrayList<Mod>(modLoader.getMods());
+		
+		mods = modLoader.getMods();
 	}
 
 	@Before
@@ -88,32 +88,7 @@ public class TestModStateManager {
 		
 		assertEquals(1, mods.size());
 		assertTrue(mods.contains(newer));
-		assertEquals(newestFile, mods.get(0).getNewestFileName());
-	}
-	
-	@Test
-	public void testSaveModState(){
-		boolean mod1State = false;
-		mod1.setEnabled(mod1State);
-		update(mod1, false);
-		
-		assertEquals(mod1State, mod1.isEnabled());
-		assertEquals(mod1State, mods.get(0).isEnabled());
-		
-		boolean mod2State = true;
-		mod2.setEnabled(mod2State);
-		update(mod2, false);
-		
-		assertEquals(mod2State, mod2.isEnabled());
-		for (Mod mod : mods){
-			if (mod.equals(mod1)){
-				assertEquals(mod1State, mod.isEnabled());
-			} else if (mod.equals(mod2)){
-				assertEquals(mod2State, mod.isEnabled());
-			} else {
-				assertTrue(false);
-			}
-		}
+		assertEquals(newestFile, mods.iterator().next().getNewestFileName());
 	}
 	
 	@Test

@@ -19,6 +19,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import test.util.MockHelper;
+import test.util.MockHelper.MockMod;
 import test.util.TestModLoader;
 import test.util.ModStubs;
 import aohara.common.workflows.ConflictResolver;
@@ -37,7 +38,7 @@ public class TestModManager {
 	
 	private static TinkerConfig config;
 	private ModManager manager;
-	private static TestModLoader.MockMod mod, testMod1, testMod2;
+	private static MockMod mod, testMod1, testMod2;
 	private MockCR cr;
 	private ThreadPoolExecutor downloadExecutor;
 	private Executor enablerExecutor;
@@ -95,7 +96,7 @@ public class TestModManager {
 	public void testEnableOneMod() throws Throwable {
 		cr.res = Resolution.Overwrite;
 
-		assertFalse(mod.isEnabled());
+		assertFalse(mod.isEnabled(config));
 		enableMod(mod);
 	}
 	
@@ -136,7 +137,7 @@ public class TestModManager {
 	
 	@Test(expected = ModAlreadyDisabledError.class)
 	public void testDisableDisabledMod() throws Throwable {
-		assertFalse(mod.isEnabled());
+		assertFalse(mod.isEnabled(config));
 		manager.disableMod(mod);
 	}
 	

@@ -198,7 +198,7 @@ class Actions {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Mod selectedMod = mm.getSelectedMod();
-			if (selectedMod != null && selectedMod.isEnabled()){
+			if (selectedMod != null && selectedMod.isEnabled(mm.config)){
 				try {
 					mm.disableMod(selectedMod);
 				} catch (ModAlreadyDisabledError | IOException e1) {

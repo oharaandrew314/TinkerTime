@@ -6,12 +6,14 @@ import java.io.StringWriter;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.IOUtils;
 
+import aohara.common.tree.FileNode;
 import aohara.common.tree.TreeNode;
 import aohara.common.tree.zip.ZipTreeBuilder;
 import aohara.tinkertime.TinkerConfig;
@@ -41,6 +43,14 @@ public class ModStructure {
 		return new HashSet<TreeNode>(modules);
 	}
 	
+	public Set<String> getModuleNames(){
+		Set<String> moduleNames = new LinkedHashSet<>();
+		for (TreeNode module : getModules()){
+			moduleNames.add(module.getName());
+		}
+		return moduleNames;
+	}
+	
 	// Factory Methods
 	
 	public static ModStructure inspectArchive(TinkerConfig config, Mod mod) throws IOException {
@@ -48,6 +58,13 @@ public class ModStructure {
 	}
 	
 	public static ModStructure inspectArchive(final Path zipPath) throws IOException {
+		if (!zipPath.toString().endsWith(".zip")){
+			Set<TreeNode> modules = new HashSet<>();
+			modules.add(new FileNode(zipPath.getFileName().toString()));
+			return new ModStructure(modules);
+		}
+		
+		
 		TreeNode root = new ZipTreeBuilder(zipPath).process();
 		
 		// Find GameData Path within zip

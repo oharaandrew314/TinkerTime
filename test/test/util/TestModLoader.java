@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 
+import test.util.MockHelper.MockMod;
 import aohara.common.tree.TreeNode;
-import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.Crawler.Asset;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
@@ -60,7 +60,6 @@ public class TestModLoader {
 			this.crawler = crawler;
 			this.mod = mod;
 		}
-		
 	}
 	
 	public static MockMod loadMod(ModStubs stub) throws UnsupportedHostException{
@@ -92,32 +91,6 @@ public class TestModLoader {
 			}
 		}
 		return null;
-	}
-	
-	public static class MockMod extends Mod {
-		
-		private boolean downloaded = false;
-
-		public MockMod(Mod mod) {
-			super(
-				mod.id,
-				mod.getName(),
-				mod.getNewestFileName(),
-				mod.getCreator(),
-				mod.getPageUrl(),
-				mod.getUpdatedOn(),
-				mod.getSupportedVersion()
-			);
-		}
-		
-		public void setDownloaded(boolean downloaded){
-			this.downloaded = downloaded;
-		}
-		
-		@Override
-		public Path getCachedZipPath(TinkerConfig config){
-			return downloaded ? TestModLoader.getZipPath(getName()) : Paths.get("/");
-		}
 	}
 	
 	private static class StaticAssetSelector implements Crawler.AssetSelector {
