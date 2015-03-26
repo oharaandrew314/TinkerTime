@@ -59,15 +59,21 @@ public class TinkerConfig {
 		return Paths.get(config.getProperty(GAMEDATA_PATH));	
 	}
 	
+	private Path getModCachePath(){
+		Path path = getGameDataPath().getParent().resolve(TinkerTime.NAME.replace(" ", ""));
+		path.toFile().mkdir();
+		return path;		
+	}
+	
 	public Path getModsZipPath(){
-		Path path = config.getFolder().resolve("mods");
-		path.toFile().mkdirs();
+		Path path = getModCachePath().resolve("modCache");
+		path.toFile().mkdir();
 		return path;
 	}
 	
 	public Path getImageCachePath(){
-		Path path = config.getFolder().resolve("imageCache");
-		path.toFile().mkdirs();
+		Path path = getModCachePath().resolve("imageCache");
+		path.toFile().mkdir();
 		return path;
 	}
 	
