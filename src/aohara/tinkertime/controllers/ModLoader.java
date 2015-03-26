@@ -55,6 +55,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>>
 		for (SelectorInterface<Mod> l : getListeners()){
 			l.clear();
 		}
+		modCache.clear();
 		importMods(config.getModsListPath(), mm);
 	}
 	
