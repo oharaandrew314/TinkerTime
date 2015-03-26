@@ -4,8 +4,7 @@ Contributor Readme
 Learn how to set up your environment to begin contributing to this repo.
 
 ### Requirements
-- Oracle JDK 7 or better
-  - non-oracle JVM will cause UI to fallback from Nimbus to Metal
+- JDK 7 or better
 - gradle
   - install in repo with `gradlew.bat` or `./gradlew`
 
@@ -19,7 +18,7 @@ git submodule update
 
 ### Set up Dependencies
 
-- This project requires Oracle JDK 7 or better
+- This project requires JDK 7 or better
   - All code must comply with the 1.7 grammar standard
 - This project uses gradle, which manages dependencies for you
   - see `build.gradle`
@@ -41,5 +40,5 @@ Gradle is used for building distributables
 
 
 
- 
+
 
