@@ -21,13 +21,13 @@ public class Mod implements FileUpdateListener {
 	public final String id;
 	private Date updatedOn;
 	private String name, creator, supportedVersion, newestFileName;
-	private URL imageUrl, pageUrl;
+	private URL pageUrl;
 	private boolean enabled = false;
 	private transient boolean updateAvailable = false;
 	
 	public Mod(
 		String id, String modName, String newestFileName, String creator,
-		URL imageUrl, URL pageUrl, Date updatedOn, String supportedVersion
+		URL pageUrl, Date updatedOn, String supportedVersion
 	){
 		this.id = id;
 		this.newestFileName = newestFileName;
@@ -35,7 +35,6 @@ public class Mod implements FileUpdateListener {
 		this.pageUrl = pageUrl;
 		this.name = modName;
 		this.creator = creator;
-		this.imageUrl = imageUrl;
 		this.supportedVersion = supportedVersion;
 	}
 	
@@ -45,10 +44,6 @@ public class Mod implements FileUpdateListener {
 
 	public String getCreator() {
 		return creator;
-	}
-
-	public URL getImageUrl() {
-		return imageUrl;
 	}
 	
 	public String getNewestFileName() {

@@ -17,7 +17,7 @@ public class TestMod {
 	private void checkZipPath(String expectedFileName, String originalFileName){
 		checkZipPath(
 			expectedFileName,
-			new Mod(null, null, originalFileName, null, null, null, null, null)
+			new Mod(null, null, originalFileName, null, null, null, null)
 		);
 	}
 	

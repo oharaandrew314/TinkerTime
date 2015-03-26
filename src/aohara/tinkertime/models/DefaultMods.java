@@ -15,9 +15,8 @@ public class DefaultMods {
 		
 		// Add Module Manager to Defaults
 		 defaults.add(new Mod(
-			"ModuleManager", "Module Manager", null, null, null,
-			CrawlerFactory.getModuleManagerUrl(),
-			null, null
+			"ModuleManager", "Module Manager", null, null,
+			CrawlerFactory.getModuleManagerUrl(), null, null
 		));
 		
 		return defaults;

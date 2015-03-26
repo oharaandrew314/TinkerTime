@@ -76,11 +76,11 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	public void addLocalMod(Path zipPath, TinkerConfig config, ModLoader sm){
 		String fileName = zipPath.getFileName().toString();
 		String prettyName = fileName;
-		if (prettyName.indexOf(".") > 0)
+		if (prettyName.indexOf(".") > 0) {
 			prettyName = prettyName.substring(0, prettyName.lastIndexOf("."));
-		//prettyName = prettyName.replaceAll("_", " ");
+		}
 		Mod newMod = new Mod(
-			fileName, prettyName, fileName, null, null, null,
+			fileName, prettyName, fileName, null, null,
 			Calendar.getInstance().getTime(), null
 		);
 		

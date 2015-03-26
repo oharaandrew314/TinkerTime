@@ -31,20 +31,36 @@ public class TestModLoader {
 	 * @return
 	 * @throws UnsupportedHostException
 	 */
-	public static MockMod loadMod(ModStubs stub, boolean fallback) throws UnsupportedHostException{
+	public static MockMod loadMod(ModStubs stub, boolean fallback) throws UnsupportedHostException {
+		return loadCrawlerAndMod(stub, fallback).mod;
+	}
+	
+	public static CrawlerAndMod loadCrawlerAndMod(ModStubs stub, boolean fallback) throws UnsupportedHostException{
 		try {
 			Crawler<?> crawler = MockHelper.newCrawlerFactory().getCrawler(stub.url, fallback);
 			crawler.setAssetSelector(new StaticAssetSelector());
 			Mod mod = new Mod(
 				crawler.generateId(), crawler.getName(), crawler.getNewestFileName(),
-				crawler.getCreator(), crawler.getImageUrl(), crawler.getPageUrl(),
+				crawler.getCreator(), crawler.getPageUrl(),
 				crawler.getUpdatedOn() != null ? crawler.getUpdatedOn() : Calendar.getInstance().getTime(),
 				crawler.getSupportedVersion()
 			);
-			return new MockMod(mod);
+			return new CrawlerAndMod(crawler, new MockMod(mod));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public static class CrawlerAndMod {
+		
+		public final Crawler<?> crawler;
+		public final MockMod mod;
+		
+		private CrawlerAndMod(Crawler<?> crawler, MockMod mod){
+			this.crawler = crawler;
+			this.mod = mod;
+		}
+		
 	}
 	
 	public static MockMod loadMod(ModStubs stub) throws UnsupportedHostException{
@@ -88,7 +104,6 @@ public class TestModLoader {
 				mod.getName(),
 				mod.getNewestFileName(),
 				mod.getCreator(),
-				mod.getImageUrl(),
 				mod.getPageUrl(),
 				mod.getUpdatedOn(),
 				mod.getSupportedVersion()

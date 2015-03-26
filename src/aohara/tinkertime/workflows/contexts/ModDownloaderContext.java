@@ -32,7 +32,7 @@ public class ModDownloaderContext extends DownloaderContext {
 		if (cachedMod == null){
 			cachedMod = new Mod(
 				crawler.generateId(), crawler.getName(), crawler.getNewestFileName(),
-				crawler.getCreator(), crawler.getImageUrl(), crawler.getPageUrl(),
+				crawler.getCreator(), crawler.getPageUrl(),
 				crawler.getUpdatedOn() != null ? crawler.getUpdatedOn() : Calendar.getInstance().getTime(),
 				crawler.getSupportedVersion()
 			);

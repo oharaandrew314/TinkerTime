@@ -9,6 +9,8 @@ import java.util.Date;
 
 import test.util.TestModLoader;
 import test.util.ModStubs;
+import test.util.TestModLoader.CrawlerAndMod;
+import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 
@@ -19,16 +21,20 @@ public abstract class AbstractTestModCrawler {
 		String newestFile, String downloadLink, String imageLink, String supportedVersion,
 		boolean fallback
 	) throws IOException, UnsupportedHostException {
-		Mod actualMod = TestModLoader.loadMod(stub, fallback);
+		CrawlerAndMod actual = TestModLoader.loadCrawlerAndMod(stub, fallback);
 		
+		Mod actualMod = actual.mod;
 		assertEquals(id, actualMod.id);
 		assertEquals(stub.name, actualMod.getName());
 		assertEquals(newestFile, actualMod.getNewestFileName());
 		assertEquals(creator, actualMod.getCreator());
 		assertEquals(newestFile, actualMod.getNewestFileName());
 		assertEquals(creator, actualMod.getCreator());
-		assertEquals(imageLink != null ? new URL(imageLink) : null, actualMod.getImageUrl());
 		assertEquals(stub.url, actualMod.getPageUrl());
+		
+		Crawler<?> crawler = actual.crawler;
+		URL imageUrl = crawler.getImageUrl();
+		assertEquals(imageLink, imageUrl != null ? imageUrl.toString() : null);
 
 		Calendar expectedDate = Calendar.getInstance();
 		expectedDate.setTime(updatedOn);

@@ -28,7 +28,6 @@ public class TestModStateManager {
 			mod.getName(),
 			newestFile,
 			mod.getCreator(),
-			mod.getImageUrl(),
 			mod.getPageUrl(),
 			mod.getUpdatedOn(),
 			mod.getSupportedVersion()
