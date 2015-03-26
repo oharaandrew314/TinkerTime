@@ -32,11 +32,12 @@ The [Tinker Time Wiki](https://github.com/oharaandrew314/TinkerTime/wiki) contai
 
 ### Change Log
 
-v2.0 (planned)
+##### v2.0 (planned)
 
 This major update is planned to feature a visual design overhaul, and .version file integration
 
-v1.3
+##### v1.3
+
 This update focuses on fixing annoyances, in order to provide a better general UX
 
 - New Features
@@ -57,7 +58,7 @@ This update focuses on fixing annoyances, in order to provide a better general U
     - After updating, restart TinkerTime, and delete the old ModuleManager dll in your GameData directory (if there are two)
   - Mod file no longer needs to save image URLs and enabled state
 
-v1.2
+##### v1.2
 - New Features
   - Automatically check for TinkerTime update, and prompt user if new version is available
   - Mod Page Caching to now persist for 10 minutes (rather than just for a single workflow)
@@ -67,10 +68,10 @@ v1.2
   - Fix issue where illegal file characters were causing some mods to fail to download
   - "Update All" button to only update mods which have an update available
 
-v1.1.1
+##### v1.1.1
 - Updated for KerbalStuff content-provider change
 
-v1.1
+##### v1.1
 - New Features
   - KSP Launcher (supports Windows, OSX, and Linux)
     - On Windows, will ask user if they wish to use 64-bit, otherwise, automatic
@@ -84,7 +85,7 @@ v1.1
   - Fix Typo in TinkerTime Options Window
   - Fix highlighting of toolbar buttons after clicking
 
-v1.0
+##### v1.0
 - New Features:
   - Module Manager is now considered a (non-removable) mod
   - Can now add local mod zip files (non-updateable)
@@ -102,7 +103,7 @@ v1.0
   - Improve Github mod URL analysis robustness
   - Fix Json caching for Jenkins crawler (less annoyance for [sarbian](https://github.com/sarbian))
 
-v0.7
+##### v0.7
 - KerbalStuff Mod Support
 - Graphical Toolbar
 - New GUI Theme (Nimbus)
@@ -111,7 +112,7 @@ v0.7
 - Automated JAR file generation with Gradle
 - Travis-CI integration for automated testing
 
-v0.6
+##### v0.6
 - Github Mod Support
 - GUI Mod List is to maintain proper order
 - on start, update Module manager, and check for Mod updates
@@ -121,7 +122,7 @@ v0.6
 - Each KSP Installation to have its own separate mods configuration
 - Various other under-the-hood improvements
 
-v0.5
+##### v0.5
 - Initial Release
 - Curse.com support
 
