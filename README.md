@@ -9,12 +9,12 @@ Master: [![Build Status](https://travis-ci.org/oharaandrew314/TinkerTime.svg?bra
 Tinker Time is a Mod Manager for Kerbal Space Program that will allow you to automatically update, enable, and disable all of your mods.  All you have to do is enter the URL to the mod webpage, and Tinker Time will do the rest of the work for you.  It will even manage your ModuleManager Installation for you. :)
 
 ### Requirements
-- [Oracle Java 7](https://java.com/en/download/index.jsp) or better
-  - OpenJDK is not supported, but it may work (however the missing Nimbus UI will default to Metal UI)
+- [Java 7](https://java.com/en/download/index.jsp) or better
+  - OpenJDK is not supported, but it may work
 
 #### Supported Mod Hosting Sites
 - Curse
-- Github (when compiled versions are released)
+- Github (when compiled assets are released)
 - KerbalStuff
 
 
@@ -31,6 +31,31 @@ The [Tinker Time Wiki](https://github.com/oharaandrew314/TinkerTime/wiki) contai
 - Beta Testers ([foonix](https://github.com/foonix), [jcsntoll](https://github.com/jcsntoll), and [apemanzilla](https://github.com/apemanzilla))
 
 ### Change Log
+
+v2.0 (planned)
+
+This major update is planned to feature a visual design overhaul, and .version file integration
+
+v1.3
+This update focuses on fixing annoyances, in order to provide a better general UX
+
+- New Features
+  - Add an options field to set KSP Launch Options
+  - Updating the options will no longer require an app restart
+  - Now scans the GameData directory to see which mods are enabled
+    - This fixes issues with the mods file being out of sync with the GameData directory
+  - Now scrapes Github using the API, by default
+    - If the API limit is reached, will fallback to the HTML scraper
+- Fixes
+  - Mod file caches between KSP installations are now separate
+    - This fixes issues when updating or deleting a mod in one installation, which would then affect the other
+    - Caches are now stored in a "TinkerTime" directory within your KSP installation
+- Other Changes
+  - Tinker Time now updates itself using KerbalStuff, rather than Github
+  - ModuleManager has been further integrated as a mod, (as opposed to a special entity)
+    - This will cause a minor issue the first time you update it
+    - After updating, restart TinkerTime, and delete the old ModuleManager dll in your GameData directory (if there are two)
+  - Mod file no longer needs to save image URLs and enabled state
 
 v1.2
 - New Features
