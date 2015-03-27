@@ -176,15 +176,8 @@ public class ModManager implements ListListener<Mod> {
 	
 	public void addModZip(Path zipPath){
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Adding " + zipPath);
-		builder.addLocalMod(zipPath, config, loader);
-		builder.addListener(new TaskCallback.WorkflowCompleteCallback() {
-			
-			@Override
-			protected void processTaskEvent(TaskEvent event) {
-				Mod mod = (Mod) event.data;
-				loader.modUpdated(mod);
-			}
-		});
+		final Mod futureMod = builder.addLocalMod(zipPath, config, loader);
+		builder.refreshModAfterWorkflowComplete(futureMod, loader);
 		submitDownloadWorkflow(builder);
 	}
 	
@@ -205,13 +198,7 @@ public class ModManager implements ListListener<Mod> {
 		} else {
 			builder.enableMod(mod, config, loader, cr);
 		}
-		builder.addListener(new TaskCallback.WorkflowCompleteCallback() {
-			
-			@Override
-			protected void processTaskEvent(TaskEvent event) {
-				loader.modUpdated(mod);
-			}
-		});
+		builder.refreshModAfterWorkflowComplete(mod, loader);
 		
 		submitEnablerWorkflow(builder);
 	}

@@ -7,8 +7,10 @@ import java.util.Calendar;
 
 import aohara.common.tree.TreeNode;
 import aohara.common.workflows.ConflictResolver;
+import aohara.common.workflows.tasks.TaskCallback;
 import aohara.common.workflows.tasks.UnzipTask;
 import aohara.common.workflows.tasks.WorkflowBuilder;
+import aohara.common.workflows.tasks.WorkflowTask.TaskEvent;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.controllers.ModLoader;
 import aohara.tinkertime.crawlers.Crawler;
@@ -46,7 +48,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		addTask(new DownloadModAssetTask(crawler, config, ModDownloadType.Image));
 	}
 	
-	public void addLocalMod(Path zipPath, TinkerConfig config, ModLoader sm){
+	public Mod addLocalMod(Path zipPath, TinkerConfig config, ModLoader sm){
 		String fileName = zipPath.getFileName().toString();
 		String prettyName = fileName;
 		if (prettyName.indexOf(".") > 0) {
@@ -58,6 +60,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		);
 		
 		copy(zipPath, newMod.getCachedZipPath(config));
+		return newMod;
 	}
 	
 	/**
@@ -114,6 +117,16 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	}
 	
 	// helpers
+	
+	public void refreshModAfterWorkflowComplete(final Mod mod, final ModLoader loader){
+		addListener(new TaskCallback.WorkflowCompleteCallback() {
+			
+			@Override
+			protected void processTaskEvent(TaskEvent event) {
+				loader.modUpdated(mod);
+			}
+		});
+	}
 	
 	private boolean isDependency(TreeNode module, TinkerConfig config, ModLoader sm) throws IOException{
 		int numDependencies = 0;
