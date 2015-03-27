@@ -3,8 +3,8 @@ package aohara.tinkertime.workflows;
 import java.io.IOException;
 
 import aohara.common.workflows.tasks.WorkflowTask;
+import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.VersionInfo;
-import aohara.tinkertime.workflows.contexts.DownloaderContext;
 
 /**
  * Workflow Task that returns true if an update for a file is available.
@@ -13,18 +13,22 @@ import aohara.tinkertime.workflows.contexts.DownloaderContext;
  */
 class CheckForUpdateTask extends WorkflowTask {
 	
-	private final DownloaderContext context;
+	private final Crawler<?> crawler;
 	private final VersionInfo currentVersion;
 
-	CheckForUpdateTask(DownloaderContext context, VersionInfo currentVersion) {
+	CheckForUpdateTask(Crawler<?> crawler, VersionInfo currentVersion) {
 		super("Comparing versions");
-		this.context = context;
+		this.crawler = crawler;
 		this.currentVersion = currentVersion;
 	}
 
 	@Override
 	public boolean execute() throws Exception {
-		return context.crawler.isUpdateAvailable(currentVersion);
+		if (crawler.isUpdateAvailable(currentVersion)){
+			setResult(crawler);
+			return true;
+		}
+		return false;
 	}
 	
 	@Override

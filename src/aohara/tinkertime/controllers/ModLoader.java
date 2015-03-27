@@ -14,10 +14,8 @@ import javax.swing.JOptionPane;
 import aohara.common.Listenable;
 import aohara.common.selectorPanel.SelectorInterface;
 import aohara.tinkertime.TinkerConfig;
-import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.models.DefaultMods;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.models.FileUpdateListener;
 import aohara.tinkertime.views.FileChoosers;
 
 import com.google.gson.Gson;
@@ -32,8 +30,7 @@ import com.google.gson.reflect.TypeToken;
  * 
  * @author Andrew O'Hara
  */
-public class ModLoader extends Listenable<SelectorInterface<Mod>>
-		implements ModUpdateListener, FileUpdateListener {
+public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 	
 	private final Gson gson;
 	private final TinkerConfig config;
@@ -70,7 +67,6 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>>
 	 * 
 	 * Updates the persistent mod data, and refreshes the mod views.
 	 */
-	@Override
 	public synchronized void modUpdated(Mod mod) {
 		modCache.remove(mod);
 		modCache.add(mod);
@@ -88,7 +84,6 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>>
 	 * 
 	 * Deleted the persistent mod data, and removes from mod views.
 	 */
-	@Override
 	public synchronized void modDeleted(Mod mod){
 		modCache.remove(mod);
 		for (SelectorInterface<Mod> l : getListeners()){
@@ -116,20 +111,6 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>>
 				l.addElement(mod);
 			}
 			modCache.add(mod);
-		}
-	}
-
-	@Override
-	public synchronized void setUpdateAvailable(Crawler<?> crawler) {
-		for (Mod mod : modCache){
-			try {
-				if (mod.isUpdateable() && mod.id.equals(crawler.getId())){
-					mod.setUpdateAvailable(crawler);
-					break;
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 	

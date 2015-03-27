@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import aohara.tinkertime.TinkerConfig;
-import aohara.tinkertime.crawlers.Crawler;
 
 /**
  * Model for holding Mod information and status.
@@ -20,7 +19,7 @@ import aohara.tinkertime.crawlers.Crawler;
  * 
  * @author Andrew O'Hara
  */
-public class Mod implements FileUpdateListener {
+public class Mod {
 	
 	public final String id;
 	private Date updatedOn;
@@ -118,8 +117,7 @@ public class Mod implements FileUpdateListener {
 		}
 	}
 	
-	@Override
-	public void setUpdateAvailable(Crawler<?> crawler){
+	public void setUpdateAvailable(){
 		updateAvailable = true;
 	}
 	

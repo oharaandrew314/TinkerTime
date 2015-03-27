@@ -5,21 +5,20 @@ import java.net.MalformedURLException;
 
 import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.crawlers.Crawler;
-import aohara.tinkertime.workflows.contexts.DownloaderContext;
 
 class CacheCrawlerPageTask extends WorkflowTask {
 	
-	private final DownloaderContext context;
+	private final Crawler<?> crawler;
 
-	CacheCrawlerPageTask(DownloaderContext context) {
-		super(getTitle(context));
-		this.context = context;
+	CacheCrawlerPageTask(Crawler<?> crawler) {
+		super(getTitle(crawler));
+		this.crawler = crawler;
 	}
 	
-	private static String getTitle(DownloaderContext context) {
+	private static String getTitle(Crawler<?> crawler) {
 		String pageName = "Unknown Page";
 		try {
-			pageName = context.crawler.getApiUrl().getHost();
+			pageName = crawler.getApiUrl().getHost();
 		} catch (MalformedURLException e) {
 			// Do Nothing
 		}
@@ -28,13 +27,12 @@ class CacheCrawlerPageTask extends WorkflowTask {
 
 	@Override
 	public boolean execute() throws Exception {
-		Crawler<?> crawler = context.crawler;
 		crawler.getPage(crawler.getApiUrl());
 		return true;
 	}
 
 	@Override
 	protected int findTargetProgress() throws IOException {
-		return context.crawler.getApiUrl().openConnection().getContentLength();
+		return crawler.getApiUrl().openConnection().getContentLength();
 	}
 }
