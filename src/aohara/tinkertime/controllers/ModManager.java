@@ -221,7 +221,7 @@ public class ModManager implements ListListener<Mod> {
 		submitEnablerWorkflow(builder);
 	}
 	
-	public void deleteMod(Mod mod) throws CannotDisableModError, IOException {
+	public void deleteMod(final Mod mod) throws CannotDisableModError, IOException {
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Deleting " + mod);
 		builder.deleteMod(mod, config, loader);
 		builder.addListener(new TaskCallback.WorkflowCompleteCallback() {
@@ -238,7 +238,7 @@ public class ModManager implements ListListener<Mod> {
 	public void checkForModUpdates() throws Exception{
 		Exception e = null;
 		
-		for (Mod mod : loader.getMods()){
+		for (final Mod mod : loader.getMods()){
 			try {
 				if (mod.getPageUrl() != null){
 					ModWorkflowBuilder builder = new ModWorkflowBuilder("Checking for update for " + mod);
