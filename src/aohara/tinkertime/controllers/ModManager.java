@@ -194,7 +194,7 @@ public class ModManager implements ListListener<Mod> {
 		}
 	}
 	
-	public void toggleMod(Mod mod) throws IOException{
+	public void toggleMod(final Mod mod) throws IOException{
 		if (!mod.isDownloaded(config)){
 			throw new ModNotDownloadedError(mod, "Cannot enable since not downloaded");
 		}
@@ -205,6 +205,13 @@ public class ModManager implements ListListener<Mod> {
 		} else {
 			builder.enableMod(mod, config, loader, cr);
 		}
+		builder.addListener(new TaskCallback.WorkflowCompleteCallback() {
+			
+			@Override
+			protected void processTaskEvent(TaskEvent event) {
+				loader.modUpdated(mod);
+			}
+		});
 		
 		submitEnablerWorkflow(builder);
 	}
