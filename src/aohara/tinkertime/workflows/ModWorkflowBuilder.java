@@ -8,7 +8,6 @@ import java.util.Calendar;
 import aohara.common.tree.TreeNode;
 import aohara.common.workflows.ConflictResolver;
 import aohara.common.workflows.tasks.TaskCallback;
-import aohara.common.workflows.tasks.UnzipTask;
 import aohara.common.workflows.tasks.WorkflowBuilder;
 import aohara.common.workflows.tasks.WorkflowTask.TaskEvent;
 import aohara.tinkertime.TinkerConfig;
@@ -108,7 +107,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		if (modHasArchive(mod, config)){
 			ModStructure structure = ModStructure.inspectArchive(config, mod);
 			for (TreeNode module : structure.getModules()){
-				addTask(new UnzipTask(mod.getCachedZipPath(config), config.getGameDataPath(), module, cr));
+				unzip(mod.getCachedZipPath(config), config.getGameDataPath(), module, cr);
 			}
 		} else {
 			copy(mod.getCachedZipPath(config), config.getGameDataPath());

@@ -45,7 +45,11 @@ public class TinkerConfig {
 		
 		builder.addTextProperty(WIN_64, null, true, true);
 		
-		GuiConfig config = builder.createGuiConfigInDocuments("TinkerTime Config", TinkerTime.NAME, "TinkerTime.json");
+		GuiConfig config = builder.createGuiConfigInDocuments(
+			String.format("%s Config", TinkerTime.SAFE_NAME),
+			TinkerTime.NAME,
+			"TinkerTime.json"
+		);
 		if (!config.isValid()){
 			config.openOptionsWindow(true);
 		}
@@ -60,19 +64,19 @@ public class TinkerConfig {
 	}
 	
 	private Path getModCachePath(){
-		Path path = getGameDataPath().getParent().resolve(TinkerTime.NAME.replace(" ", ""));
-		path.toFile().mkdir();
-		return path;		
+		return getSubFolder(getGameDataPath().getParent(), TinkerTime.SAFE_NAME);	
 	}
 	
 	public Path getModsZipPath(){
-		Path path = getModCachePath().resolve("modCache");
-		path.toFile().mkdir();
-		return path;
+		return getSubFolder(getModCachePath(), "modCache");
 	}
 	
 	public Path getImageCachePath(){
-		Path path = getModCachePath().resolve("imageCache");
+		return getSubFolder(getModCachePath(), "imageCache");
+	}
+	
+	private Path getSubFolder(Path parent, String subFolder){
+		Path path = parent.resolve(subFolder);
 		path.toFile().mkdir();
 		return path;
 	}
@@ -89,7 +93,7 @@ public class TinkerConfig {
 		return Integer.parseInt(config.getProperty(NUM_CONCURRENT_DOWNLOADS));
 	}
 	
-	public boolean use64BitGame(){
+	public boolean use64BitGame() throws IOException{
 		switch(OS.getOs()){
 		case Windows:
 			// If Windows, only run 64-bit if user chooses to.  Cache user's choice.
@@ -107,9 +111,10 @@ public class TinkerConfig {
 					) == JOptionPane.YES_OPTION;
 					try {
 						config.setProperty(WIN_64, Boolean.toString(use64));
-						config.save();
 					} catch (InvalidInputException e) {
+						throw new IOException(e);
 					}
+					config.save();
 				} else {
 					return Boolean.parseBoolean(config.getProperty(WIN_64));
 				}

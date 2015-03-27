@@ -280,7 +280,7 @@ public class ModManager implements ListListener<Mod> {
 							null,
 							String.format(
 								"%s v%s is available.\n" +
-								"Would you like to download it?\n" +
+								"Would you like to download it?%n" +
 								"\n" + 
 								"You currently have v%s",
 								TinkerTime.NAME, crawler.getVersion(), TinkerTime.VERSION
@@ -289,7 +289,7 @@ public class ModManager implements ListListener<Mod> {
 							JOptionPane.YES_NO_OPTION,
 							JOptionPane.QUESTION_MESSAGE
 						) == JOptionPane.YES_OPTION){
-							new BrowserGoToTask(crawler.getDownloadLink()).call(null);
+							BrowserGoToTask.callNow(crawler.getDownloadLink());
 						}
 					} catch (IOException e) {
 						throw new RuntimeException(e);
