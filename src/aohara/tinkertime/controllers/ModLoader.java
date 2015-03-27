@@ -69,19 +69,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 	 * Updates the persistent mod data, and refreshes the mod views.
 	 */
 	public synchronized void modUpdated(Mod mod) {
-		modCache.remove(mod);
-		
-		/* For legacy support, delete duplicate mods with same name */
-		Mod duplicate = null;
-		for (Mod cachedMod : modCache){
-			if (mod.name.equals(cachedMod.name)){
-				duplicate = cachedMod;
-			}
-		}
-		if (duplicate != null){
-			modDeleted(duplicate);
-		}
-		
+		modCache.remove(mod);		
 		modCache.add(mod);
 		
 		for (SelectorInterface<Mod> l : getListeners()){
