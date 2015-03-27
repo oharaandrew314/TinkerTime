@@ -115,6 +115,7 @@ public class TinkerConfig {
 						throw new IOException(e);
 					}
 					config.save();
+					return use64;
 				} else {
 					return Boolean.parseBoolean(config.getProperty(WIN_64));
 				}

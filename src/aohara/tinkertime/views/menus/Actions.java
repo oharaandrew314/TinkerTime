@@ -265,11 +265,11 @@ class Actions {
 						TinkerTime.VERSION,
 						TinkerTime.AUTHOR
 					),
-					"\n",
-					"This work is licensed under the Creative Commons \n"
-							+ "Attribution-ShareAlike 4.0 International License.\n",
+					"%n",
+					"This work is licensed under the Creative Commons %n" +
+					"Attribution-ShareAlike 4.0 International License.%n",
 					new UrlPanel("View a copy of this license", new URL("http://creativecommons.org/licenses/by-sa/4.0/")).getComponent(),
-					"\n",
+					"%n",
 					TinkerTime.NAME + " uses Glyphicons (glyphicons.com)"
 				};
 				JOptionPane.showMessageDialog(
