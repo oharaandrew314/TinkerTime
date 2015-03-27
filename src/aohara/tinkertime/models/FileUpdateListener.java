@@ -7,6 +7,7 @@ import aohara.tinkertime.crawlers.Crawler;
  * 
  * @author Andrew O'Hara
  */
+// TODO: Remove in favor of workflow Event model
 public interface FileUpdateListener {
 	
 	public void setUpdateAvailable(Crawler<?> crawler);

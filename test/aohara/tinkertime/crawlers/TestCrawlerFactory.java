@@ -1,4 +1,4 @@
-package test.crawlers;
+package aohara.tinkertime.crawlers;
 
 import static org.junit.Assert.*;
 
@@ -8,7 +8,6 @@ import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
 
-import test.util.MockHelper;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
@@ -16,6 +15,7 @@ import aohara.tinkertime.crawlers.CurseCrawler;
 import aohara.tinkertime.crawlers.GithubHtmlCrawler;
 import aohara.tinkertime.crawlers.GithubJsonCrawler;
 import aohara.tinkertime.crawlers.KerbalStuffCrawler;
+import aohara.tinkertime.testutil.MockHelper;
 
 public class TestCrawlerFactory {
 	

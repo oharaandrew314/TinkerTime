@@ -1,12 +1,12 @@
-package test.crawlers;
+package aohara.tinkertime.crawlers;
 
 import java.io.IOException;
 import java.util.Calendar;
 
 import org.junit.Test;
 
-import test.util.ModStubs;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.testutil.ModStubs;
 
 public class TestKerbalStuffCrawler extends AbstractTestModCrawler {
 	

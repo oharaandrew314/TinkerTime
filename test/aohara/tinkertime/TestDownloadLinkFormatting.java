@@ -1,4 +1,4 @@
-package test.integration;
+package aohara.tinkertime;
 
 import static org.junit.Assert.assertTrue;
 

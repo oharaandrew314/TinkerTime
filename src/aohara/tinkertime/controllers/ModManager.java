@@ -37,15 +37,17 @@ import aohara.tinkertime.workflows.contexts.AppUpdateContext;
  * 
  * @author Andrew O'Hara
  */
-public class ModManager extends Listenable<ModUpdateListener> implements WorkflowRunner, ListListener<Mod> {
+public class ModManager extends Listenable<ModUpdateListener> implements ListListener<Mod> {
+	
+	public final TinkerConfig config;
 	
 	private final CrawlerFactory crawlerFactory;
 	private final ThreadPoolExecutor downloadExecutor;
 	private final Executor enablerExecutor;
-	public final TinkerConfig config;
 	private final ModLoader loader;
 	private final ProgressPanel progressPanel;
 	private final ConflictResolver cr;
+	
 	private Mod selectedMod;
 	
 	public static ModManager createDefaultModManager(TinkerConfig config, ModLoader sm, ProgressPanel pp){
@@ -57,7 +59,7 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		);
 	}
 	
-	public ModManager(
+	protected ModManager(
 			ModLoader loader, TinkerConfig config, ProgressPanel progressPanel,
 			ConflictResolver cr, ThreadPoolExecutor downloadExecutor,
 			Executor enablerExecutor, CrawlerFactory crawlerFactory
@@ -99,9 +101,8 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	
 	// -- Modifiers ---------------------------------
 	
-	@Override
-	public void submitDownloadWorkflow(Workflow workflow){
-		workflow.addListener(progressPanel);
+	private void submitDownloadWorkflow(Workflow workflow){
+		workflow.addCallback(progressPanel);
 		
 		// Reset thread pool size if size in options has changed
 		int numDownloadThreads = config.numConcurrentDownloads();
@@ -113,9 +114,8 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		downloadExecutor.execute(workflow);
 	}
 	
-	@Override
-	public void submitEnablerWorkflow(Workflow workflow){
-		workflow.addListener(progressPanel);
+	private void submitEnablerWorkflow(Workflow workflow){
+		workflow.addCallback(progressPanel);
 		enablerExecutor.execute(workflow);
 	}
 	
@@ -182,7 +182,9 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 		
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Enabling " + mod);
 		builder.enableMod(mod, config, loader, cr);
-		submitEnablerWorkflow(builder.buildWorkflow());
+		
+		Workflow workflow = builder.buildWorkflow();		
+		submitEnablerWorkflow(workflow);
 	}
 	
 	public void disableMod(Mod mod) throws ModAlreadyDisabledError, IOException {
@@ -251,6 +253,10 @@ public class ModManager extends Listenable<ModUpdateListener> implements Workflo
 	
 	public void openConfigWindow(){
 		config.updateConfig(false);
+		reloadMods();
+	}
+	
+	private void reloadMods(){
 		loader.init(this);  // Reload mods (top update views)
 	}
 	

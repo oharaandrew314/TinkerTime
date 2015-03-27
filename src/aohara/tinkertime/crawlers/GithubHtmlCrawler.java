@@ -1,8 +1,7 @@
 package aohara.tinkertime.crawlers;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,22 +31,22 @@ public class GithubHtmlCrawler extends Crawler<Document> {
 	}
 	
 	@Override
-	public Document getPage(URL url) throws IOException {
+	public URL getApiUrl() throws MalformedURLException {
+		URL url = getPageUrl();
+		
 		/* Groom the Github Releases URL before getting it */
 		List<String> paths = Arrays.asList(url.getPath().split("/"));
 		if (paths.contains(RELEASES)){
 			// If path contains releases, but isn't last element, strip url
 			if (!paths.get(paths.size() - 1).equals(RELEASES)){
-				url = new URL(url.toString().split(RELEASES)[0]);
+				return new URL(url.toString().split(RELEASES)[0]);
 			}
+			// Otherwise, releases is in correct spot
+			return url;
 		}
 		
 		// If path does not contain releases, try appending it to end 
-		else {
-			url = new URL(url.toString() + "/releases");
-		}
-		
-		return super.getPage(url);
+		return new URL(String.format("%s/%s", url, RELEASES));
 	}
 	
 	private Element getLatestReleaseElement() throws IOException {
@@ -129,20 +128,6 @@ public class GithubHtmlCrawler extends Crawler<Document> {
 	@Override
 	public String getSupportedVersion() throws IOException {
 		return null;  // Not Supported by Github
-	}
-
-	@Override
-	public String generateId() throws IOException {
-		try { // Chop off releases from path
-			URI uri = getApiUrl().toURI();
-			if (getApiUrl().getPath().endsWith("releases")){
-				uri = uri.getPath().endsWith("/") ? uri.resolve("..") : uri.resolve(".");
-			}
-			String[] names = uri.getPath().split("/");
-			return names[names.length - 1];
-		} catch (URISyntaxException e) {
-			throw new RuntimeException(e);
-		}	
 	}
 
 	@Override

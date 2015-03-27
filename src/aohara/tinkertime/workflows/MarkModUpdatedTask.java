@@ -1,15 +1,15 @@
-package aohara.tinkertime.workflows.tasks;
+package aohara.tinkertime.workflows;
 
 import java.io.IOException;
 
-import aohara.common.workflows.Workflow;
-import aohara.common.workflows.Workflow.WorkflowTask;
+import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.controllers.ModUpdateListener;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.workflows.contexts.ModDownloaderContext;
 
-public class MarkModUpdatedTask extends WorkflowTask {
+// TODO: Remove in favor of Event System
+class MarkModUpdatedTask extends WorkflowTask {
 	
 	private static interface ModBuilder {
 		Mod buildMod() throws IOException;
@@ -20,11 +20,12 @@ public class MarkModUpdatedTask extends WorkflowTask {
 	private boolean deleted = false;
 
 	private MarkModUpdatedTask(ModUpdateListener listener, ModBuilder builder) {
+		super("Registering Mod as Updated");
 		this.listener = listener;
 		this.modBuilder = builder;
 	}
 	
-	public static MarkModUpdatedTask createFromDownloaderContext(ModUpdateListener listener, final ModDownloaderContext context){
+	static MarkModUpdatedTask createFromDownloaderContext(ModUpdateListener listener, final ModDownloaderContext context){
 		return new MarkModUpdatedTask(
 			listener,
 			new ModBuilder(){
@@ -36,7 +37,7 @@ public class MarkModUpdatedTask extends WorkflowTask {
 		);
 	}
 	
-	public static MarkModUpdatedTask createFromMod(ModUpdateListener listener, final Mod mod){
+	static MarkModUpdatedTask createFromMod(ModUpdateListener listener, final Mod mod){
 		return new MarkModUpdatedTask(
 			listener,
 			new ModBuilder(){
@@ -48,14 +49,14 @@ public class MarkModUpdatedTask extends WorkflowTask {
 		);
 	}
 	
-	public static MarkModUpdatedTask notifyDeletion(ModUpdateListener listener, Mod mod, TinkerConfig config){
+	static MarkModUpdatedTask notifyDeletion(ModUpdateListener listener, Mod mod, TinkerConfig config){
 		MarkModUpdatedTask task = createFromMod(listener, mod);
 		task.deleted = true;
 		return task;
 	}
 
 	@Override
-	public boolean call(Workflow workflow) throws Exception {
+	public boolean execute() throws Exception {
 		if (deleted){
 			listener.modDeleted(modBuilder.buildMod());
 		} else {
@@ -65,12 +66,7 @@ public class MarkModUpdatedTask extends WorkflowTask {
 	}
 
 	@Override
-	public int getTargetProgress() throws IOException {
+	protected int findTargetProgress() throws IOException {
 		return 0;
-	}
-
-	@Override
-	public String getTitle() {
-		return "Registering Mod as Updated";
 	}
 }

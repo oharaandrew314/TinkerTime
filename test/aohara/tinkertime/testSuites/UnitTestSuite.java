@@ -1,4 +1,4 @@
-package test;
+package aohara.tinkertime.testSuites;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,11 +8,15 @@ import org.apache.commons.io.FileUtils;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-import test.TestModStateManager;
-import test.crawlers.TestCrawlerFactory;
-import test.crawlers.TestCurseCrawler;
-import test.crawlers.TestGithubHtmlCrawler;
-import test.crawlers.TestGithubJsonCrawler;
+import aohara.tinkertime.TestMod;
+import aohara.tinkertime.TestModStateManager;
+import aohara.tinkertime.TestModuleManagerCrawler;
+import aohara.tinkertime.TestZipTreeBuilder;
+import aohara.tinkertime.controllers.TestModManager;
+import aohara.tinkertime.crawlers.TestCrawlerFactory;
+import aohara.tinkertime.crawlers.TestCurseCrawler;
+import aohara.tinkertime.crawlers.TestGithubHtmlCrawler;
+import aohara.tinkertime.crawlers.TestGithubJsonCrawler;
 
 
 @RunWith(Suite.class)

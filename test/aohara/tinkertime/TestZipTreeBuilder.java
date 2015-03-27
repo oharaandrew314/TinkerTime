@@ -1,4 +1,4 @@
-package test;
+package aohara.tinkertime;
 
 import static org.junit.Assert.*;
 
@@ -10,8 +10,8 @@ import org.junit.Test;
 
 import aohara.common.tree.TreeNode;
 import aohara.common.tree.zip.ZipTreeBuilder;
-import test.util.ModStubs;
-import test.util.TestModLoader;
+import aohara.tinkertime.testutil.ModStubs;
+import aohara.tinkertime.testutil.TestModLoader;
 
 public class TestZipTreeBuilder {
 	

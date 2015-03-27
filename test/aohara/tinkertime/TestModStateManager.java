@@ -1,4 +1,4 @@
-package test;
+package aohara.tinkertime;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -9,11 +9,11 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import test.util.MockHelper;
-import test.util.TestModLoader;
-import test.util.ModStubs;
 import aohara.tinkertime.controllers.ModLoader;
 import aohara.tinkertime.models.Mod;
+import aohara.tinkertime.testutil.MockHelper;
+import aohara.tinkertime.testutil.ModStubs;
+import aohara.tinkertime.testutil.TestModLoader;
 
 public class TestModStateManager {
 

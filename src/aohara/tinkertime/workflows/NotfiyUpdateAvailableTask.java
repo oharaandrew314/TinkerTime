@@ -1,9 +1,8 @@
-package aohara.tinkertime.workflows.tasks;
+package aohara.tinkertime.workflows;
 
 import java.io.IOException;
 
-import aohara.common.workflows.Workflow;
-import aohara.common.workflows.Workflow.WorkflowTask;
+import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.models.FileUpdateListener;
 
@@ -13,23 +12,25 @@ import aohara.tinkertime.models.FileUpdateListener;
  * 
  * @author Andrew O'Hara
  */
-public class NotfiyUpdateAvailableTask extends WorkflowTask {
+//TODO: remove in favor of event model
+class NotfiyUpdateAvailableTask extends WorkflowTask {
 	
 	private final FileUpdateListener[] listeners;
 	private final Crawler<?> crawler;
 
-	public NotfiyUpdateAvailableTask(Crawler<?> crawler, FileUpdateListener... listeners) {
+	NotfiyUpdateAvailableTask(Crawler<?> crawler, FileUpdateListener... listeners) {
+		super("Registering Update Available");
 		this.listeners = listeners;
 		this.crawler = crawler;
 	}
 
 	@Override
-	public boolean call(Workflow workflow) throws Exception {		
+	public boolean execute() throws Exception {	
 		// Notify update listeners
 		if (crawler.isAssetsAvailable()){
 			for (FileUpdateListener l : listeners){
 				l.setUpdateAvailable(crawler);
-				progress(workflow, 1);
+				progress(1);
 			}
 			return true;
 		}
@@ -37,13 +38,8 @@ public class NotfiyUpdateAvailableTask extends WorkflowTask {
 	}
 
 	@Override
-	public int getTargetProgress() throws IOException {
+	protected int findTargetProgress() throws IOException {
 		return listeners.length;
-	}
-
-	@Override
-	public String getTitle() {
-		return "Registering Update Available";
 	}
 
 }

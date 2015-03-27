@@ -123,7 +123,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>>
 	public synchronized void setUpdateAvailable(Crawler<?> crawler) {
 		for (Mod mod : modCache){
 			try {
-				if (mod.isUpdateable() && mod.id.equals(crawler.generateId())){
+				if (mod.isUpdateable() && mod.id.equals(crawler.getId())){
 					mod.setUpdateAvailable(crawler);
 					break;
 				}

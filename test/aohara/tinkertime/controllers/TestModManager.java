@@ -1,4 +1,4 @@
-package test;
+package aohara.tinkertime.controllers;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -18,10 +18,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import test.util.MockHelper;
-import test.util.MockHelper.MockMod;
-import test.util.TestModLoader;
-import test.util.ModStubs;
 import aohara.common.workflows.ConflictResolver;
 import aohara.common.workflows.ConflictResolver.Resolution;
 import aohara.common.workflows.ProgressPanel;
@@ -33,6 +29,10 @@ import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledError;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedError;
 import aohara.tinkertime.controllers.ModLoader;
 import aohara.tinkertime.models.Mod;
+import aohara.tinkertime.testutil.MockHelper;
+import aohara.tinkertime.testutil.ModStubs;
+import aohara.tinkertime.testutil.TestModLoader;
+import aohara.tinkertime.testutil.MockHelper.MockMod;
 
 public class TestModManager {
 	

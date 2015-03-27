@@ -1,4 +1,4 @@
-package test.util;
+package aohara.tinkertime.testutil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,12 +9,12 @@ import java.nio.file.Paths;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import test.UnitTestSuite;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.pageLoaders.JsonLoader;
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 import aohara.tinkertime.models.Mod;
+import aohara.tinkertime.testSuites.UnitTestSuite;
 
 import com.google.gson.JsonElement;
 

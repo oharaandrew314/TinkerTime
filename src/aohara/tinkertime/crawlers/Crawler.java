@@ -3,6 +3,7 @@ package aohara.tinkertime.crawlers;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
@@ -11,6 +12,7 @@ import javax.swing.JOptionPane;
 import com.github.zafarkhaja.semver.Version;
 
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
+import aohara.tinkertime.models.Mod;
 
 /**
  * Abstract Base Class for Creating Web Crawlers to gather file information.
@@ -37,7 +39,6 @@ public abstract class Crawler<T> {
 		return pageLoader.getPage(url);
 	}
 
-	public abstract String generateId() throws IOException;
 	public abstract Date getUpdatedOn() throws IOException;
 	public abstract URL getImageUrl() throws IOException;
 	public abstract String getName() throws IOException;
@@ -45,6 +46,10 @@ public abstract class Crawler<T> {
 	public abstract String getSupportedVersion() throws IOException;
 	public abstract String getVersionString() throws IOException;
 	protected abstract Collection<Asset> getNewestAssets() throws IOException;
+	
+	public String getId() throws MalformedURLException{
+		return getApiUrl().toString().split("://")[1].replace("/", "-");
+	}
 	
 	public boolean isAssetsAvailable(){
 		try {
@@ -117,6 +122,15 @@ public abstract class Crawler<T> {
 	
 	public void setAssetSelector(AssetSelector assetSelector){
 		this.assetSelector = assetSelector;
+	}
+	
+	public Mod createMod() throws IOException {
+		return new Mod(
+			getId(), getName(), getNewestFileName(),
+			getCreator(), getPageUrl(),
+			getUpdatedOn() != null ? getUpdatedOn() : Calendar.getInstance().getTime(),
+			getSupportedVersion()
+		);
 	}
 	
 	// -- Inner Asset Class ---------------------------------------------------

@@ -1,9 +1,8 @@
-package aohara.tinkertime.workflows.tasks;
+package aohara.tinkertime.workflows;
 
 import java.io.IOException;
 
-import aohara.common.workflows.Workflow;
-import aohara.common.workflows.Workflow.WorkflowTask;
+import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.crawlers.VersionInfo;
 import aohara.tinkertime.workflows.contexts.DownloaderContext;
 
@@ -12,28 +11,24 @@ import aohara.tinkertime.workflows.contexts.DownloaderContext;
  * 
  * @author Andrew O'Hara
  */
-public class CheckForUpdateTask extends WorkflowTask {
+class CheckForUpdateTask extends WorkflowTask {
 	
 	private final DownloaderContext context;
 	private final VersionInfo currentVersion;
 
-	public CheckForUpdateTask(DownloaderContext context, VersionInfo currentVersion) {
+	CheckForUpdateTask(DownloaderContext context, VersionInfo currentVersion) {
+		super("Comparing versions");
 		this.context = context;
 		this.currentVersion = currentVersion;
 	}
 
 	@Override
-	public boolean call(Workflow workflow) throws Exception {
+	public boolean execute() throws Exception {
 		return context.crawler.isUpdateAvailable(currentVersion);
 	}
-
+	
 	@Override
-	public int getTargetProgress() throws IOException {
+	protected int findTargetProgress() throws IOException {
 		return -1;
-	}
-
-	@Override
-	public String getTitle() {
-		return "Comparing versions";
 	}
 }

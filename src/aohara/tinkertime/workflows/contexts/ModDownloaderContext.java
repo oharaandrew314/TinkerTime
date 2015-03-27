@@ -2,7 +2,6 @@ package aohara.tinkertime.workflows.contexts;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Calendar;
 
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.crawlers.Crawler;
@@ -30,12 +29,7 @@ public class ModDownloaderContext extends DownloaderContext {
 	
 	public Mod createMod() throws IOException{
 		if (cachedMod == null){
-			cachedMod = new Mod(
-				crawler.generateId(), crawler.getName(), crawler.getNewestFileName(),
-				crawler.getCreator(), crawler.getPageUrl(),
-				crawler.getUpdatedOn() != null ? crawler.getUpdatedOn() : Calendar.getInstance().getTime(),
-				crawler.getSupportedVersion()
-			);
+			cachedMod = crawler.createMod();
 		}
 		return cachedMod;
 	}
