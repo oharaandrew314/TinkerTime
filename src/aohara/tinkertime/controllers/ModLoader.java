@@ -74,7 +74,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 		/* For legacy support, delete duplicate mods with same name */
 		Mod duplicate = null;
 		for (Mod cachedMod : modCache){
-			if (mod.getName().equals(cachedMod.getName())){
+			if (mod.name.equals(cachedMod.name)){
 				duplicate = cachedMod;
 			}
 		}
@@ -154,7 +154,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 	private boolean trySatisfyLocalFiles(Mod mod, ModManager mm){
 		if (JOptionPane.showConfirmDialog(
 			null,
-			mod.getName() + " does not have an update url.\n"
+			mod.name + " does not have an update url.\n"
 			+ "Would you like to select a zip file to use?",
 			"Import Local Mod?",
 			JOptionPane.YES_NO_OPTION,

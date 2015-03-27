@@ -46,7 +46,7 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 		
 		if (mod != null){
 			// Set Border
-			panel.setBorder(BorderFactory.createTitledBorder(mod.getName() + (mod.isUpdateable()? " - by " + mod.getCreator() : " - added from zip")));
+			panel.setBorder(BorderFactory.createTitledBorder(mod.name + (mod.isUpdateable()? " - by " + mod.creator : " - added from zip")));
 			
 			// Warning if non-updateable
 			if (!mod.isUpdateable()){
@@ -56,7 +56,7 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 			}
 			
 			// Current Mod Version
-			panel.add(new JLabel("Mod Version: " + mod.getNewestFileName()));
+			panel.add(new JLabel("Mod Version: " + mod.newestFileName));
 			
 			// Supported KSP Version
 			String kspVersion =  mod.getSupportedVersion();
@@ -64,7 +64,7 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 			
 			// Last Updated On
 			JLabel updatedLabel = new JLabel();
-			Date updatedOn = mod.getUpdatedOn();
+			Date updatedOn = mod.updatedOn;
 			updatedLabel.setText("Last Updated: " + (updatedOn != null ? DATE_FORMAT.format(updatedOn) : "N/A"));
 			panel.add(updatedLabel);
 
@@ -72,9 +72,9 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 			panel.add(new UrlPanel(				
 				String.format(
 					"Go to Mod Page (on %s)",
-					mod.isUpdateable() ? mod.getPageUrl().getHost() : null
+					mod.isUpdateable() ? mod.pageUrl.getHost() : null
 				),
-				mod.getPageUrl()
+				mod.pageUrl
 			).getComponent());
 
 			// Readme

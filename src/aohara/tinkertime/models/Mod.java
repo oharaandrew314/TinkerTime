@@ -21,10 +21,9 @@ import aohara.tinkertime.TinkerConfig;
  */
 public class Mod implements Comparable<Mod> {
 	
-	public final String id;
-	private Date updatedOn;
-	private String name, creator, supportedVersion, newestFileName;
-	private URL pageUrl;
+	public final Date updatedOn;
+	public final String id, name, creator, supportedVersion, newestFileName;
+	public final URL pageUrl;
 	private transient boolean updateAvailable = false;
 	
 	public Mod(
@@ -40,26 +39,6 @@ public class Mod implements Comparable<Mod> {
 		this.supportedVersion = supportedVersion;
 	}
 	
-	public String getName(){
-		return name;
-	}
-
-	public String getCreator() {
-		return creator;
-	}
-	
-	public String getNewestFileName() {
-		return newestFileName;
-	}
-
-	public Date getUpdatedOn() {
-		return updatedOn;
-	}
-	
-	public URL getPageUrl() {
-		return pageUrl;
-	}
-	
 	public boolean isDownloaded(TinkerConfig config){
 		Path zipPath = getCachedZipPath(config);
 		if (zipPath != null){
@@ -69,8 +48,8 @@ public class Mod implements Comparable<Mod> {
 	}
 	
 	public Path getCachedZipPath(TinkerConfig config){
-		if (getNewestFileName() != null){
-			String safePathFileName = getNewestFileName().replaceAll(":", "").replaceAll("/", "");
+		if (newestFileName != null){
+			String safePathFileName = newestFileName.replaceAll(":", "").replaceAll("/", "");
 			return config.getModsZipPath().resolve(safePathFileName);
 		}
 		return null;
@@ -89,7 +68,7 @@ public class Mod implements Comparable<Mod> {
 	}
 	
 	public boolean isUpdateable(){
-		return getPageUrl() != null;
+		return pageUrl != null;
 	}
 	
 	// -- Other Methods --------------------
@@ -127,7 +106,7 @@ public class Mod implements Comparable<Mod> {
 	
 	@Override
 	public String toString(){
-		return getName();
+		return name;
 	}
 	
 	@Override
@@ -139,7 +118,7 @@ public class Mod implements Comparable<Mod> {
 	public boolean equals(Object o){
 		if (o instanceof Mod){
 			Mod mod = (Mod) o;
-			return id.equals(mod.id) || getName().equals(mod.getName());
+			return id.equals(mod.id) || name.equals(mod.name);
 		}
 		return false;
 	}

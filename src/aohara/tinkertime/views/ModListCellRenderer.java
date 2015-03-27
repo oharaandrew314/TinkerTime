@@ -62,12 +62,12 @@ public class ModListCellRenderer implements ListCellRenderer<Mod> {
 			icons.add(updateIcon);
 		}
 		
-		if (mod.getPageUrl() == null){
+		if (mod.pageUrl == null){
 			icons.add(localIcon);
 		}
 		
 		// Create cell label
-		String text = mod.getName();
+		String text = mod.name;
 		if (mod.getSupportedVersion() != null){
 			text = String.format("[%s] %s", mod.getSupportedVersion(), text);
 		}

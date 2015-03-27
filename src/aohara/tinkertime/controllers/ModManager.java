@@ -123,11 +123,11 @@ public class ModManager implements ListListener<Mod> {
 	 * @throws ModUpdateFailedError
 	 */
 	public void updateMod(Mod mod, boolean forceUpdate) throws ModUpdateFailedError {
-		if (mod.getPageUrl() == null){
+		if (!mod.isUpdateable()){
 			throw new ModUpdateFailedError(mod, "Mod is a local zip only, and cannot be updated.");
 		}
 		
-		ModWorkflowBuilder builder = new ModWorkflowBuilder("Updating " + mod.getName());
+		ModWorkflowBuilder builder = new ModWorkflowBuilder("Updating " + mod.name);
 		try {
 			// Cleanup operations prior to update
 			if (mod.isDownloaded(config)){
@@ -222,7 +222,7 @@ public class ModManager implements ListListener<Mod> {
 		
 		for (final Mod mod : loader.getMods()){
 			try {
-				if (mod.getPageUrl() != null){
+				if (mod.isUpdateable()){
 					ModWorkflowBuilder builder = new ModWorkflowBuilder("Checking for update for " + mod);
 					builder.checkForUpdates(mod, getCrawler(mod));
 					
@@ -279,9 +279,9 @@ public class ModManager implements ListListener<Mod> {
 						if (JOptionPane.showConfirmDialog(
 							null,
 							String.format(
-								"%s v%s is available.\n" +
+								"%s v%s is available.%n" +
 								"Would you like to download it?%n" +
-								"\n" + 
+								"%n" + 
 								"You currently have v%s",
 								TinkerTime.NAME, crawler.getVersion(), TinkerTime.VERSION
 							),
@@ -317,7 +317,7 @@ public class ModManager implements ListListener<Mod> {
 	}
 	
 	protected Crawler<?> getCrawler(Mod mod) throws UnsupportedHostException{
-		return getCrawler(mod.getPageUrl());
+		return getCrawler(mod.pageUrl);
 	}
 	
 	// -- Exceptions/Errors --------------------------------------------------

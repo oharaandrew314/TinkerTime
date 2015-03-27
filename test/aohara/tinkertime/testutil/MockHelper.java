@@ -91,12 +91,12 @@ public class MockHelper {
 		public MockMod(Mod mod) {
 			super(
 				mod.id,
-				mod.getName(),
-				mod.getNewestFileName(),
-				mod.getCreator(),
-				mod.getPageUrl(),
-				mod.getUpdatedOn(),
-				mod.getSupportedVersion()
+				mod.name,
+				mod.newestFileName,
+				mod.creator,
+				mod.pageUrl,
+				mod.updatedOn,
+				mod.supportedVersion
 			);
 		}
 		
@@ -106,7 +106,7 @@ public class MockHelper {
 		
 		@Override
 		public Path getCachedZipPath(TinkerConfig config){
-			return downloaded ? TestModLoader.getZipPath(getName()) : Paths.get("/");
+			return downloaded ? TestModLoader.getZipPath(name) : Paths.get("/");
 		}
 		
 		@Override

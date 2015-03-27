@@ -111,10 +111,10 @@ public class TinkerConfig {
 					) == JOptionPane.YES_OPTION;
 					try {
 						config.setProperty(WIN_64, Boolean.toString(use64));
+						config.save();
 					} catch (InvalidInputException e) {
 						throw new IOException(e);
 					}
-					config.save();
 					return use64;
 				} else {
 					return Boolean.parseBoolean(config.getProperty(WIN_64));

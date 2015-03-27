@@ -24,11 +24,11 @@ public class TestModStateManager {
 	private static Mod getUpdatedMod(final Mod mod, final String newestFile){
 		return new Mod(
 			mod.id,
-			mod.getName(),
+			mod.name,
 			newestFile,
-			mod.getCreator(),
-			mod.getPageUrl(),
-			mod.getUpdatedOn(),
+			mod.creator,
+			mod.pageUrl,
+			mod.updatedOn,
 			mod.getSupportedVersion()
 		);
 		
@@ -80,15 +80,15 @@ public class TestModStateManager {
 	public void testSaveUpdatedMod() throws Throwable {	
 		testSaveOne();
 		
-		String newestFile = mod1.getNewestFileName() + "-updated";
+		String newestFile = mod1.newestFileName + "-updated";
 		Mod newer = getUpdatedMod(mod1, newestFile);
-		assertEquals(newestFile, newer.getNewestFileName());
+		assertEquals(newestFile, newer.newestFileName);
 		
 		update(newer, false);
 		
 		assertEquals(1, mods.size());
 		assertTrue(mods.contains(newer));
-		assertEquals(newestFile, mods.iterator().next().getNewestFileName());
+		assertEquals(newestFile, mods.iterator().next().newestFileName);
 	}
 	
 	@Test
