@@ -19,7 +19,7 @@ import aohara.tinkertime.TinkerConfig;
  * 
  * @author Andrew O'Hara
  */
-public class Mod {
+public class Mod implements Comparable<Mod> {
 	
 	public final String id;
 	private Date updatedOn;
@@ -137,6 +137,15 @@ public class Mod {
 	
 	@Override
 	public boolean equals(Object o){
-		return o instanceof Mod && ((Mod)o).id.equals(id);
+		if (o instanceof Mod){
+			Mod mod = (Mod) o;
+			return id.equals(mod.id) || getName().equals(mod.getName());
+		}
+		return false;
+	}
+
+	@Override
+	public int compareTo(Mod other) {
+		return id.compareTo(other.id);
 	}
 }

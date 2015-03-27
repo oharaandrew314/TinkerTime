@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.file.Path;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.swing.JOptionPane;
@@ -35,7 +36,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 	private final Gson gson;
 	private final TinkerConfig config;
 	private final Type modsType = new TypeToken<Set<Mod>>() {}.getType();
-	private final Set<Mod> modCache = new HashSet<>();
+	private final Set<Mod> modCache = new LinkedHashSet<>();
 	
 	// -- Initializers ----------------------------------------
 	
@@ -69,6 +70,18 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 	 */
 	public synchronized void modUpdated(Mod mod) {
 		modCache.remove(mod);
+		
+		/* For legacy support, delete duplicate mods with same name */
+		Mod duplicate = null;
+		for (Mod cachedMod : modCache){
+			if (mod.getName().equals(cachedMod.getName())){
+				duplicate = cachedMod;
+			}
+		}
+		if (duplicate != null){
+			modDeleted(duplicate);
+		}
+		
 		modCache.add(mod);
 		
 		for (SelectorInterface<Mod> l : getListeners()){

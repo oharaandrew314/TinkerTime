@@ -48,7 +48,11 @@ public abstract class Crawler<T> {
 	protected abstract Collection<Asset> getNewestAssets() throws IOException;
 	
 	public String getId() throws MalformedURLException{
-		return getApiUrl().toString().split("://")[1].replace("/", "-");
+		return urlToId(getPageUrl());
+	}
+	
+	public static String urlToId(URL url) throws MalformedURLException {
+		return url.toString().split("://")[1].replace("/", "-");
 	}
 	
 	public boolean isAssetsAvailable(){
