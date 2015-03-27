@@ -17,9 +17,6 @@ import aohara.common.content.ImageManager;
 import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModManager.CannotDisableModError;
-import aohara.tinkertime.controllers.ModManager.ModAlreadyDisabledError;
-import aohara.tinkertime.controllers.ModManager.ModAlreadyEnabledError;
-import aohara.tinkertime.controllers.ModManager.ModNotDownloadedError;
 import aohara.tinkertime.controllers.ModManager.ModUpdateFailedError;
 import aohara.tinkertime.controllers.launcher.GameLauncher;
 import aohara.tinkertime.crawlers.CrawlerFactory;
@@ -198,16 +195,10 @@ class Actions {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Mod selectedMod = mm.getSelectedMod();
-			if (selectedMod != null && selectedMod.isEnabled(mm.config)){
+			if (selectedMod != null){
 				try {
-					mm.disableMod(selectedMod);
-				} catch (ModAlreadyDisabledError | IOException e1) {
-					errorMessage(e1);
-				}
-			} else if (selectedMod != null){
-				try {
-					mm.enableMod(selectedMod);
-				} catch (ModAlreadyEnabledError | ModNotDownloadedError | IOException e1) {
+					mm.toggleMod(selectedMod);
+				} catch (IOException e1) {
 					errorMessage(e1);
 				}
 			}

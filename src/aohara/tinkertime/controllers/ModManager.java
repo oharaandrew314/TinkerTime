@@ -87,11 +87,7 @@ public class ModManager implements ListListener<Mod> {
 	@Override
 	public void elementClicked(Mod mod, int numTimes) throws Exception{
 		if (numTimes == 2){
-			if (mod.isEnabled(config)){
-				disableMod(mod);
-			} else {
-				enableMod(mod);
-			}
+			toggleMod(mod);
 		}
 	}
 
@@ -198,26 +194,18 @@ public class ModManager implements ListListener<Mod> {
 		}
 	}
 	
-	public void enableMod(Mod mod) throws ModAlreadyEnabledError, ModNotDownloadedError, IOException {
-		if (mod.isEnabled(config)){
-			throw new ModAlreadyEnabledError();
-		} else if (!mod.isDownloaded(config)){
+	public void toggleMod(Mod mod) throws IOException{
+		if (!mod.isDownloaded(config)){
 			throw new ModNotDownloadedError(mod, "Cannot enable since not downloaded");
 		}
 		
-		ModWorkflowBuilder builder = new ModWorkflowBuilder("Enabling " + mod);
-		builder.enableMod(mod, config, loader, cr);
-				
-		submitEnablerWorkflow(builder);
-	}
-	
-	public void disableMod(Mod mod) throws ModAlreadyDisabledError, IOException {
-		if (!mod.isEnabled(config)){
-			throw new ModAlreadyDisabledError();
+		ModWorkflowBuilder builder = new ModWorkflowBuilder("Toggling " + mod);
+		if (mod.isEnabled(config)){
+			builder.disableMod(mod, config, loader);
+		} else {
+			builder.enableMod(mod, config, loader, cr);
 		}
 		
-		ModWorkflowBuilder builder = new ModWorkflowBuilder("Disabling " + mod);
-		builder.disableMod(mod, config, loader);
 		submitEnablerWorkflow(builder);
 	}
 	
@@ -340,10 +328,6 @@ public class ModManager implements ListListener<Mod> {
 	
 	// -- Exceptions/Errors --------------------------------------------------
 	
-	@SuppressWarnings("serial")
-	public static class ModAlreadyEnabledError extends Error {}
-	@SuppressWarnings("serial")
-	public static class ModAlreadyDisabledError extends Error {}
 	@SuppressWarnings("serial")
 	public static class ModNotDownloadedError extends Error {
 		private ModNotDownloadedError(Mod mod, String message){
