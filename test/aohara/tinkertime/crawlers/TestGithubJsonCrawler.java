@@ -1,4 +1,4 @@
-package test.crawlers;
+package aohara.tinkertime.crawlers;
 
 
 public class TestGithubJsonCrawler extends AbstractTestGithubCrawler {

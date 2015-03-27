@@ -1,12 +1,12 @@
-package test.crawlers;
+package aohara.tinkertime.crawlers;
 
 import java.io.IOException;
 import java.util.Calendar;
 
 import org.junit.Test;
 
-import test.util.ModStubs;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.testutil.ModStubs;
 
 public class TestKerbalStuffCrawler extends AbstractTestModCrawler {
 	
@@ -14,7 +14,7 @@ public class TestKerbalStuffCrawler extends AbstractTestModCrawler {
 	public void testRadialEngines() throws IOException, UnsupportedHostException {		
 		compare(
 			ModStubs.RadialEngines,
-			"153",
+			"kerbalstuff.com-api-mod-153",
 			Calendar.getInstance().getTime(),
 			"teejaye85",
 			"Radial Engine Mounts by PanaTee Parts International v0.30.zip",
@@ -29,7 +29,7 @@ public class TestKerbalStuffCrawler extends AbstractTestModCrawler {
 	public void testTimeControl() throws IOException, UnsupportedHostException {
 		compare(
 			ModStubs.TimeControl,
-			"21",
+			"kerbalstuff.com-api-mod-21",
 			Calendar.getInstance().getTime(),
 			"Xaiier",
 			"Time Control 13.2.zip",

@@ -77,11 +77,6 @@ public class KerbalStuffCrawler extends Crawler<JsonElement>{
 	public String getVersionString() throws IOException{
 		return getLatestVersion().get("friendly_version").getAsString();
 	}
-
-	@Override
-	public String generateId(){
-		return generateId(getApiUrl());
-	}
 	
 	private static String generateId(URL url) {
 		Matcher m = ID_PATTERN.matcher(url.getPath());

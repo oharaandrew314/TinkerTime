@@ -2,35 +2,25 @@ package aohara.tinkertime.workflows;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Calendar;
 
 import aohara.common.tree.TreeNode;
 import aohara.common.workflows.ConflictResolver;
-import aohara.common.workflows.WorkflowBuilder;
+import aohara.common.workflows.tasks.TaskCallback;
 import aohara.common.workflows.tasks.UnzipTask;
+import aohara.common.workflows.tasks.WorkflowBuilder;
+import aohara.common.workflows.tasks.WorkflowTask.TaskEvent;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.controllers.ModLoader;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.crawlers.VersionInfo;
-import aohara.tinkertime.models.FileUpdateListener;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
-import aohara.tinkertime.workflows.contexts.DirectDownloaderContext;
-import aohara.tinkertime.workflows.contexts.DownloaderContext;
-import aohara.tinkertime.workflows.contexts.ModDownloaderContext;
-import aohara.tinkertime.workflows.tasks.CacheCrawlerPageTask;
-import aohara.tinkertime.workflows.tasks.CheckForUpdateTask;
-import aohara.tinkertime.workflows.tasks.CrawlerDownloadTask;
-import aohara.tinkertime.workflows.tasks.MarkModUpdatedTask;
-import aohara.tinkertime.workflows.tasks.MoveCrawlerDownloadToDestTask;
-import aohara.tinkertime.workflows.tasks.NotfiyUpdateAvailableTask;
+import aohara.tinkertime.workflows.DownloadModAssetTask.ModDownloadType;
 
 public class ModWorkflowBuilder extends WorkflowBuilder {
-	
-	public static enum ModDownloadType { File, Image };
 	
 	public ModWorkflowBuilder(String workflowName) {
 		super(workflowName);
@@ -39,40 +29,26 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	/**
 	 * Notifies the listeners if an update is available for the given file
 	 */
-	public void checkForUpdates(Mod mod, Crawler<?> crawler, FileUpdateListener... listeners) throws IOException, UnsupportedHostException {
-		checkForUpdates(crawler, new VersionInfo(null, mod.getUpdatedOn(), mod.getNewestFileName()), listeners);
+	public void checkForUpdates(Mod mod, Crawler<?> crawler) throws IOException, UnsupportedHostException {
+		checkForUpdates(crawler, new VersionInfo(null, mod.getUpdatedOn(), mod.getNewestFileName()));
 	}
 	
-	public void checkForUpdates(Crawler<?> crawler, VersionInfo currentVersion, FileUpdateListener... listeners) throws UnsupportedHostException{
-		DownloaderContext context = new DirectDownloaderContext(crawler, null, null);
-		addTask(new CacheCrawlerPageTask(context));
-		addTask(new CheckForUpdateTask(context, currentVersion));
-		addTask(new NotfiyUpdateAvailableTask(context.crawler, listeners));
+	public void checkForUpdates(Crawler<?> crawler, VersionInfo currentVersion) throws UnsupportedHostException{
+		addTask(new CacheCrawlerPageTask(crawler));
+		addTask(new CheckForUpdateTask(crawler, currentVersion));
 	}
 	
 	/**
 	 * Downloads the latest version of the mod referenced by the URL.
 	 */
 	public void downloadMod(Crawler<?> crawler, TinkerConfig config, ModLoader sm) throws IOException, UnsupportedHostException {
-		ModDownloaderContext context = new ModDownloaderContext(crawler, config);
-		addTask(new CacheCrawlerPageTask(context));
+		addTask(new CacheCrawlerPageTask(crawler));
 		
-		// Download File
-		Path tempFile = Files.createTempFile("temp", ".download");
-		tempFile.toFile().deleteOnExit();
-		addTask(new CrawlerDownloadTask(context.crawler, ModDownloadType.File, tempFile));
-		addTask(new MoveCrawlerDownloadToDestTask(context, ModDownloadType.File, tempFile));
-		
-		// Download Image
-		Path tempImage = Files.createTempFile("temp", ".download");
-		tempImage.toFile().deleteOnExit();
-		addTask(new CrawlerDownloadTask(context.crawler, ModDownloadType.Image, tempImage));
-		addTask(new MoveCrawlerDownloadToDestTask(context, ModDownloadType.Image, tempImage));
-		
-		addTask(MarkModUpdatedTask.createFromDownloaderContext(sm, context));
+		addTask(new DownloadModAssetTask(crawler, config, ModDownloadType.File));
+		addTask(new DownloadModAssetTask(crawler, config, ModDownloadType.Image));
 	}
 	
-	public void addLocalMod(Path zipPath, TinkerConfig config, ModLoader sm){
+	public Mod addLocalMod(Path zipPath, TinkerConfig config, ModLoader sm){
 		String fileName = zipPath.getFileName().toString();
 		String prettyName = fileName;
 		if (prettyName.indexOf(".") > 0) {
@@ -84,7 +60,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		);
 		
 		copy(zipPath, newMod.getCachedZipPath(config));
-		addTask(MarkModUpdatedTask.createFromMod(sm, newMod));
+		return newMod;
 	}
 	
 	/**
@@ -113,7 +89,6 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		
 		deleteModZip(mod, config);
 		delete(mod.getCachedImagePath(config));
-		addTask(MarkModUpdatedTask.notifyDeletion(sm, mod, config));
 	}
 	
 	public void disableMod(Mod mod, TinkerConfig config, ModLoader sm) throws IOException{
@@ -142,6 +117,16 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	}
 	
 	// helpers
+	
+	public void refreshModAfterWorkflowComplete(final Mod mod, final ModLoader loader){
+		addListener(new TaskCallback.WorkflowCompleteCallback() {
+			
+			@Override
+			protected void processTaskEvent(TaskEvent event) {
+				loader.modUpdated(mod);
+			}
+		});
+	}
 	
 	private boolean isDependency(TreeNode module, TinkerConfig config, ModLoader sm) throws IOException{
 		int numDependencies = 0;

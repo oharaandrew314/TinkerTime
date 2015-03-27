@@ -1,4 +1,4 @@
-package test.crawlers;
+package aohara.tinkertime.crawlers;
 
 import static org.junit.Assert.assertEquals;
 
@@ -7,12 +7,12 @@ import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 
-import test.util.TestModLoader;
-import test.util.ModStubs;
-import test.util.TestModLoader.CrawlerAndMod;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
+import aohara.tinkertime.testutil.ModStubs;
+import aohara.tinkertime.testutil.TestModLoader;
+import aohara.tinkertime.testutil.TestModLoader.CrawlerAndMod;
 
 public abstract class AbstractTestModCrawler {
 	

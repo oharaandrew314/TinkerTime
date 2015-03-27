@@ -1,9 +1,12 @@
 package aohara.tinkertime.models;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory;
 
 public class DefaultMods {
@@ -14,10 +17,15 @@ public class DefaultMods {
 		Collection<Mod> defaults = new LinkedList<>();
 		
 		// Add Module Manager to Defaults
-		 defaults.add(new Mod(
-			"ModuleManager", "Module Manager", null, null,
-			CrawlerFactory.getModuleManagerUrl(), null, null
-		));
+		try {
+			URL moduleManagerUrl = CrawlerFactory.getModuleManagerUrl();
+			 defaults.add(new Mod(
+				Crawler.urlToId(moduleManagerUrl),
+				"ModuleManager", null, null, moduleManagerUrl, null, null
+			));
+		} catch (MalformedURLException e){
+			throw new RuntimeException(e);
+		}
 		
 		return defaults;
 	}
