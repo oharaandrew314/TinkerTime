@@ -1,11 +1,11 @@
-package test.crawlers;
+package aohara.tinkertime.crawlers;
 
 import java.io.IOException;
 
 import org.junit.Test;
 
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
-import test.util.ModStubs;
+import aohara.tinkertime.testutil.ModStubs;
 
 public class TestCurseCrawler extends AbstractTestModCrawler {
 
@@ -13,7 +13,7 @@ public class TestCurseCrawler extends AbstractTestModCrawler {
 	public void testMechjeb() throws IOException, UnsupportedHostException {		
 		compare(
 			ModStubs.Mechjeb,
-			"220221-mechjeb",
+			"www.curse.com-ksp-mods-kerbal-220221-mechjeb",
 			getDate(2014, 4, 6),
 			"r4m0n",
 			"MechJeb2-2.2.1.0.zip",
@@ -28,7 +28,7 @@ public class TestCurseCrawler extends AbstractTestModCrawler {
 	public void testEngineer() throws IOException, UnsupportedHostException {		
 		compare(
 			ModStubs.Engineer,
-			"220285-kerbal-engineer-redux",
+			"www.curse.com-ksp-mods-kerbal-220285-kerbal-engineer-redux",
 			getDate(2014, 4, 12),
 			"cybutek",
 			"Engineer_Redux_v0.6.2.4.zip",
@@ -44,7 +44,7 @@ public class TestCurseCrawler extends AbstractTestModCrawler {
 	public void testHotRockets() throws IOException, UnsupportedHostException {
 		compare(
 			ModStubs.HotRockets,
-			"220207-hotrockets-particle-fx-replacement",
+			"www.curse.com-ksp-mods-kerbal-220207-hotrockets-particle-fx-replacement",
 			getDate(2014, 7, 1),
 			"Nazari1382",
 			"HotRockets for 0.25.zip",

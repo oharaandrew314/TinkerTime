@@ -1,4 +1,4 @@
-package test.util;
+package aohara.tinkertime.testutil;
 
 import java.net.MalformedURLException;
 import java.net.URL;

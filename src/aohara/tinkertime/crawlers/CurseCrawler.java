@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 
-import org.apache.commons.io.FilenameUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
@@ -63,11 +62,6 @@ public class CurseCrawler extends Crawler<Document> {
 	public String getSupportedVersion() throws IOException {
 		String text = getPage(getApiUrl()).select("li.version").first().text();
 		return text.split(":")[1].trim();
-	}
-
-	@Override
-	public String generateId() throws IOException {
-		return FilenameUtils.getBaseName(getApiUrl().getPath());
 	}
 
 	@Override

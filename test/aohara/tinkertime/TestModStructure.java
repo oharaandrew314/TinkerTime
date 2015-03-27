@@ -1,4 +1,4 @@
-package test.integration;
+package aohara.tinkertime;
 
 import static org.junit.Assert.assertEquals;
 
@@ -11,10 +11,10 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import test.util.TestModLoader;
-import test.util.ModStubs;
 import aohara.common.tree.TreeNode;
 import aohara.tinkertime.models.ModStructure;
+import aohara.tinkertime.testutil.ModStubs;
+import aohara.tinkertime.testutil.TestModLoader;
 
 public class TestModStructure {
 	

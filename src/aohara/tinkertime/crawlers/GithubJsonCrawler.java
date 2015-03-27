@@ -47,11 +47,6 @@ public class GithubJsonCrawler extends Crawler<JsonElement> {
 	}
 
 	@Override
-	public String generateId() throws IOException {
-		return getRepoDoc().get("name").getAsString();
-	}
-
-	@Override
 	public Date getUpdatedOn() throws IOException {
 		String dateStr = getLatestRelease().get("published_at").getAsString();
   		try {

@@ -1,4 +1,4 @@
-package test.util;
+package aohara.tinkertime.testutil;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -6,16 +6,14 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 
-import test.util.MockHelper.MockMod;
 import aohara.common.tree.TreeNode;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.Crawler.Asset;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
-import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
+import aohara.tinkertime.testutil.MockHelper.MockMod;
 
 public class TestModLoader {
 	
@@ -39,13 +37,7 @@ public class TestModLoader {
 		try {
 			Crawler<?> crawler = MockHelper.newCrawlerFactory().getCrawler(stub.url, fallback);
 			crawler.setAssetSelector(new StaticAssetSelector());
-			Mod mod = new Mod(
-				crawler.generateId(), crawler.getName(), crawler.getNewestFileName(),
-				crawler.getCreator(), crawler.getPageUrl(),
-				crawler.getUpdatedOn() != null ? crawler.getUpdatedOn() : Calendar.getInstance().getTime(),
-				crawler.getSupportedVersion()
-			);
-			return new CrawlerAndMod(crawler, new MockMod(mod));
+			return new CrawlerAndMod(crawler, new MockMod(crawler.createMod()));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

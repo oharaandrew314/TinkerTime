@@ -1,4 +1,4 @@
-package test.crawlers;
+package aohara.tinkertime.crawlers;
 
 import java.io.IOException;
 import java.util.Date;
@@ -6,7 +6,7 @@ import java.util.Date;
 import org.junit.Test;
 
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
-import test.util.ModStubs;
+import aohara.tinkertime.testutil.ModStubs;
 
 public abstract class AbstractTestGithubCrawler extends AbstractTestModCrawler {
 	
@@ -24,7 +24,7 @@ public abstract class AbstractTestGithubCrawler extends AbstractTestModCrawler {
 	public void testKerbalAlarmClock() throws IOException, UnsupportedHostException {
 		compare(
 			ModStubs.KerbalAlarmClock,
-			"KerbalAlarmClock",
+			"github.com-TriggerAu-KerbalAlarmClock",
 			getDate(2014, 12, 19),
 			"TriggerAu",
 			"KerbalAlarmClock_3.2.3.0.zip",
@@ -38,7 +38,7 @@ public abstract class AbstractTestGithubCrawler extends AbstractTestModCrawler {
 	public void testProceduralFairings() throws IOException, UnsupportedHostException {
 		compare(
 			ModStubs.ProceduralFairings,
-			"ProceduralFairings",
+			"github.com-e-dog-ProceduralFairings",
 			getDate(2014, 11, 17),
 			"e-dog",
 			"ProcFairings_3.11.zip",
@@ -62,7 +62,7 @@ public abstract class AbstractTestGithubCrawler extends AbstractTestModCrawler {
 	public void testStockFixes() throws IOException, UnsupportedHostException {
 		compare(
 			ModStubs.StockFixes,
-			"KSP-Stock-Bug-Fix-Modules",
+			"github.com-ClawKSP-KSP-Stock-Bug-Fix-Modules",
 			getDate(2015,0,7),
 			"ClawKSP",
 			"StockBugFixModules.v0.1.7d.zip",
@@ -86,7 +86,7 @@ public abstract class AbstractTestGithubCrawler extends AbstractTestModCrawler {
 	public void testDontGetPrereleaseIfLatestRelease() throws IOException, UnsupportedHostException {
 		compare(
 			ModStubs.ActiveTextureManagement,
-			"ActiveTextureManagement",
+			"github.com-rbray89-ActiveTextureManagement",
 			getDate(2014,11,17),
 			"rbray89",
 			"x64-Aggressive-Release.zip",

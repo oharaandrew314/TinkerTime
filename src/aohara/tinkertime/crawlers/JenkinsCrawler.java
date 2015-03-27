@@ -56,11 +56,6 @@ public class JenkinsCrawler extends Crawler<JsonElement> {
 	}
 
 	@Override
-	public String generateId() {
-		return getName();
-	}
-
-	@Override
 	public URL getImageUrl() throws IOException {
 		return null;
 	}

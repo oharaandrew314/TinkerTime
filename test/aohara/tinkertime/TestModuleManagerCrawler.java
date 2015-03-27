@@ -1,12 +1,12 @@
-package test;
+package aohara.tinkertime;
 
 import java.io.IOException;
 
 import org.junit.Test;
 
-import test.crawlers.AbstractTestModCrawler;
-import test.util.ModStubs;
+import aohara.tinkertime.crawlers.AbstractTestModCrawler;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.testutil.ModStubs;
 
 public class TestModuleManagerCrawler extends AbstractTestModCrawler {
 	
@@ -16,7 +16,7 @@ public class TestModuleManagerCrawler extends AbstractTestModCrawler {
 		String newestFilename = "ModuleManager.2.5.9.dll";
 		compare(
 				stub,
-				"moduleManagerPage1",
+				"ksp.sarbian.com-jenkins-job-moduleManagerPage1",
 				getDate(2015, 1, 23),
 				"ksp.sarbian.com",
 				newestFilename,

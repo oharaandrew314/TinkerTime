@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.file.Path;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.swing.JOptionPane;
@@ -14,10 +15,8 @@ import javax.swing.JOptionPane;
 import aohara.common.Listenable;
 import aohara.common.selectorPanel.SelectorInterface;
 import aohara.tinkertime.TinkerConfig;
-import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.models.DefaultMods;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.models.FileUpdateListener;
 import aohara.tinkertime.views.FileChoosers;
 
 import com.google.gson.Gson;
@@ -32,13 +31,12 @@ import com.google.gson.reflect.TypeToken;
  * 
  * @author Andrew O'Hara
  */
-public class ModLoader extends Listenable<SelectorInterface<Mod>>
-		implements ModUpdateListener, FileUpdateListener {
+public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 	
 	private final Gson gson;
 	private final TinkerConfig config;
 	private final Type modsType = new TypeToken<Set<Mod>>() {}.getType();
-	private final Set<Mod> modCache = new HashSet<>();
+	private final Set<Mod> modCache = new LinkedHashSet<>();
 	
 	// -- Initializers ----------------------------------------
 	
@@ -70,9 +68,20 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>>
 	 * 
 	 * Updates the persistent mod data, and refreshes the mod views.
 	 */
-	@Override
 	public synchronized void modUpdated(Mod mod) {
 		modCache.remove(mod);
+		
+		/* For legacy support, delete duplicate mods with same name */
+		Mod duplicate = null;
+		for (Mod cachedMod : modCache){
+			if (mod.getName().equals(cachedMod.getName())){
+				duplicate = cachedMod;
+			}
+		}
+		if (duplicate != null){
+			modDeleted(duplicate);
+		}
+		
 		modCache.add(mod);
 		
 		for (SelectorInterface<Mod> l : getListeners()){
@@ -88,7 +97,6 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>>
 	 * 
 	 * Deleted the persistent mod data, and removes from mod views.
 	 */
-	@Override
 	public synchronized void modDeleted(Mod mod){
 		modCache.remove(mod);
 		for (SelectorInterface<Mod> l : getListeners()){
@@ -116,20 +124,6 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>>
 				l.addElement(mod);
 			}
 			modCache.add(mod);
-		}
-	}
-
-	@Override
-	public synchronized void setUpdateAvailable(Crawler<?> crawler) {
-		for (Mod mod : modCache){
-			try {
-				if (mod.isUpdateable() && mod.id.equals(crawler.generateId())){
-					mod.setUpdateAvailable(crawler);
-					break;
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 	

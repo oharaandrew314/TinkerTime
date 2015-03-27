@@ -24,6 +24,8 @@ public class CrawlerFactory {
 		HOST_GITHUB = "github.com",
 		HOST_MODULE_MANAGER = "ksp.sarbian.com",
 		HOST_KERBAL_STUFF = "kerbalstuff.com";
+	
+	public static final String APP_UPDATE_URL = "https://kerbalstuff.com/mod/243";
 
 	public static final String[] ACCEPTED_MOD_HOSTS	 = new String[]{
 		HOST_CURSE, HOST_GITHUB, HOST_KERBAL_STUFF

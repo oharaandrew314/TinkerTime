@@ -9,10 +9,10 @@ import java.nio.file.Paths;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import aohara.common.OS;
 import aohara.common.config.ConfigBuilder;
 import aohara.common.config.Constraint.InvalidInputException;
 import aohara.common.config.GuiConfig;
-import aohara.tinkertime.controllers.OS;
 
 /**
  * Stores and Retrieves User Configuration Data.

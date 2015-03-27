@@ -1,4 +1,4 @@
-package test;
+package aohara.tinkertime;
 
 import static org.junit.Assert.assertEquals;
 
@@ -6,9 +6,9 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
-import test.util.MockHelper;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.models.Mod;
+import aohara.tinkertime.testutil.MockHelper;
 
 public class TestMod {
 	

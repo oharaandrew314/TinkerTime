@@ -1,15 +1,15 @@
-package test.util;
+package aohara.tinkertime.testutil;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import test.UnitTestSuite;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.pageLoaders.JsonLoader;
@@ -52,7 +52,7 @@ public class MockHelper {
 	public static TinkerConfig newConfig(){
 		return new TinkerConfig(null) {
 			
-			private final Path modsListPath = UnitTestSuite.getTempFile("mods", ".json");
+			private Path modsListPath;
 			
 			@Override
 			public Path getGameDataPath(){
@@ -65,6 +65,15 @@ public class MockHelper {
 			}
 			
 			public Path getModsListPath(){
+				if (modsListPath == null){
+					try {
+						modsListPath = Files.createTempFile("mods", ".json");
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					modsListPath.toFile().deleteOnExit();
+				}
+				
 				return modsListPath;
 			}
 			
