@@ -11,8 +11,7 @@ import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.testutil.ModStubs;
-import aohara.tinkertime.testutil.TestModLoader;
-import aohara.tinkertime.testutil.TestModLoader.CrawlerAndMod;
+import aohara.tinkertime.testutil.ResourceLoader;
 
 public abstract class AbstractTestModCrawler {
 	
@@ -21,9 +20,9 @@ public abstract class AbstractTestModCrawler {
 		String newestFile, String downloadLink, String imageLink, String supportedVersion,
 		boolean fallback
 	) throws IOException, UnsupportedHostException {
-		CrawlerAndMod actual = TestModLoader.loadCrawlerAndMod(stub, fallback);
+		Crawler<?> crawler = ResourceLoader.loadCrawler(stub, fallback);
 		
-		Mod actualMod = actual.mod;
+		Mod actualMod = crawler.createMod();
 		assertEquals(id, actualMod.id);
 		assertEquals(stub.name, actualMod.name);
 		assertEquals(newestFile, actualMod.newestFileName);
@@ -31,7 +30,6 @@ public abstract class AbstractTestModCrawler {
 		assertEquals(newestFile, actualMod.newestFileName);
 		assertEquals(stub.url, actualMod.pageUrl);
 		
-		Crawler<?> crawler = actual.crawler;
 		URL imageUrl = crawler.getImageUrl();
 		assertEquals(imageLink, imageUrl != null ? imageUrl.toString() : null);
 

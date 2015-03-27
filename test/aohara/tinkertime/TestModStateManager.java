@@ -13,7 +13,7 @@ import aohara.tinkertime.controllers.ModLoader;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.testutil.MockHelper;
 import aohara.tinkertime.testutil.ModStubs;
-import aohara.tinkertime.testutil.TestModLoader;
+import aohara.tinkertime.testutil.ResourceLoader;
 
 public class TestModStateManager {
 
@@ -46,8 +46,8 @@ public class TestModStateManager {
 
 	@Before
 	public void setUp() throws Throwable {
-		mod1 = TestModLoader.loadMod(ModStubs.Mechjeb);
-		mod2 = TestModLoader.loadMod(ModStubs.Engineer);
+		mod1 = ResourceLoader.loadMod(ModStubs.Mechjeb);
+		mod2 = ResourceLoader.loadMod(ModStubs.Engineer);
 
 		modLoader = ModLoader.create(MockHelper.newConfig());
 	}
@@ -103,5 +103,4 @@ public class TestModStateManager {
 		assertFalse(mods.contains(mod1));
 		assertTrue(mods.contains(mod2));
 	}
-
 }

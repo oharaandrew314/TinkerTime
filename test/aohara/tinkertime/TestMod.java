@@ -2,8 +2,6 @@ package aohara.tinkertime;
 
 import static org.junit.Assert.assertEquals;
 
-import java.nio.file.Paths;
-
 import org.junit.Test;
 
 import aohara.tinkertime.TinkerConfig;
@@ -22,7 +20,7 @@ public class TestMod {
 	}
 	
 	private void checkZipPath(String expectedFileName, Mod mod){
-		assertEquals(Paths.get("zips", expectedFileName), mod.getCachedZipPath(config));
+		assertEquals(expectedFileName, mod.getCachedZipPath(config).getFileName().toString());
 	}
 	
 	@Test
