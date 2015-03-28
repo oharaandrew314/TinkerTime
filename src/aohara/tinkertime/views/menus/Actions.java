@@ -106,7 +106,7 @@ class Actions {
 			Mod selectedMod = mm.getSelectedMod();
 			if (selectedMod != null){
 				if (DefaultMods.isBuiltIn(selectedMod)){
-					errorMessage("Cannot delete built-in mod: " + selectedMod.getName());
+					errorMessage("Cannot delete built-in mod: " + selectedMod.name);
 					return;
 				}
 				
@@ -114,14 +114,14 @@ class Actions {
 					if (JOptionPane.showConfirmDialog(
 						parent,
 						"Are you sure you want to delete "
-						+ selectedMod.getName() + "?",
+						+ selectedMod.name + "?",
 						"Delete?",
 						JOptionPane.YES_NO_OPTION
 					) == JOptionPane.YES_OPTION){
 						mm.deleteMod(selectedMod);
 					}
 				} catch (CannotDisableModError | IOException e1) {
-					errorMessage(selectedMod.getName() + " could not be disabled.");
+					errorMessage(selectedMod.name + " could not be disabled.");
 				}
 			}
 		}
@@ -260,16 +260,16 @@ class Actions {
 			try {
 				Object[] message = {
 					String.format(
-						"<html>%s v%s - by %s\n",
+						"<html>%s v%s - by %s%n",
 						TinkerTime.NAME,
 						TinkerTime.VERSION,
 						TinkerTime.AUTHOR
 					),
-					"\n",
-					"This work is licensed under the Creative Commons \n"
-							+ "Attribution-ShareAlike 4.0 International License.\n",
+					"%n",
+					"This work is licensed under the Creative Commons %n" +
+					"Attribution-ShareAlike 4.0 International License.%n",
 					new UrlPanel("View a copy of this license", new URL("http://creativecommons.org/licenses/by-sa/4.0/")).getComponent(),
-					"\n",
+					"%n",
 					TinkerTime.NAME + " uses Glyphicons (glyphicons.com)"
 				};
 				JOptionPane.showMessageDialog(

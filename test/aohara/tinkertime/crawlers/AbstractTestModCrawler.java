@@ -11,28 +11,26 @@ import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.testutil.ModStubs;
-import aohara.tinkertime.testutil.TestModLoader;
-import aohara.tinkertime.testutil.TestModLoader.CrawlerAndMod;
+import aohara.tinkertime.testutil.ResourceLoader;
 
 public abstract class AbstractTestModCrawler {
 	
 	protected void compare(
 		ModStubs stub, String id, Date updatedOn, String creator,
-		String newestFile, String downloadLink, String imageLink, String supportedVersion,
-		boolean fallback
+		String newestFile, String downloadLink, String imageLink, String kspVersion,
+		String version, boolean fallback
 	) throws IOException, UnsupportedHostException {
-		CrawlerAndMod actual = TestModLoader.loadCrawlerAndMod(stub, fallback);
+		Crawler<?> crawler = ResourceLoader.loadCrawler(stub, fallback);
 		
-		Mod actualMod = actual.mod;
+		Mod actualMod = crawler.createMod();
 		assertEquals(id, actualMod.id);
-		assertEquals(stub.name, actualMod.getName());
-		assertEquals(newestFile, actualMod.getNewestFileName());
-		assertEquals(creator, actualMod.getCreator());
-		assertEquals(newestFile, actualMod.getNewestFileName());
-		assertEquals(creator, actualMod.getCreator());
-		assertEquals(stub.url, actualMod.getPageUrl());
+		assertEquals(stub.name, actualMod.name);
+		assertEquals(newestFile, actualMod.newestFileName);
+		assertEquals(creator, actualMod.creator);
+		assertEquals(newestFile, actualMod.newestFileName);
+		assertEquals(stub.url, actualMod.pageUrl);
+		assertEquals(version, actualMod.getVersion() != null ? actualMod.getVersion().toString() : null);
 		
-		Crawler<?> crawler = actual.crawler;
 		URL imageUrl = crawler.getImageUrl();
 		assertEquals(imageLink, imageUrl != null ? imageUrl.toString() : null);
 
@@ -40,7 +38,7 @@ public abstract class AbstractTestModCrawler {
 		expectedDate.setTime(updatedOn);
 		
 		Calendar actualDate = Calendar.getInstance();
-		actualDate.setTime(actualMod.getUpdatedOn());
+		actualDate.setTime(actualMod.updatedOn);
 		
 		assertEquals(expectedDate.get(Calendar.YEAR), actualDate.get(Calendar.YEAR));
 		assertEquals(expectedDate.get(Calendar.MONTH), actualDate.get(Calendar.MONTH));
@@ -49,9 +47,10 @@ public abstract class AbstractTestModCrawler {
 	
 	protected void compare(
 		ModStubs stub, String id, Date updatedOn, String creator,
-		String newestFile, String downloadLink, String imageLink, String supportedVersion
+		String newestFile, String downloadLink, String imageLink,
+		String kspVersion, String version
 	) throws IOException, UnsupportedHostException {
-		compare(stub, id, updatedOn, creator, newestFile, downloadLink, imageLink, supportedVersion, false);
+		compare(stub, id, updatedOn, creator, newestFile, downloadLink, imageLink, kspVersion, version, false);
 	}
 	
 	protected Date getDate(int year, int month, int date){

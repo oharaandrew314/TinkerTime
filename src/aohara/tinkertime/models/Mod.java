@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.github.zafarkhaja.semver.Version;
+
 import aohara.tinkertime.TinkerConfig;
 
 /**
@@ -21,15 +23,15 @@ import aohara.tinkertime.TinkerConfig;
  */
 public class Mod implements Comparable<Mod> {
 	
-	public final String id;
-	private Date updatedOn;
-	private String name, creator, supportedVersion, newestFileName;
-	private URL pageUrl;
-	private transient boolean updateAvailable = false;
+	public final Date updatedOn;
+	public final String id, name, creator, kspVersion, newestFileName;
+	public final URL pageUrl;
+	private final String version;
+	public transient boolean updateAvailable = false;
 	
 	public Mod(
 		String id, String modName, String newestFileName, String creator,
-		URL pageUrl, Date updatedOn, String supportedVersion
+		URL pageUrl, Date updatedOn, String kspVersion, Version version
 	){
 		this.id = id;
 		this.newestFileName = newestFileName;
@@ -37,40 +39,18 @@ public class Mod implements Comparable<Mod> {
 		this.pageUrl = pageUrl;
 		this.name = modName;
 		this.creator = creator;
-		this.supportedVersion = supportedVersion;
-	}
-	
-	public String getName(){
-		return name;
-	}
-
-	public String getCreator() {
-		return creator;
-	}
-	
-	public String getNewestFileName() {
-		return newestFileName;
-	}
-
-	public Date getUpdatedOn() {
-		return updatedOn;
-	}
-	
-	public URL getPageUrl() {
-		return pageUrl;
+		this.kspVersion = kspVersion;
+		this.version = version != null ? version.getNormalVersion() : null;
 	}
 	
 	public boolean isDownloaded(TinkerConfig config){
 		Path zipPath = getCachedZipPath(config);
-		if (zipPath != null){
-			return zipPath.toFile().exists();
-		}
-		return false;
+		return zipPath != null && zipPath.toFile().exists();
 	}
 	
 	public Path getCachedZipPath(TinkerConfig config){
-		if (getNewestFileName() != null){
-			String safePathFileName = getNewestFileName().replaceAll(":", "").replaceAll("/", "");
+		if (newestFileName != null){
+			String safePathFileName = newestFileName.replaceAll(":", "").replaceAll("/", "");
 			return config.getModsZipPath().resolve(safePathFileName);
 		}
 		return null;
@@ -85,14 +65,12 @@ public class Mod implements Comparable<Mod> {
 	 * @return supported KSP version
 	 */
 	public String getSupportedVersion(){
-		return supportedVersion;
+		return kspVersion;
 	}
 	
 	public boolean isUpdateable(){
-		return getPageUrl() != null;
+		return pageUrl != null;
 	}
-	
-	// -- Other Methods --------------------
 
 	public boolean isEnabled(TinkerConfig config){
 		// Cannot decide if the mod is enabled if the zip is missing
@@ -117,17 +95,9 @@ public class Mod implements Comparable<Mod> {
 		}
 	}
 	
-	public void setUpdateAvailable(){
-		updateAvailable = true;
-	}
-	
-	public boolean isUpdateAvailable(){
-		return updateAvailable;
-	}
-	
 	@Override
 	public String toString(){
-		return getName();
+		return name;
 	}
 	
 	@Override
@@ -139,9 +109,13 @@ public class Mod implements Comparable<Mod> {
 	public boolean equals(Object o){
 		if (o instanceof Mod){
 			Mod mod = (Mod) o;
-			return id.equals(mod.id) || getName().equals(mod.getName());
+			return id.equals(mod.id) || name.equals(mod.name);
 		}
 		return false;
+	}
+	
+	public Version getVersion(){
+		return version != null ? Version.valueOf(version) : null;
 	}
 
 	@Override

@@ -23,7 +23,6 @@ import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory;
-import aohara.tinkertime.crawlers.VersionInfo;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.crawlers.pageLoaders.JsonLoader;
 import aohara.tinkertime.crawlers.pageLoaders.WebpageLoader;
@@ -123,11 +122,11 @@ public class ModManager implements ListListener<Mod> {
 	 * @throws ModUpdateFailedError
 	 */
 	public void updateMod(Mod mod, boolean forceUpdate) throws ModUpdateFailedError {
-		if (mod.getPageUrl() == null){
+		if (!mod.isUpdateable()){
 			throw new ModUpdateFailedError(mod, "Mod is a local zip only, and cannot be updated.");
 		}
 		
-		ModWorkflowBuilder builder = new ModWorkflowBuilder("Updating " + mod.getName());
+		ModWorkflowBuilder builder = new ModWorkflowBuilder("Updating " + mod.name);
 		try {
 			// Cleanup operations prior to update
 			if (mod.isDownloaded(config)){
@@ -222,7 +221,7 @@ public class ModManager implements ListListener<Mod> {
 		
 		for (final Mod mod : loader.getMods()){
 			try {
-				if (mod.getPageUrl() != null){
+				if (mod.isUpdateable()){
 					ModWorkflowBuilder builder = new ModWorkflowBuilder("Checking for update for " + mod);
 					builder.checkForUpdates(mod, getCrawler(mod));
 					
@@ -231,7 +230,7 @@ public class ModManager implements ListListener<Mod> {
 						
 						@Override
 						protected void processTaskEvent(TaskEvent event) {
-							mod.setUpdateAvailable();
+							mod.updateAvailable = true;
 						}
 					});
 					submitDownloadWorkflow(builder);
@@ -263,11 +262,10 @@ public class ModManager implements ListListener<Mod> {
 	 */
 	public void tryUpdateModManager() throws UnsupportedHostException{
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Updating " + TinkerTime.NAME);
-		VersionInfo currentVersion = new VersionInfo(TinkerTime.VERSION, null, TinkerTime.FULL_NAME);
 		try {
 			builder.checkForUpdates(
 				getCrawler(new URL(CrawlerFactory.APP_UPDATE_URL)),
-				currentVersion
+				TinkerTime.VERSION, null
 			);
 			builder.addListener(new TaskCallback.WorkflowCompleteCallback() {
 				
@@ -279,9 +277,9 @@ public class ModManager implements ListListener<Mod> {
 						if (JOptionPane.showConfirmDialog(
 							null,
 							String.format(
-								"%s v%s is available.\n" +
-								"Would you like to download it?\n" +
-								"\n" + 
+								"%s v%s is available.%n" +
+								"Would you like to download it?%n" +
+								"%n" + 
 								"You currently have v%s",
 								TinkerTime.NAME, crawler.getVersion(), TinkerTime.VERSION
 							),
@@ -289,7 +287,7 @@ public class ModManager implements ListListener<Mod> {
 							JOptionPane.YES_NO_OPTION,
 							JOptionPane.QUESTION_MESSAGE
 						) == JOptionPane.YES_OPTION){
-							new BrowserGoToTask(crawler.getDownloadLink()).call(null);
+							BrowserGoToTask.callNow(crawler.getDownloadLink());
 						}
 					} catch (IOException e) {
 						throw new RuntimeException(e);
@@ -317,7 +315,7 @@ public class ModManager implements ListListener<Mod> {
 	}
 	
 	protected Crawler<?> getCrawler(Mod mod) throws UnsupportedHostException{
-		return getCrawler(mod.getPageUrl());
+		return getCrawler(mod.pageUrl);
 	}
 	
 	// -- Exceptions/Errors --------------------------------------------------

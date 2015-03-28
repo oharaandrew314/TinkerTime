@@ -69,7 +69,7 @@ public class KerbalStuffCrawler extends Crawler<JsonElement>{
 	}
 
 	@Override
-	public String getSupportedVersion() throws IOException {
+	public String getKspVersion() throws IOException {
 		return getLatestVersion().get("ksp_version").getAsString();
 	}
 	

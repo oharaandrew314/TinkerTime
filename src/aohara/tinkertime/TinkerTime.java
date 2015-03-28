@@ -30,7 +30,9 @@ public class TinkerTime {
 		NAME = "Tinker Time",
 		AUTHOR = "Andrew O'Hara";
 	public static final Version VERSION = Version.valueOf("1.2.0");
-	public static final String FULL_NAME = String.format("%s v%s", NAME, VERSION);
+	public static final String
+		SAFE_NAME = NAME.replace(" ", ""),
+		FULL_NAME = String.format("%s v%s", NAME, VERSION);
 	
 	public static void main(String[] args) {
 		TinkerConfig config = TinkerConfig.create();

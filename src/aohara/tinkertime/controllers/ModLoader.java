@@ -69,19 +69,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 	 * Updates the persistent mod data, and refreshes the mod views.
 	 */
 	public synchronized void modUpdated(Mod mod) {
-		modCache.remove(mod);
-		
-		/* For legacy support, delete duplicate mods with same name */
-		Mod duplicate = null;
-		for (Mod cachedMod : modCache){
-			if (mod.getName().equals(cachedMod.getName())){
-				duplicate = cachedMod;
-			}
-		}
-		if (duplicate != null){
-			modDeleted(duplicate);
-		}
-		
+		modCache.remove(mod);		
 		modCache.add(mod);
 		
 		for (SelectorInterface<Mod> l : getListeners()){
@@ -154,7 +142,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 	private boolean trySatisfyLocalFiles(Mod mod, ModManager mm){
 		if (JOptionPane.showConfirmDialog(
 			null,
-			mod.getName() + " does not have an update url.\n"
+			mod.name + " does not have an update url.\n"
 			+ "Would you like to select a zip file to use?",
 			"Import Local Mod?",
 			JOptionPane.YES_NO_OPTION,

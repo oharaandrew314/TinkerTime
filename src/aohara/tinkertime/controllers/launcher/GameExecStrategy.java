@@ -1,5 +1,6 @@
 package aohara.tinkertime.controllers.launcher;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,7 +9,7 @@ import aohara.tinkertime.TinkerConfig;
 
 abstract class GameExecStrategy {
 	
-	public abstract ProcessBuilder getExecCommand(TinkerConfig config);
+	public abstract ProcessBuilder getExecCommand(TinkerConfig config) throws IOException;
 	
 	private static ProcessBuilder getProcessBuilder(TinkerConfig config, Path executablePath, String... preCommands){
 		List<String> commands = new LinkedList<>();
@@ -33,7 +34,7 @@ abstract class GameExecStrategy {
 	static class WindowsExecStrategy extends GameExecStrategy {
 
 		@Override
-		public ProcessBuilder getExecCommand(TinkerConfig config) {
+		public ProcessBuilder getExecCommand(TinkerConfig config) throws IOException {
 			Path path = config.getGameDataPath();
 			path = path.resolve(config.use64BitGame() ? "../KSP_x64.exe" : "../KSP.exe");
 			return getProcessBuilder(config, path);
@@ -43,7 +44,7 @@ abstract class GameExecStrategy {
 	static class LinuxExecStrategy extends GameExecStrategy {
 
 		@Override
-		public ProcessBuilder getExecCommand(TinkerConfig config) {
+		public ProcessBuilder getExecCommand(TinkerConfig config) throws IOException {
 			Path path = config.getGameDataPath();
 			path = path.resolve(config.use64BitGame() ? "../KSP.x86_64" : "../KSP.x86");
 			return getProcessBuilder(config, path);

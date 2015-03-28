@@ -22,7 +22,8 @@ public class TestModuleManagerCrawler extends AbstractTestModCrawler {
 				newestFilename,
 				String.format("%s/lastSuccesfulBuild/artifact/%s", stub.url, newestFilename),
 				null,
-				null
+				null,
+				"2.5.9"
 		);
 	}
 }

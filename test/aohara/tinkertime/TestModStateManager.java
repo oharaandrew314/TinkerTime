@@ -13,7 +13,7 @@ import aohara.tinkertime.controllers.ModLoader;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.testutil.MockHelper;
 import aohara.tinkertime.testutil.ModStubs;
-import aohara.tinkertime.testutil.TestModLoader;
+import aohara.tinkertime.testutil.ResourceLoader;
 
 public class TestModStateManager {
 
@@ -24,12 +24,13 @@ public class TestModStateManager {
 	private static Mod getUpdatedMod(final Mod mod, final String newestFile){
 		return new Mod(
 			mod.id,
-			mod.getName(),
+			mod.name,
 			newestFile,
-			mod.getCreator(),
-			mod.getPageUrl(),
-			mod.getUpdatedOn(),
-			mod.getSupportedVersion()
+			mod.creator,
+			mod.pageUrl,
+			mod.updatedOn,
+			mod.getSupportedVersion(),
+			null
 		);
 		
 	}
@@ -46,8 +47,8 @@ public class TestModStateManager {
 
 	@Before
 	public void setUp() throws Throwable {
-		mod1 = TestModLoader.loadMod(ModStubs.Mechjeb);
-		mod2 = TestModLoader.loadMod(ModStubs.Engineer);
+		mod1 = ResourceLoader.loadMod(ModStubs.Mechjeb);
+		mod2 = ResourceLoader.loadMod(ModStubs.Engineer);
 
 		modLoader = ModLoader.create(MockHelper.newConfig());
 	}
@@ -80,15 +81,15 @@ public class TestModStateManager {
 	public void testSaveUpdatedMod() throws Throwable {	
 		testSaveOne();
 		
-		String newestFile = mod1.getNewestFileName() + "-updated";
+		String newestFile = mod1.newestFileName + "-updated";
 		Mod newer = getUpdatedMod(mod1, newestFile);
-		assertEquals(newestFile, newer.getNewestFileName());
+		assertEquals(newestFile, newer.newestFileName);
 		
 		update(newer, false);
 		
 		assertEquals(1, mods.size());
 		assertTrue(mods.contains(newer));
-		assertEquals(newestFile, mods.iterator().next().getNewestFileName());
+		assertEquals(newestFile, mods.iterator().next().newestFileName);
 	}
 	
 	@Test
@@ -103,5 +104,4 @@ public class TestModStateManager {
 		assertFalse(mods.contains(mod1));
 		assertTrue(mods.contains(mod2));
 	}
-
 }
