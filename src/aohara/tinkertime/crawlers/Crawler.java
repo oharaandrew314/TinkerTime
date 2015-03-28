@@ -95,7 +95,7 @@ public abstract class Crawler<T> {
 			return getVersion().greaterThan(currentVersion);
 		} catch (NullPointerException e){
 			try {
-				return getUpdatedOn().after(lastUpdatedOn);
+				return getUpdatedOn().before(lastUpdatedOn);
 			} catch (NullPointerException | IOException e1) {
 				return false;
 			}
