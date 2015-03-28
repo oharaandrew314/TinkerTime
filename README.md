@@ -38,25 +38,34 @@ This major update is planned to feature a visual design overhaul, and .version f
 
 ##### v1.3
 
-This update focuses on fixing annoyances, in order to provide a better general UX
+This update focuses on fixing annoyances, in order to provide a better general UX.
+A major refactor was done, reducing lines of code by an estimated 25%.
+
+###### LEGACY BREAKING CHANGES:
+- You will need to re add and re-download all your mods
+  - mods list file schema has been simplified
+  - mod zip and image caches are now stored in GameData directory
+  - mod id generation has been changed
 
 - New Features
   - Add an options field to set KSP Launch Options
   - Updating the options will no longer require an app restart
   - Now scans the GameData directory to see which mods are enabled
-    - This fixes issues with the mods file being out of sync with the GameData directory
   - Now scrapes Github using the API, by default
     - If the API limit is reached, will fallback to the HTML scraper
+  - Can now parse versions of mods and use those when checking for updates
+  - Progress bars will now appear immediately after launching a task, and their max progress will be set once it has been determined afterwards
 - Fixes
   - Mod file caches between KSP installations are now separate
     - This fixes issues when updating or deleting a mod in one installation, which would then affect the other
     - Caches are now stored in a "TinkerTime" directory within your KSP installation
 - Other Changes
+  - Removed Nimbus UI
   - Tinker Time now updates itself using KerbalStuff, rather than Github
   - ModuleManager has been further integrated as a mod, (as opposed to a special entity)
-    - This will cause a minor issue the first time you update it
-    - After updating, restart TinkerTime, and delete the old ModuleManager dll in your GameData directory (if there are two)
-  - Mod file no longer needs to save image URLs and enabled state
+  - Mod list file no longer needs to save image URLs and enabled state
+  - Refactor Unit Test resource loading
+  - Major general refactor
 
 ##### v1.2
 - New Features
