@@ -23,7 +23,6 @@ import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory;
-import aohara.tinkertime.crawlers.VersionInfo;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.crawlers.pageLoaders.JsonLoader;
 import aohara.tinkertime.crawlers.pageLoaders.WebpageLoader;
@@ -231,7 +230,7 @@ public class ModManager implements ListListener<Mod> {
 						
 						@Override
 						protected void processTaskEvent(TaskEvent event) {
-							mod.setUpdateAvailable();
+							mod.updateAvailable = true;
 						}
 					});
 					submitDownloadWorkflow(builder);
@@ -263,11 +262,10 @@ public class ModManager implements ListListener<Mod> {
 	 */
 	public void tryUpdateModManager() throws UnsupportedHostException{
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Updating " + TinkerTime.NAME);
-		VersionInfo currentVersion = new VersionInfo(TinkerTime.VERSION, null, TinkerTime.FULL_NAME);
 		try {
 			builder.checkForUpdates(
 				getCrawler(new URL(CrawlerFactory.APP_UPDATE_URL)),
-				currentVersion
+				TinkerTime.VERSION, null
 			);
 			builder.addListener(new TaskCallback.WorkflowCompleteCallback() {
 				

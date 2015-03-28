@@ -4,6 +4,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Calendar;
+import java.util.Date;
+
+import com.github.zafarkhaja.semver.Version;
 
 import aohara.common.tree.TreeNode;
 import aohara.common.workflows.ConflictResolver;
@@ -14,7 +17,6 @@ import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.controllers.ModLoader;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
-import aohara.tinkertime.crawlers.VersionInfo;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModStructure;
 import aohara.tinkertime.workflows.DownloadModAssetTask.ModDownloadType;
@@ -29,12 +31,12 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	 * Notifies the listeners if an update is available for the given file
 	 */
 	public void checkForUpdates(Mod mod, Crawler<?> crawler) throws IOException, UnsupportedHostException {
-		checkForUpdates(crawler, new VersionInfo(null, mod.updatedOn, mod.newestFileName));
+		checkForUpdates(crawler, mod.getVersion(), mod.updatedOn);
 	}
 	
-	public void checkForUpdates(Crawler<?> crawler, VersionInfo currentVersion) throws UnsupportedHostException{
+	public void checkForUpdates(Crawler<?> crawler, Version currentVersion, Date lastUpdatedOn) throws UnsupportedHostException{
 		addTask(new CacheCrawlerPageTask(crawler));
-		addTask(new CheckForUpdateTask(crawler, currentVersion));
+		addTask(new CheckForUpdateTask(crawler, currentVersion, lastUpdatedOn));
 	}
 	
 	/**
@@ -55,7 +57,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		}
 		Mod newMod = new Mod(
 			fileName, prettyName, fileName, null, null,
-			Calendar.getInstance().getTime(), null
+			Calendar.getInstance().getTime(), null, Version.valueOf(prettyName)
 		);
 		
 		copy(zipPath, newMod.getCachedZipPath(config));

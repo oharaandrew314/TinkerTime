@@ -17,8 +17,8 @@ public abstract class AbstractTestModCrawler {
 	
 	protected void compare(
 		ModStubs stub, String id, Date updatedOn, String creator,
-		String newestFile, String downloadLink, String imageLink, String supportedVersion,
-		boolean fallback
+		String newestFile, String downloadLink, String imageLink, String kspVersion,
+		String version, boolean fallback
 	) throws IOException, UnsupportedHostException {
 		Crawler<?> crawler = ResourceLoader.loadCrawler(stub, fallback);
 		
@@ -29,6 +29,7 @@ public abstract class AbstractTestModCrawler {
 		assertEquals(creator, actualMod.creator);
 		assertEquals(newestFile, actualMod.newestFileName);
 		assertEquals(stub.url, actualMod.pageUrl);
+		assertEquals(version, actualMod.getVersion() != null ? actualMod.getVersion().toString() : null);
 		
 		URL imageUrl = crawler.getImageUrl();
 		assertEquals(imageLink, imageUrl != null ? imageUrl.toString() : null);
@@ -46,9 +47,10 @@ public abstract class AbstractTestModCrawler {
 	
 	protected void compare(
 		ModStubs stub, String id, Date updatedOn, String creator,
-		String newestFile, String downloadLink, String imageLink, String supportedVersion
+		String newestFile, String downloadLink, String imageLink,
+		String kspVersion, String version
 	) throws IOException, UnsupportedHostException {
-		compare(stub, id, updatedOn, creator, newestFile, downloadLink, imageLink, supportedVersion, false);
+		compare(stub, id, updatedOn, creator, newestFile, downloadLink, imageLink, kspVersion, version, false);
 	}
 	
 	protected Date getDate(int year, int month, int date){

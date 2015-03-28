@@ -59,7 +59,7 @@ public class CurseCrawler extends Crawler<Document> {
 	}
 
 	@Override
-	public String getSupportedVersion() throws IOException {
+	public String getKspVersion() throws IOException {
 		String text = getPage(getApiUrl()).select("li.version").first().text();
 		return text.split(":")[1].trim();
 	}

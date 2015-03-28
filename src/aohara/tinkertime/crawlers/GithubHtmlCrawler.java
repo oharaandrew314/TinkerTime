@@ -126,7 +126,7 @@ public class GithubHtmlCrawler extends Crawler<Document> {
 	}
 
 	@Override
-	public String getSupportedVersion() throws IOException {
+	public String getKspVersion() throws IOException {
 		return null;  // Not Supported by Github
 	}
 

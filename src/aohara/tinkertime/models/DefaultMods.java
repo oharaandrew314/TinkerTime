@@ -21,7 +21,7 @@ public class DefaultMods {
 			URL moduleManagerUrl = CrawlerFactory.getModuleManagerUrl();
 			 defaults.add(new Mod(
 				Crawler.urlToId(moduleManagerUrl),
-				"ModuleManager", null, null, moduleManagerUrl, null, null
+				"ModuleManager", null, null, moduleManagerUrl, null, null, null
 			));
 		} catch (MalformedURLException e){
 			throw new RuntimeException(e);

@@ -44,19 +44,26 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 		this.mod = mod;
 		panel.removeAll();
 		
+		String versionString = mod.getVersion() != null ? " v" + mod.getVersion() : "";
+		
 		if (mod != null){
 			// Set Border
-			panel.setBorder(BorderFactory.createTitledBorder(mod.name + (mod.isUpdateable()? " - by " + mod.creator : " - added from zip")));
+			panel.setBorder(BorderFactory.createTitledBorder(
+				mod.name + versionString +
+				(mod.isUpdateable()? " - by " + mod.creator : " - added from zip"
+			)));
 			
 			// Warning if non-updateable
 			if (!mod.isUpdateable()){
 				panel.add(new JLabel("<html><b>Warning:</b> Local File Only.  Not updateable.</html>"));
-			} else if(mod.isUpdateAvailable()) {
+			} else if(mod.updateAvailable) {
 				panel.add(new JLabel("<html><b>An update for this mod is available.</b></html>"));
 			}
 			
 			// Current Mod Version
-			panel.add(new JLabel("Mod Version: " + mod.newestFileName));
+			if (mod.getVersion() != null){
+				panel.add(new JLabel("Mod Version: " + versionString));
+			}
 			
 			// Supported KSP Version
 			String kspVersion =  mod.getSupportedVersion();

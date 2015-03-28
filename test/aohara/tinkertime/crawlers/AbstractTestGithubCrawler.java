@@ -15,9 +15,10 @@ public abstract class AbstractTestGithubCrawler extends AbstractTestModCrawler {
 	@Override
 	protected void compare(
 		ModStubs stub, String id, Date updatedOn, String creator,
-		String newestFile, String downloadLink, String imageLink, String supportedVersion
+		String newestFile, String downloadLink, String imageLink,
+		String kspVersion, String version
 	) throws IOException, UnsupportedHostException {
-		compare(stub, id, updatedOn, creator, newestFile, downloadLink, imageLink, supportedVersion, isTestingFallbackCrawler());
+		compare(stub, id, updatedOn, creator, newestFile, downloadLink, imageLink, kspVersion, version, isTestingFallbackCrawler());
 	}
 	
 	@Test
@@ -30,7 +31,8 @@ public abstract class AbstractTestGithubCrawler extends AbstractTestModCrawler {
 			"KerbalAlarmClock_3.2.3.0.zip",
 			"https://github.com/TriggerAu/KerbalAlarmClock/releases",
 			null,
-			null
+			null,
+			"3.2.30"
 		);
 	}
 	
@@ -44,7 +46,8 @@ public abstract class AbstractTestGithubCrawler extends AbstractTestModCrawler {
 			"ProcFairings_3.11.zip",
 			"https://github.com/e-dog/ProceduralFairings/releases",
 			null,
-			null
+			null,
+			"3.11.0"
 		);
 	}
 	
@@ -68,7 +71,8 @@ public abstract class AbstractTestGithubCrawler extends AbstractTestModCrawler {
 			"StockBugFixModules.v0.1.7d.zip",
 			"https://github.com/ClawKSP/KSP-Stock-Bug-Fix-Modules/releases",
 			null,
-			null
+			null,
+			"0.1.7"
 		);
 	}
 	
@@ -92,7 +96,8 @@ public abstract class AbstractTestGithubCrawler extends AbstractTestModCrawler {
 			"x64-Aggressive-Release.zip",
 			"https://github.com/rbray89/ActiveTextureManagement/releases",
 			null,
-			null
+			null,
+			"4.3.0"
 		);
 		
 	}

@@ -75,7 +75,7 @@ public class JenkinsCrawler extends Crawler<JsonElement> {
 	}
 
 	@Override
-	public String getSupportedVersion() throws IOException {
+	public String getKspVersion() throws IOException {
 		return null;
 	}
 

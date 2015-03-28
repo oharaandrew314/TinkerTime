@@ -72,7 +72,7 @@ public class GithubJsonCrawler extends Crawler<JsonElement> {
 	}
 
 	@Override
-	public String getSupportedVersion() throws IOException {
+	public String getKspVersion() throws IOException {
 		return null;  // Not Supported by Github
 	}
 

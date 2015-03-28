@@ -9,10 +9,12 @@ import java.util.Date;
 
 import javax.swing.JOptionPane;
 
-import com.github.zafarkhaja.semver.Version;
-
+import aohara.common.VersionParser;
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 import aohara.tinkertime.models.Mod;
+
+import com.github.zafarkhaja.semver.UnexpectedCharacterException;
+import com.github.zafarkhaja.semver.Version;
 
 /**
  * Abstract Base Class for Creating Web Crawlers to gather file information.
@@ -43,7 +45,7 @@ public abstract class Crawler<T> {
 	public abstract URL getImageUrl() throws IOException;
 	public abstract String getName() throws IOException;
 	public abstract String getCreator() throws IOException;
-	public abstract String getSupportedVersion() throws IOException;
+	public abstract String getKspVersion() throws IOException;
 	public abstract String getVersionString() throws IOException;
 	protected abstract Collection<Asset> getNewestAssets() throws IOException;
 	
@@ -74,22 +76,29 @@ public abstract class Crawler<T> {
 	
 	public Version getVersion(){
 		try {
-			return Version.valueOf(getVersionString());
-		} catch(
-			com.github.zafarkhaja.semver.UnexpectedCharacterException
-			| IOException  | IllegalArgumentException e
-		){
-			return null;
+			// First try to parse version from an available version tag field
+			String versionString = VersionParser.parseVersionString(getVersionString());
+			return Version.valueOf(versionString);
+		} catch(UnexpectedCharacterException | IOException | IllegalArgumentException e){
+			try {
+				// Alternately, try to parse version from the fileName
+				String versionString = VersionParser.parseVersionString(getNewestFileName());
+				return Version.valueOf(versionString);
+			} catch (UnexpectedCharacterException | IOException | IllegalArgumentException e1) {
+				return null;
+			}
 		}
 	}
 	
-	public boolean isUpdateAvailable(VersionInfo currentVersion) {
-		try {
-			VersionInfo crawledVersion = new VersionInfo(getVersion(), getUpdatedOn(), getNewestAssets());
-			return crawledVersion.compareTo(currentVersion) > 0;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
+	public boolean isUpdateAvailable(Version currentVersion, Date lastUpdatedOn) {
+		try{
+			return getVersion().greaterThan(currentVersion);
+		} catch (NullPointerException e){
+			try {
+				return getUpdatedOn().after(lastUpdatedOn);
+			} catch (NullPointerException | IOException e1) {
+				return false;
+			}
 		}
 	}
 	
@@ -133,7 +142,7 @@ public abstract class Crawler<T> {
 			getId(), getName(), getNewestFileName(),
 			getCreator(), getPageUrl(),
 			getUpdatedOn() != null ? getUpdatedOn() : Calendar.getInstance().getTime(),
-			getSupportedVersion()
+			getKspVersion(), getVersion()
 		);
 	}
 	

@@ -58,7 +58,7 @@ public class ModListCellRenderer implements ListCellRenderer<Mod> {
 			icons.add(errorIcon);
 		}
 		
-		if (mod.isUpdateAvailable()){
+		if (mod.updateAvailable){
 			icons.add(updateIcon);
 		}
 		

@@ -62,17 +62,16 @@ public class ModStructure {
 			Set<TreeNode> modules = new HashSet<>();
 			modules.add(new FileNode(zipPath.getFileName().toString()));
 			return new ModStructure(modules);
+		} else {
+			TreeNode root = new ZipTreeBuilder(zipPath).process();
+			
+			// Find GameData Path within zip
+			TreeNode gameData = getGameDataNode(root);
+			gameData = gameData != null ? gameData : root;
+			
+			// Discover structure
+			return new ModStructure(getModules(gameData));
 		}
-		
-		
-		TreeNode root = new ZipTreeBuilder(zipPath).process();
-		
-		// Find GameData Path within zip
-		TreeNode gameData = getGameDataNode(root);
-		gameData = gameData != null ? gameData : root;
-		
-		// Discover structure
-		return new ModStructure(getModules(gameData));
 	}
 	
 	public static String getReadmeText(final TinkerConfig config, final Mod mod){

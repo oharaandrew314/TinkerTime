@@ -29,7 +29,8 @@ public class TestModStateManager {
 			mod.creator,
 			mod.pageUrl,
 			mod.updatedOn,
-			mod.getSupportedVersion()
+			mod.getSupportedVersion(),
+			null
 		);
 		
 	}
