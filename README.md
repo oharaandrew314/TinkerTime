@@ -42,7 +42,7 @@ This update focuses on fixing annoyances, in order to provide a better general U
 A major refactor was done, reducing lines of code by an estimated 25%.
 
 ###### LEGACY BREAKING CHANGES:
-- You will need to re add and re-download all your mods
+- You will need to re-add and re-download all your mods
   - mods list file schema has been simplified
   - mod zip and image caches are now stored in GameData directory
   - mod id generation has been changed
