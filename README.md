@@ -59,6 +59,7 @@ A major refactor was done, reducing lines of code by an estimated 25%.
   - Mod file caches between KSP installations are now separate
     - This fixes issues when updating or deleting a mod in one installation, which would then affect the other
     - Caches are now stored in a "TinkerTime" directory within your KSP installation
+    - Options Window to have correct number of rows
 - Other Changes
   - Removed Nimbus UI
   - Tinker Time now updates itself using KerbalStuff, rather than Github
