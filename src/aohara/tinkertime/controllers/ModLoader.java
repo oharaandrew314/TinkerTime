@@ -69,11 +69,10 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 	 * Updates the persistent mod data, and refreshes the mod views.
 	 */
 	public synchronized void modUpdated(Mod mod) {
-		modCache.remove(mod);		
-		modCache.add(mod);
+		modDeleted(mod);	
 		
+		modCache.add(mod);
 		for (SelectorInterface<Mod> l : getListeners()){
-			l.removeElement(mod);
 			l.addElement(mod);
 		}
 		
@@ -86,10 +85,17 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 	 * Deleted the persistent mod data, and removes from mod views.
 	 */
 	public synchronized void modDeleted(Mod mod){
-		modCache.remove(mod);
-		for (SelectorInterface<Mod> l : getListeners()){
-			l.removeElement(mod);
+		// Search for all copies of the mode to delete
+		// Potential duplicates due to legacy migrations
+		for (Mod cached : new LinkedHashSet<>(modCache)){
+			if (cached.equals(mod)){
+				modCache.remove(cached);
+				for (SelectorInterface<Mod> l : getListeners()){
+					l.removeElement(cached);
+				}
+			}
 		}
+		
 		saveMods(modCache, config.getModsListPath());
 	}
 	
@@ -103,7 +109,13 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 		saveMods(toExport, path);
 	}
 	
-	public synchronized void importMods(Path path, ModManager mm){
+	/**
+	 * Loads the mods from the given file and adds them
+	 * 
+	 * @param path file to load mods from
+	 * @param mm ModManager reference
+	 */
+	public synchronized void importMods(Path path, ModManager mm){		
 		for (Mod mod : loadMods(path, mm)){
 			for (SelectorInterface<Mod> l : getListeners()){
 				if (modCache.contains(mod)){
@@ -117,6 +129,13 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 	
 	// -- Private Methods ----------------------------------------
 	
+	/**
+	 * Loads the mods from the given file and returns them.
+	 * 
+	 * @param path file to get mods from
+	 * @param mm ModManager reference
+	 * @return set of mods loaded from the file
+	 */
 	private Set<Mod> loadMods(Path path, ModManager mm){
 		Set<Mod> mods = new HashSet<>();
 		

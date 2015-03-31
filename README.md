@@ -9,12 +9,12 @@ Master: [![Build Status](https://travis-ci.org/oharaandrew314/TinkerTime.svg?bra
 Tinker Time is a Mod Manager for Kerbal Space Program that will allow you to automatically update, enable, and disable all of your mods.  All you have to do is enter the URL to the mod webpage, and Tinker Time will do the rest of the work for you.  It will even manage your ModuleManager Installation for you. :)
 
 ### Requirements
-- [Oracle Java 7](https://java.com/en/download/index.jsp) or better
-  - OpenJDK is not supported, but it may work (however the missing Nimbus UI will default to Metal UI)
+- [Java 7](https://java.com/en/download/index.jsp) or better
+  - OpenJDK is not supported, but it may work
 
 #### Supported Mod Hosting Sites
 - Curse
-- Github (when compiled versions are released)
+- Github (when compiled assets are released)
 - KerbalStuff
 
 
@@ -32,7 +32,44 @@ The [Tinker Time Wiki](https://github.com/oharaandrew314/TinkerTime/wiki) contai
 
 ### Change Log
 
-v1.2
+##### v2.0 (planned)
+
+This major update is planned to feature a visual design overhaul, and .version file integration
+
+##### v1.3
+
+This update focuses on fixing annoyances, in order to provide a better general UX.
+A major refactor was done, reducing lines of code by an estimated 25%.
+
+###### LEGACY BREAKING CHANGES:
+- You will need to re-add and re-download all your mods
+  - mods list file schema has been simplified
+  - mod zip and image caches are now stored in GameData directory
+  - mod id generation has been changed
+
+- New Features
+  - Add an options field to set KSP Launch Options
+  - Updating the options will no longer require an app restart
+  - Now scans the GameData directory to see which mods are enabled
+  - Now scrapes Github using the API, by default
+    - If the API limit is reached, will fallback to the HTML scraper
+  - Can now parse versions of mods and use those when checking for updates
+  - Progress bars will now appear immediately after launching a task, and their max progress will be set once it has been determined afterwards
+- Fixes
+  - Mod file caches between KSP installations are now separate
+    - This fixes issues when updating or deleting a mod in one installation, which would then affect the other
+    - Caches are now stored in a "TinkerTime" directory within your KSP installation
+  - Options Window to have correct number of rows
+  - Right-click menu working on OSX due to removal of Nimbus UI
+- Other Changes
+  - Removed Nimbus UI
+  - Tinker Time now updates itself using KerbalStuff, rather than Github
+  - ModuleManager has been further integrated as a mod, (as opposed to a special entity)
+  - Mod list file no longer needs to save image URLs and enabled state
+  - Refactor Unit Test resource loading
+  - Major general refactor
+
+##### v1.2
 - New Features
   - Automatically check for TinkerTime update, and prompt user if new version is available
   - Mod Page Caching to now persist for 10 minutes (rather than just for a single workflow)
@@ -42,10 +79,10 @@ v1.2
   - Fix issue where illegal file characters were causing some mods to fail to download
   - "Update All" button to only update mods which have an update available
 
-v1.1.1
+##### v1.1.1
 - Updated for KerbalStuff content-provider change
 
-v1.1
+##### v1.1
 - New Features
   - KSP Launcher (supports Windows, OSX, and Linux)
     - On Windows, will ask user if they wish to use 64-bit, otherwise, automatic
@@ -59,7 +96,7 @@ v1.1
   - Fix Typo in TinkerTime Options Window
   - Fix highlighting of toolbar buttons after clicking
 
-v1.0
+##### v1.0
 - New Features:
   - Module Manager is now considered a (non-removable) mod
   - Can now add local mod zip files (non-updateable)
@@ -77,7 +114,7 @@ v1.0
   - Improve Github mod URL analysis robustness
   - Fix Json caching for Jenkins crawler (less annoyance for [sarbian](https://github.com/sarbian))
 
-v0.7
+##### v0.7
 - KerbalStuff Mod Support
 - Graphical Toolbar
 - New GUI Theme (Nimbus)
@@ -86,7 +123,7 @@ v0.7
 - Automated JAR file generation with Gradle
 - Travis-CI integration for automated testing
 
-v0.6
+##### v0.6
 - Github Mod Support
 - GUI Mod List is to maintain proper order
 - on start, update Module manager, and check for Mod updates
@@ -96,7 +133,7 @@ v0.6
 - Each KSP Installation to have its own separate mods configuration
 - Various other under-the-hood improvements
 
-v0.5
+##### v0.5
 - Initial Release
 - Curse.com support
 

@@ -95,7 +95,6 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	public void disableMod(Mod mod, TinkerConfig config, ModLoader sm) throws IOException{
 		if (modHasArchive(mod, config)){			
 			for (TreeNode module : ModStructure.inspectArchive(config, mod).getModules()){
-				
 				if (!isDependency(module, config, sm)){
 					delete(config.getGameDataPath().resolve(module.getName()));
 				}
@@ -107,14 +106,15 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	
 	public void enableMod(Mod mod, TinkerConfig config, ModLoader sm, ConflictResolver cr) throws IOException{
 		if (modHasArchive(mod, config)){
+			// If the mod is an archive, unzip it's modules
 			ModStructure structure = ModStructure.inspectArchive(config, mod);
 			for (TreeNode module : structure.getModules()){
 				unzip(mod.getCachedZipPath(config), config.getGameDataPath(), module, cr);
 			}
 		} else {
+			// If the mod is not an archive e.g. ModuleManager, copy the file over instead
 			copy(mod.getCachedZipPath(config), config.getGameDataPath());
 		}
-		
 	}
 	
 	// helpers

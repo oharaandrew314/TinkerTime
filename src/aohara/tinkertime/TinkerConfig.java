@@ -48,7 +48,7 @@ public class TinkerConfig {
 		GuiConfig config = builder.createGuiConfigInDocuments(
 			String.format("%s Config", TinkerTime.SAFE_NAME),
 			TinkerTime.NAME,
-			"TinkerTime.json"
+			"TinkerTime-Options.json"
 		);
 		if (!config.isValid()){
 			config.openOptionsWindow(true);
