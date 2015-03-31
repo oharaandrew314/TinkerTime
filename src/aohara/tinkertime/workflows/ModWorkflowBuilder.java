@@ -1,25 +1,24 @@
 package aohara.tinkertime.workflows;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Set;
 
-import com.github.zafarkhaja.semver.Version;
-
-import aohara.common.tree.TreeNode;
-import aohara.common.workflows.ConflictResolver;
 import aohara.common.workflows.tasks.TaskCallback;
+import aohara.common.workflows.tasks.UnzipTask;
 import aohara.common.workflows.tasks.WorkflowBuilder;
 import aohara.common.workflows.tasks.WorkflowTask.TaskEvent;
+import aohara.tinkertime.ModManager.ModNotDownloadedException;
 import aohara.tinkertime.TinkerConfig;
-import aohara.tinkertime.controllers.ModLoader;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.models.ModStructure;
+import aohara.tinkertime.resources.ModLoader;
 import aohara.tinkertime.workflows.DownloadModAssetTask.ModDownloadType;
+
+import com.github.zafarkhaja.semver.Version;
 
 public class ModWorkflowBuilder extends WorkflowBuilder {
 	
@@ -42,14 +41,16 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	/**
 	 * Downloads the latest version of the mod referenced by the URL.
 	 */
-	public void downloadMod(Crawler<?> crawler, TinkerConfig config, ModLoader sm) throws IOException, UnsupportedHostException {
+	public void downloadMod(Crawler<?> crawler, TinkerConfig config, ModLoader modLoader)
+			throws IOException, UnsupportedHostException
+	{
 		addTask(new CacheCrawlerPageTask(crawler));
 		
-		addTask(new DownloadModAssetTask(crawler, config, ModDownloadType.File));
-		addTask(new DownloadModAssetTask(crawler, config, ModDownloadType.Image));
+		addTask(new DownloadModAssetTask(crawler, config, modLoader, ModDownloadType.File));
+		addTask(new DownloadModAssetTask(crawler, config, modLoader, ModDownloadType.Image));
 	}
 	
-	public Mod addLocalMod(Path zipPath, TinkerConfig config, ModLoader sm){
+	public Mod addLocalMod(Path zipPath, ModLoader modLoader){
 		String fileName = zipPath.getFileName().toString();
 		String prettyName = fileName;
 		if (prettyName.indexOf(".") > 0) {
@@ -60,7 +61,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 			Calendar.getInstance().getTime(), null, Version.valueOf(prettyName)
 		);
 		
-		copy(zipPath, newMod.getCachedZipPath(config));
+		copy(zipPath, modLoader.getZipPath(newMod));
 		return newMod;
 	}
 	
@@ -69,51 +70,71 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	 * @param mod
 	 * @param config
 	 */
-	public void deleteModZip(final Mod mod, final TinkerConfig config){
-		delete(mod.getCachedZipPath(config));
+	public void deleteModZip(final Mod mod, final ModLoader modLoader){
+		delete(modLoader.getZipPath(mod));
 	}
 	
 	/**
 	 * Fully delete the mod and mark it as deleted.
 	 * @param mod
 	 * @param config
-	 * @param sm
+	 * @param modLoader
 	 */
-	public void deleteMod(Mod mod, TinkerConfig config, ModLoader sm) {
-		if (mod.isEnabled(config)){
-			try {
-				disableMod(mod, config, sm);
-			} catch (IOException e) {
-				// No Action
+	public void deleteMod(Mod mod, TinkerConfig config, ModLoader modLoader) {
+		// Try to disable the mod first
+		try {
+			if (modLoader.isEnabled(mod)){
+				disableMod(mod, modLoader);
 			}
+		} catch (ModNotDownloadedException e) {
+			e.printStackTrace();  // Do nothing
 		}
 		
-		deleteModZip(mod, config);
+		deleteModZip(mod, modLoader);
 		delete(mod.getCachedImagePath(config));
 	}
 	
-	public void disableMod(Mod mod, TinkerConfig config, ModLoader sm) throws IOException{
-		if (modHasArchive(mod, config)){			
-			for (TreeNode module : ModStructure.inspectArchive(config, mod).getModules()){
-				if (!isDependency(module, config, sm)){
-					delete(config.getGameDataPath().resolve(module.getName()));
+	public void disableMod(Mod mod, ModLoader modLoader) throws ModNotDownloadedException{
+		Set<Path> fileDestPaths = modLoader.getModFileDestPaths(mod);
+		
+		// Check if any files for this mod are dependencies of other mods.
+		// All files which are a dependency will not be deleted
+		for (Mod otherMod : modLoader.getMods()){
+			try{
+				if (!otherMod.equals(mod) && modLoader.isEnabled(otherMod)){
+					fileDestPaths.removeAll(modLoader.getModFileDestPaths(otherMod));
 				}
+			} catch (ModNotDownloadedException e){
+				// Ignore
 			}
-		} else {
-			delete(config.getGameDataPath().resolve(mod.newestFileName));
+		}
+		
+		// Delete the files that do not conflict with other enabled mods
+		for (Path filePath : fileDestPaths){
+			delete(filePath);
 		}
 	}
 	
-	public void enableMod(Mod mod, TinkerConfig config, ModLoader sm, ConflictResolver cr) throws IOException{
-		if (modHasArchive(mod, config)){
-			// If the mod is an archive, unzip it's modules
-			ModStructure structure = ModStructure.inspectArchive(config, mod);
-			for (TreeNode module : structure.getModules()){
-				unzip(mod.getCachedZipPath(config), config.getGameDataPath(), module, cr);
+	public void enableMod(Mod mod, ModLoader modLoader, TinkerConfig config) throws ModNotDownloadedException {
+		try {
+			Path zipPath = modLoader.getZipPath(mod);
+			if (zipPath == null){
+				throw new ModNotDownloadedException(mod, "mod has no zip path");
 			}
-		} else {
-			// If the mod is not an archive e.g. ModuleManager, copy the file over instead
-			copy(mod.getCachedZipPath(config), config.getGameDataPath());
+			
+			if (zipPath.toString().endsWith(".zip")){
+				// If mod is a zip file, unzip it
+				addTask(new UnzipTask(
+					modLoader.getStructure(mod).getZipEntries(),
+					zipPath,
+					config.getGameDataPath())
+				);
+			} else {
+				// Otherwise, it is just a file.  Copy it
+				copy(zipPath, config.getGameDataPath());
+			}
+		} catch (IOException e) {
+			throw new ModNotDownloadedException(mod, e.toString());
 		}
 	}
 	
@@ -127,21 +148,5 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 				loader.modUpdated(mod);
 			}
 		});
-	}
-	
-	private boolean isDependency(TreeNode module, TinkerConfig config, ModLoader sm) throws IOException{
-		int numDependencies = 0;
-		for (Mod mod : sm.getMods()){
-			try {
-				if (mod.isEnabled(config) && modHasArchive(mod, config) && ModStructure.inspectArchive(config, mod).usesModule(module)){
-					numDependencies++;
-				}
-			} catch (FileNotFoundException ex){}
-		}
-		return numDependencies > 1;
-	}
-	
-	private boolean modHasArchive(Mod mod, TinkerConfig config){
-		return mod.newestFileName.toLowerCase().endsWith(".zip") && mod.isDownloaded(config);
 	}
 }

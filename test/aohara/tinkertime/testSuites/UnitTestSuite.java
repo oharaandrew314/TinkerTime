@@ -3,7 +3,6 @@ package aohara.tinkertime.testSuites;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-import aohara.tinkertime.TestMod;
 import aohara.tinkertime.TestModStateManager;
 import aohara.tinkertime.TestModStructure;
 import aohara.tinkertime.TestModuleManagerCrawler;
@@ -24,7 +23,6 @@ import aohara.tinkertime.crawlers.TestKerbalStuffCrawler;
    TestGithubJsonCrawler.class,
    TestCrawlerFactory.class,
    TestZipTreeBuilder.class,
-   TestMod.class,
    TestModStructure.class,
    TestKerbalStuffCrawler.class
 })

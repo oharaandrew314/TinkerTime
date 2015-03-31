@@ -6,7 +6,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 
-import aohara.tinkertime.controllers.ModManager;
+import aohara.tinkertime.ModManager;
 
 public class MenuFactory {
 	

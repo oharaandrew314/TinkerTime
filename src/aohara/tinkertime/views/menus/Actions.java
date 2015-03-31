@@ -14,10 +14,11 @@ import javax.swing.JOptionPane;
 
 import aohara.common.Util;
 import aohara.common.content.ImageManager;
+import aohara.tinkertime.ModManager;
+import aohara.tinkertime.ModManager.ModNotDownloadedException;
 import aohara.tinkertime.TinkerTime;
-import aohara.tinkertime.controllers.ModManager;
-import aohara.tinkertime.controllers.ModManager.CannotDisableModError;
-import aohara.tinkertime.controllers.ModManager.ModUpdateFailedError;
+import aohara.tinkertime.ModManager.CannotDisableModError;
+import aohara.tinkertime.ModManager.ModUpdateFailedError;
 import aohara.tinkertime.controllers.launcher.GameLauncher;
 import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
@@ -143,7 +144,7 @@ class Actions {
 			if (mm.getSelectedMod() != null){
 				try {
 					mm.updateMod(mm.getSelectedMod(), true);
-				} catch (ModUpdateFailedError e1) {
+				} catch (ModUpdateFailedError | ModNotDownloadedException e1) {
 					errorMessage(e1);
 				}
 			}
@@ -161,7 +162,7 @@ class Actions {
 		public void actionPerformed(ActionEvent e) {
 			try {
 				mm.updateMods();
-			} catch (ModUpdateFailedError e1) {
+			} catch (ModUpdateFailedError | ModNotDownloadedException e1) {
 				errorMessage("One or more mods failed to update");
 			}
 		}
@@ -198,7 +199,7 @@ class Actions {
 			if (selectedMod != null){
 				try {
 					mm.toggleMod(selectedMod);
-				} catch (IOException e1) {
+				} catch (ModNotDownloadedException e1) {
 					errorMessage(e1);
 				}
 			}

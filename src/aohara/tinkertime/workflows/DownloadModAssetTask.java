@@ -8,6 +8,7 @@ import aohara.common.workflows.tasks.FileTransferTask;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.models.Mod;
+import aohara.tinkertime.resources.ModLoader;
 
 
 class DownloadModAssetTask extends FileTransferTask {
@@ -17,10 +18,12 @@ class DownloadModAssetTask extends FileTransferTask {
 	private final Crawler<?> crawler;
 	private final ModDownloadType type;
 	private final TinkerConfig config;
+	private final ModLoader modLoader;
 	
-	DownloadModAssetTask(Crawler<?> crawler, TinkerConfig config, ModDownloadType type){
+	DownloadModAssetTask(Crawler<?> crawler, TinkerConfig config, ModLoader modLoader, ModDownloadType type){
 		super(null, null);
 		this.crawler = crawler;
+		this.modLoader = modLoader;
 		this.config = config;
 		this.type = type;
 	}
@@ -36,7 +39,7 @@ class DownloadModAssetTask extends FileTransferTask {
 	private Path getDest() throws IOException{
 		Mod mod = crawler.createMod();
 		switch(type){
-		case File: return mod.getCachedZipPath(config);
+		case File: return modLoader.getZipPath(mod);
 		case Image: return mod.getCachedImagePath(config);
 		default: throw new IllegalStateException();
 		}

@@ -9,10 +9,9 @@ import com.github.zafarkhaja.semver.Version;
 
 import aohara.common.selectorPanel.SelectorPanel;
 import aohara.common.workflows.ProgressPanel;
-import aohara.tinkertime.controllers.ModManager;
-import aohara.tinkertime.controllers.ModLoader;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
+import aohara.tinkertime.resources.ModLoader;
 import aohara.tinkertime.views.TinkerFrame;
 import aohara.tinkertime.views.ModImageView;
 import aohara.tinkertime.views.ModListCellRenderer;
@@ -40,17 +39,17 @@ public class TinkerTime {
 		ProgressPanel pp = new ProgressPanel();
 		
 		// Initialize Controllers
-		ModLoader modLoader = ModLoader.create(config);
+		ModLoader modLoader = new ModLoader(config);
 		ModManager mm = ModManager.createDefaultModManager(config, modLoader, pp);
 		
 		// Set HTTP User-agent
 		System.setProperty("http.agent", "TinkerTime Bot");
 		
 		// Initialize GUI
-		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new ModView(config), new java.awt.Dimension(500, 600), 0.4f);
+		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new ModView(modLoader), new java.awt.Dimension(500, 600), 0.4f);
 		sp.addControlPanel(true, new ModImageView(config));
 		sp.addPopupMenu(MenuFactory.createPopupMenu(mm));
-		sp.setListCellRenderer(new ModListCellRenderer(config));
+		sp.setListCellRenderer(new ModListCellRenderer(modLoader));
 		
 		// Add Listeners
 		sp.addListener(mm);

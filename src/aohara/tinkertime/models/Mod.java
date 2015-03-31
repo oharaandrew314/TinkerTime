@@ -1,16 +1,12 @@
 package aohara.tinkertime.models;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-
-import com.github.zafarkhaja.semver.Version;
 
 import aohara.tinkertime.TinkerConfig;
+
+import com.github.zafarkhaja.semver.Version;
 
 /**
  * Model for holding Mod information and status.
@@ -43,19 +39,6 @@ public class Mod implements Comparable<Mod> {
 		this.version = version != null ? version.getNormalVersion() : null;
 	}
 	
-	public boolean isDownloaded(TinkerConfig config){
-		Path zipPath = getCachedZipPath(config);
-		return zipPath != null && zipPath.toFile().exists();
-	}
-	
-	public Path getCachedZipPath(TinkerConfig config){
-		if (newestFileName != null){
-			String safePathFileName = newestFileName.replaceAll(":", "").replaceAll("/", "");
-			return config.getModsZipPath().resolve(safePathFileName);
-		}
-		return null;
-	}
-	
 	public Path getCachedImagePath(TinkerConfig config){
 		return config.getImageCachePath().resolve(id + ".jpg");
 	}
@@ -70,29 +53,6 @@ public class Mod implements Comparable<Mod> {
 	
 	public boolean isUpdateable(){
 		return pageUrl != null;
-	}
-
-	public boolean isEnabled(TinkerConfig config){
-		// Cannot decide if the mod is enabled if the zip is missing
-		if (!isDownloaded(config)){
-			return false;
-		}
-		
-		// Find all installed module names
-		Set<String> installedModuleNames = new HashSet<>();
-		for (File dirEntry : config.getGameDataPath().toFile().listFiles()){
-			installedModuleNames.add(dirEntry.getName());
-		}
-		
-		// If all modules in the mod are installed, then the mod is enabled
-		try {
-			return installedModuleNames.containsAll(
-				ModStructure.inspectArchive(config, this).getModuleNames()
-			);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
 	}
 	
 	@Override

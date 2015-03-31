@@ -9,8 +9,8 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import aohara.tinkertime.controllers.ModLoader;
 import aohara.tinkertime.models.Mod;
+import aohara.tinkertime.resources.ModLoader;
 import aohara.tinkertime.testutil.MockHelper;
 import aohara.tinkertime.testutil.ModStubs;
 import aohara.tinkertime.testutil.ResourceLoader;
@@ -50,7 +50,7 @@ public class TestModStateManager {
 		mod1 = ResourceLoader.loadMod(ModStubs.Mechjeb);
 		mod2 = ResourceLoader.loadMod(ModStubs.Engineer);
 
-		modLoader = ModLoader.create(MockHelper.newConfig());
+		modLoader = new ModLoader(MockHelper.newConfig());
 	}
 
 	@Test

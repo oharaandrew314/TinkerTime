@@ -16,7 +16,7 @@ public class TestModuleManagerCrawler extends AbstractTestModCrawler {
 		String newestFilename = "ModuleManager.2.5.9.dll";
 		compare(
 				stub,
-				"ksp.sarbian.com-jenkins-job-moduleManagerPage1",
+				"ksp.sarbian.com-jenkins-job-moduleManagerPage1-lastSuccessfulBuild-api-json",
 				getDate(2015, 1, 23),
 				"ksp.sarbian.com",
 				newestFilename,

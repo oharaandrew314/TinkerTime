@@ -50,7 +50,7 @@ public abstract class Crawler<T> {
 	protected abstract Collection<Asset> getNewestAssets() throws IOException;
 	
 	public String getId() throws MalformedURLException{
-		return urlToId(getPageUrl());
+		return urlToId(getApiUrl());
 	}
 	
 	public static String urlToId(URL url) throws MalformedURLException {

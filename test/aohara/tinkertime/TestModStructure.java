@@ -3,71 +3,70 @@ package aohara.tinkertime;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.junit.Test;
 
-import aohara.common.tree.TreeNode;
-import aohara.tinkertime.models.ModStructure;
+import aohara.tinkertime.resources.ModStructure;
 import aohara.tinkertime.testutil.ModStubs;
 import aohara.tinkertime.testutil.ResourceLoader;
 
 public class TestModStructure {
 	
-	private void testModules(ModStubs stub, String... expectedModuleNames) throws IOException{
+	private void testFiles(ModStubs stub, String... paths) throws IOException{
 		ModStructure struct = ResourceLoader.getStructure(stub);
 		
-		// Get Actual Module Names
-		Set<String> actualNames = new HashSet<>();
-		for (TreeNode module : struct.getModules()){
-			actualNames.add(module.getName());
+		Set<Path> expectedPaths = new LinkedHashSet<>();
+		for (String path : paths){
+			expectedPaths.add(Paths.get(path));
 		}
-
-		assertEquals(
-			new HashSet<String>(Arrays.asList(expectedModuleNames)),
-			actualNames
+		
+		Set<Path> actualPaths = struct.getPaths();
+		
+		/*
+		System.out.println("\nExpecting");
+		for (Path path : expectedPaths){
+			System.out.println(path);
+		}
+		System.out.println("\nGot");
+		for(Path path : actualPaths){
+			System.out.println(path);
+		}
+		*/
+		
+		assertEquals(expectedPaths, actualPaths);
+	}
+	
+	@Test
+	public void testRadialEngines() throws IOException {
+		testFiles(
+			ModStubs.RadialEngines,
+			"RadialEngineMountsPPI",
+			"RadialEngineMountsPPI/basicRadialEngineMount",
+			"RadialEngineMountsPPI/basicRadialEngineMount/model.mu",
+			"RadialEngineMountsPPI/basicRadialEngineMount/part.cfg",
+			"RadialEngineMountsPPI/basicRadialEngineMount/texture.mbm",
+			"RadialEngineMountsPPI/doubleRadialEngineMount",
+			"RadialEngineMountsPPI/doubleRadialEngineMount/model.mu",
+			"RadialEngineMountsPPI/doubleRadialEngineMount/part.cfg",
+			"RadialEngineMountsPPI/doubleRadialEngineMount/texture.mbm"
+		);		
+	}
+	
+	@Test
+	public void testEnhancedNavball() throws IOException {
+		testFiles(
+			ModStubs.NavBall,
+			"EnhancedNavBall",
+			"EnhancedNavBall/Plugins",
+			"EnhancedNavBall/Plugins/EnhancedNavBall.dll",
+			"EnhancedNavBall/Resources",
+			"EnhancedNavBall/Resources/navball24.png",
+			"EnhancedNavBall/Resources/navball32.png"
 		);
-	}
-	
-	@Test
-	public void testEngineerEntries() throws IOException{
-		testModules(ModStubs.Engineer, "Engineer");
-	}
-	
-	@Test
-	public void testMechjeb() throws IOException{
-		testModules(ModStubs.Mechjeb, "MechJeb2");
-	}
-	
-	@Test
-	public void testAlarmClock() throws IOException{
-		testModules(ModStubs.AlarmClock, "TriggerTech");
-	}
-	
-	@Test
-	public void testEnhancedNavball() throws IOException{
-		testModules(ModStubs.NavBall, "EnhancedNavBall");
-	}	
-	
-	@Test
-	public void testHotRockets() throws IOException{
-		testModules(ModStubs.HotRockets, "SmokeScreen", "MP_Nazari");
-	}
-	
-	@Test
-	public void testFar() throws IOException {
-		testModules(ModStubs.FAR, "FerramAerospaceResearch");
-	}
-	
-	@Test
-	public void testRadialEngineMounts() throws IOException {
-		testModules(ModStubs.RadialEngines, "RadialEngineMountsPPI");
-	}
-	
-	@Test
-	public void testCollisionFx() throws IOException {
-		testModules(ModStubs.CollisionFx, "CollisionFX");
+		
 	}
 }

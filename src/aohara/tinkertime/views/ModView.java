@@ -15,9 +15,8 @@ import javax.swing.event.HyperlinkListener;
 import thirdParty.VerticalLayout;
 import aohara.common.Util;
 import aohara.common.selectorPanel.SelectorView;
-import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.models.ModStructure;
+import aohara.tinkertime.resources.ModLoader;
 
 /**
  * Panel for displaying a Mod's information.
@@ -28,14 +27,14 @@ import aohara.tinkertime.models.ModStructure;
  */
 public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 	
-	private final TinkerConfig config;
+	private final ModLoader modLoader;
 	private Mod mod;
 	private final JPanel panel = new JPanel();
 	private final SimpleDateFormat DATE_FORMAT = (
 			new SimpleDateFormat("yyyy/MM/dd"));
 	
-	public ModView(TinkerConfig config){
-		this.config = config;
+	public ModView(final ModLoader modLoader){
+		this.modLoader = modLoader;
 		panel.setLayout(new VerticalLayout(0, VerticalLayout.BOTH));
 	}
 
@@ -85,8 +84,8 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 			).getComponent());
 
 			// Readme
-			if (mod.isDownloaded(config)){
-				String readmeText = ModStructure.getReadmeText(config, mod);				
+			try{
+				String readmeText = modLoader.getStructure(mod).getReadmeText();
 				if (readmeText != null && !readmeText.trim().isEmpty()){
 					panel.add(new JLabel("<html><b>Readme:</b></html"));
 					JTextArea readmeArea = new JTextArea(readmeText);
@@ -95,6 +94,8 @@ public class ModView implements SelectorView<Mod, JPanel>, HyperlinkListener {
 					readmeArea.setEditable(false);
 					panel.add(readmeArea);
 				}
+			} catch(IOException e){
+				// Do Nothing
 			}
 
 		}

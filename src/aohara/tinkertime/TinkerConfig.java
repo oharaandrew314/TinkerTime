@@ -75,14 +75,14 @@ public class TinkerConfig {
 		return getSubFolder(getModCachePath(), "imageCache");
 	}
 	
+	public Path getModsListPath(){
+		return getModCachePath().resolve("TinkerTime-mods.json");
+	}
+	
 	private Path getSubFolder(Path parent, String subFolder){
 		Path path = parent.resolve(subFolder);
 		path.toFile().mkdir();
 		return path;
-	}
-	
-	public Path getModsListPath(){
-		return getGameDataPath().resolve("TinkerTime.json");
 	}
 	
 	public boolean autoCheckForModUpdates(){

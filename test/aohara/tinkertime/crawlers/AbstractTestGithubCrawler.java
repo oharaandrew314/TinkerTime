@@ -25,11 +25,11 @@ public abstract class AbstractTestGithubCrawler extends AbstractTestModCrawler {
 	public void testKerbalAlarmClock() throws IOException, UnsupportedHostException {
 		compare(
 			ModStubs.KerbalAlarmClock,
-			"github.com-TriggerAu-KerbalAlarmClock",
+			"api.github.com-repos-TriggerAu-KerbalAlarmClock",
 			getDate(2014, 12, 19),
 			"TriggerAu",
 			"KerbalAlarmClock_3.2.3.0.zip",
-			"https://github.com/TriggerAu/KerbalAlarmClock/releases",
+			"api.github.com/repos/TriggerAu/KerbalAlarmClock/releases",
 			null,
 			null,
 			"3.2.30"
@@ -40,11 +40,11 @@ public abstract class AbstractTestGithubCrawler extends AbstractTestModCrawler {
 	public void testProceduralFairings() throws IOException, UnsupportedHostException {
 		compare(
 			ModStubs.ProceduralFairings,
-			"github.com-e-dog-ProceduralFairings",
+			"api.github.com-repos-e-dog-ProceduralFairings",
 			getDate(2014, 11, 17),
 			"e-dog",
 			"ProcFairings_3.11.zip",
-			"https://github.com/e-dog/ProceduralFairings/releases",
+			"api.github.com/repos/e-dog/ProceduralFairings/releases",
 			null,
 			null,
 			"3.11.0"
@@ -65,11 +65,11 @@ public abstract class AbstractTestGithubCrawler extends AbstractTestModCrawler {
 	public void testStockFixes() throws IOException, UnsupportedHostException {
 		compare(
 			ModStubs.StockFixes,
-			"github.com-ClawKSP-KSP-Stock-Bug-Fix-Modules",
+			"api.github.com-repos-ClawKSP-KSP-Stock-Bug-Fix-Modules",
 			getDate(2015,0,7),
 			"ClawKSP",
 			"StockBugFixModules.v0.1.7d.zip",
-			"https://github.com/ClawKSP/KSP-Stock-Bug-Fix-Modules/releases",
+			"api.github.com/repos/ClawKSP/KSP-Stock-Bug-Fix-Modules/releases",
 			null,
 			null,
 			"0.1.7"
@@ -90,11 +90,11 @@ public abstract class AbstractTestGithubCrawler extends AbstractTestModCrawler {
 	public void testDontGetPrereleaseIfLatestRelease() throws IOException, UnsupportedHostException {
 		compare(
 			ModStubs.ActiveTextureManagement,
-			"github.com-rbray89-ActiveTextureManagement",
+			"api.github.com-repos-rbray89-ActiveTextureManagement",
 			getDate(2014,11,17),
 			"rbray89",
 			"x64-Aggressive-Release.zip",
-			"https://github.com/rbray89/ActiveTextureManagement/releases",
+			"api.github.com-repos-rbray89-ActiveTextureManagement",
 			null,
 			null,
 			"4.3.0"

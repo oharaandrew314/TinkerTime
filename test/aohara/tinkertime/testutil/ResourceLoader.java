@@ -5,17 +5,16 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import aohara.common.tree.TreeNode;
-import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.Crawler.Asset;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.models.ModStructure;
+import aohara.tinkertime.resources.ModLoader;
+import aohara.tinkertime.resources.ModStructure;
 
 public class ResourceLoader {
 	
-	private static final TinkerConfig config = MockHelper.newConfig();
+	private static final ModLoader modLoader = new ModLoader(MockHelper.newConfig());
 	
 	public static Crawler<?> loadCrawler(ModStubs stub){
 		return loadCrawler(stub, false);
@@ -40,8 +39,8 @@ public class ResourceLoader {
 	}
 	
 	public static Path getZipPath(Mod mod){
-		Path path = mod.getCachedZipPath(config);
-		if (path.toFile().exists()){
+		Path path = modLoader.getZipPath(mod);
+		if (modLoader.isDownloaded(mod)){
 			return path;
 		}
 		throw new RuntimeException(String.format("Mod zip not found: %s", path));
@@ -51,17 +50,8 @@ public class ResourceLoader {
 		return getZipPath(loadMod(stub));
 	}
 	
-	public static ModStructure getStructure(ModStubs stub) throws IOException{
-		return ModStructure.inspectArchive(getZipPath(stub));
-	}
-	
-	public static TreeNode getModule(ModStructure struct, String moduleName){
-		for (TreeNode module : struct.getModules()){
-			if (module.getName().equals(moduleName)){
-				return module;
-			}
-		}
-		return null;
+	public static ModStructure getStructure(ModStubs stub) {
+		return new ModStructure(modLoader.getZipPath(loadMod(stub)));
 	}
 	
 	private static class StaticAssetSelector implements Crawler.AssetSelector {

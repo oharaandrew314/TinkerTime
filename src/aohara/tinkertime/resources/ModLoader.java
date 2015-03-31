@@ -1,4 +1,4 @@
-package aohara.tinkertime.controllers;
+package aohara.tinkertime.resources;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -7,13 +7,18 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.file.Path;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.zip.ZipFile;
 
 import javax.swing.JOptionPane;
 
 import aohara.common.Listenable;
 import aohara.common.selectorPanel.SelectorInterface;
+import aohara.tinkertime.ModManager;
+import aohara.tinkertime.ModManager.ModNotDownloadedException;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.models.DefaultMods;
 import aohara.tinkertime.models.Mod;
@@ -36,7 +41,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 	private final Gson gson;
 	private final TinkerConfig config;
 	private final Type modsType = new TypeToken<Set<Mod>>() {}.getType();
-	private final Set<Mod> modCache = new LinkedHashSet<>();
+	private final Map<Mod, ModStructure> modCache = new LinkedHashMap<>();
 	
 	// -- Initializers ----------------------------------------
 	
@@ -45,11 +50,11 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 		this.gson = gson;
 	}
 	
-	public static ModLoader create(TinkerConfig config){
-		return new ModLoader(config, new GsonBuilder().setPrettyPrinting().create());
+	public ModLoader(TinkerConfig config){
+		this(config, new GsonBuilder().setPrettyPrinting().create());
 	}
 	
-	public synchronized void init(ModManager mm){
+	public synchronized void init(ModManager mm) {
 		for (SelectorInterface<Mod> l : getListeners()){
 			l.clear();
 		}
@@ -60,23 +65,23 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 	//-- Public Methods ----------------------------------------
 	
 	public synchronized Set<Mod> getMods(){
-		return new HashSet<Mod>(modCache);
+		return modCache.keySet();
 	}
 	
 	/**
 	 * Call when a mod has been updated.
 	 * 
 	 * Updates the persistent mod data, and refreshes the mod views.
+	 * @throws IOException 
 	 */
 	public synchronized void modUpdated(Mod mod) {
 		modDeleted(mod);	
 		
-		modCache.add(mod);
+		cacheMod(mod);
 		for (SelectorInterface<Mod> l : getListeners()){
 			l.addElement(mod);
 		}
-		
-		saveMods(modCache, config.getModsListPath());
+		saveMods(modCache.keySet(), config.getModsListPath());
 	}
 	
 	/**
@@ -87,7 +92,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 	public synchronized void modDeleted(Mod mod){
 		// Search for all copies of the mode to delete
 		// Potential duplicates due to legacy migrations
-		for (Mod cached : new LinkedHashSet<>(modCache)){
+		for (Mod cached : new LinkedHashSet<>(modCache.keySet())){
 			if (cached.equals(mod)){
 				modCache.remove(cached);
 				for (SelectorInterface<Mod> l : getListeners()){
@@ -96,14 +101,18 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 			}
 		}
 		
-		saveMods(modCache, config.getModsListPath());
+		saveMods(modCache.keySet(), config.getModsListPath());
 	}
 	
 	public synchronized void exportEnabledMods(Path path){
 		Set<Mod> toExport = new HashSet<>();
-		for (Mod mod : modCache){
-			if (mod.isEnabled(config)){
-				toExport.add(mod);
+		for (Mod mod : modCache.keySet()){
+			try {
+				if (isEnabled(mod)){
+					toExport.add(mod);
+				}
+			} catch (ModNotDownloadedException e) {
+				// Do not export this mod
 			}
 		}
 		saveMods(toExport, path);
@@ -114,17 +123,69 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 	 * 
 	 * @param path file to load mods from
 	 * @param mm ModManager reference
+	 * @throws IOException 
 	 */
-	public synchronized void importMods(Path path, ModManager mm){		
+	public synchronized void importMods(Path path, ModManager mm) {		
 		for (Mod mod : loadMods(path, mm)){
 			for (SelectorInterface<Mod> l : getListeners()){
-				if (modCache.contains(mod)){
+				if (modCache.containsKey(mod)){
 					l.removeElement(mod);
 				}
 				l.addElement(mod);
 			}
-			modCache.add(mod);
+			cacheMod(mod);
 		}
+	}
+	
+	public Set<Path> getModFilePaths(Mod mod) throws ModNotDownloadedException {
+		try {
+			return modCache.get(mod).getPaths();
+		} catch (IOException e) {
+			throw new ModNotDownloadedException(mod, e.toString());
+		}
+	}
+	
+	public Set<Path> getModFileDestPaths(Mod mod) throws ModNotDownloadedException {
+		Set<Path> paths = new LinkedHashSet<>();
+		Path destFolder = config.getGameDataPath();
+		for (Path path : getModFilePaths(mod)){
+			paths.add(destFolder.resolve(path));
+		}
+		return paths;
+	}
+	
+	public boolean isDownloaded(Mod mod){
+		Path zipPath = getZipPath(mod);
+		return zipPath != null && zipPath.toFile().exists();
+	}
+	
+	public Path getZipPath(Mod mod){
+		if (mod.newestFileName != null){
+			String safePathFileName = mod.newestFileName.replaceAll(":", "").replaceAll("/", "");
+			return config.getModsZipPath().resolve(safePathFileName);
+		}
+		return null;
+	}
+	
+	public ZipFile getZipFile(Mod mod) throws ModNotDownloadedException {
+		try {
+			return new ZipFile(getZipPath(mod).toFile());
+		} catch (NullPointerException | IOException e) {
+			throw new ModNotDownloadedException(mod, e.toString());
+		}
+	}
+	
+	public boolean isEnabled(Mod mod) throws ModNotDownloadedException{
+		for (Path filePath : getModFileDestPaths(mod)){
+			if (!filePath.toFile().exists()){
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public ModStructure getStructure(Mod mod){
+		return modCache.get(mod);
 	}
 	
 	// -- Private Methods ----------------------------------------
@@ -144,7 +205,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 			Set<Mod> newMods = gson.fromJson(reader, modsType);
 			for (Mod newMod : newMods){
 				// If mod is updateable, or if the local zip file is available, add mod
-				if (newMod.isUpdateable() || newMod.isDownloaded(config) || trySatisfyLocalFiles(newMod, mm)){
+				if (newMod.isUpdateable() || isDownloaded(newMod) || trySatisfyLocalFiles(newMod, mm)){
 					mods.add(newMod);
 				}
 			}
@@ -181,5 +242,9 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private final void cacheMod(Mod mod) {
+		modCache.put(mod, new ModStructure(getZipPath(mod)));
 	}
 }

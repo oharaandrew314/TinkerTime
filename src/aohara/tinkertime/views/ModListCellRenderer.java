@@ -14,8 +14,9 @@ import javax.swing.ListCellRenderer;
 
 import thirdParty.CompoundIcon;
 import aohara.common.content.ImageManager;
-import aohara.tinkertime.TinkerConfig;
+import aohara.tinkertime.ModManager.ModNotDownloadedException;
 import aohara.tinkertime.models.Mod;
+import aohara.tinkertime.resources.ModLoader;
 
 /**
  * Custom ListCellRenderer for a Mod to be displayed on a JList.
@@ -29,10 +30,10 @@ public class ModListCellRenderer implements ListCellRenderer<Mod> {
 	private final ImageIcon checkIcon, xIcon, errorIcon, updateIcon, localIcon;
 	private final DefaultListCellRenderer def = new DefaultListCellRenderer();
 	private final ImageManager imageManager = new ImageManager("icon/");
-	private final TinkerConfig config;
+	private final ModLoader modLoader;
 	
-	public ModListCellRenderer(TinkerConfig config){
-		this.config = config;
+	public ModListCellRenderer(ModLoader modLoader){
+		this.modLoader = modLoader;
 		checkIcon = loadIcon("glyphicons_152_check.png", new Color(70, 210, 70));
 		xIcon = loadIcon("glyphicons_207_remove_2.png", new Color(205, 20, 20));
 		errorIcon = loadIcon("glyphicons_078_warning_sign.png", new Color(215, 160, 0));
@@ -52,9 +53,9 @@ public class ModListCellRenderer implements ListCellRenderer<Mod> {
 
 		// Compile list of icons
 		LinkedList<ImageIcon> icons = new LinkedList<>();
-		if (mod.isDownloaded(config)){
-			icons.add(mod.isEnabled(config) ? checkIcon : xIcon);
-		} else {
+		try {
+			icons.add(modLoader.isEnabled(mod) ? checkIcon : xIcon);
+		} catch (ModNotDownloadedException e){
 			icons.add(errorIcon);
 		}
 		
