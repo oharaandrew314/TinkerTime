@@ -223,6 +223,7 @@ public class ModManager implements ListListener<Mod> {
 						@Override
 						protected void processTaskEvent(TaskEvent event) {
 							mod.updateAvailable = true;
+							loader.modUpdated(mod);
 						}
 					});
 					submitDownloadWorkflow(builder);

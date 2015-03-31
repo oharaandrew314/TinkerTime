@@ -23,7 +23,7 @@ public class Mod implements Comparable<Mod> {
 	public final String id, name, creator, kspVersion, newestFileName;
 	public final URL pageUrl;
 	private final String version;
-	public transient boolean updateAvailable = false;
+	public boolean updateAvailable = false;
 	
 	public Mod(
 		String id, String modName, String newestFileName, String creator,

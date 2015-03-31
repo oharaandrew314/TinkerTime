@@ -37,7 +37,7 @@ public class TinkerConfig {
 	
 	public static TinkerConfig create(){
 		ConfigBuilder builder = new ConfigBuilder();
-		builder.addTrueFalseProperty(AUTO_CHECK_FOR_MOD_UPDATES, true, false, false);
+		builder.addTrueFalseProperty(AUTO_CHECK_FOR_MOD_UPDATES, false, false, false);
 		builder.addPathProperty(GAMEDATA_PATH, JFileChooser.DIRECTORIES_ONLY, null, false, false);
 		builder.addIntProperty(NUM_CONCURRENT_DOWNLOADS, 4, 1, null, false, false);
 		builder.addTrueFalseProperty(STARTUP_CHECK_MM_UPDATES, true, false, false);

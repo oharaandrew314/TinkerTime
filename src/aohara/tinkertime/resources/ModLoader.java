@@ -91,7 +91,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 	 */
 	public synchronized void modDeleted(Mod mod){
 		// Search for all copies of the mode to delete
-		// Potential duplicates due to legacy migrations
+		// Potential duplicates due to legacy imports		
 		for (Mod cached : new LinkedHashSet<>(modCache.keySet())){
 			if (cached.equals(mod)){
 				modCache.remove(cached);
