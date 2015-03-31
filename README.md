@@ -60,6 +60,7 @@ A major refactor was done, reducing lines of code by an estimated 25%.
     - This fixes issues when updating or deleting a mod in one installation, which would then affect the other
     - Caches are now stored in a "TinkerTime" directory within your KSP installation
     - Options Window to have correct number of rows
+    - Right-click menu working on OSX due to removal of Nimbus UI
 - Other Changes
   - Removed Nimbus UI
   - Tinker Time now updates itself using KerbalStuff, rather than Github
