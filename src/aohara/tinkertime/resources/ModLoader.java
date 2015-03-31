@@ -55,10 +55,8 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 	}
 	
 	public synchronized void init(ModManager mm) {
-		for (SelectorInterface<Mod> l : getListeners()){
-			l.clear();
-		}
 		modCache.clear();
+		updateViews();
 		importMods(config.getModsListPath(), mm);
 	}
 	
@@ -78,9 +76,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 		modDeleted(mod);	
 		
 		cacheMod(mod);
-		for (SelectorInterface<Mod> l : getListeners()){
-			l.addElement(mod);
-		}
+		updateViews();
 		saveMods(modCache.keySet(), config.getModsListPath());
 	}
 	
@@ -95,13 +91,17 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 		for (Mod cached : new LinkedHashSet<>(modCache.keySet())){
 			if (cached.equals(mod)){
 				modCache.remove(cached);
-				for (SelectorInterface<Mod> l : getListeners()){
-					l.removeElement(cached);
-				}
 			}
 		}
 		
+		updateViews();
 		saveMods(modCache.keySet(), config.getModsListPath());
+	}
+	
+	private void updateViews(){
+		for (SelectorInterface<Mod> l : getListeners()){
+			l.setData(new LinkedHashSet<>(modCache.keySet()));
+		}
 	}
 	
 	public synchronized void exportEnabledMods(Path path){
@@ -127,17 +127,12 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 	 */
 	public synchronized void importMods(Path path, ModManager mm) {		
 		for (Mod mod : loadMods(path, mm)){
-			for (SelectorInterface<Mod> l : getListeners()){
-				if (modCache.containsKey(mod)){
-					l.removeElement(mod);
-				}
-				l.addElement(mod);
-			}
 			cacheMod(mod);
 		}
+		updateViews();
 	}
 	
-	public Set<Path> getModFilePaths(Mod mod) throws ModNotDownloadedException {
+	public synchronized Set<Path> getModFilePaths(Mod mod) throws ModNotDownloadedException {
 		try {
 			return modCache.get(mod).getPaths();
 		} catch (IOException e) {
@@ -145,7 +140,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 		}
 	}
 	
-	public Set<Path> getModFileDestPaths(Mod mod) throws ModNotDownloadedException {
+	public synchronized Set<Path> getModFileDestPaths(Mod mod) throws ModNotDownloadedException {
 		Set<Path> paths = new LinkedHashSet<>();
 		Path destFolder = config.getGameDataPath();
 		for (Path path : getModFilePaths(mod)){
@@ -175,7 +170,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 		}
 	}
 	
-	public boolean isEnabled(Mod mod) throws ModNotDownloadedException{
+	public synchronized boolean isEnabled(Mod mod) throws ModNotDownloadedException{
 		for (Path filePath : getModFileDestPaths(mod)){
 			if (!filePath.toFile().exists()){
 				return false;
@@ -184,7 +179,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 		return true;
 	}
 	
-	public ModStructure getStructure(Mod mod){
+	public synchronized ModStructure getStructure(Mod mod){
 		return modCache.get(mod);
 	}
 	
