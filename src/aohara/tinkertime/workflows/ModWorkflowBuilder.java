@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.Set;
 
 import aohara.common.workflows.tasks.TaskCallback;
-import aohara.common.workflows.tasks.UnzipTask;
 import aohara.common.workflows.tasks.WorkflowBuilder;
 import aohara.common.workflows.tasks.WorkflowTask.TaskEvent;
 import aohara.tinkertime.ModManager.ModNotDownloadedException;
@@ -124,11 +123,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 			
 			if (zipPath.toString().endsWith(".zip")){
 				// If mod is a zip file, unzip it
-				addTask(new UnzipTask(
-					modLoader.getStructure(mod).getZipEntries(),
-					zipPath,
-					config.getGameDataPath())
-				);
+				unzip(zipPath, modLoader.getStructure(mod).getZipEntries(), config.getGameDataPath());
 			} else {
 				// Otherwise, it is just a file.  Copy it
 				copy(zipPath, config.getGameDataPath());

@@ -6,7 +6,6 @@ import org.junit.runners.Suite;
 import aohara.tinkertime.TestModStateManager;
 import aohara.tinkertime.TestModStructure;
 import aohara.tinkertime.TestModuleManagerCrawler;
-import aohara.tinkertime.TestZipTreeBuilder;
 import aohara.tinkertime.crawlers.TestCrawlerFactory;
 import aohara.tinkertime.crawlers.TestCurseCrawler;
 import aohara.tinkertime.crawlers.TestGithubHtmlCrawler;
@@ -22,7 +21,6 @@ import aohara.tinkertime.crawlers.TestKerbalStuffCrawler;
    TestGithubHtmlCrawler.class,
    TestGithubJsonCrawler.class,
    TestCrawlerFactory.class,
-   TestZipTreeBuilder.class,
    TestModStructure.class,
    TestKerbalStuffCrawler.class
 })
