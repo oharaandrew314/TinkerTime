@@ -1,14 +1,13 @@
-package aohara.tinkertime;
+package aohara.tinkertime.crawlers;
 
 import java.io.IOException;
 
 import org.junit.Test;
 
-import aohara.tinkertime.crawlers.AbstractTestModCrawler;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.testutil.ModStubs;
 
-public class TestModuleManagerCrawler extends AbstractTestModCrawler {
+public class TestJenkinsCrawler extends AbstractTestModCrawler {
 	
 	@Test
 	public void testBuild1() throws IOException, UnsupportedHostException{

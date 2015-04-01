@@ -1,4 +1,4 @@
-package aohara.tinkertime;
+package aohara.tinkertime.resources;
 
 import static org.junit.Assert.assertEquals;
 

@@ -1,4 +1,4 @@
-package aohara.tinkertime;
+package aohara.tinkertime.resources;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -15,7 +15,7 @@ import aohara.tinkertime.testutil.MockHelper;
 import aohara.tinkertime.testutil.ModStubs;
 import aohara.tinkertime.testutil.ResourceLoader;
 
-public class TestModStateManager {
+public class TestModLoader {
 
 	private Mod mod1, mod2;
 	private ModLoader modLoader;
