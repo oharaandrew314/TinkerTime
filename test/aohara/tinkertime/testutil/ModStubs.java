@@ -18,7 +18,8 @@ public enum ModStubs {
 	CollisionFx("Collision FX 2.1", "https://kerbalstuff.com/mod/381"),
 	StockFixes("KSP-Stock-Bug-Fix-Modules", "https://github.com/ClawKSP/KSP-Stock-Bug-Fix-Modules"),
 	ActiveTextureManagement("ActiveTextureManagement", "https://github.com/rbray89/ActiveTextureManagement"),
-	ModuleManagerBuild1("moduleManagerPage1", "https://ksp.sarbian.com/jenkins/job/moduleManagerPage1");
+	ModuleManagerBuild1("moduleManagerPage1", "https://ksp.sarbian.com/jenkins/job/moduleManagerPage1"),
+	TweakableEverything("TweakableEverything", "https://kerbalstuff.com/mod/255");
 	
 	public final String name;
 	public final URL url;

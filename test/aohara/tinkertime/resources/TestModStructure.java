@@ -26,7 +26,6 @@ public class TestModStructure {
 		
 		Set<Path> actualPaths = struct.getPaths();
 		
-		/*
 		System.out.println("\nExpecting");
 		for (Path path : expectedPaths){
 			System.out.println(path);
@@ -35,7 +34,6 @@ public class TestModStructure {
 		for(Path path : actualPaths){
 			System.out.println(path);
 		}
-		*/
 		
 		assertEquals(expectedPaths, actualPaths);
 	}
@@ -67,6 +65,19 @@ public class TestModStructure {
 			"EnhancedNavBall/Resources/navball24.png",
 			"EnhancedNavBall/Resources/navball32.png"
 		);
-		
+	}
+	
+	@Test
+	public void testTweakableEverything() throws IOException {
+		testFiles(
+			ModStubs.TweakableEverything,
+			"TweakableEverything",
+			"TweakableEverything/TweakableStaging.dll",
+			"TweakableEverything/TweakableSolarPanels.dll",
+			"TweakableEverything/TweakableSolarPanels.cfg",
+			"ToadicusTools",
+			"ToadicusTools/ToadicusTools.dll",
+			"EVAManager.dll"
+		);
 	}
 }

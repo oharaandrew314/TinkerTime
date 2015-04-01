@@ -100,7 +100,9 @@ public class ModStructure {
 					for (ZipEntry entry; entries.hasMoreElements(); ){
 						entry = entries.nextElement();
 						Path entryPath = Paths.get(entry.getName());
-						if (entryPath.startsWith(gameDataPath) && !entryPath.equals(gameDataPath)
+						if (
+							entryPath.startsWith(gameDataPath) && !entryPath.equals(gameDataPath) &&
+							!(entry.getName().contains("ModuleManager") && entry.getName().endsWith(".dll"))
 						){
 							zipEntries.put(gameDataPath.relativize(entryPath), entry);
 						}
