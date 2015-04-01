@@ -12,7 +12,7 @@ public class TestJenkinsCrawler extends AbstractTestModCrawler {
 	@Test
 	public void testBuild1() throws IOException, UnsupportedHostException{
 		ModStubs stub = ModStubs.ModuleManagerBuild1;
-		String newestFilename = "ModuleManager.2.5.9.dll";
+		String newestFilename = "ModuleManager.2.5.12.dll";
 		compare(
 				stub,
 				"ksp.sarbian.com-jenkins-job-moduleManagerPage1-lastSuccessfulBuild-api-json",
@@ -22,7 +22,7 @@ public class TestJenkinsCrawler extends AbstractTestModCrawler {
 				String.format("%s/lastSuccesfulBuild/artifact/%s", stub.url, newestFilename),
 				null,
 				null,
-				"2.5.9"
+				"2.5.12"
 		);
 	}
 }

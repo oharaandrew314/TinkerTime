@@ -8,9 +8,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 
+import aohara.common.VersionParser;
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 
-import com.google.gson.JsonArray;
+import com.github.zafarkhaja.semver.Version;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -78,13 +79,28 @@ public class JenkinsCrawler extends Crawler<JsonElement> {
 	public String getKspVersion() throws IOException {
 		return null;
 	}
+	
+	private JsonObject getLatestArtifact() throws IOException{
+		Version latestVersion = null;
+		JsonObject latestArtifact = null;
+		
+		for (JsonElement artifactEle : getJson().get("artifacts").getAsJsonArray()){
+			JsonObject artifactObj = artifactEle.getAsJsonObject();
+			String fileName = artifactObj.get("relativePath").getAsString();
+			Version version = Version.valueOf(VersionParser.parseVersionString(fileName));
+			if (latestVersion == null || version.greaterThan(latestVersion) && fileName.endsWith(".dll")){
+				latestVersion = version;
+				latestArtifact = artifactObj;
+			}
+		}
+		return latestArtifact;
+	}
 
 	@Override
 	protected Collection<Asset> getNewestAssets() throws IOException {
 		Collection<Asset> assets = new LinkedList<>();
 		
-		JsonArray artifacts = getJson().get("artifacts").getAsJsonArray();
-		JsonObject dllArtifact = artifacts.get(artifacts.size() - 1).getAsJsonObject();
+		JsonObject dllArtifact = getLatestArtifact();
 		String fileName = dllArtifact.get("relativePath").getAsString();
 		
 		assets.add(new Asset(
