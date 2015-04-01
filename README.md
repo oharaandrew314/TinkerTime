@@ -42,9 +42,8 @@ This update focuses on fixing annoyances, in order to provide a better general U
 A major refactor was done, reducing lines of code by an estimated 25%.
 
 ###### LEGACY BREAKING CHANGES:
-- You will need to re-enter your app options
-- You will need to re-download all your mods
-  - mod zip and image caches are now stored in GameData directory
+- All configuration and mod data will not carry over to this version
+  - You can export your mods from the old version, and import them into the new (but this is not fully tested)
 
 - New Features
   - Add an options field to set KSP Launch Options
@@ -54,6 +53,7 @@ A major refactor was done, reducing lines of code by an estimated 25%.
     - If the API limit is reached, will fallback to the HTML scraper
   - Can now parse versions of mods and use those when checking for updates
   - Progress bars will now appear immediately after launching a task, and their max progress will be set once it has been determined afterwards
+  - If an update for a mod is available, the "update" icon will not go away when you restart TinkerTime
 - Fixes
   - Mod file caches between KSP installations are now separate
     - This fixes issues when updating or deleting a mod in one installation, which would then affect the other
