@@ -38,9 +38,10 @@ import com.google.gson.reflect.TypeToken;
  */
 public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 	
+	private static final Type MODS_TYPE = new TypeToken<Set<Mod>>() {}.getType();
+	
 	private final Gson gson;
 	private final TinkerConfig config;
-	private final Type modsType = new TypeToken<Set<Mod>>() {}.getType();
 	private final Map<Mod, ModStructure> modCache = new LinkedHashMap<>();
 	
 	// -- Initializers ----------------------------------------
@@ -172,7 +173,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 	
 	public synchronized boolean isEnabled(Mod mod) throws ModNotDownloadedException{
 		for (Path filePath : getModFileDestPaths(mod)){
-			if (!filePath.toFile().exists()){
+			if (filePath.getFileName().toString().contains(".") && !filePath.toFile().exists()){
 				return false;
 			}
 		}
@@ -197,7 +198,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 		
 		try(FileReader reader = new FileReader(path.toFile())){
 			// Try to load mods from file
-			Set<Mod> newMods = gson.fromJson(reader, modsType);
+			Set<Mod> newMods = gson.fromJson(reader, MODS_TYPE);
 			for (Mod newMod : newMods){
 				// If mod is updateable, or if the local zip file is available, add mod
 				if (newMod.isUpdateable() || isDownloaded(newMod) || trySatisfyLocalFiles(newMod, mm)){
@@ -233,7 +234,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 	
 	private void saveMods(Set<Mod> mods, Path path){
 		try(FileWriter writer = new FileWriter(path.toFile())){
-			gson.toJson(mods, modsType, writer);
+			gson.toJson(mods, MODS_TYPE, writer);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
