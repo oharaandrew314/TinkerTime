@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
 
+import aohara.common.VersionParser;
 import aohara.common.workflows.tasks.TaskCallback;
 import aohara.common.workflows.tasks.WorkflowBuilder;
 import aohara.common.workflows.tasks.WorkflowTask.TaskEvent;
@@ -57,7 +58,8 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		}
 		Mod newMod = new Mod(
 			fileName, prettyName, fileName, null, null,
-			Calendar.getInstance().getTime(), null, Version.valueOf(prettyName)
+			Calendar.getInstance().getTime(), null,
+			Version.valueOf(VersionParser.parseVersionString(prettyName))
 		);
 		
 		copy(zipPath, modLoader.getZipPath(newMod));
