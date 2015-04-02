@@ -1,5 +1,8 @@
 apply plugin: 'java'
+apply plugin: 'application'
 apply plugin: 'eclipse'
+
+mainClassName = "aohara.tinkertime.TinkerTime"
 
 repositories {
     mavenCentral()
