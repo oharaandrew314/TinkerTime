@@ -31,7 +31,7 @@ public class TinkerTime {
 	public static final Version VERSION = Version.valueOf("1.3.0");
 	public static final String
 		SAFE_NAME = NAME.replace(" ", ""),
-		FULL_NAME = String.format("%s v%s", NAME, VERSION);
+		FULL_NAME = String.format("%s v%s by %s", NAME, VERSION, AUTHOR);
 	
 	public static void main(String[] args) {
 		TinkerConfig config = TinkerConfig.create();

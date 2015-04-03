@@ -215,7 +215,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 		return mods;
 	}
 	
-	private boolean trySatisfyLocalFiles(Mod mod, ModManager mm){
+	private boolean trySatisfyLocalFiles(Mod mod, ModManager mm) throws FileNotFoundException{
 		if (JOptionPane.showConfirmDialog(
 			null,
 			mod.name + " does not have an update url.\n"
@@ -224,10 +224,8 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 			JOptionPane.YES_NO_OPTION,
 			JOptionPane.QUESTION_MESSAGE
 		) == JOptionPane.YES_OPTION){
-			Path zipPath = FileChoosers.chooseModZip();
-			if (zipPath != null){
-				mm.addModZip(zipPath);
-			}
+			mm.addModZip(FileChoosers.chooseModZip());
+			return true;
 		}
 		return false;
 	}

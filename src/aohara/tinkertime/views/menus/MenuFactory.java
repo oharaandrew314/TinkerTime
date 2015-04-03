@@ -2,7 +2,6 @@ package aohara.tinkertime.views.menus;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 
@@ -15,6 +14,7 @@ public class MenuFactory {
 		toolBar.setFloatable(false);
 		
 		toolBar.add(new Actions.LaunchKspAction(toolBar, mm)).setFocusPainted(false);
+		toolBar.add(new Actions.OpenGameDataFolder(toolBar, mm)).setFocusPainted(false);
 		
 		toolBar.addSeparator();
 		
@@ -37,7 +37,7 @@ public class MenuFactory {
 
 		toolBar.addSeparator();
 		
-		toolBar.add(new Actions.HelpAction(toolBar, mm)).setFocusPainted(false);
+		toolBar.add(Actions.newHelpAction(toolBar)).setFocusPainted(false);
 		
 		return toolBar;
 	}
@@ -46,34 +46,35 @@ public class MenuFactory {
 		JMenuBar menuBar = new JMenuBar();
 		
 		JMenu fileMenu = new JMenu("File");
-		fileMenu.add(new JMenuItem(new Actions.LaunchKspAction(menuBar, mm)));
-		fileMenu.add(new JMenuItem(new Actions.OptionsAction(menuBar, mm)));
-		fileMenu.add(new JMenuItem(new Actions.ExitAction(menuBar, mm)));
+		fileMenu.add(new Actions.LaunchKspAction(menuBar, mm));
+		fileMenu.add(new Actions.OpenGameDataFolder(menuBar, mm));
+		fileMenu.add(new Actions.OptionsAction(menuBar, mm));
+		fileMenu.add(new Actions.ExitAction(menuBar, mm));
 		menuBar.add(fileMenu);
 		
 		JMenu modMenu = new JMenu("Mod");
-		modMenu.add(new JMenuItem(new Actions.AddModAction(menuBar, mm)));
-		modMenu.add(new JMenuItem(new Actions.AddModZip(menuBar, mm)));
-		modMenu.add(new JMenuItem(new Actions.EnableDisableModAction(menuBar, mm)));
-		modMenu.add(new JMenuItem(new Actions.DeleteModAction(menuBar, mm)));
-		modMenu.add(new JMenuItem(new Actions.UpdateModAction(menuBar, mm)));
+		modMenu.add(new Actions.AddModAction(menuBar, mm));
+		modMenu.add(new Actions.AddModZip(menuBar, mm));
+		modMenu.add(new Actions.EnableDisableModAction(menuBar, mm));
+		modMenu.add(new Actions.DeleteModAction(menuBar, mm));
+		modMenu.add(new Actions.UpdateModAction(menuBar, mm));
 		menuBar.add(modMenu);
 		
 		JMenu updateMenu = new JMenu("Updates");
-		updateMenu.add(new JMenuItem(new Actions.UpdateAllAction(menuBar, mm)));
-		updateMenu.add(new JMenuItem(new Actions.CheckforUpdatesAction(menuBar, mm)));
-		updateMenu.add(new JMenuItem(new Actions.UpdateTinkerTime(menuBar, mm)));
+		updateMenu.add(new Actions.UpdateAllAction(menuBar, mm));
+		updateMenu.add(new Actions.CheckforUpdatesAction(menuBar, mm));
+		updateMenu.add(new Actions.UpdateTinkerTime(menuBar, mm));
 		menuBar.add(updateMenu);
 		
 		JMenu importExportMenu = new JMenu("Import/Export Mods");
-		importExportMenu.add(new JMenuItem(new Actions.ExportMods(menuBar, mm)));
-		importExportMenu.add(new JMenuItem(new Actions.ImportMods(menuBar, mm)));
+		importExportMenu.add(new Actions.ExportMods(menuBar, mm));
+		importExportMenu.add(new Actions.ImportMods(menuBar, mm));
 		menuBar.add(importExportMenu);
 		
 		JMenu helpMenu = new JMenu("Help");
-		helpMenu.add(new JMenuItem(new Actions.AboutAction(menuBar, mm)));
-		helpMenu.add(new JMenuItem(new Actions.HelpAction(menuBar, mm)));
-		helpMenu.add(new JMenuItem(new Actions.ContactAction(menuBar, mm)));
+		helpMenu.add(new Actions.AboutAction(menuBar, mm));
+		helpMenu.add(Actions.newHelpAction(menuBar));
+		helpMenu.add(Actions.newContactAction(menuBar));
 		menuBar.add(helpMenu);
 		
 		return menuBar;

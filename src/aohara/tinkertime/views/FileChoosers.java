@@ -1,5 +1,6 @@
 package aohara.tinkertime.views;
 
+import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -8,11 +9,11 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class FileChoosers {
 	
-	public static Path chooseJsonFile(boolean save){
+	public static Path chooseJsonFile(boolean save) throws FileNotFoundException {
 		return chooseJsonFile(Paths.get("mods.json"), save);
 	}
 	
-	public static Path chooseJsonFile(Path defaultPath, boolean save){
+	public static Path chooseJsonFile(Path defaultPath, boolean save) throws FileNotFoundException{
 		JFileChooser chooser = new JFileChooser();
 		chooser.setDialogTitle("Choose Mod Json File");
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);  // Only accept files
@@ -22,7 +23,7 @@ public class FileChoosers {
 		return save ? showSaveDialog(chooser) : showOpenDialog(chooser);
 	}
 	
-	public static Path chooseModZip(){
+	public static Path chooseModZip() throws FileNotFoundException {
 		JFileChooser chooser = new JFileChooser();
 		chooser.setDialogTitle("Please select the mod zip to add.");
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);  // Only accept files
@@ -33,18 +34,24 @@ public class FileChoosers {
 	
 	//-- Helpers --------------------------------------------------------------
 	
-	private static Path showSaveDialog(JFileChooser chooser){
+	private static Path showSaveDialog(JFileChooser chooser) throws FileNotFoundException {
 		if (chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION){
-			return chooser.getSelectedFile().toPath();
+			Path path = chooser.getSelectedFile().toPath();
+			if (path != null){
+				return path;
+			}
 		}
-		return null;
+		throw new FileNotFoundException("A File was not selected in the chooser");
 	}
 	
-	private static Path showOpenDialog(JFileChooser chooser){
+	private static Path showOpenDialog(JFileChooser chooser) throws FileNotFoundException {
 		if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION){
-			return chooser.getSelectedFile().toPath();
+			Path path = chooser.getSelectedFile().toPath();
+			if (path != null){
+				return path;
+			}
 		}
-		return null;
+		throw new FileNotFoundException("A File was not selected in the chooser");
 	}
 
 }
