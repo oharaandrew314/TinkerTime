@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.concurrent.Callable;
 
 import javax.swing.JOptionPane;
 
@@ -25,56 +26,44 @@ import com.github.zafarkhaja.semver.Version;
  *
  * @param <T> Type of Page that is to be returned by getPage
  */
-public abstract class Crawler<T> {
+public abstract class Crawler<T> implements Callable<Mod> {
+	
+	private final PageLoader<T> pageLoader;
+	public final URL pageUrl;
 	
 	private Asset cachedAsset;
+	private Mod cachedMod;
 	private AssetSelector assetSelector = new DialogAssetSelector();
-	private final PageLoader<T> pageLoader;
-	private final URL url;
+	private boolean wasRun = false;
+	
 	
 	public Crawler(URL url, PageLoader<T> pageLoader) {
-		this.url = url;
+		this.pageUrl = url;
 		this.pageLoader = pageLoader;
 	}
 	
 	public T getPage(URL url) throws IOException {
 		return pageLoader.getPage(url);
 	}
-
-	public abstract Date getUpdatedOn() throws IOException;
+	
 	public abstract URL getImageUrl() throws IOException;
-	public abstract String getName() throws IOException;
-	public abstract String getCreator() throws IOException;
-	public abstract String getKspVersion() throws IOException;
-	public abstract String getVersionString() throws IOException;
+
+	protected abstract Date getUpdatedOn() throws IOException;
+	protected abstract String getName() throws IOException;
+	protected abstract String getCreator() throws IOException;
+	protected abstract String getKspVersion() throws IOException;
+	protected abstract String getVersionString() throws IOException;
 	protected abstract Collection<Asset> getNewestAssets() throws IOException;
 	
-	public String getId() throws MalformedURLException{
+	private String getId() throws MalformedURLException{
 		return urlToId(getApiUrl());
 	}
 	
-	public static String urlToId(URL url) throws MalformedURLException {
-		return url.toString().split("://")[1].replace("/", "-");
+	protected URL getApiUrl() throws MalformedURLException{
+		return pageUrl;
 	}
 	
-	public boolean isAssetsAvailable(){
-		try {
-			return !getNewestAssets().isEmpty();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
-	
-	public URL getPageUrl(){
-		return url;
-	}
-	
-	public URL getApiUrl() throws MalformedURLException{
-		return url;
-	}
-	
-	public Version getVersion(){
+	private Version getVersion(){
 		try {
 			// First try to parse version from an available version tag field
 			String versionString = VersionParser.parseVersionString(getVersionString());
@@ -86,18 +75,6 @@ public abstract class Crawler<T> {
 				return Version.valueOf(versionString);
 			} catch (UnexpectedCharacterException | IOException | IllegalArgumentException e1) {
 				return null;
-			}
-		}
-	}
-	
-	public boolean isUpdateAvailable(Version currentVersion, Date lastUpdatedOn) {
-		try{
-			return getVersion().greaterThan(currentVersion);
-		} catch (NullPointerException e){
-			try {
-				return getUpdatedOn().before(lastUpdatedOn);
-			} catch (NullPointerException | IOException e1) {
-				return false;
 			}
 		}
 	}
@@ -115,35 +92,64 @@ public abstract class Crawler<T> {
 				return assets.iterator().next();
 			default:
 				// Ask user which asset to use
-				cachedAsset = assetSelector.selectAsset(getName(), assets);
-				if (cachedAsset == null){
-					throw new IOException("You must select a download to use the mod!");
-				}
+				cachedAsset = assetSelector.selectAsset(getName(), getNewestAssets());
 			}
 		}
 		
+		if (cachedAsset == null){
+			throw new IOException("You must select a download to use the mod!");
+		}
 		return cachedAsset;
 	}
 	
-	public final String getNewestFileName() throws IOException {
+	private final String getNewestFileName() throws IOException {
 		return getSelectedAsset().fileName;
+	}
+	
+	// -- Public Methods ---------------------------------------------------
+	
+	@Override
+	public Mod call() throws IOException {
+		wasRun = true;
+		return cachedMod = new Mod(
+			getId(), getName(), getNewestFileName(),
+			getCreator(), pageUrl,
+			getUpdatedOn() != null ? getUpdatedOn() : Calendar.getInstance().getTime(),
+			getKspVersion(), getVersion()
+		);
+	}
+	
+	public void setAssetSelector(AssetSelector assetSelector){
+		this.assetSelector = assetSelector;
+	}
+
+	public Mod getMod() throws IOException {
+		if (!wasRun){
+			throw new IOException("The Crawler was not run.");
+		} else if (cachedMod == null){
+			throw new IOException("The Crawler could not generate a mod");
+		}
+		return cachedMod;
+	}
+	
+	public boolean isUpdateAvailable(Version currentVersion, Date lastUpdatedOn) {
+		try{
+			return cachedMod.getVersion().greaterThan(currentVersion);
+		} catch (NullPointerException e){
+			try {
+				return getUpdatedOn().before(lastUpdatedOn);
+			} catch (NullPointerException | IOException e1) {
+				return false;
+			}
+		}
 	}
 	
 	public final URL getDownloadLink() throws IOException{
 		return getSelectedAsset().downloadLink;
 	}
 	
-	public void setAssetSelector(AssetSelector assetSelector){
-		this.assetSelector = assetSelector;
-	}
-	
-	public Mod createMod() throws IOException {
-		return new Mod(
-			getId(), getName(), getNewestFileName(),
-			getCreator(), getPageUrl(),
-			getUpdatedOn() != null ? getUpdatedOn() : Calendar.getInstance().getTime(),
-			getKspVersion(), getVersion()
-		);
+	public static String urlToId(URL url) throws MalformedURLException {
+		return url.toString().split("://")[1].replace("/", "-");
 	}
 	
 	// -- Inner Asset Class ---------------------------------------------------
@@ -166,7 +172,6 @@ public abstract class Crawler<T> {
 	public static interface AssetSelector {
 		
 		public Asset selectAsset(String modName, Collection<Asset> assets);
-		
 	}
 	
 	static class DialogAssetSelector implements AssetSelector {

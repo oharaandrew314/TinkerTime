@@ -28,7 +28,7 @@ public class KerbalStuffCrawler extends Crawler<JsonElement>{
 			return new URL(
 				"https",
 				CrawlerFactory.HOST_KERBAL_STUFF,
-				String.format("/api/mod/%s", generateId(getPageUrl()))
+				String.format("/api/mod/%s", generateId(pageUrl))
 			);
 		} catch (IOException e) {
 			e.printStackTrace();

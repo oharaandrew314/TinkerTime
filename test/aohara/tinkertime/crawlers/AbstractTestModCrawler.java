@@ -22,7 +22,7 @@ public abstract class AbstractTestModCrawler {
 	) throws IOException, UnsupportedHostException {
 		Crawler<?> crawler = ResourceLoader.loadCrawler(stub, fallback);
 		
-		Mod actualMod = crawler.createMod();
+		Mod actualMod = crawler.call();
 		assertEquals(id, actualMod.id);
 		assertEquals(stub.name, actualMod.name);
 		assertEquals(newestFile, actualMod.newestFileName);

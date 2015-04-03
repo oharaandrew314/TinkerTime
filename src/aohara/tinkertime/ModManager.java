@@ -253,7 +253,7 @@ public class ModManager implements ListListener<Mod> {
 	 * If an update is available from Github, then the user is given a choice to update.
 	 * @throws UnsupportedHostException 
 	 */
-	public void tryUpdateModManager() throws UnsupportedHostException{
+	public void tryUpdateModManager() throws UnsupportedHostException {
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Updating " + TinkerTime.NAME);
 		try {
 			builder.checkForUpdates(
@@ -274,7 +274,7 @@ public class ModManager implements ListListener<Mod> {
 								"Would you like to download it?%n" +
 								"%n" + 
 								"You currently have v%s",
-								TinkerTime.NAME, crawler.getVersion(), TinkerTime.VERSION
+								TinkerTime.NAME, crawler.getMod().getVersion(), TinkerTime.VERSION
 							),
 							"Update Tinker Time",
 							JOptionPane.YES_NO_OPTION,

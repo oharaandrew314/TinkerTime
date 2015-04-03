@@ -23,7 +23,7 @@ public class GithubJsonCrawler extends Crawler<JsonElement> {
 	
 	@Override
 	public URL getApiUrl() throws MalformedURLException{
-		String pagePath = getPageUrl().getPath();
+		String pagePath = pageUrl.getPath();
 		if (pagePath.contains("/releases")){
 			pagePath = pagePath.split("/releases")[0];
 		}

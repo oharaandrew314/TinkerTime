@@ -31,7 +31,7 @@ public class JenkinsCrawler extends Crawler<JsonElement> {
 	@Override
 	public URL getApiUrl(){
 		try {
-			return new URL(String.format("%s/lastSuccessfulBuild/api/json", getPageUrl()));
+			return new URL(String.format("%s/lastSuccessfulBuild/api/json", pageUrl));
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
 		}
@@ -63,7 +63,7 @@ public class JenkinsCrawler extends Crawler<JsonElement> {
 
 	@Override
 	public String getName() {
-		String jobName = getPageUrl().getPath().split("job/")[1];
+		String jobName = pageUrl.getPath().split("job/")[1];
 		if (jobName.contains("/")){
 			jobName = jobName.split("/")[0];
 		}
@@ -72,7 +72,7 @@ public class JenkinsCrawler extends Crawler<JsonElement> {
 
 	@Override
 	public String getCreator() throws IOException {
-		return getPageUrl().getHost();
+		return pageUrl.getHost();
 	}
 
 	@Override
@@ -105,7 +105,7 @@ public class JenkinsCrawler extends Crawler<JsonElement> {
 		
 		assets.add(new Asset(
 			fileName,
-			new URL(String.format("%s/lastSuccessfulBuild/artifact/%s", getPageUrl(), fileName))
+			new URL(String.format("%s/lastSuccessfulBuild/artifact/%s", pageUrl, fileName))
 		));
 		
 		return assets;

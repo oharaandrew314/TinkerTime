@@ -32,9 +32,9 @@ public class ResourceLoader {
 	
 	public static Mod loadMod(ModStubs stub){
 		try {
-			return loadCrawler(stub).createMod();
+			return loadCrawler(stub).call();
 		} catch (IOException e) {
-			throw new RuntimeException("Error creating mod for stub: " + stub.name);
+			throw new RuntimeException("Error creating mod for stub: " + stub.name, e);
 		}
 	}
 	

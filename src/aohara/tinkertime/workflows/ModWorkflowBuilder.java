@@ -34,7 +34,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	}
 	
 	public void checkForUpdates(Crawler<?> crawler, Version currentVersion, Date lastUpdatedOn) throws UnsupportedHostException{
-		addTask(new CacheCrawlerPageTask(crawler));
+		addTask(new RunCrawlerTask(crawler));
 		addTask(new CheckForUpdateTask(crawler, currentVersion, lastUpdatedOn));
 	}
 	
@@ -44,7 +44,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	public void downloadMod(Crawler<?> crawler, TinkerConfig config, ModLoader modLoader)
 			throws IOException, UnsupportedHostException
 	{
-		addTask(new CacheCrawlerPageTask(crawler));
+		addTask(new RunCrawlerTask(crawler));
 		
 		addTask(new DownloadModAssetTask(crawler, config, modLoader, ModDownloadType.File));
 		addTask(new DownloadModAssetTask(crawler, config, modLoader, ModDownloadType.Image));

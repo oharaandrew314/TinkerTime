@@ -31,22 +31,20 @@ public class GithubHtmlCrawler extends Crawler<Document> {
 	}
 	
 	@Override
-	public URL getApiUrl() throws MalformedURLException {
-		URL url = getPageUrl();
-		
+	public URL getApiUrl() throws MalformedURLException {		
 		/* Groom the Github Releases URL before getting it */
-		List<String> paths = Arrays.asList(url.getPath().split("/"));
+		List<String> paths = Arrays.asList(pageUrl.getPath().split("/"));
 		if (paths.contains(RELEASES)){
 			// If path contains releases, but isn't last element, strip url
 			if (!paths.get(paths.size() - 1).equals(RELEASES)){
-				return new URL(url.toString().split(RELEASES)[0]);
+				return new URL(pageUrl.toString().split(RELEASES)[0]);
 			}
 			// Otherwise, releases is in correct spot
-			return url;
+			return pageUrl;
 		}
 		
 		// If path does not contain releases, try appending it to end 
-		return new URL(String.format("%s/%s", url, RELEASES));
+		return new URL(String.format("%s/%s", pageUrl, RELEASES));
 	}
 	
 	private Element getLatestReleaseElement() throws IOException {
