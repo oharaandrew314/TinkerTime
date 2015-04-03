@@ -1,6 +1,9 @@
 package aohara.tinkertime;
 
 import java.awt.BorderLayout;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -9,7 +12,10 @@ import com.github.zafarkhaja.semver.Version;
 
 import aohara.common.selectorPanel.SelectorPanel;
 import aohara.common.workflows.ProgressPanel;
+import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.crawlers.pageLoaders.JsonLoader;
+import aohara.tinkertime.crawlers.pageLoaders.WebpageLoader;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.resources.ModLoader;
 import aohara.tinkertime.views.TinkerFrame;
@@ -40,7 +46,15 @@ public class TinkerTime {
 		
 		// Initialize Controllers
 		ModLoader modLoader = new ModLoader(config);
-		ModManager mm = ModManager.createDefaultModManager(config, modLoader, pp);
+		ModManager mm = new ModManager(
+			modLoader,
+			config,
+			pp,
+			(ThreadPoolExecutor) Executors.newFixedThreadPool(config.numConcurrentDownloads()),
+			(Executor) Executors.newSingleThreadExecutor(),
+			new CrawlerFactory(new WebpageLoader(), new JsonLoader())
+		);
+		ModListListener listListener = new ModListListener(mm);
 		
 		// Set HTTP User-agent
 		System.setProperty("http.agent", "TinkerTime Bot");
@@ -52,8 +66,9 @@ public class TinkerTime {
 		sp.setListCellRenderer(new ModListCellRenderer(modLoader));
 		
 		// Add Listeners
-		sp.addListener(mm);
-		modLoader.addListener(sp);
+		sp.addSelectionListener(listListener);
+		sp.addSelectorKeyListener(listListener);
+		modLoader.addSelectionListener(sp);
 
 		// Start Application
 		modLoader.init(mm);  // Load mods (will notify selector panel)

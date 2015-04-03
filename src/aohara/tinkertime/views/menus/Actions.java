@@ -15,11 +15,12 @@ import javax.swing.JOptionPane;
 import aohara.common.Util;
 import aohara.common.content.ImageManager;
 import aohara.tinkertime.ModManager;
+import aohara.tinkertime.ModManager.NoModSelectedException;
 import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.controllers.launcher.GameLauncher;
 import aohara.tinkertime.crawlers.CrawlerFactory;
-import aohara.tinkertime.models.DefaultMods;
 import aohara.tinkertime.models.Mod;
+import aohara.tinkertime.views.Dialogs;
 import aohara.tinkertime.views.FileChoosers;
 import aohara.tinkertime.views.UrlPanel;
 
@@ -46,7 +47,7 @@ class Actions {
 				call();
 			} catch (Exception e){
 				e.printStackTrace();
-				JOptionPane.showMessageDialog(null, e.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+				Dialogs.errorDialog(parent, e);
 			}
 		}
 		
@@ -116,21 +117,14 @@ class Actions {
 
 		@Override
 		protected void call() throws Exception {
-			Mod selectedMod = mm.getSelectedMod();
-			if (selectedMod != null){
-				if (DefaultMods.isBuiltIn(selectedMod)){
-					throw new RuntimeException("Cannot delete built-in mod: " + selectedMod.name);
-				}
+			try {
+				Mod selectedMod = mm.getSelectedMod();
 				
-				if (JOptionPane.showConfirmDialog(
-					parent,
-					"Are you sure you want to delete "
-					+ selectedMod.name + "?",
-					"Delete?",
-					JOptionPane.YES_NO_OPTION
-				) == JOptionPane.YES_OPTION){
+				if (Dialogs.confirmDeleteMod(parent, selectedMod.name)){
 					mm.deleteMod(selectedMod);
 				}
+			} catch (NoModSelectedException ex){
+				// Do Nothing
 			}
 		}
 	}
@@ -148,8 +142,10 @@ class Actions {
 
 		@Override
 		protected void call() throws Exception {
-			if (mm.getSelectedMod() != null){
+			try {
 				mm.updateMod(mm.getSelectedMod(), true);
+			} catch (NoModSelectedException ex){
+				// Do Nothing
 			}
 		}
 	}
@@ -189,9 +185,10 @@ class Actions {
 
 		@Override
 		protected void call() throws Exception {
-			Mod selectedMod = mm.getSelectedMod();
-			if (selectedMod != null){
-				mm.toggleMod(selectedMod);
+			try {
+				mm.toggleMod(mm.getSelectedMod());
+			} catch (NoModSelectedException ex){
+				// Do Nothing
 			}
 		}
 	}

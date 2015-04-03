@@ -5,14 +5,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FilenameUtils;
 
-import aohara.common.selectorPanel.ListListener;
 import aohara.common.workflows.ProgressPanel;
 import aohara.common.workflows.tasks.BrowserGoToTask;
 import aohara.common.workflows.tasks.TaskCallback;
@@ -21,8 +19,7 @@ import aohara.common.workflows.tasks.WorkflowTask.TaskEvent;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
-import aohara.tinkertime.crawlers.pageLoaders.JsonLoader;
-import aohara.tinkertime.crawlers.pageLoaders.WebpageLoader;
+import aohara.tinkertime.models.DefaultMods;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.resources.ModLoader;
 import aohara.tinkertime.workflows.ModWorkflowBuilder;
@@ -36,7 +33,7 @@ import aohara.tinkertime.workflows.ModWorkflowBuilder;
  * 
  * @author Andrew O'Hara
  */
-public class ModManager implements ListListener<Mod> {
+public class ModManager {
 	
 	public final TinkerConfig config;
 	
@@ -47,17 +44,8 @@ public class ModManager implements ListListener<Mod> {
 	private final ProgressPanel progressPanel;
 	
 	private Mod selectedMod;
-	
-	public static ModManager createDefaultModManager(TinkerConfig config, ModLoader sm, ProgressPanel pp){
-		return new ModManager(
-			sm, config, pp,
-			(ThreadPoolExecutor) Executors.newFixedThreadPool(config.numConcurrentDownloads()),
-			Executors.newSingleThreadExecutor(),
-			new CrawlerFactory(new WebpageLoader(), new JsonLoader())
-		);
-	}
-	
-	protected ModManager(
+
+	public ModManager(
 			ModLoader loader, TinkerConfig config, ProgressPanel progressPanel,
 			ThreadPoolExecutor downloadExecutor,
 			Executor enablerExecutor, CrawlerFactory crawlerFactory
@@ -71,26 +59,19 @@ public class ModManager implements ListListener<Mod> {
 	}
 	
 	// -- Accessors --------------------------------------------------------
-	
-	public Mod getSelectedMod(){
+
+	public Mod getSelectedMod() throws NoModSelectedException {
+		if (selectedMod == null){
+			throw new NoModSelectedException();
+		}
 		return selectedMod;
 	}
 	
-	// -- Listeners -----------------------
-	
-	@Override
-	public void elementClicked(Mod mod, int numTimes) throws Exception{
-		if (numTimes == 2){
-			toggleMod(mod);
-		}
-	}
-
-	@Override
-	public void elementSelected(Mod element) {
-		selectedMod = element;
-	}
-	
 	// -- Modifiers ---------------------------------
+	
+	void selectMod(Mod mod){
+		this.selectedMod = mod;
+	}
 	
 	private void submitDownloadWorkflow(WorkflowBuilder builder){
 		builder.addListener(progressPanel);
@@ -194,7 +175,11 @@ public class ModManager implements ListListener<Mod> {
 		submitEnablerWorkflow(builder);
 	}
 	
-	public void deleteMod(final Mod mod) throws CannotDisableModError, IOException {
+	public void deleteMod(final Mod mod) throws CannotDeleteModException {
+		if (DefaultMods.isBuiltIn(mod)){
+			throw new CannotDeleteModException(mod, "Built-in");
+		}
+		
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Deleting " + mod);
 		builder.deleteMod(mod, config, loader);
 		builder.addListener(new TaskCallback.WorkflowCompleteCallback() {
@@ -303,11 +288,11 @@ public class ModManager implements ListListener<Mod> {
 	
 	// -- Helpers -----------------------------------------------------------
 	
-	public Crawler<?> getCrawler(URL url) throws UnsupportedHostException{
+	private Crawler<?> getCrawler(URL url) throws UnsupportedHostException{
 		return crawlerFactory.getCrawler(url);
 	}
 	
-	protected Crawler<?> getCrawler(Mod mod) throws UnsupportedHostException{
+	private Crawler<?> getCrawler(Mod mod) throws UnsupportedHostException{
 		return getCrawler(mod.pageUrl);
 	}
 	
@@ -329,5 +314,14 @@ public class ModManager implements ListListener<Mod> {
 		private ModUpdateFailedError(Mod mod, String message){
 			super("Error for " + mod + ": " + message);
 		}
+	}
+	@SuppressWarnings("serial")
+	public static class NoModSelectedException extends Exception {}
+	@SuppressWarnings("serial")
+	public static class CannotDeleteModException extends Exception {
+		private CannotDeleteModException(Mod mod, String reason){
+			super(String.format("Cannot delete %s: %s", mod, reason));
+		}
+		
 	}
 }
