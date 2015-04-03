@@ -10,9 +10,10 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import aohara.common.OS;
+import aohara.common.config.Config;
 import aohara.common.config.ConfigBuilder;
 import aohara.common.config.Constraint.InvalidInputException;
-import aohara.common.config.GuiConfig;
+import aohara.common.config.views.OptionsWindow;
 
 /**
  * Stores and Retrieves User Configuration Data.
@@ -29,9 +30,9 @@ public class TinkerConfig {
 		WIN_64 = "win64",
 		STARTUP_CHECK_MM_UPDATES = "Check for App Updates on Startup";
 		
-	private final GuiConfig config;
+	private final Config config;
 	
-	protected TinkerConfig(GuiConfig config){
+	protected TinkerConfig(Config config){
 		this.config = config;
 	}
 	
@@ -45,14 +46,11 @@ public class TinkerConfig {
 		
 		builder.addTextProperty(WIN_64, null, true, true);
 		
-		GuiConfig config = builder.createGuiConfigInDocuments(
+		Config config = builder.createConfigInDocuments(
 			String.format("%s Config", TinkerTime.SAFE_NAME),
 			TinkerTime.NAME,
 			"TinkerTime-Options.json"
 		);
-		if (!config.isValid()){
-			config.openOptionsWindow(true);
-		}
 		
 		return new TinkerConfig(config);
 	}
@@ -152,7 +150,7 @@ public class TinkerConfig {
 	
 	// -- Verification ----------------------------------------------------
 	
-	public void updateConfig(boolean exitOnCancel){
-		config.openOptionsWindow(exitOnCancel);
+	public void updateConfig(){
+		new OptionsWindow(config).toDialog();
 	}
 }

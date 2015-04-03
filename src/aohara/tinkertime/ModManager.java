@@ -278,7 +278,7 @@ public class ModManager {
 	}
 	
 	public void openConfigWindow(){
-		config.updateConfig(false);
+		config.updateConfig();
 		reloadMods();
 	}
 	
