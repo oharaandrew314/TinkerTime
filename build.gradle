@@ -12,8 +12,7 @@ sourceSets {
 
     main {
         java {
-            srcDirs ('src', 'Common')
-            exclude '**/test/**'
+            srcDirs ('src', 'Common/src')
         }
         resources {
             srcDir 'res'
@@ -53,7 +52,7 @@ jar {
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 
     manifest {
-        attributes 'Main-Class': 'aohara.tinkertime.TinkerTime'
+        attributes 'Main-Class': mainClassName
     }
 }
 
