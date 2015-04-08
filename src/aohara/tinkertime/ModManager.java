@@ -11,7 +11,7 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FilenameUtils;
 
-import aohara.common.workflows.ProgressPanel;
+import aohara.common.Listenable;
 import aohara.common.workflows.tasks.BrowserGoToTask;
 import aohara.common.workflows.tasks.TaskCallback;
 import aohara.common.workflows.tasks.WorkflowBuilder;
@@ -33,32 +33,30 @@ import aohara.tinkertime.workflows.ModWorkflowBuilder;
  * 
  * @author Andrew O'Hara
  */
-public class ModManager {
+public class ModManager extends Listenable<TaskCallback> {
 	
 	public final TinkerConfig config;
 	
 	private final CrawlerFactory crawlerFactory;
 	private final ThreadPoolExecutor downloadExecutor;
 	private final Executor enablerExecutor;
-	private final ModLoader loader;
-	private final ProgressPanel progressPanel;
+	private final ModLoader modLoader;
 	
 	private Mod selectedMod;
 
 	public ModManager(
-			ModLoader loader, TinkerConfig config, ProgressPanel progressPanel,
+			ModLoader loader, TinkerConfig config,
 			ThreadPoolExecutor downloadExecutor,
 			Executor enablerExecutor, CrawlerFactory crawlerFactory
 	){
-		this.loader = loader;
+		this.modLoader = loader;
 		this.config = config;
-		this.progressPanel = progressPanel;
 		this.downloadExecutor = downloadExecutor;
 		this.enablerExecutor = enablerExecutor;
 		this.crawlerFactory = crawlerFactory;
 	}
 	
-	// -- Accessors --------------------------------------------------------
+	// -- Interface --------------------------------------------------------
 
 	public Mod getSelectedMod() throws NoModSelectedException {
 		if (selectedMod == null){
@@ -67,28 +65,8 @@ public class ModManager {
 		return selectedMod;
 	}
 	
-	// -- Modifiers ---------------------------------
-	
 	void selectMod(Mod mod){
 		this.selectedMod = mod;
-	}
-	
-	private void submitDownloadWorkflow(WorkflowBuilder builder){
-		builder.addListener(progressPanel);
-		
-		// Reset thread pool size if size in options has changed
-		int numDownloadThreads = config.numConcurrentDownloads();
-		if (downloadExecutor.getMaximumPoolSize() != numDownloadThreads){
-			downloadExecutor.setCorePoolSize(numDownloadThreads);
-			downloadExecutor.setMaximumPoolSize(numDownloadThreads);
-		}
-		
-		builder.execute(downloadExecutor);
-	}
-	
-	private void submitEnablerWorkflow(WorkflowBuilder builder){
-		builder.addListener(progressPanel);
-		builder.execute(enablerExecutor);
 	}
 	
 	/**
@@ -106,24 +84,24 @@ public class ModManager {
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Updating " + mod.name);
 		try {
 			// Cleanup operations prior to update
-			if (loader.isDownloaded(mod)){
+			if (modLoader.isDownloaded(mod)){
 				if (!forceUpdate){
 					builder.checkForUpdates(mod, getCrawler(mod));
 				}
 				
-				if (loader.isEnabled(mod)){
-					builder.disableMod(mod, loader);
+				if (modLoader.isEnabled(mod)){
+					builder.disableMod(mod, modLoader);
 				}
 				
-				builder.deleteModZip(mod, loader);
+				builder.deleteModZip(mod, modLoader);
 			}
-			builder.downloadMod(getCrawler(mod), config, loader);
+			builder.downloadMod(getCrawler(mod), config, modLoader);
 			builder.addListener(new TaskCallback.WorkflowCompleteCallback() {
 				
 				@Override
 				protected void processTaskEvent(TaskEvent event) {
 					Mod mod = (Mod) event.data;
-					loader.modUpdated(mod);
+					modLoader.modUpdated(mod);
 				}
 			});
 			submitDownloadWorkflow(builder);
@@ -135,13 +113,13 @@ public class ModManager {
 	public void downloadMod(URL url) throws ModUpdateFailedError, UnsupportedHostException {
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Downloading " + FilenameUtils.getBaseName(url.toString()));
 		try {
-			builder.downloadMod(getCrawler(url), config, loader);
+			builder.downloadMod(getCrawler(url), config, modLoader);
 			builder.addListener(new TaskCallback.WorkflowCompleteCallback() {
 				
 				@Override
 				protected void processTaskEvent(TaskEvent event) {
 					Mod mod = (Mod) event.data;
-					loader.modUpdated(mod);
+					modLoader.modUpdated(mod);
 				}
 			});
 			submitDownloadWorkflow(builder);
@@ -152,28 +130,32 @@ public class ModManager {
 	
 	public void addModZip(Path zipPath){
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Adding " + zipPath);
-		final Mod futureMod = builder.addLocalMod(zipPath, loader);
-		builder.refreshModAfterWorkflowComplete(futureMod, loader);
+		final Mod futureMod = builder.addLocalMod(zipPath, modLoader);
+		builder.refreshModAfterWorkflowComplete(futureMod, modLoader);
 		submitDownloadWorkflow(builder);
 	}
 	
 	public void updateMods() throws ModUpdateFailedError, ModNotDownloadedException{
-		for (Mod mod : loader.getMods()){
+		for (Mod mod : modLoader.getMods()){
 			updateMod(mod, false);
 		}
 	}
 	
-	public void toggleMod(final Mod mod) throws ModNotDownloadedException{
+	public void toggleMod(final Mod mod) {
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Toggling " + mod);
-		if (loader.isEnabled(mod)){
-			builder.disableMod(mod, loader);
-		} else {
-			builder.enableMod(mod, loader, config);
+		try {
+			if (modLoader.isEnabled(mod)){
+				builder.disableMod(mod, modLoader);
+			} else {
+				builder.enableMod(mod, modLoader, config);
+			}
+			builder.refreshModAfterWorkflowComplete(mod, modLoader);
+			
+			submitEnablerWorkflow(builder);
+		} catch (ModNotDownloadedException e){
+			// Ignore user input if mod not downloaded
 		}
-		builder.refreshModAfterWorkflowComplete(mod, loader);
-		
-		submitEnablerWorkflow(builder);
-	}
+	}	
 	
 	public void deleteMod(final Mod mod) throws CannotDeleteModException {
 		if (DefaultMods.isBuiltIn(mod)){
@@ -181,12 +163,12 @@ public class ModManager {
 		}
 		
 		ModWorkflowBuilder builder = new ModWorkflowBuilder("Deleting " + mod);
-		builder.deleteMod(mod, config, loader);
+		builder.deleteMod(mod, config, modLoader);
 		builder.addListener(new TaskCallback.WorkflowCompleteCallback() {
 			
 			@Override
 			protected void processTaskEvent(TaskEvent event) {
-				loader.modDeleted(mod);
+				modLoader.modDeleted(mod);
 			}
 		});
 		
@@ -196,7 +178,7 @@ public class ModManager {
 	public void checkForModUpdates() throws Exception{
 		Exception e = null;
 		
-		for (final Mod mod : loader.getMods()){
+		for (final Mod mod : modLoader.getMods()){
 			try {
 				if (mod.isUpdateable()){
 					ModWorkflowBuilder builder = new ModWorkflowBuilder("Checking for update for " + mod);
@@ -208,7 +190,7 @@ public class ModManager {
 						@Override
 						protected void processTaskEvent(TaskEvent event) {
 							mod.updateAvailable = true;
-							loader.modUpdated(mod);
+							modLoader.modUpdated(mod);
 						}
 					});
 					submitDownloadWorkflow(builder);
@@ -225,11 +207,11 @@ public class ModManager {
 	}
 	
 	public void exportEnabledMods(Path path){
-		loader.exportEnabledMods(path);
+		modLoader.exportEnabledMods(path);
 	}
 	
 	public void importMods(Path path){
-		loader.importMods(path, this);
+		modLoader.importMods(path, this);
 	}
 	
 	/**
@@ -283,7 +265,7 @@ public class ModManager {
 	}
 	
 	private void reloadMods(){
-		loader.init(this);  // Reload mods (top update views)
+		modLoader.init(this);  // Reload mods (top update views)
 	}
 	
 	// -- Helpers -----------------------------------------------------------
@@ -294,6 +276,28 @@ public class ModManager {
 	
 	private Crawler<?> getCrawler(Mod mod) throws UnsupportedHostException{
 		return getCrawler(mod.pageUrl);
+	}
+	
+	private void submitDownloadWorkflow(WorkflowBuilder builder){
+		for(TaskCallback callback : getListeners()){
+			builder.addListener(callback);
+		}
+		
+		// Reset thread pool size if size in options has changed
+		int numDownloadThreads = config.numConcurrentDownloads();
+		if (downloadExecutor.getMaximumPoolSize() != numDownloadThreads){
+			downloadExecutor.setCorePoolSize(numDownloadThreads);
+			downloadExecutor.setMaximumPoolSize(numDownloadThreads);
+		}
+		
+		builder.execute(downloadExecutor);
+	}
+	
+	private void submitEnablerWorkflow(WorkflowBuilder builder){
+		for(TaskCallback callback : getListeners()){
+			builder.addListener(callback);
+		}
+		builder.execute(enablerExecutor);
 	}
 	
 	// -- Exceptions/Errors --------------------------------------------------

@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 
 import aohara.common.Util;
 import aohara.common.content.ImageManager;
+import aohara.common.views.UrlPanel;
 import aohara.tinkertime.ModManager;
 import aohara.tinkertime.ModManager.NoModSelectedException;
 import aohara.tinkertime.TinkerTime;
@@ -22,7 +23,6 @@ import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.views.Dialogs;
 import aohara.tinkertime.views.FileChoosers;
-import aohara.tinkertime.views.UrlPanel;
 
 class Actions {
 	

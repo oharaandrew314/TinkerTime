@@ -3,12 +3,12 @@ package aohara.tinkertime;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import aohara.common.selectorPanel.ListListener;
+import aohara.common.selectorPanel.SelectorListListener;
 import aohara.tinkertime.ModManager.NoModSelectedException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.views.Dialogs;
 
-class ModListListener implements KeyListener, ListListener<Mod> {
+class ModListListener implements KeyListener, SelectorListListener<Mod> {
 	
 	private final ModManager mm;
 	
@@ -48,7 +48,7 @@ class ModListListener implements KeyListener, ListListener<Mod> {
 	}
 
 	@Override
-	public void elementClicked(Mod mod, int numTimes) throws Exception{
+	public void elementClicked(Mod mod, int numTimes) {
 		if (numTimes == 2){
 			mm.toggleMod(mod);
 		}

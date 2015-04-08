@@ -16,7 +16,7 @@ import java.util.zip.ZipFile;
 import javax.swing.JOptionPane;
 
 import aohara.common.Listenable;
-import aohara.common.selectorPanel.SelectorInterface;
+import aohara.common.selectorPanel.SelectorPanelController;
 import aohara.tinkertime.ModManager;
 import aohara.tinkertime.ModManager.ModNotDownloadedException;
 import aohara.tinkertime.TinkerConfig;
@@ -36,7 +36,7 @@ import com.google.gson.reflect.TypeToken;
  * 
  * @author Andrew O'Hara
  */
-public class ModLoader extends Listenable<SelectorInterface<Mod>> {
+public class ModLoader extends Listenable<SelectorPanelController<Mod>> {
 	
 	private static final Type MODS_TYPE = new TypeToken<Set<Mod>>() {}.getType();
 	
@@ -100,7 +100,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 	}
 	
 	private void updateViews(){
-		for (SelectorInterface<Mod> l : getListeners()){
+		for (SelectorPanelController<Mod> l : getListeners()){
 			l.setData(new LinkedHashSet<>(modCache.keySet()));
 		}
 	}

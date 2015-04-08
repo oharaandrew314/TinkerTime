@@ -10,7 +10,8 @@ import javax.swing.JOptionPane;
 
 import com.github.zafarkhaja.semver.Version;
 
-import aohara.common.selectorPanel.SelectorPanel;
+import aohara.common.selectorPanel.SelectorPanelBuilder;
+import aohara.common.selectorPanel.SelectorPanelController;
 import aohara.common.workflows.ProgressPanel;
 import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
@@ -42,41 +43,41 @@ public class TinkerTime {
 	public static void main(String[] args) {
 		TinkerConfig config = TinkerConfig.create();
 		
-		ProgressPanel pp = new ProgressPanel();
-		
 		// Initialize Controllers
 		ModLoader modLoader = new ModLoader(config);
-		ModManager mm = new ModManager(
+		ModManager modManager = new ModManager(
 			modLoader,
 			config,
-			pp,
 			(ThreadPoolExecutor) Executors.newFixedThreadPool(config.numConcurrentDownloads()),
 			(Executor) Executors.newSingleThreadExecutor(),
 			new CrawlerFactory(new WebpageLoader(), new JsonLoader())
 		);
-		ModListListener listListener = new ModListListener(mm);
+		ModListListener listListener = new ModListListener(modManager);
 		
 		// Set HTTP User-agent
 		System.setProperty("http.agent", "TinkerTime Bot");
 		
 		// Initialize GUI
-		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new ModView(modLoader), new java.awt.Dimension(500, 600), 0.4f);
-		sp.addControlPanel(true, new ModImageView(config));
-		sp.addPopupMenu(MenuFactory.createPopupMenu(mm));
-		sp.setListCellRenderer(new ModListCellRenderer(modLoader));
+		SelectorPanelBuilder<Mod> spBuilder = new SelectorPanelBuilder<>();
+		spBuilder.setListCellRenderer(new ModListCellRenderer(modLoader));
+		spBuilder.setContextMenu(MenuFactory.createPopupMenu(modManager));
+		spBuilder.setLeftControlPanel(new ModImageView(config));
+		spBuilder.addKeyListener(listListener);
+		spBuilder.addSelectionListener(listListener);
+		SelectorPanelController<Mod> selectorPanel = spBuilder.createSelectorPanel(new ModView(modLoader));
+		ProgressPanel progessPanel = new ProgressPanel();
 		
 		// Add Listeners
-		sp.addSelectionListener(listListener);
-		sp.addSelectorKeyListener(listListener);
-		modLoader.addSelectionListener(sp);
+		modLoader.addListener(selectorPanel);
+		modManager.addListener(progessPanel);
 
 		// Start Application
-		modLoader.init(mm);  // Load mods (will notify selector panel)
+		modLoader.init(modManager);  // Load mods (will notify selector panel)
 		
 		// Check for App update on Startup
 		if (config.isCheckForMMUpdatesOnStartup()){
 			try {
-				mm.tryUpdateModManager();
+				modManager.tryUpdateModManager();
 			} catch (UnsupportedHostException e) {
 				JOptionPane.showMessageDialog(null, e.toString(), "Error Checking for App Updates", JOptionPane.ERROR_MESSAGE);
 			}
@@ -85,7 +86,7 @@ public class TinkerTime {
 		// Check for Mod Updates on Startup
 		try {			
 			if (config.autoCheckForModUpdates()){
-				mm.checkForModUpdates();
+				modManager.checkForModUpdates();
 			}
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, e.toString(), "Error Checking for Mod Updates", JOptionPane.ERROR_MESSAGE);
@@ -93,10 +94,10 @@ public class TinkerTime {
 		
 		// Initialize Frame
 		JFrame frame = new TinkerFrame();
-		frame.setJMenuBar(MenuFactory.createMenuBar(mm));
-		frame.add(MenuFactory.createToolBar(mm), BorderLayout.NORTH);
-		frame.add(sp.getComponent(), BorderLayout.CENTER);
-		frame.add(pp.getComponent(), BorderLayout.SOUTH);
+		frame.setJMenuBar(MenuFactory.createMenuBar(modManager));
+		frame.add(MenuFactory.createToolBar(modManager), BorderLayout.NORTH);
+		frame.add(selectorPanel.getComponent(), BorderLayout.CENTER);
+		frame.add(progessPanel.getComponent(), BorderLayout.SOUTH);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
