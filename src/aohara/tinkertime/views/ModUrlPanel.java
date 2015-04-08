@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import javax.swing.JLabel;
 
+import aohara.common.Dialogs;
 import aohara.common.Util;
 import aohara.common.selectorPanel.SelectorView;
 import aohara.tinkertime.models.Mod;

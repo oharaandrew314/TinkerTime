@@ -3,10 +3,11 @@ package aohara.tinkertime;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import aohara.common.Dialogs;
 import aohara.common.selectorPanel.SelectorListListener;
 import aohara.tinkertime.ModManager.NoModSelectedException;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.views.Dialogs;
+import aohara.tinkertime.views.TinkerDialogs;
 
 class ModListListener implements KeyListener, SelectorListListener<Mod> {
 	
@@ -32,7 +33,7 @@ class ModListListener implements KeyListener, SelectorListListener<Mod> {
 			switch(evt.getKeyChar()){
 			case KeyEvent.VK_DELETE:
 				Mod selectedMod = mm.getSelectedMod();
-				if (Dialogs.confirmDeleteMod(evt.getComponent(), selectedMod.name)){
+				if (TinkerDialogs.confirmDeleteMod(evt.getComponent(), selectedMod.name)){
 					mm.deleteMod(selectedMod);
 				}
 				break;

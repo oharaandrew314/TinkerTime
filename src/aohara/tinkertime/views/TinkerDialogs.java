@@ -4,11 +4,7 @@ import java.awt.Component;
 
 import javax.swing.JOptionPane;
 
-public class Dialogs {
-	
-	public static void errorDialog(Component parent, Throwable throwable){
-		JOptionPane.showMessageDialog(parent, throwable.toString(), "Exception", JOptionPane.ERROR_MESSAGE);
-	}
+public class TinkerDialogs {
 	
 	public static boolean confirmDeleteMod(Component parent, String modName){
 		return (JOptionPane.showConfirmDialog(
