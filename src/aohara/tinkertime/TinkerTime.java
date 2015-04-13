@@ -12,7 +12,7 @@ import com.github.zafarkhaja.semver.Version;
 
 import aohara.common.selectorPanel.SelectorPanelBuilder;
 import aohara.common.selectorPanel.SelectorPanelController;
-import aohara.common.workflows.ProgressPanel;
+import aohara.common.views.ProgressPanel;
 import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.crawlers.pageLoaders.JsonLoader;
@@ -20,7 +20,6 @@ import aohara.tinkertime.crawlers.pageLoaders.WebpageLoader;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.resources.ModLoader;
 import aohara.tinkertime.views.TinkerFrame;
-import aohara.tinkertime.views.ModImageView;
 import aohara.tinkertime.views.ModListCellRenderer;
 import aohara.tinkertime.views.ModView;
 import aohara.tinkertime.views.menus.MenuFactory;
@@ -57,20 +56,23 @@ public class TinkerTime {
 		// Set HTTP User-agent
 		System.setProperty("http.agent", "TinkerTime Bot");
 		
-		// Initialize GUI
+		// Initialize GUI		
 		SelectorPanelBuilder<Mod> spBuilder = new SelectorPanelBuilder<>();
-		spBuilder.setListCellRenderer(new ModListCellRenderer(modLoader));
+		ModListCellRenderer renderer = ModListCellRenderer.create(modLoader);
+		spBuilder.setListCellRenderer(renderer);
 		spBuilder.setContextMenu(MenuFactory.createPopupMenu(modManager));
 		spBuilder.addKeyListener(listListener);
 		spBuilder.addSelectionListener(listListener);
-		SelectorPanelController<Mod> selectorPanel = spBuilder.createSelectorPanel(new ModView(modLoader));
+		SelectorPanelController<Mod> selectorPanel = spBuilder.createSelectorPanel(new ModView(modLoader, config));
 		ProgressPanel progessPanel = new ProgressPanel();
 		
 		// Add Listeners
 		modLoader.addListener(selectorPanel);
 		modManager.addListener(progessPanel);
+		modManager.addListener(renderer);
 
 		// Start Application
+		renderer.startFramerateTimer();
 		modLoader.init(modManager);  // Load mods (will notify selector panel)
 		
 		// Check for App update on Startup
