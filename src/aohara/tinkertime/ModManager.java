@@ -9,8 +9,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.swing.JOptionPane;
 
-import org.apache.commons.io.FilenameUtils;
-
 import aohara.common.Listenable;
 import aohara.common.workflows.tasks.BrowserGoToTask;
 import aohara.common.workflows.tasks.TaskCallback;
@@ -81,7 +79,7 @@ public class ModManager extends Listenable<TaskCallback> {
 			throw new ModUpdateFailedError(mod, "Mod is a local zip only, and cannot be updated.");
 		}
 		
-		ModWorkflowBuilder builder = new ModWorkflowBuilder("Updating " + mod.name);
+		ModWorkflowBuilder builder = new ModWorkflowBuilder(mod);
 		try {
 			// Cleanup operations prior to update
 			if (modLoader.isDownloaded(mod)){
@@ -111,7 +109,7 @@ public class ModManager extends Listenable<TaskCallback> {
 	}
 	
 	public void downloadMod(URL url) throws ModUpdateFailedError, UnsupportedHostException {
-		ModWorkflowBuilder builder = new ModWorkflowBuilder("Downloading " + FilenameUtils.getBaseName(url.toString()));
+		ModWorkflowBuilder builder = new ModWorkflowBuilder(null);
 		try {
 			builder.downloadMod(getCrawler(url), config, modLoader);
 			builder.addListener(new TaskCallback.WorkflowCompleteCallback() {
@@ -129,7 +127,7 @@ public class ModManager extends Listenable<TaskCallback> {
 	}
 	
 	public void addModZip(Path zipPath){
-		ModWorkflowBuilder builder = new ModWorkflowBuilder("Adding " + zipPath);
+		ModWorkflowBuilder builder = new ModWorkflowBuilder(null);
 		final Mod futureMod = builder.addLocalMod(zipPath, modLoader);
 		builder.refreshModAfterWorkflowComplete(futureMod, modLoader);
 		submitDownloadWorkflow(builder);
@@ -142,7 +140,7 @@ public class ModManager extends Listenable<TaskCallback> {
 	}
 	
 	public void toggleMod(final Mod mod) {
-		ModWorkflowBuilder builder = new ModWorkflowBuilder("Toggling " + mod);
+		ModWorkflowBuilder builder = new ModWorkflowBuilder(mod);
 		try {
 			if (modLoader.isEnabled(mod)){
 				builder.disableMod(mod, modLoader);
@@ -162,7 +160,7 @@ public class ModManager extends Listenable<TaskCallback> {
 			throw new CannotDeleteModException(mod, "Built-in");
 		}
 		
-		ModWorkflowBuilder builder = new ModWorkflowBuilder("Deleting " + mod);
+		ModWorkflowBuilder builder = new ModWorkflowBuilder(mod);
 		builder.deleteMod(mod, config, modLoader);
 		builder.addListener(new TaskCallback.WorkflowCompleteCallback() {
 			
@@ -181,7 +179,7 @@ public class ModManager extends Listenable<TaskCallback> {
 		for (final Mod mod : modLoader.getMods()){
 			try {
 				if (mod.isUpdateable()){
-					ModWorkflowBuilder builder = new ModWorkflowBuilder("Checking for update for " + mod);
+					ModWorkflowBuilder builder = new ModWorkflowBuilder(mod);
 					builder.checkForUpdates(mod, getCrawler(mod));
 					
 					// If the Workflow completes with a success, mark the mod as having an update available 
@@ -221,7 +219,7 @@ public class ModManager extends Listenable<TaskCallback> {
 	 * @throws UnsupportedHostException 
 	 */
 	public void tryUpdateModManager() throws UnsupportedHostException {
-		ModWorkflowBuilder builder = new ModWorkflowBuilder("Updating " + TinkerTime.NAME);
+		ModWorkflowBuilder builder = new ModWorkflowBuilder(null);
 		try {
 			builder.checkForUpdates(
 				getCrawler(new URL(CrawlerFactory.APP_UPDATE_URL)),

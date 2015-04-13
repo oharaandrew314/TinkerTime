@@ -22,8 +22,8 @@ import com.github.zafarkhaja.semver.Version;
 
 public class ModWorkflowBuilder extends WorkflowBuilder {
 	
-	public ModWorkflowBuilder(String workflowName) {
-		super(workflowName);
+	public ModWorkflowBuilder(Mod context) {
+		super(context);
 	}
 	
 	/**
