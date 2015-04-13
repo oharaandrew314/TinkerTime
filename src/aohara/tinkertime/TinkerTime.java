@@ -61,7 +61,6 @@ public class TinkerTime {
 		SelectorPanelBuilder<Mod> spBuilder = new SelectorPanelBuilder<>();
 		spBuilder.setListCellRenderer(new ModListCellRenderer(modLoader));
 		spBuilder.setContextMenu(MenuFactory.createPopupMenu(modManager));
-		spBuilder.setLeftControlPanel(new ModImageView(config));
 		spBuilder.addKeyListener(listListener);
 		spBuilder.addSelectionListener(listListener);
 		SelectorPanelController<Mod> selectorPanel = spBuilder.createSelectorPanel(new ModView(modLoader));

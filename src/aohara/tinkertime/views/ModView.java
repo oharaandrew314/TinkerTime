@@ -1,5 +1,6 @@
 package aohara.tinkertime.views;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,6 +12,7 @@ import javax.swing.JPanel;
 
 import aohara.common.config.views.ReadmePanel;
 import aohara.common.selectorPanel.SelectorView;
+import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.resources.ModLoader;
 
@@ -29,32 +31,37 @@ public class ModView extends SelectorView.AbstractSelectorView<Mod> {
 		modVersionLabel = new JLabel(),
 		kspVersionLabel = new JLabel(),
 		updatedOnLabel = new JLabel();
+	private final ModImageView imageView;
+	
 	
 	private final SelectorView<Mod> urlPanel, readmePanel;
 	
 	private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
 	
-	public ModView(final ModLoader modLoader){		
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+	public ModView(final ModLoader modLoader, TinkerConfig config){
+		panel.setLayout(new BorderLayout());
 		panel.setPreferredSize(new java.awt.Dimension(400, 600));
 		
-		updateLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		modVersionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		kspVersionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		updatedOnLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		JPanel topPanel = new JPanel(new BorderLayout());
 		
-		panel.add(updateLabel);		
-		panel.add(modVersionLabel);
-		panel.add(kspVersionLabel);
-		panel.add(updatedOnLabel);
+		// Create Info Panel (Mod Info)
+		JPanel infoPanel = new JPanel();
+		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));		
+		infoPanel.add(updateLabel);
+		infoPanel.add(modVersionLabel);
+		infoPanel.add(kspVersionLabel);
+		infoPanel.add(updatedOnLabel);
+		infoPanel.add((urlPanel = new ModUrlPanel()).getComponent());
 		
-		urlPanel = new ModUrlPanel();
-		urlPanel.getComponent().setAlignmentX(Component.LEFT_ALIGNMENT);
-		panel.add(urlPanel.getComponent());
+		// Create Top Panel (Info Panel and Mod Image)
+		topPanel.add(infoPanel, BorderLayout.CENTER);
+		topPanel.add((imageView = new ModImageView(config)).getComponent(), BorderLayout.EAST);
+		panel.add(topPanel, BorderLayout.NORTH);
 		
+		// Create Bottom (Readme) Panel
 		readmePanel = new ReadmePanel(modLoader);
 		readmePanel.getComponent().setAlignmentX(Component.LEFT_ALIGNMENT);
-		panel.add(readmePanel.getComponent());
+		panel.add(readmePanel.getComponent(), BorderLayout.CENTER);
 	}
 
 	@Override
@@ -92,6 +99,9 @@ public class ModView extends SelectorView.AbstractSelectorView<Mod> {
 			
 			// Readme
 			readmePanel.display(mod);
+			
+			// Image
+			imageView.display(mod);
 		}
 	}
 
