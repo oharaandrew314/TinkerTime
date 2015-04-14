@@ -28,7 +28,7 @@ public class CrawlerFactory {
 	public static final String APP_UPDATE_URL = "https://kerbalstuff.com/mod/243";
 
 	public static final String[] ACCEPTED_MOD_HOSTS	 = new String[]{
-		HOST_CURSE, HOST_GITHUB, HOST_KERBAL_STUFF
+		HOST_KERBAL_STUFF, HOST_CURSE, HOST_GITHUB
 	};
 	
 	private final PageLoader<Document> htmlLoader;
