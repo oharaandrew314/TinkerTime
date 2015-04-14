@@ -12,10 +12,10 @@ import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
-import aohara.common.Dialogs;
 import aohara.common.Util;
+import aohara.common.config.views.Dialogs;
 import aohara.common.content.ImageManager;
-import aohara.common.views.UrlPanel;
+import aohara.common.views.UrlLabels;
 import aohara.tinkertime.ModManager;
 import aohara.tinkertime.ModManager.NoModSelectedException;
 import aohara.tinkertime.TinkerTime;
@@ -30,7 +30,7 @@ class Actions {
 	// -- Helpers ---------------------------------------------------------
 	
 	@SuppressWarnings("serial")
-	private static abstract class TinkerAction extends AbstractAction {
+	static abstract class TinkerAction extends AbstractAction {
 		
 		private static final ImageManager IMAGE_MANAGER = new ImageManager();;
 		protected final JComponent parent;
@@ -50,6 +50,11 @@ class Actions {
 				e.printStackTrace();
 				Dialogs.errorDialog(parent, e);
 			}
+		}
+		
+		public TinkerAction withoutIcon(){
+			putValue(Action.SMALL_ICON, null);
+			return this;
 		}
 		
 		protected abstract void call() throws Exception;
@@ -168,7 +173,7 @@ class Actions {
 	static class CheckforUpdatesAction extends TinkerAction {
 		
 		CheckforUpdatesAction(JComponent parent, ModManager mm){
-			super("Check for Updates", "icon/glyphicons_027_search.png", parent, mm);
+			super("Check for Mod Updates", "icon/glyphicons_027_search.png", parent, mm);
 		}
 
 		@Override
@@ -207,19 +212,6 @@ class Actions {
 		}
 	}
 	
-	@SuppressWarnings("serial")
-	static class ExitAction extends TinkerAction {
-		
-		ExitAction(JComponent parent, ModManager mm){
-			super("Exit", "icon/glyphicons_063_power.png", parent, mm);
-		}
-
-		@Override
-		protected void call() throws Exception {
-			System.exit(0);
-		}
-	}
-	
 	static TinkerAction newHelpAction(JComponent parent){
 		return new GoToUrlAction(
 			"Help",
@@ -243,7 +235,7 @@ class Actions {
 				"\n",
 				"This work is licensed under the Creative Commons \n" +
 				"Attribution-ShareAlike 4.0 International License.\n",
-				new UrlPanel("View a copy of this license", new URL("http://creativecommons.org/licenses/by-sa/4.0/")).getComponent(),
+				new UrlLabels.UrlLink("View a copy of this license", new URL("http://creativecommons.org/licenses/by-sa/4.0/")).getComponent(),
 				"\n",
 				TinkerTime.NAME + " uses Glyphicons (glyphicons.com)"
 			};
@@ -308,7 +300,7 @@ class Actions {
 	static class UpdateTinkerTime extends TinkerAction {
 		
 		UpdateTinkerTime(JComponent parent, ModManager mm){
-			super("Update Tinker Time", null, parent, mm);
+			super("Check for Tinker Time Update", null, parent, mm);
 		}
 
 		@Override
