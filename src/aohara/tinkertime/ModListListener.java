@@ -3,7 +3,7 @@ package aohara.tinkertime;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import aohara.common.Dialogs;
+import aohara.common.config.views.Dialogs;
 import aohara.common.selectorPanel.SelectorListListener;
 import aohara.tinkertime.ModManager.NoModSelectedException;
 import aohara.tinkertime.models.Mod;
