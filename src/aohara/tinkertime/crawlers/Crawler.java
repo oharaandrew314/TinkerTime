@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.concurrent.Callable;
 
 import javax.swing.JOptionPane;
@@ -27,6 +28,8 @@ import com.github.zafarkhaja.semver.Version;
  * @param <T> Type of Page that is to be returned by getPage
  */
 public abstract class Crawler<T> implements Callable<Mod> {
+	
+	public static final String[] VALID_ASSET_EXTENSIONS = new String[]{ ".zip", ".dll" };
 	
 	private final PageLoader<T> pageLoader;
 	public final URL pageUrl;
@@ -82,7 +85,16 @@ public abstract class Crawler<T> implements Callable<Mod> {
 	private Asset getSelectedAsset() throws IOException {
 		// If there is no cached selected asset, get it
 		if (cachedAsset == null){
-			Collection<Asset> assets = getNewestAssets();
+			// Get Valid Assets so one can be chosen
+			Collection<Asset> assets = new LinkedList<>();
+			for (Asset asset : getNewestAssets()){
+				for (String validAssetExtension : VALID_ASSET_EXTENSIONS){
+					if (asset.fileName.endsWith(validAssetExtension)){
+						assets.add(asset);
+					}
+				}
+			}
+			
 			switch(assets.size()){
 			case 0:
 				// No non-source downloads
