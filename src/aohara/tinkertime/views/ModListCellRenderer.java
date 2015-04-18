@@ -132,13 +132,13 @@ public class ModListCellRenderer extends TaskCallback implements ListCellRendere
 	}
 	
 	@Override
-	protected void processTaskEvent(TaskEvent event) {
+	protected void processTaskEvent(final TaskEvent event) {
 		Object context  = event.getTask().getWorkflow().context;
 		if (context == null || !elements.containsKey(context)){
 			return;
 		}
 		
-		ProgressSpinnerPanel element = elements.get(context);
+		final ProgressSpinnerPanel element = elements.get(context);
 		
 		switch(event.getTask().getStatus()){
 		case Ready:
