@@ -9,27 +9,29 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class FileChoosers {
 	
+	public static Path lastJsonLocation = null, lastZipLocation = null;
+	
 	public static Path chooseJsonFile(boolean save) throws FileNotFoundException {
 		return chooseJsonFile(Paths.get("mods.json"), save);
 	}
 	
 	public static Path chooseJsonFile(Path defaultPath, boolean save) throws FileNotFoundException{
-		JFileChooser chooser = new JFileChooser();
+		JFileChooser chooser = new JFileChooser(lastJsonLocation != null ? lastJsonLocation.toFile() : null);
 		chooser.setDialogTitle("Choose Mod Json File");
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);  // Only accept files
 		chooser.setFileFilter(new FileNameExtensionFilter("Json File", "json"));  // Only accept JSON files
 		chooser.setSelectedFile(defaultPath.toFile());
 		
-		return save ? showSaveDialog(chooser) : showOpenDialog(chooser);
+		return lastJsonLocation = save ? showSaveDialog(chooser) : showOpenDialog(chooser);
 	}
 	
 	public static Path chooseModZip() throws FileNotFoundException {
-		JFileChooser chooser = new JFileChooser();
+		JFileChooser chooser = new JFileChooser(lastZipLocation != null ? lastZipLocation.toFile() : null);
 		chooser.setDialogTitle("Please select the mod zip to add.");
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);  // Only accept files
 		chooser.setFileFilter(new FileNameExtensionFilter("Zip Archive", "zip"));
 
-		return showOpenDialog(chooser);
+		return lastZipLocation = showOpenDialog(chooser);
 	}
 	
 	//-- Helpers --------------------------------------------------------------
