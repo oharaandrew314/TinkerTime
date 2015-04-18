@@ -9,6 +9,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.swing.JOptionPane;
 
+import com.github.zafarkhaja.semver.Version;
+
 import aohara.common.Listenable;
 import aohara.common.workflows.tasks.BrowserGoToTask;
 import aohara.common.workflows.tasks.TaskCallback;
@@ -20,6 +22,8 @@ import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.DefaultMods;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.resources.ModLoader;
+import aohara.tinkertime.workflows.CheckForUpdateTask;
+import aohara.tinkertime.workflows.CheckForUpdateTask.OnUpdateAvailable;
 import aohara.tinkertime.workflows.ModWorkflowBuilder;
 
 /**
@@ -84,7 +88,7 @@ public class ModManager extends Listenable<TaskCallback> {
 			// Cleanup operations prior to update
 			if (modLoader.isDownloaded(mod)){
 				if (!forceUpdate){
-					builder.checkForUpdates(mod, getCrawler(mod));
+					builder.checkForUpdates(getCrawler(mod), mod.getVersion(), mod.updatedOn, null);
 				}
 				
 				if (modLoader.isEnabled(mod)){
@@ -180,20 +184,18 @@ public class ModManager extends Listenable<TaskCallback> {
 			try {
 				if (mod.isUpdateable()){
 					ModWorkflowBuilder builder = new ModWorkflowBuilder(mod);
-					builder.checkForUpdates(mod, getCrawler(mod));
-					
-					// If the Workflow completes with a success, mark the mod as having an update available 
-					builder.addListener(new TaskCallback.WorkflowCompleteCallback() {
-						
+					OnUpdateAvailable onUpdateAvailable = new CheckForUpdateTask.OnUpdateAvailable() {
 						@Override
-						protected void processTaskEvent(TaskEvent event) {
+						public void onUpdateAvailable(Version newVersion, URL downloadLink) {
 							mod.updateAvailable = true;
 							modLoader.modUpdated(mod);
 						}
-					});
+					};
+					
+					builder.checkForUpdates(getCrawler(mod), mod.getVersion(), mod.updatedOn, onUpdateAvailable);
 					submitDownloadWorkflow(builder);
 				}
-			} catch (IOException | UnsupportedHostException ex) {
+			} catch (UnsupportedHostException ex) {
 				ex.printStackTrace();
 				e = ex;
 			}
@@ -221,38 +223,32 @@ public class ModManager extends Listenable<TaskCallback> {
 	public void tryUpdateModManager() throws UnsupportedHostException {
 		ModWorkflowBuilder builder = new ModWorkflowBuilder(null);
 		try {
-			builder.checkForUpdates(
-				getCrawler(new URL(CrawlerFactory.APP_UPDATE_URL)),
-				TinkerTime.VERSION, null
-			);
-			builder.addListener(new TaskCallback.WorkflowCompleteCallback() {
+			OnUpdateAvailable onUpdateAvailable = new CheckForUpdateTask.OnUpdateAvailable() {
 				
 				@Override
-				protected void processTaskEvent(TaskEvent event) {
-					Crawler<?> crawler = (Crawler<?>) event.data;
-					
-					try {
-						if (JOptionPane.showConfirmDialog(
-							null,
-							String.format(
-								"%s v%s is available.%n" +
-								"Would you like to download it?%n" +
-								"%n" + 
-								"You currently have v%s",
-								TinkerTime.NAME, crawler.getMod().getVersion(), TinkerTime.VERSION
-							),
-							"Update Tinker Time",
-							JOptionPane.YES_NO_OPTION,
-							JOptionPane.QUESTION_MESSAGE
-						) == JOptionPane.YES_OPTION){
-							BrowserGoToTask.callNow(crawler.getDownloadLink());
-						}
-					} catch (IOException e) {
-						throw new RuntimeException(e);
+				public void onUpdateAvailable(Version newVersion, URL downloadLink) {
+					if (JOptionPane.showConfirmDialog(
+						null,
+						String.format(
+							"%s v%s is available.%n" +
+							"Would you like to download it?%n" +
+							"%n" + 
+							"You currently have v%s",
+							TinkerTime.NAME, newVersion, TinkerTime.VERSION
+						),
+						"Update Tinker Time",
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.QUESTION_MESSAGE
+					) == JOptionPane.YES_OPTION){
+						BrowserGoToTask.callNow(downloadLink);
 					}
 				}
-			});
+			};
 			
+			builder.checkForUpdates(
+				getCrawler(new URL(CrawlerFactory.APP_UPDATE_URL)),
+				TinkerTime.VERSION, null, onUpdateAvailable
+			);
 			submitDownloadWorkflow(builder);
 		} catch (MalformedURLException e) { /* Ignore */ }
 	}

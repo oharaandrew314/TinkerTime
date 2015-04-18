@@ -1,36 +1,42 @@
 package aohara.tinkertime.workflows;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Date;
-
-import com.github.zafarkhaja.semver.Version;
 
 import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.crawlers.Crawler;
+import aohara.tinkertime.crawlers.UpdateCheckCrawler;
+
+import com.github.zafarkhaja.semver.Version;
 
 /**
  * Workflow Task that returns true if an update for a file is available.
  * 
  * @author Andrew O'Hara
  */
-class CheckForUpdateTask extends WorkflowTask {
+public class CheckForUpdateTask extends WorkflowTask {
 	
-	private final Crawler<?> crawler;
-	private final Version currentVersion;
-	private final Date lastUpdatedOn;
+	private final UpdateCheckCrawler crawler;
+	private final OnUpdateAvailable onUpdateAvailable;
 
-	CheckForUpdateTask(Crawler<?> crawler, Version currentVersion, Date lastUpdatedOn) {
-		super("Comparing versions");
-		this.crawler = crawler;
-		this.currentVersion = currentVersion;
-		this.lastUpdatedOn = lastUpdatedOn;
+	CheckForUpdateTask(Crawler<?> crawler, Version currentVersion, Date lastUpdatedOn, OnUpdateAvailable onUpdateAvailable) {
+		this(new UpdateCheckCrawler(crawler, currentVersion, lastUpdatedOn), onUpdateAvailable);
+	}
+	
+	CheckForUpdateTask(UpdateCheckCrawler updateCheckCrawler, OnUpdateAvailable onUpdateAvailable){
+		super("Comparing Versions");
+		this.crawler = updateCheckCrawler;
+		this.onUpdateAvailable = onUpdateAvailable;
 	}
 
 	@Override
-	public boolean execute() throws Exception {
-		if (crawler.isUpdateAvailable(currentVersion, lastUpdatedOn)){
-			setResult(crawler);
-			return true;
+	public boolean execute() throws IOException {
+		if (crawler.isUpdateAvailable()){
+			if (onUpdateAvailable != null){
+				onUpdateAvailable.onUpdateAvailable(crawler.getVersion(), crawler.getDownloadLink());
+				return true;
+			}
 		}
 		return false;
 	}
@@ -38,5 +44,11 @@ class CheckForUpdateTask extends WorkflowTask {
 	@Override
 	protected int findTargetProgress() throws IOException {
 		return -1;
+	}
+	
+	public interface OnUpdateAvailable {
+		
+		void onUpdateAvailable(Version newVersion, URL downloadLink);
+		
 	}
 }

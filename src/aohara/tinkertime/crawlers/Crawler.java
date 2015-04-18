@@ -66,7 +66,7 @@ public abstract class Crawler<T> implements Callable<Mod> {
 		return pageUrl;
 	}
 	
-	private Version getVersion(){
+	Version getVersion(){
 		try {
 			// First try to parse version from an available version tag field
 			String versionString = VersionParser.parseVersionString(getVersionString());
@@ -137,23 +137,12 @@ public abstract class Crawler<T> implements Callable<Mod> {
 
 	public Mod getMod() throws IOException {
 		if (!wasRun){
-			throw new IOException("The Crawler was not run.");
-		} else if (cachedMod == null){
+			call();
+		}
+		if (cachedMod == null){
 			throw new IOException("The Crawler could not generate a mod");
 		}
 		return cachedMod;
-	}
-	
-	public boolean isUpdateAvailable(Version currentVersion, Date lastUpdatedOn) {
-		try{
-			return cachedMod.getVersion().greaterThan(currentVersion);
-		} catch (NullPointerException e){
-			try {
-				return getUpdatedOn().before(lastUpdatedOn);
-			} catch (NullPointerException | IOException e1) {
-				return false;
-			}
-		}
 	}
 	
 	public final URL getDownloadLink() throws IOException{

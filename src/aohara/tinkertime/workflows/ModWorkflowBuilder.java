@@ -29,13 +29,8 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	/**
 	 * Notifies the listeners if an update is available for the given file
 	 */
-	public void checkForUpdates(Mod mod, Crawler<?> crawler) throws IOException, UnsupportedHostException {
-		checkForUpdates(crawler, mod.getVersion(), mod.updatedOn);
-	}
-	
-	public void checkForUpdates(Crawler<?> crawler, Version currentVersion, Date lastUpdatedOn) throws UnsupportedHostException{
-		addTask(new RunCrawlerTask(crawler));
-		addTask(new CheckForUpdateTask(crawler, currentVersion, lastUpdatedOn));
+	public void checkForUpdates(Crawler<?> crawler, Version currentVersion, Date lastUpdatedOn, CheckForUpdateTask.OnUpdateAvailable onUpdateAvailable) {
+		addTask(new CheckForUpdateTask(crawler, currentVersion, lastUpdatedOn, onUpdateAvailable));
 	}
 	
 	/**
