@@ -10,7 +10,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import aohara.common.config.views.ReadmePanel;
 import aohara.common.selectorPanel.SelectorView;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.models.Mod;
