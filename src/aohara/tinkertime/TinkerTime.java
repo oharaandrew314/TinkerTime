@@ -102,5 +102,9 @@ public class TinkerTime {
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
+		
+		// Add Mod Drag and Drop Handler
+		new AddModDragDropHandler(frame, modManager);
+		
 	}
 }
