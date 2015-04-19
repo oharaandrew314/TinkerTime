@@ -79,6 +79,8 @@ public class ModView extends SelectorView.AbstractSelectorView<Mod> {
 				updateLabel.setText("<html><b>Warning:</b> Local File Only.  Not updateable.</html>");
 			} else if(mod.updateAvailable) {
 				updateLabel.setText("<html><b>An update for this mod is available.</b></html>");
+			} else {
+				updateLabel.setText(null);
 			}
 			
 			// Current Mod Version
