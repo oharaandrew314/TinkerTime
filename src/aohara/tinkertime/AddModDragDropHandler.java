@@ -16,7 +16,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.Collection;
 
-import aohara.common.config.views.Dialogs;
+import aohara.common.views.Dialogs;
 import aohara.tinkertime.ModManager.ModUpdateFailedError;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 

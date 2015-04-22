@@ -18,8 +18,8 @@ import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.crawlers.pageLoaders.JsonLoader;
 import aohara.tinkertime.crawlers.pageLoaders.WebpageLoader;
 import aohara.tinkertime.models.Mod;
+import aohara.tinkertime.resources.Icons;
 import aohara.tinkertime.resources.ModLoader;
-import aohara.tinkertime.views.TinkerFrame;
 import aohara.tinkertime.views.ModListCellRenderer;
 import aohara.tinkertime.views.ModView;
 import aohara.tinkertime.views.menus.MenuFactory;
@@ -33,7 +33,7 @@ public class TinkerTime {
 	
 	public static final String
 		NAME = "Tinker Time",
-		AUTHOR = "Andrew O'Hara";
+		AUTHOR = "Andrew O'Hara (oharaandrew314)";
 	public static final Version VERSION = Version.valueOf("1.3.0");
 	public static final String
 		SAFE_NAME = NAME.replace(" ", ""),
@@ -94,7 +94,10 @@ public class TinkerTime {
 		}
 		
 		// Initialize Frame
-		JFrame frame = new TinkerFrame();
+		JFrame frame = new JFrame(TinkerTime.FULL_NAME);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setLayout(new BorderLayout());
+		frame.setIconImages(Icons.getAppIcons());
 		frame.setJMenuBar(MenuFactory.createMenuBar(modManager));
 		frame.add(MenuFactory.createToolBar(modManager), BorderLayout.NORTH);
 		frame.add(selectorPanel.getComponent(), BorderLayout.CENTER);

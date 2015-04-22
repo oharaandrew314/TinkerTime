@@ -13,8 +13,8 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
 import aohara.common.Util;
-import aohara.common.config.views.Dialogs;
 import aohara.common.content.ImageManager;
+import aohara.common.views.Dialogs;
 import aohara.common.views.UrlLabels;
 import aohara.tinkertime.ModManager;
 import aohara.tinkertime.ModManager.NoModSelectedException;
@@ -47,7 +47,6 @@ class Actions {
 			try {
 				call();
 			} catch (Exception e){
-				e.printStackTrace();
 				Dialogs.errorDialog(parent, e);
 			}
 		}
