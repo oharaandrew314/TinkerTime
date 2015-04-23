@@ -70,6 +70,7 @@ public class TinkerTime {
 		modLoader.addListener(selectorPanel);
 		modManager.addListener(progessPanel);
 		modManager.addListener(renderer);
+		new AddModDragDropHandler(selectorPanel.getList(), modManager);  // Add Mod Drag and Drop Handler
 
 		// Start Application
 		renderer.startFramerateTimer();
@@ -105,9 +106,5 @@ public class TinkerTime {
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
-		
-		// Add Mod Drag and Drop Handler
-		new AddModDragDropHandler(frame, modManager);
-		
 	}
 }
