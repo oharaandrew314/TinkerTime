@@ -53,7 +53,7 @@ public class MenuFactory {
 		JMenu helpMenu = new JMenu("Help");
 		helpMenu.add(new Actions.AboutAction(menuBar, mm).withoutIcon());
 		helpMenu.add(Actions.newHelpAction(menuBar).withoutIcon());
-		helpMenu.add(Actions.newContactAction(menuBar).withoutIcon());
+		helpMenu.add(new Actions.ContactAction(menuBar, mm).withoutIcon());
 		menuBar.add(helpMenu);
 		
 		return menuBar;

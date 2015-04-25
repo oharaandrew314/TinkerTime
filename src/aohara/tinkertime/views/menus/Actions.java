@@ -4,6 +4,7 @@ import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 
@@ -247,13 +248,20 @@ class Actions {
 		}
 	}
 	
-	static TinkerAction newContactAction(JComponent parent){
-		return new GoToUrlAction(
-			"Contact Me",
-			"http://tinkertime.uservoice.com",
-			"icon/glyphicons_010_envelope.png",
-			parent
-		);
+	static class ContactAction extends TinkerAction {
+		
+		ContactAction(JComponent parent, ModManager mm){
+			super("Contact Me", "icon/glyphicons_010_envelope.png", parent, mm);
+		}
+
+		@Override
+		protected void call() throws Exception {
+			Desktop desktop = Desktop.getDesktop();
+			String message = "mailto:tinkertime@andrewohara.io?subject=TinkerTime%20Support%20Request";
+			URI uri = URI.create(message);
+			desktop.mail(uri);
+		}
+		
 	}
 	
 	@SuppressWarnings("serial")
