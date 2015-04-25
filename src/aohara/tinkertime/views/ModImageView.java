@@ -52,5 +52,6 @@ public class ModImageView extends SelectorView.AbstractSelectorView<Mod> {
 		}
 	}
 	
+	@SuppressWarnings("serial")
 	private static class NoModSelectedException extends Exception {}
 }

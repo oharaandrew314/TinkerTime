@@ -97,7 +97,7 @@ public class TinkerConfig {
 			// If Windows, only run 64-bit if user chooses to.  Cache user's choice.
 			boolean is64Bit = System.getenv("ProgramFiles(x86)") != null; 
 			if (is64Bit){
-				if (config.getProperty(WIN_64) == null){
+				if (config.getProperty(WIN_64).getValue() == null){
 					Boolean use64 = JOptionPane.showConfirmDialog(
 						null,
 						"Tinker Time has detected that you are runing a 64-bit system.\n" +
