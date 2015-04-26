@@ -32,9 +32,22 @@ The [Tinker Time Wiki](https://github.com/oharaandrew314/TinkerTime/wiki) contai
 
 ### Change Log
 
-##### v2.0 (planned)
+##### v1.4
 
-This major update is planned to feature a visual design overhaul, and .version file integration
+###### New Features
+- You can now drag and drop URL icons from your browser and files into the mod list to add them
+- The Config Window has been visually updated
+- Task progress will now appear next to their respective mods as spinners
+  - New mods will appear in the list as they are being added
+  - The Lower Progress bars have been removed
+- The "Enter" and "Delete" keys will now toggle and delete mods in the list
+- Tooltips have been added to mods in the list, explaining their current state
+- The Mod Image View has been moved to the right panel
+- UserVoice support will be reitred.  Support is now done through tinkertime at andrewohara dot io
+
+###### Fixes
+- Pressing cancel while selecting a github asset will no longer delete the zip
+- Fix Regression where user would be asked to select github asset when they are just checking for updates
 
 ##### v1.3
 
