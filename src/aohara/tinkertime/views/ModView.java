@@ -39,7 +39,7 @@ public class ModView extends SelectorView.AbstractSelectorView<Mod> {
 	
 	public ModView(final ModLoader modLoader, TinkerConfig config){
 		panel.setLayout(new BorderLayout());
-		panel.setPreferredSize(new java.awt.Dimension(400, 600));
+		panel.setPreferredSize(new java.awt.Dimension(500, 600));
 		
 		JPanel topPanel = new JPanel(new BorderLayout());
 		

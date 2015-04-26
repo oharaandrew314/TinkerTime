@@ -32,7 +32,7 @@ public class TinkerTime {
 	
 	public static final String
 		NAME = "Tinker Time",
-		AUTHOR = "Andrew O'Hara (oharaandrew314)";
+		AUTHOR = "oharaandrew314";
 	public static final Version VERSION = Version.valueOf("1.3.0");
 	public static final String
 		SAFE_NAME = NAME.replace(" ", ""),
