@@ -33,7 +33,7 @@ public class TinkerTime {
 	public static final String
 		NAME = "Tinker Time",
 		AUTHOR = "oharaandrew314";
-	public static final Version VERSION = Version.valueOf("1.3.0");
+	public static final Version VERSION = Version.valueOf("1.4.0");
 	public static final String
 		SAFE_NAME = NAME.replace(" ", ""),
 		FULL_NAME = String.format("%s v%s by %s", NAME, VERSION, AUTHOR);
