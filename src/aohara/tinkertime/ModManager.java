@@ -81,22 +81,9 @@ public class ModManager extends Listenable<TaskCallback> {
 		if (!mod.isUpdateable()){
 			throw new ModUpdateFailedError(mod, "Mod is a local zip only, and cannot be updated.");
 		}
-		
-		ModWorkflowBuilder builder = new ModWorkflowBuilder(mod);
 		try {
-			// Cleanup operations prior to update
-			if (modLoader.isDownloaded(mod)){
-				if (!forceUpdate){
-					builder.checkForUpdates(getCrawler(mod), mod.getVersion(), mod.updatedOn, null);
-				}
-				
-				if (modLoader.isEnabled(mod)){
-					builder.disableMod(mod, modLoader);
-				}
-				
-				builder.deleteModZip(mod, modLoader);
-			}
-			builder.updateMod(getCrawler(mod), config, modLoader);
+			ModWorkflowBuilder builder = new ModWorkflowBuilder(mod);
+			builder.updateMod(mod, getCrawler(mod), config, modLoader, forceUpdate);
 			submitDownloadWorkflow(builder);
 		} catch (UnsupportedHostException e) {
 			throw new ModUpdateFailedError(e);

@@ -31,24 +31,42 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	}
 	
 	public void downloadNewMod(Crawler<?> crawler, TinkerConfig config, ModLoader modLoader) {
-		// Create Placeholder Mod
 		try {
+			// Create Placeholder Mod
 			Mod placeholder = Mod.newTempMod(crawler.getApiUrl());
 			updateContext(placeholder);
 			addTask(new SaveModTask.FromMod(modLoader, placeholder));
+			
+			// Download Mod
+			updateMod(placeholder, crawler, config, modLoader, true);
 		} catch (MalformedURLException e) {
 			Dialogs.errorDialog(null, e);
 		}
-		
-		// Download Mod
-		updateMod(crawler, config, modLoader);
 	}
 	
 	/**
 	 * Downloads the latest version of the mod referenced by the URL.
 	 */
-	public void updateMod(Crawler<?> crawler, TinkerConfig config, ModLoader modLoader) {
+	public void updateMod(Mod mod, Crawler<?> crawler, TinkerConfig config, ModLoader modLoader, boolean forceUpdate) {
 		addTask(new RunCrawlerTask(crawler));
+		
+		// Cleanup operations prior to update
+		if (modLoader.isDownloaded(mod)){
+			if (!forceUpdate){
+				checkForUpdates(crawler, mod.getVersion(), mod.updatedOn, null);
+			}
+			
+			// Disable Mod if it is enabled
+			try {
+				if (modLoader.isEnabled(mod)){
+					disableMod(mod, modLoader);
+				}
+			} catch (ModNotDownloadedException e) {
+				// Do Nothing
+			}
+			
+			deleteModZip(mod, modLoader);
+		}
 		
 		addTask(new DownloadModAssetTask(crawler, config, modLoader, ModDownloadType.File));
 		addTask(new DownloadModAssetTask(crawler, config, modLoader, ModDownloadType.Image));
