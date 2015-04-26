@@ -1,10 +1,12 @@
 package aohara.tinkertime.workflows;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.util.Date;
 import java.util.Set;
 
+import aohara.common.views.Dialogs;
 import aohara.common.workflows.tasks.WorkflowBuilder;
 import aohara.tinkertime.ModManager.ModNotDownloadedException;
 import aohara.tinkertime.TinkerConfig;
@@ -30,9 +32,13 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	
 	public void downloadNewMod(Crawler<?> crawler, TinkerConfig config, ModLoader modLoader) {
 		// Create Placeholder Mod
-		Mod placeholder = Mod.newTempMod(crawler.pageUrl);
-		updateContext(placeholder);
-		addTask(new SaveModTask.FromMod(modLoader, placeholder));
+		try {
+			Mod placeholder = Mod.newTempMod(crawler.getApiUrl());
+			updateContext(placeholder);
+			addTask(new SaveModTask.FromMod(modLoader, placeholder));
+		} catch (MalformedURLException e) {
+			Dialogs.errorDialog(null, e);
+		}
 		
 		// Download Mod
 		updateMod(crawler, config, modLoader);

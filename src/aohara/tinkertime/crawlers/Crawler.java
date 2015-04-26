@@ -62,7 +62,7 @@ public abstract class Crawler<T> implements Callable<Mod> {
 		return urlToId(getApiUrl());
 	}
 	
-	protected URL getApiUrl() throws MalformedURLException{
+	public URL getApiUrl() throws MalformedURLException{
 		return pageUrl;
 	}
 	
