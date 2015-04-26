@@ -12,13 +12,13 @@ import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.Timer;
 
 import thirdParty.CompoundIcon;
 import aohara.common.Util;
 import aohara.common.content.ImageManager;
+import aohara.common.views.Dialogs;
 import aohara.common.views.ProgressSpinnerPanel;
 import aohara.common.workflows.tasks.TaskCallback;
 import aohara.common.workflows.tasks.WorkflowTask.TaskEvent;
@@ -158,14 +158,7 @@ public class ModListCellRenderer extends TaskCallback implements ListCellRendere
 			}
 			break;
 		case Exception:
-			JOptionPane.showMessageDialog(
-				element,
-				"An error ocurred while processing:\n" + event.getTask().getWorkflow() +
-				"\n\n" +
-				((TaskExceptionEvent)event).exception,
-				"Error!",
-				JOptionPane.ERROR_MESSAGE
-			);
+			Dialogs.errorDialog(element, ((TaskExceptionEvent)event).exception);
 		case Success:
 		case Failure:
 			element.reset();

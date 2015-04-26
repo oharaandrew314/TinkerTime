@@ -82,7 +82,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 				disableMod(mod, modLoader);
 			}
 		} catch (ModNotDownloadedException e) {
-			e.printStackTrace();  // Do nothing
+			// Do nothing
 		}
 		
 		deleteModZip(mod, modLoader);
