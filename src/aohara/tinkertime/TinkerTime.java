@@ -1,6 +1,7 @@
 package aohara.tinkertime;
 
 import java.awt.BorderLayout;
+import java.net.MalformedURLException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -32,7 +33,8 @@ public class TinkerTime {
 	
 	public static final String
 		NAME = "Tinker Time",
-		AUTHOR = "oharaandrew314";
+		AUTHOR = "oharaandrew314",
+		DOWNLOAD_URL = "https://kerbalstuff.com/mod/243";
 	public static final Version VERSION = Version.valueOf("1.4.0");
 	public static final String
 		SAFE_NAME = NAME.replace(" ", ""),
@@ -77,7 +79,7 @@ public class TinkerTime {
 		if (config.isCheckForMMUpdatesOnStartup()){
 			try {
 				modManager.tryUpdateModManager();
-			} catch (UnsupportedHostException e) {
+			} catch (UnsupportedHostException | MalformedURLException e) {
 				JOptionPane.showMessageDialog(null, e.toString(), "Error Checking for App Updates", JOptionPane.ERROR_MESSAGE);
 			}
 		}

@@ -56,10 +56,14 @@ public class Mod implements Comparable<Mod> {
 	}
 	
 	public static Mod newTempMod(URL url){
+		return newTempMod(url, null);
+	}
+	
+	public static Mod newTempMod(URL url, Version version){
 		return new Mod(
-			Crawler.urlToId(url), String.format("New %s Mod",
-			url.getHost()), null, null, url, null, null, null
-		);
+				Crawler.urlToId(url), String.format("New %s Mod",
+				url.getHost()), null, null, url, null, null, version
+			);
 	}
 	
 	public Path getCachedImagePath(TinkerConfig config){

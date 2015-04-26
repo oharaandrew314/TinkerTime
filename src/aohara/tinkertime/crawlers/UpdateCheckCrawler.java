@@ -23,7 +23,7 @@ public class UpdateCheckCrawler implements Callable<Boolean> {
 	@Override
 	public Boolean call() throws IOException {
 		try{
-			isUpdateAvailable = crawler.getMod().getVersion().greaterThan(currentVersion);
+			isUpdateAvailable = crawler.getVersion().greaterThan(currentVersion);
 		} catch (NullPointerException e){
 			try {
 				isUpdateAvailable = crawler.getUpdatedOn().before(lastUpdatedOn);

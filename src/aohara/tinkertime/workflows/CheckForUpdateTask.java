@@ -1,7 +1,6 @@
 package aohara.tinkertime.workflows;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.Date;
 
 import aohara.common.workflows.tasks.WorkflowTask;
@@ -18,37 +17,23 @@ import com.github.zafarkhaja.semver.Version;
 public class CheckForUpdateTask extends WorkflowTask {
 	
 	private final UpdateCheckCrawler crawler;
-	private final OnUpdateAvailable onUpdateAvailable;
 
-	CheckForUpdateTask(Crawler<?> crawler, Version currentVersion, Date lastUpdatedOn, OnUpdateAvailable onUpdateAvailable) {
-		this(new UpdateCheckCrawler(crawler, currentVersion, lastUpdatedOn), onUpdateAvailable);
+	CheckForUpdateTask(Crawler<?> crawler, Version currentVersion, Date lastUpdatedOn) {
+		this(new UpdateCheckCrawler(crawler, currentVersion, lastUpdatedOn));
 	}
 	
-	CheckForUpdateTask(UpdateCheckCrawler updateCheckCrawler, OnUpdateAvailable onUpdateAvailable){
+	CheckForUpdateTask(UpdateCheckCrawler updateCheckCrawler){
 		super("Comparing Versions");
 		this.crawler = updateCheckCrawler;
-		this.onUpdateAvailable = onUpdateAvailable;
 	}
 
 	@Override
 	public boolean execute() throws IOException {
-		if (crawler.isUpdateAvailable()){
-			if (onUpdateAvailable != null){
-				onUpdateAvailable.onUpdateAvailable(crawler.getVersion(), crawler.getDownloadLink());
-				return true;
-			}
-		}
-		return false;
+		return crawler.isUpdateAvailable();
 	}
 	
 	@Override
 	protected int findTargetProgress() throws IOException {
 		return -1;
-	}
-	
-	public interface OnUpdateAvailable {
-		
-		void onUpdateAvailable(Version newVersion, URL downloadLink);
-		
 	}
 }

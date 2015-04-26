@@ -6,23 +6,15 @@ import java.nio.file.Path;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import javax.swing.JOptionPane;
-
-import com.github.zafarkhaja.semver.Version;
-
 import aohara.common.Listenable;
-import aohara.common.workflows.tasks.BrowserGoToTask;
 import aohara.common.workflows.tasks.TaskCallback;
 import aohara.common.workflows.tasks.WorkflowBuilder;
 import aohara.common.workflows.tasks.WorkflowTask.TaskEvent;
-import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.DefaultMods;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.resources.ModLoader;
-import aohara.tinkertime.workflows.CheckForUpdateTask;
-import aohara.tinkertime.workflows.CheckForUpdateTask.OnUpdateAvailable;
 import aohara.tinkertime.workflows.ModWorkflowBuilder;
 
 /**
@@ -82,8 +74,8 @@ public class ModManager extends Listenable<TaskCallback> {
 			throw new ModUpdateFailedError(mod, "Mod is a local zip only, and cannot be updated.");
 		}
 		try {
-			ModWorkflowBuilder builder = new ModWorkflowBuilder(mod);
-			builder.updateMod(mod, getCrawler(mod), config, modLoader, forceUpdate);
+			ModWorkflowBuilder builder = new ModWorkflowBuilder(mod, crawlerFactory);
+			builder.updateMod(config, modLoader, forceUpdate);
 			submitDownloadWorkflow(builder);
 		} catch (UnsupportedHostException e) {
 			throw new ModUpdateFailedError(e);
@@ -91,13 +83,13 @@ public class ModManager extends Listenable<TaskCallback> {
 	}
 	
 	public void downloadMod(URL url) throws UnsupportedHostException {
-		ModWorkflowBuilder builder = new ModWorkflowBuilder(null);
-		builder.downloadNewMod(getCrawler(url), config, modLoader);
+		ModWorkflowBuilder builder = new ModWorkflowBuilder(Mod.newTempMod(url), crawlerFactory);
+		builder.downloadNewMod(config, modLoader);
 		submitDownloadWorkflow(builder);
 	}
 	
 	public void addModZip(Path zipPath){
-		ModWorkflowBuilder builder = new ModWorkflowBuilder(null);
+		ModWorkflowBuilder builder = new ModWorkflowBuilder(Mod.newTempMod(zipPath), crawlerFactory);
 		builder.addLocalMod(zipPath, modLoader);
 		submitDownloadWorkflow(builder);
 	}
@@ -109,7 +101,7 @@ public class ModManager extends Listenable<TaskCallback> {
 	}
 	
 	public void toggleMod(final Mod mod) {
-		ModWorkflowBuilder builder = new ModWorkflowBuilder(mod);
+		ModWorkflowBuilder builder = new ModWorkflowBuilder(mod, crawlerFactory);
 		try {
 			if (modLoader.isEnabled(mod)){
 				builder.disableMod(mod, modLoader);
@@ -127,7 +119,7 @@ public class ModManager extends Listenable<TaskCallback> {
 			throw new CannotDeleteModException(mod, "Built-in");
 		}
 		
-		ModWorkflowBuilder builder = new ModWorkflowBuilder(mod);
+		ModWorkflowBuilder builder = new ModWorkflowBuilder(mod, crawlerFactory);
 		builder.deleteMod(mod, config, modLoader);
 		builder.addListener(new TaskCallback.WorkflowCompleteCallback() {
 			
@@ -146,16 +138,8 @@ public class ModManager extends Listenable<TaskCallback> {
 		for (final Mod mod : modLoader.getMods()){
 			try {
 				if (mod.isUpdateable()){
-					ModWorkflowBuilder builder = new ModWorkflowBuilder(mod);
-					OnUpdateAvailable onUpdateAvailable = new CheckForUpdateTask.OnUpdateAvailable() {
-						@Override
-						public void onUpdateAvailable(Version newVersion, URL downloadLink) {
-							mod.updateAvailable = true;
-							modLoader.modUpdated(mod);
-						}
-					};
-					
-					builder.checkForUpdates(getCrawler(mod), mod.getVersion(), mod.updatedOn, onUpdateAvailable);
+					ModWorkflowBuilder builder = new ModWorkflowBuilder(mod, crawlerFactory);
+					builder.checkForUpdates(modLoader, true);
 					submitDownloadWorkflow(builder);
 				}
 			} catch (UnsupportedHostException ex) {
@@ -182,38 +166,15 @@ public class ModManager extends Listenable<TaskCallback> {
 	 * 
 	 * If an update is available from Github, then the user is given a choice to update.
 	 * @throws UnsupportedHostException 
+	 * @throws MalformedURLException 
 	 */
-	public void tryUpdateModManager() throws UnsupportedHostException {
-		ModWorkflowBuilder builder = new ModWorkflowBuilder(null);
-		try {
-			OnUpdateAvailable onUpdateAvailable = new CheckForUpdateTask.OnUpdateAvailable() {
-				
-				@Override
-				public void onUpdateAvailable(Version newVersion, URL downloadLink) {
-					if (JOptionPane.showConfirmDialog(
-						null,
-						String.format(
-							"%s v%s is available.%n" +
-							"Would you like to download it?%n" +
-							"%n" + 
-							"You currently have v%s",
-							TinkerTime.NAME, newVersion, TinkerTime.VERSION
-						),
-						"Update Tinker Time",
-						JOptionPane.YES_NO_OPTION,
-						JOptionPane.QUESTION_MESSAGE
-					) == JOptionPane.YES_OPTION){
-						BrowserGoToTask.callNow(downloadLink);
-					}
-				}
-			};
-			
-			builder.checkForUpdates(
-				getCrawler(new URL(CrawlerFactory.APP_UPDATE_URL)),
-				TinkerTime.VERSION, null, onUpdateAvailable
-			);
-			submitDownloadWorkflow(builder);
-		} catch (MalformedURLException e) { /* Ignore */ }
+	public void tryUpdateModManager() throws UnsupportedHostException, MalformedURLException {
+		ModWorkflowBuilder builder = new ModWorkflowBuilder(
+			Mod.newTempMod(new URL(TinkerTime.DOWNLOAD_URL), TinkerTime.VERSION),
+			crawlerFactory
+		);
+		builder.checkForUpdates(modLoader, false);
+		builder.downloadModInBrowser();
 	}
 	
 	public void openConfigWindow(){
@@ -226,14 +187,6 @@ public class ModManager extends Listenable<TaskCallback> {
 	}
 	
 	// -- Helpers -----------------------------------------------------------
-	
-	private Crawler<?> getCrawler(URL url) throws UnsupportedHostException{
-		return crawlerFactory.getCrawler(url);
-	}
-	
-	private Crawler<?> getCrawler(Mod mod) throws UnsupportedHostException{
-		return getCrawler(mod.pageUrl);
-	}
 	
 	private void submitDownloadWorkflow(WorkflowBuilder builder){
 		for(TaskCallback callback : getListeners()){

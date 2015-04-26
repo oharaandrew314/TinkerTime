@@ -66,7 +66,7 @@ public abstract class Crawler<T> implements Callable<Mod> {
 		return pageUrl;
 	}
 	
-	Version getVersion(){
+	public Version getVersion(){
 		try {
 			// First try to parse version from an available version tag field
 			String versionString = VersionParser.parseVersionString(getVersionString());
