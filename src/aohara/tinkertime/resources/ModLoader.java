@@ -136,7 +136,7 @@ public class ModLoader extends Listenable<SelectorPanelController<Mod>> {
 	public synchronized Set<Path> getModFilePaths(Mod mod) throws ModNotDownloadedException {
 		try {
 			return modCache.get(mod).getPaths();
-		} catch (IOException e) {
+		} catch (IOException | NullPointerException e) {
 			throw new ModNotDownloadedException(mod, e.toString());
 		}
 	}

@@ -8,11 +8,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import com.github.zafarkhaja.semver.Version;
-
 import aohara.common.selectorPanel.SelectorPanelBuilder;
 import aohara.common.selectorPanel.SelectorPanelController;
-import aohara.common.views.ProgressPanel;
 import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.crawlers.pageLoaders.JsonLoader;
@@ -23,6 +20,8 @@ import aohara.tinkertime.resources.ModLoader;
 import aohara.tinkertime.views.ModListCellRenderer;
 import aohara.tinkertime.views.ModView;
 import aohara.tinkertime.views.menus.MenuFactory;
+
+import com.github.zafarkhaja.semver.Version;
 
 /**
  * Main Class for Tinker Time
@@ -64,11 +63,9 @@ public class TinkerTime {
 		spBuilder.addKeyListener(listListener);
 		spBuilder.addSelectionListener(listListener);
 		SelectorPanelController<Mod> selectorPanel = spBuilder.createSelectorPanel(new ModView(modLoader, config));
-		ProgressPanel progessPanel = new ProgressPanel();
 		
 		// Add Listeners
 		modLoader.addListener(selectorPanel);
-		modManager.addListener(progessPanel);
 		modManager.addListener(renderer);
 		new AddModDragDropHandler(selectorPanel.getList(), modManager);  // Add Mod Drag and Drop Handler
 
@@ -102,7 +99,6 @@ public class TinkerTime {
 		frame.setJMenuBar(MenuFactory.createMenuBar(modManager));
 		frame.add(MenuFactory.createToolBar(modManager), BorderLayout.NORTH);
 		frame.add(selectorPanel.getComponent(), BorderLayout.CENTER);
-		frame.add(progessPanel.getComponent(), BorderLayout.SOUTH);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);

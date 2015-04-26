@@ -149,7 +149,7 @@ public abstract class Crawler<T> implements Callable<Mod> {
 		return getSelectedAsset().downloadLink;
 	}
 	
-	public static String urlToId(URL url) throws MalformedURLException {
+	public static String urlToId(URL url) {
 		return url.toString().split("://")[1].replace("/", "-");
 	}
 	

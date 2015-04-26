@@ -144,6 +144,7 @@ public class ModListCellRenderer extends TaskCallback implements ListCellRendere
 		case Ready:
 			break;  // Ignored
 		case Running:
+			// If a new task has begun, show progress spinner
 			if (!element.isRunning()){
 				element.start();
 				new Runnable(){

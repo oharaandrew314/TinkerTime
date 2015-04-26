@@ -5,6 +5,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import aohara.common.workflows.tasks.FileTransferTask;
 import aohara.tinkertime.TinkerConfig;
@@ -54,7 +55,7 @@ class DownloadModAssetTask extends FileTransferTask {
 		
 		try {
 			transfer(getUrl(), tempDest);  // Copy to temp file
-			Files.move(tempDest, dest);  // Rename to dest file
+			Files.move(tempDest, dest, StandardCopyOption.REPLACE_EXISTING);  // Rename to dest file
 		} catch (NullSourceException e){
 			// Do Nothing
 		}

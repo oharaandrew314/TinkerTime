@@ -1,6 +1,5 @@
 package aohara.tinkertime;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -97,43 +96,22 @@ public class ModManager extends Listenable<TaskCallback> {
 				
 				builder.deleteModZip(mod, modLoader);
 			}
-			builder.downloadMod(getCrawler(mod), config, modLoader);
-			builder.addListener(new TaskCallback.WorkflowCompleteCallback() {
-				
-				@Override
-				protected void processTaskEvent(TaskEvent event) {
-					Mod mod = (Mod) event.data;
-					modLoader.modUpdated(mod);
-				}
-			});
+			builder.updateMod(getCrawler(mod), config, modLoader);
 			submitDownloadWorkflow(builder);
-		} catch (IOException | UnsupportedHostException e) {
+		} catch (UnsupportedHostException e) {
 			throw new ModUpdateFailedError(e);
 		}
 	}
 	
-	public void downloadMod(URL url) throws ModUpdateFailedError, UnsupportedHostException {
+	public void downloadMod(URL url) throws UnsupportedHostException {
 		ModWorkflowBuilder builder = new ModWorkflowBuilder(null);
-		try {
-			builder.downloadMod(getCrawler(url), config, modLoader);
-			builder.addListener(new TaskCallback.WorkflowCompleteCallback() {
-				
-				@Override
-				protected void processTaskEvent(TaskEvent event) {
-					Mod mod = (Mod) event.data;
-					modLoader.modUpdated(mod);
-				}
-			});
-			submitDownloadWorkflow(builder);
-		} catch (IOException e) {
-			throw new ModUpdateFailedError(e);
-		}
+		builder.downloadNewMod(getCrawler(url), config, modLoader);
+		submitDownloadWorkflow(builder);
 	}
 	
 	public void addModZip(Path zipPath){
 		ModWorkflowBuilder builder = new ModWorkflowBuilder(null);
-		final Mod futureMod = builder.addLocalMod(zipPath, modLoader);
-		builder.refreshModAfterWorkflowComplete(futureMod, modLoader);
+		builder.addLocalMod(zipPath, modLoader);
 		submitDownloadWorkflow(builder);
 	}
 	
@@ -150,9 +128,7 @@ public class ModManager extends Listenable<TaskCallback> {
 				builder.disableMod(mod, modLoader);
 			} else {
 				builder.enableMod(mod, modLoader, config);
-			}
-			builder.refreshModAfterWorkflowComplete(mod, modLoader);
-			
+			}			
 			submitEnablerWorkflow(builder);
 		} catch (ModNotDownloadedException e){
 			// Ignore user input if mod not downloaded
