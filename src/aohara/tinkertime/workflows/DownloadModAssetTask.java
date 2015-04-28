@@ -2,7 +2,10 @@ package aohara.tinkertime.workflows;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import aohara.common.workflows.tasks.FileTransferTask;
 import aohara.tinkertime.TinkerConfig;
@@ -47,10 +50,15 @@ class DownloadModAssetTask extends FileTransferTask {
 
 	@Override
 	public boolean execute() throws Exception {
-		transfer(
-			getUrl() != null ? getUrl().toURI() : null,
-			getDest()
-		);
+		Path dest = getDest();
+		Path tempDest = Paths.get(dest.toString() + ".tempDownload");
+		
+		try {
+			transfer(getUrl(), tempDest);  // Copy to temp file
+			Files.move(tempDest, dest, StandardCopyOption.REPLACE_EXISTING);  // Rename to dest file
+		} catch (NullSourceException e){
+			// Do Nothing
+		}
 		
 		setResult(crawler.getMod());
 		return true;

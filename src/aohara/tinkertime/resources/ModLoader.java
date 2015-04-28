@@ -16,7 +16,7 @@ import java.util.zip.ZipFile;
 import javax.swing.JOptionPane;
 
 import aohara.common.Listenable;
-import aohara.common.selectorPanel.SelectorInterface;
+import aohara.common.selectorPanel.SelectorPanelController;
 import aohara.tinkertime.ModManager;
 import aohara.tinkertime.ModManager.ModNotDownloadedException;
 import aohara.tinkertime.TinkerConfig;
@@ -36,7 +36,7 @@ import com.google.gson.reflect.TypeToken;
  * 
  * @author Andrew O'Hara
  */
-public class ModLoader extends Listenable<SelectorInterface<Mod>> {
+public class ModLoader extends Listenable<SelectorPanelController<Mod>> {
 	
 	private static final Type MODS_TYPE = new TypeToken<Set<Mod>>() {}.getType();
 	
@@ -100,7 +100,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 	}
 	
 	private void updateViews(){
-		for (SelectorInterface<Mod> l : getListeners()){
+		for (SelectorPanelController<Mod> l : getListeners()){
 			l.setData(new LinkedHashSet<>(modCache.keySet()));
 		}
 	}
@@ -136,7 +136,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 	public synchronized Set<Path> getModFilePaths(Mod mod) throws ModNotDownloadedException {
 		try {
 			return modCache.get(mod).getPaths();
-		} catch (IOException e) {
+		} catch (IOException | NullPointerException e) {
 			throw new ModNotDownloadedException(mod, e.toString());
 		}
 	}
@@ -215,7 +215,7 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 		return mods;
 	}
 	
-	private boolean trySatisfyLocalFiles(Mod mod, ModManager mm){
+	private boolean trySatisfyLocalFiles(Mod mod, ModManager mm) throws FileNotFoundException{
 		if (JOptionPane.showConfirmDialog(
 			null,
 			mod.name + " does not have an update url.\n"
@@ -224,10 +224,8 @@ public class ModLoader extends Listenable<SelectorInterface<Mod>> {
 			JOptionPane.YES_NO_OPTION,
 			JOptionPane.QUESTION_MESSAGE
 		) == JOptionPane.YES_OPTION){
-			Path zipPath = FileChoosers.chooseModZip();
-			if (zipPath != null){
-				mm.addModZip(zipPath);
-			}
+			mm.addModZip(FileChoosers.chooseModZip());
+			return true;
 		}
 		return false;
 	}

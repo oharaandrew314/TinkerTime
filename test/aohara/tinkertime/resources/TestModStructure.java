@@ -26,6 +26,7 @@ public class TestModStructure {
 		
 		Set<Path> actualPaths = struct.getPaths();
 		
+		/*
 		System.out.println("\nExpecting");
 		for (Path path : expectedPaths){
 			System.out.println(path);
@@ -34,6 +35,7 @@ public class TestModStructure {
 		for(Path path : actualPaths){
 			System.out.println(path);
 		}
+		*/
 		
 		assertEquals(expectedPaths, actualPaths);
 	}

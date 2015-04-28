@@ -1,10 +1,11 @@
 package aohara.tinkertime.views.menus;
 
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
-import java.nio.file.Path;
 import java.util.Arrays;
 
 import javax.swing.AbstractAction;
@@ -14,25 +15,23 @@ import javax.swing.JOptionPane;
 
 import aohara.common.Util;
 import aohara.common.content.ImageManager;
+import aohara.common.views.Dialogs;
+import aohara.common.views.UrlLabels;
 import aohara.tinkertime.ModManager;
-import aohara.tinkertime.ModManager.ModNotDownloadedException;
+import aohara.tinkertime.ModManager.NoModSelectedException;
 import aohara.tinkertime.TinkerTime;
-import aohara.tinkertime.ModManager.CannotDisableModError;
-import aohara.tinkertime.ModManager.ModUpdateFailedError;
 import aohara.tinkertime.controllers.launcher.GameLauncher;
 import aohara.tinkertime.crawlers.CrawlerFactory;
-import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
-import aohara.tinkertime.models.DefaultMods;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.views.FileChoosers;
-import aohara.tinkertime.views.UrlPanel;
+import aohara.tinkertime.views.TinkerDialogs;
 
 class Actions {
 	
 	// -- Helpers ---------------------------------------------------------
 	
 	@SuppressWarnings("serial")
-	private static abstract class TinkerAction extends AbstractAction {
+	static abstract class TinkerAction extends AbstractAction {
 		
 		private static final ImageManager IMAGE_MANAGER = new ImageManager();;
 		protected final JComponent parent;
@@ -45,13 +44,39 @@ class Actions {
 			putValue(Action.SHORT_DESCRIPTION, title);
 		}
 		
-		protected void errorMessage(Throwable ex){
-			ex.printStackTrace();
-			errorMessage(ex.getClass().getSimpleName() + " - " + ex.getMessage());
+		public void actionPerformed(ActionEvent evt) {
+			try {
+				call();
+			} catch (Exception e){
+				Dialogs.errorDialog(parent, e);
+			}
 		}
 		
-		protected void errorMessage(String message){
-			JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+		public TinkerAction withoutIcon(){
+			putValue(Action.SMALL_ICON, null);
+			return this;
+		}
+		
+		protected abstract void call() throws Exception;
+	}
+	
+	@SuppressWarnings("serial")
+	private static final class GoToUrlAction extends TinkerAction {
+		
+		private final URL url;
+		
+		GoToUrlAction(String title, String url, String iconPath, JComponent parent) {
+			super(title, iconPath, parent, null);
+			try {
+				this.url = new URL(url);
+			} catch (MalformedURLException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		@Override
+		protected void call() throws Exception {
+			Util.goToHyperlink(url);
 		}
 	}
 	
@@ -65,7 +90,7 @@ class Actions {
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent evt) {
+		protected void call() throws Exception {
 			// Get URL from user
 			String urlString = JOptionPane.showInputDialog(
 				parent,
@@ -84,13 +109,7 @@ class Actions {
 			try {
 				mm.downloadMod(new URL(urlString));
 			} catch(MalformedURLException ex){
-				try {
-					mm.downloadMod(new URL("http://" + urlString));
-				} catch (MalformedURLException | ModUpdateFailedError| UnsupportedHostException e) {
-					errorMessage(ex);
-				}
-			} catch (UnsupportedHostException | ModUpdateFailedError ex) {
-				errorMessage(ex);
+				mm.downloadMod(new URL("http://" + urlString));
 			}
 		}
 	}
@@ -103,27 +122,15 @@ class Actions {
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent e) {
-			Mod selectedMod = mm.getSelectedMod();
-			if (selectedMod != null){
-				if (DefaultMods.isBuiltIn(selectedMod)){
-					errorMessage("Cannot delete built-in mod: " + selectedMod.name);
-					return;
-				}
+		protected void call() throws Exception {
+			try {
+				Mod selectedMod = mm.getSelectedMod();
 				
-				try {
-					if (JOptionPane.showConfirmDialog(
-						parent,
-						"Are you sure you want to delete "
-						+ selectedMod.name + "?",
-						"Delete?",
-						JOptionPane.YES_NO_OPTION
-					) == JOptionPane.YES_OPTION){
-						mm.deleteMod(selectedMod);
-					}
-				} catch (CannotDisableModError | IOException e1) {
-					errorMessage(selectedMod.name + " could not be disabled.");
+				if (TinkerDialogs.confirmDeleteMod(parent, selectedMod.name)){
+					mm.deleteMod(selectedMod);
 				}
+			} catch (NoModSelectedException ex){
+				// Do Nothing
 			}
 		}
 	}
@@ -140,13 +147,11 @@ class Actions {
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (mm.getSelectedMod() != null){
-				try {
-					mm.updateMod(mm.getSelectedMod(), true);
-				} catch (ModUpdateFailedError | ModNotDownloadedException e1) {
-					errorMessage(e1);
-				}
+		protected void call() throws Exception {
+			try {
+				mm.updateMod(mm.getSelectedMod(), true);
+			} catch (NoModSelectedException ex){
+				// Do Nothing
 			}
 		}
 	}
@@ -159,12 +164,8 @@ class Actions {
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent e) {
-			try {
-				mm.updateMods();
-			} catch (ModUpdateFailedError | ModNotDownloadedException e1) {
-				errorMessage("One or more mods failed to update");
-			}
+		protected void call() throws Exception {
+			mm.updateMods();
 		}
 	}
 	
@@ -172,17 +173,12 @@ class Actions {
 	static class CheckforUpdatesAction extends TinkerAction {
 		
 		CheckforUpdatesAction(JComponent parent, ModManager mm){
-			super("Check for Updates", "icon/glyphicons_027_search.png", parent, mm);
+			super("Check for Mod Updates", "icon/glyphicons_027_search.png", parent, mm);
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent e) {
-			try {
-				mm.checkForModUpdates();
-			} catch (Exception e1) {
-				e1.printStackTrace();
-				errorMessage("Error checking for updates.");
-			}
+		protected void call() throws Exception {
+			mm.checkForModUpdates();
 		}
 	}
 	
@@ -194,14 +190,11 @@ class Actions {
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent e) {
-			Mod selectedMod = mm.getSelectedMod();
-			if (selectedMod != null){
-				try {
-					mm.toggleMod(selectedMod);
-				} catch (ModNotDownloadedException e1) {
-					errorMessage(e1);
-				}
+		protected void call() throws Exception {
+			try {
+				mm.toggleMod(mm.getSelectedMod());
+			} catch (NoModSelectedException ex){
+				// Do Nothing
 			}
 		}
 	}
@@ -214,39 +207,18 @@ class Actions {
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent e) {
+		protected void call() throws Exception {
 			mm.openConfigWindow();
 		}
 	}
 	
-	@SuppressWarnings("serial")
-	static class ExitAction extends TinkerAction {
-		
-		ExitAction(JComponent parent, ModManager mm){
-			super("Exit", "icon/glyphicons_063_power.png", parent, mm);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			System.exit(0);
-		}
-	}
-	
-	@SuppressWarnings("serial")
-	static class HelpAction extends TinkerAction {
-		
-		HelpAction(JComponent parent, ModManager mm){
-			super("Help", "icon/glyphicons_194_circle_question_mark.png", parent, mm);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			try {
-				Util.goToHyperlink(new URL("https://github.com/oharaandrew314/TinkerTime/wiki"));
-			} catch (IOException e1) {
-				errorMessage("Error opening help");
-			}
-		}
+	static TinkerAction newHelpAction(JComponent parent){
+		return new GoToUrlAction(
+			"Help",
+			"https://github.com/oharaandrew314/TinkerTime/wiki",
+			"icon/glyphicons_194_circle_question_mark.png",
+			parent
+		);
 	}
 	
 	@SuppressWarnings("serial")
@@ -257,35 +229,25 @@ class Actions {
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent e) {			
-			try {
-				Object[] message = {
-					String.format(
-						"<html>%s v%s - by %s%n",
-						TinkerTime.NAME,
-						TinkerTime.VERSION,
-						TinkerTime.AUTHOR
-					),
-					"%n",
-					"This work is licensed under the Creative Commons %n" +
-					"Attribution-ShareAlike 4.0 International License.%n",
-					new UrlPanel("View a copy of this license", new URL("http://creativecommons.org/licenses/by-sa/4.0/")).getComponent(),
-					"%n",
-					TinkerTime.NAME + " uses Glyphicons (glyphicons.com)"
-				};
-				JOptionPane.showMessageDialog(
-						parent,
-						message,
-						"About " + TinkerTime.NAME,
-						JOptionPane.INFORMATION_MESSAGE
-					);
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
+		protected void call() throws Exception {
+			Object[] message = {
+				TinkerTime.FULL_NAME,
+				"\n",
+				"This work is licensed under the Creative Commons \n" +
+				"Attribution-ShareAlike 4.0 International License.\n",
+				new UrlLabels.UrlLink("View a copy of this license", new URL("http://creativecommons.org/licenses/by-sa/4.0/")).getComponent(),
+				"\n",
+				TinkerTime.NAME + " uses Glyphicons (glyphicons.com)"
+			};
+			JOptionPane.showMessageDialog(
+				parent,
+				message,
+				"About " + TinkerTime.NAME,
+				JOptionPane.INFORMATION_MESSAGE
+			);
 		}
 	}
 	
-	@SuppressWarnings("serial")
 	static class ContactAction extends TinkerAction {
 		
 		ContactAction(JComponent parent, ModManager mm){
@@ -293,13 +255,13 @@ class Actions {
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent e) {
-			try {
-				Util.goToHyperlink(new URL("http://tinkertime.uservoice.com"));
-			} catch (IOException e1) {
-				errorMessage(e1.getMessage());
-			}
+		protected void call() throws Exception {
+			Desktop desktop = Desktop.getDesktop();
+			String message = "mailto:tinkertime@andrewohara.io?subject=TinkerTime%20Support%20Request";
+			URI uri = URI.create(message);
+			desktop.mail(uri);
 		}
+		
 	}
 	
 	@SuppressWarnings("serial")
@@ -310,17 +272,14 @@ class Actions {
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			Path exportPath = FileChoosers.chooseJsonFile(true);
-			if (exportPath != null){
-				mm.exportEnabledMods(exportPath);
-				JOptionPane.showMessageDialog(
-					parent,
-					"Enabled mod data has been exported.",
-					"Exported",
-					JOptionPane.INFORMATION_MESSAGE
-				);
-			}
+		protected void call() throws Exception {
+			mm.exportEnabledMods(FileChoosers.chooseJsonFile(true));
+			JOptionPane.showMessageDialog(
+				parent,
+				"Enabled mod data has been exported.",
+				"Exported",
+				JOptionPane.INFORMATION_MESSAGE
+			);
 		}
 	}
 	
@@ -332,17 +291,14 @@ class Actions {
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			Path importPath = FileChoosers.chooseJsonFile(false);
-			if (importPath != null){
-				mm.importMods(importPath);
-				JOptionPane.showMessageDialog(
-					parent,
-					"The Mods have been imported.",
-					"Imported",
-					JOptionPane.INFORMATION_MESSAGE
-				);
-			}
+		protected void call() throws Exception {
+			mm.importMods(FileChoosers.chooseJsonFile(false));
+			JOptionPane.showMessageDialog(
+				parent,
+				"The Mods have been imported.",
+				"Imported",
+				JOptionPane.INFORMATION_MESSAGE
+			);
 		}
 		
 	}
@@ -351,16 +307,12 @@ class Actions {
 	static class UpdateTinkerTime extends TinkerAction {
 		
 		UpdateTinkerTime(JComponent parent, ModManager mm){
-			super("Update Tinker Time", null, parent, mm);
+			super("Check for Tinker Time Update", null, parent, mm);
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			try {
-				mm.tryUpdateModManager();
-			} catch (UnsupportedHostException e) {
-				errorMessage(e);
-			}
+		protected void call() throws Exception {
+			mm.tryUpdateModManager();
 		}
 		
 	}
@@ -373,10 +325,11 @@ class Actions {
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent e) {			
-			Path modPath = FileChoosers.chooseModZip();
-			if (modPath != null){
-				mm.addModZip(modPath);
+		protected void call() throws Exception {
+			try {
+				mm.addModZip(FileChoosers.chooseModZip());
+			} catch (FileNotFoundException e){
+				// Do nothing if file was not chosen
 			}
 		}	
 	}
@@ -392,12 +345,22 @@ class Actions {
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			try {
-				launcher.launchGame();
-			} catch (IOException e) {
-				errorMessage(e);
-			}
+		protected void call() throws Exception {
+			launcher.launchGame();
 		}
+	}
+	
+	@SuppressWarnings("serial")
+	static class OpenGameDataFolder extends TinkerAction {
+		
+		public OpenGameDataFolder(JComponent parent, ModManager mm) {
+			super("Open GameData Folder", "icon/glyphicons_144_folder_open.png", parent, mm);
+		}
+
+		@Override
+		protected void call() throws Exception {
+			Desktop.getDesktop().open(mm.config.getGameDataPath().toFile());
+		}
+		
 	}
 }

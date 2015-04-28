@@ -2,9 +2,12 @@ package aohara.tinkertime.models;
 
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.Calendar;
 import java.util.Date;
 
+import aohara.common.VersionParser;
 import aohara.tinkertime.TinkerConfig;
+import aohara.tinkertime.crawlers.Crawler;
 
 import com.github.zafarkhaja.semver.Version;
 
@@ -37,6 +40,30 @@ public class Mod implements Comparable<Mod> {
 		this.creator = creator;
 		this.kspVersion = kspVersion;
 		this.version = version != null ? version.getNormalVersion() : null;
+	}
+	
+	public static Mod newTempMod(Path zipPath){
+		String fileName = zipPath.getFileName().toString();
+		String prettyName = fileName;
+		if (prettyName.indexOf(".") > 0) {
+			prettyName = prettyName.substring(0, prettyName.lastIndexOf("."));
+		}
+		return new Mod(
+			fileName, prettyName, fileName, null, null,
+			Calendar.getInstance().getTime(), null,
+			Version.valueOf(VersionParser.parseVersionString(prettyName))
+		);
+	}
+	
+	public static Mod newTempMod(URL url){
+		return newTempMod(url, null);
+	}
+	
+	public static Mod newTempMod(URL url, Version version){
+		return new Mod(
+				Crawler.urlToId(url), String.format("New %s Mod",
+				url.getHost()), null, null, url, null, null, version
+			);
 	}
 	
 	public Path getCachedImagePath(TinkerConfig config){

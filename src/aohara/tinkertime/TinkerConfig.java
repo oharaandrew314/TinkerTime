@@ -1,18 +1,19 @@
 package aohara.tinkertime;
 
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import aohara.common.OS;
+import aohara.common.config.Config;
 import aohara.common.config.ConfigBuilder;
 import aohara.common.config.Constraint.InvalidInputException;
-import aohara.common.config.GuiConfig;
+import aohara.common.config.OptionsWindow;
 
 /**
  * Stores and Retrieves User Configuration Data.
@@ -29,30 +30,27 @@ public class TinkerConfig {
 		WIN_64 = "win64",
 		STARTUP_CHECK_MM_UPDATES = "Check for App Updates on Startup";
 		
-	private final GuiConfig config;
+	private final Config config;
 	
-	protected TinkerConfig(GuiConfig config){
+	protected TinkerConfig(Config config){
 		this.config = config;
 	}
 	
 	public static TinkerConfig create(){
 		ConfigBuilder builder = new ConfigBuilder();
-		builder.addTrueFalseProperty(AUTO_CHECK_FOR_MOD_UPDATES, false, false, false);
+		builder.addBooleanProperty(AUTO_CHECK_FOR_MOD_UPDATES, false, false, false);
+		builder.addBooleanProperty(STARTUP_CHECK_MM_UPDATES, true, false, false);
 		builder.addPathProperty(GAMEDATA_PATH, JFileChooser.DIRECTORIES_ONLY, null, false, false);
 		builder.addIntProperty(NUM_CONCURRENT_DOWNLOADS, 4, 1, null, false, false);
-		builder.addTrueFalseProperty(STARTUP_CHECK_MM_UPDATES, true, false, false);
-		builder.addTextProperty(KSP_WIN_LAUNCH_ARGS, null, true, false);
+		builder.addStringProperty(KSP_WIN_LAUNCH_ARGS, null, true, false);
 		
-		builder.addTextProperty(WIN_64, null, true, true);
+		builder.addStringProperty(WIN_64, null, true, true);
 		
-		GuiConfig config = builder.createGuiConfigInDocuments(
+		Config config = builder.createConfigInDocuments(
 			String.format("%s Config", TinkerTime.SAFE_NAME),
 			TinkerTime.NAME,
 			"TinkerTime-Options.json"
 		);
-		if (!config.isValid()){
-			config.openOptionsWindow(true);
-		}
 		
 		return new TinkerConfig(config);
 	}
@@ -60,7 +58,7 @@ public class TinkerConfig {
 	// -- Getters -------------------------------------------------------
 	
 	public Path getGameDataPath(){
-		return Paths.get(config.getProperty(GAMEDATA_PATH));	
+		return config.getProperty(GAMEDATA_PATH).getValueAsFile().toPath();
 	}
 	
 	private Path getModCachePath(){
@@ -86,11 +84,11 @@ public class TinkerConfig {
 	}
 	
 	public boolean autoCheckForModUpdates(){
-		return Boolean.parseBoolean(config.getProperty(AUTO_CHECK_FOR_MOD_UPDATES)); 
+		return config.getProperty(AUTO_CHECK_FOR_MOD_UPDATES).getValueAsBool();
 	}
 	
 	public int numConcurrentDownloads(){
-		return Integer.parseInt(config.getProperty(NUM_CONCURRENT_DOWNLOADS));
+		return config.getProperty(NUM_CONCURRENT_DOWNLOADS).getValueAsInt();
 	}
 	
 	public boolean use64BitGame() throws IOException{
@@ -99,8 +97,8 @@ public class TinkerConfig {
 			// If Windows, only run 64-bit if user chooses to.  Cache user's choice.
 			boolean is64Bit = System.getenv("ProgramFiles(x86)") != null; 
 			if (is64Bit){
-				if (config.getProperty(WIN_64) == null){
-					boolean use64 = JOptionPane.showConfirmDialog(
+				if (config.getProperty(WIN_64).getValue() == null){
+					Boolean use64 = JOptionPane.showConfirmDialog(
 						null,
 						"Tinker Time has detected that you are runing a 64-bit system.\n" +
 						"Would you like to run the 64-bit version of KSP?\n\n" +
@@ -110,14 +108,14 @@ public class TinkerConfig {
 						JOptionPane.QUESTION_MESSAGE
 					) == JOptionPane.YES_OPTION;
 					try {
-						config.setProperty(WIN_64, Boolean.toString(use64));
+						config.setProperty(WIN_64, use64);
 						config.save();
 					} catch (InvalidInputException e) {
 						throw new IOException(e);
 					}
 					return use64;
 				} else {
-					return Boolean.parseBoolean(config.getProperty(WIN_64));
+					return config.getProperty(WIN_64).getValueAsBool();
 				}
 			} else {
 				return false;
@@ -143,16 +141,16 @@ public class TinkerConfig {
 	}
 	
 	public String getLaunchArguments(){
-		return config.getProperty(KSP_WIN_LAUNCH_ARGS);
+		return config.getProperty(KSP_WIN_LAUNCH_ARGS).toString();
 	}
 	
 	public boolean isCheckForMMUpdatesOnStartup(){
-		return Boolean.parseBoolean(config.getProperty(STARTUP_CHECK_MM_UPDATES));
+		return config.getProperty(STARTUP_CHECK_MM_UPDATES).getValueAsBool();
 	}
 	
 	// -- Verification ----------------------------------------------------
 	
-	public void updateConfig(boolean exitOnCancel){
-		config.openOptionsWindow(exitOnCancel);
+	public void updateConfig(){
+		new OptionsWindow(config).toDialog();
 	}
 }

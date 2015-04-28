@@ -1,22 +1,28 @@
 package aohara.tinkertime;
 
 import java.awt.BorderLayout;
+import java.net.MalformedURLException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import com.github.zafarkhaja.semver.Version;
-
-import aohara.common.selectorPanel.SelectorPanel;
-import aohara.common.workflows.ProgressPanel;
+import aohara.common.selectorPanel.SelectorPanelBuilder;
+import aohara.common.selectorPanel.SelectorPanelController;
+import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.crawlers.pageLoaders.JsonLoader;
+import aohara.tinkertime.crawlers.pageLoaders.WebpageLoader;
 import aohara.tinkertime.models.Mod;
+import aohara.tinkertime.resources.Icons;
 import aohara.tinkertime.resources.ModLoader;
-import aohara.tinkertime.views.TinkerFrame;
-import aohara.tinkertime.views.ModImageView;
 import aohara.tinkertime.views.ModListCellRenderer;
 import aohara.tinkertime.views.ModView;
 import aohara.tinkertime.views.menus.MenuFactory;
+
+import com.github.zafarkhaja.semver.Version;
 
 /**
  * Main Class for Tinker Time
@@ -27,42 +33,53 @@ public class TinkerTime {
 	
 	public static final String
 		NAME = "Tinker Time",
-		AUTHOR = "Andrew O'Hara";
-	public static final Version VERSION = Version.valueOf("1.3.0");
+		AUTHOR = "oharaandrew314",
+		DOWNLOAD_URL = "https://kerbalstuff.com/mod/243";
+	public static final Version VERSION = Version.valueOf("1.4.0");
 	public static final String
 		SAFE_NAME = NAME.replace(" ", ""),
-		FULL_NAME = String.format("%s v%s", NAME, VERSION);
+		FULL_NAME = String.format("%s v%s by %s", NAME, VERSION, AUTHOR);
 	
 	public static void main(String[] args) {
 		TinkerConfig config = TinkerConfig.create();
 		
-		ProgressPanel pp = new ProgressPanel();
-		
 		// Initialize Controllers
 		ModLoader modLoader = new ModLoader(config);
-		ModManager mm = ModManager.createDefaultModManager(config, modLoader, pp);
+		ModManager modManager = new ModManager(
+			modLoader,
+			config,
+			(ThreadPoolExecutor) Executors.newFixedThreadPool(config.numConcurrentDownloads()),
+			(Executor) Executors.newSingleThreadExecutor(),
+			new CrawlerFactory(new WebpageLoader(), new JsonLoader())
+		);
+		ModListListener listListener = new ModListListener(modManager);
 		
 		// Set HTTP User-agent
 		System.setProperty("http.agent", "TinkerTime Bot");
 		
-		// Initialize GUI
-		SelectorPanel<Mod> sp = new SelectorPanel<Mod>(new ModView(modLoader), new java.awt.Dimension(500, 600), 0.4f);
-		sp.addControlPanel(true, new ModImageView(config));
-		sp.addPopupMenu(MenuFactory.createPopupMenu(mm));
-		sp.setListCellRenderer(new ModListCellRenderer(modLoader));
+		// Initialize GUI		
+		SelectorPanelBuilder<Mod> spBuilder = new SelectorPanelBuilder<>();
+		ModListCellRenderer renderer = ModListCellRenderer.create(modLoader);
+		spBuilder.setListCellRenderer(renderer);
+		spBuilder.setContextMenu(MenuFactory.createPopupMenu(modManager));
+		spBuilder.addKeyListener(listListener);
+		spBuilder.addSelectionListener(listListener);
+		SelectorPanelController<Mod> selectorPanel = spBuilder.createSelectorPanel(new ModView(modLoader, config));
 		
 		// Add Listeners
-		sp.addListener(mm);
-		modLoader.addListener(sp);
+		modLoader.addListener(selectorPanel);
+		modManager.addListener(renderer);
+		new AddModDragDropHandler(selectorPanel.getList(), modManager);  // Add Mod Drag and Drop Handler
 
 		// Start Application
-		modLoader.init(mm);  // Load mods (will notify selector panel)
+		renderer.startFramerateTimer();
+		modLoader.init(modManager);  // Load mods (will notify selector panel)
 		
 		// Check for App update on Startup
 		if (config.isCheckForMMUpdatesOnStartup()){
 			try {
-				mm.tryUpdateModManager();
-			} catch (UnsupportedHostException e) {
+				modManager.tryUpdateModManager();
+			} catch (UnsupportedHostException | MalformedURLException e) {
 				JOptionPane.showMessageDialog(null, e.toString(), "Error Checking for App Updates", JOptionPane.ERROR_MESSAGE);
 			}
 		}
@@ -70,18 +87,20 @@ public class TinkerTime {
 		// Check for Mod Updates on Startup
 		try {			
 			if (config.autoCheckForModUpdates()){
-				mm.checkForModUpdates();
+				modManager.checkForModUpdates();
 			}
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, e.toString(), "Error Checking for Mod Updates", JOptionPane.ERROR_MESSAGE);
 		}
 		
 		// Initialize Frame
-		JFrame frame = new TinkerFrame();
-		frame.setJMenuBar(MenuFactory.createMenuBar(mm));
-		frame.add(MenuFactory.createToolBar(mm), BorderLayout.NORTH);
-		frame.add(sp.getComponent(), BorderLayout.CENTER);
-		frame.add(pp.getComponent(), BorderLayout.SOUTH);
+		JFrame frame = new JFrame(TinkerTime.FULL_NAME);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setLayout(new BorderLayout());
+		frame.setIconImages(Icons.getAppIcons());
+		frame.setJMenuBar(MenuFactory.createMenuBar(modManager));
+		frame.add(MenuFactory.createToolBar(modManager), BorderLayout.NORTH);
+		frame.add(selectorPanel.getComponent(), BorderLayout.CENTER);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
