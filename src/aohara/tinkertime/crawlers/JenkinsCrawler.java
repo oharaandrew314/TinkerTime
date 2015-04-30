@@ -9,9 +9,9 @@ import java.util.Date;
 import java.util.LinkedList;
 
 import aohara.common.VersionParser;
+import aohara.common.Version;
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 
-import com.github.zafarkhaja.semver.Version;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -31,6 +31,7 @@ public class JenkinsCrawler extends Crawler<JsonElement> {
 	@Override
 	public URL getApiUrl(){
 		try {
+            System.out.printf("apiurl: '%s'\n" ,String.format("%s/lastSuccessfulBuild/api/json", pageUrl));
 			return new URL(String.format("%s/lastSuccessfulBuild/api/json", pageUrl));
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);

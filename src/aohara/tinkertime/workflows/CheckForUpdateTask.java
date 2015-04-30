@@ -7,7 +7,7 @@ import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.UpdateCheckCrawler;
 
-import com.github.zafarkhaja.semver.Version;
+import aohara.common.Version;
 
 /**
  * Workflow Task that returns true if an update for a file is available.

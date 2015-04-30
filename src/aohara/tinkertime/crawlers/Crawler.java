@@ -12,11 +12,10 @@ import java.util.concurrent.Callable;
 import javax.swing.JOptionPane;
 
 import aohara.common.VersionParser;
+import aohara.common.Version;
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 import aohara.tinkertime.models.Mod;
 
-import com.github.zafarkhaja.semver.UnexpectedCharacterException;
-import com.github.zafarkhaja.semver.Version;
 
 /**
  * Abstract Base Class for Creating Web Crawlers to gather file information.
@@ -41,11 +40,13 @@ public abstract class Crawler<T> implements Callable<Mod> {
 	
 	
 	public Crawler(URL url, PageLoader<T> pageLoader) {
+        System.out.printf("Url is %s\n", url.toString());
 		this.pageUrl = url;
 		this.pageLoader = pageLoader;
 	}
 	
 	public T getPage(URL url) throws IOException {
+        System.out.printf("getpage Url is %s\n", url.toString());
 		return pageLoader.getPage(url);
 	}
 	
@@ -71,12 +72,12 @@ public abstract class Crawler<T> implements Callable<Mod> {
 			// First try to parse version from an available version tag field
 			String versionString = VersionParser.parseVersionString(getVersionString());
 			return Version.valueOf(versionString);
-		} catch(UnexpectedCharacterException | IOException | IllegalArgumentException e){
+		} catch(IOException | IllegalArgumentException e){
 			try {
 				// Alternately, try to parse version from the fileName
 				String versionString = VersionParser.parseVersionString(getNewestFileName());
 				return Version.valueOf(versionString);
-			} catch (UnexpectedCharacterException | IOException | IllegalArgumentException e1) {
+			} catch (IOException | IllegalArgumentException e1) {
 				return null;
 			}
 		}

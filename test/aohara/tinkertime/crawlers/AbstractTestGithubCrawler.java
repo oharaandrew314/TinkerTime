@@ -32,7 +32,7 @@ public abstract class AbstractTestGithubCrawler extends AbstractTestModCrawler {
 			"api.github.com/repos/TriggerAu/KerbalAlarmClock/releases",
 			null,
 			null,
-			"3.2.30"
+			"3.2.3.0"
 		);
 	}
 	
@@ -47,7 +47,7 @@ public abstract class AbstractTestGithubCrawler extends AbstractTestModCrawler {
 			"api.github.com/repos/e-dog/ProceduralFairings/releases",
 			null,
 			null,
-			"3.11.0"
+			"3.11"
 		);
 	}
 	
@@ -97,7 +97,7 @@ public abstract class AbstractTestGithubCrawler extends AbstractTestModCrawler {
 			"api.github.com-repos-rbray89-ActiveTextureManagement",
 			null,
 			null,
-			"4.3.0"
+			"4.3"
 		);
 		
 	}

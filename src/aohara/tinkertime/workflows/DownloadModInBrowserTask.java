@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import javax.swing.JOptionPane;
 
-import com.github.zafarkhaja.semver.Version;
+import aohara.common.Version;
 
 import aohara.common.workflows.tasks.BrowserGoToTask;
 import aohara.common.workflows.tasks.WorkflowTask;

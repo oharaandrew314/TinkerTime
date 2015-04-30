@@ -22,7 +22,7 @@ import aohara.tinkertime.views.ModListCellRenderer;
 import aohara.tinkertime.views.ModView;
 import aohara.tinkertime.views.menus.MenuFactory;
 
-import com.github.zafarkhaja.semver.Version;
+import aohara.common.Version;
 
 /**
  * Main Class for Tinker Time

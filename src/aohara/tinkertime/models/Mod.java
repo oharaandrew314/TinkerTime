@@ -9,7 +9,7 @@ import aohara.common.VersionParser;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.crawlers.Crawler;
 
-import com.github.zafarkhaja.semver.Version;
+import aohara.common.Version;
 
 /**
  * Model for holding Mod information and status.
