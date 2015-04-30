@@ -40,13 +40,11 @@ public abstract class Crawler<T> implements Callable<Mod> {
 	
 	
 	public Crawler(URL url, PageLoader<T> pageLoader) {
-        System.out.printf("Url is %s\n", url.toString());
 		this.pageUrl = url;
 		this.pageLoader = pageLoader;
 	}
 	
 	public T getPage(URL url) throws IOException {
-        System.out.printf("getpage Url is %s\n", url.toString());
 		return pageLoader.getPage(url);
 	}
 	

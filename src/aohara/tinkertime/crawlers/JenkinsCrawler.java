@@ -31,7 +31,6 @@ public class JenkinsCrawler extends Crawler<JsonElement> {
 	@Override
 	public URL getApiUrl(){
 		try {
-            System.out.printf("apiurl: '%s'\n" ,String.format("%s/lastSuccessfulBuild/api/json", pageUrl));
 			return new URL(String.format("%s/lastSuccessfulBuild/api/json", pageUrl));
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
