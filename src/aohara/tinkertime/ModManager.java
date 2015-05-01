@@ -96,7 +96,9 @@ public class ModManager extends Listenable<TaskCallback> {
 	
 	public void updateMods() throws ModUpdateFailedError, ModNotDownloadedException{
 		for (Mod mod : modLoader.getMods()){
-			updateMod(mod, false);
+			if (mod.isUpdateable()){
+				updateMod(mod, false);
+			}
 		}
 	}
 	
