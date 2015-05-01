@@ -28,6 +28,8 @@ public class CountDownloads {
 	}
 	
 	public static void main(String[] args) throws Exception {
+		System.setProperty("http.agent", "TinkerTime Bot");
+		
 		// Count Github Downloads
 		int ghDls = 0;
 		for (JsonElement release : getJson(GITHUB_URL).getAsJsonArray()){
