@@ -8,8 +8,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 
-import aohara.common.VersionParser;
-import aohara.common.Version;
+import aohara.common.version.Version;
+import aohara.common.version.VersionParser;
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 
 import com.google.gson.JsonElement;

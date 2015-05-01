@@ -19,7 +19,8 @@ public enum ModStubs {
 	StockFixes("KSP-Stock-Bug-Fix-Modules", "https://github.com/ClawKSP/KSP-Stock-Bug-Fix-Modules"),
 	ActiveTextureManagement("ActiveTextureManagement", "https://github.com/rbray89/ActiveTextureManagement"),
 	ModuleManagerBuild1("moduleManagerPage1", "https://ksp.sarbian.com/jenkins/job/moduleManagerPage1"),
-	TweakableEverything("TweakableEverything", "https://kerbalstuff.com/mod/255");
+	TweakableEverything("TweakableEverything", "https://kerbalstuff.com/mod/255"),
+	BackgroundProcessing("BackgroundProcessing", "https://kerbalstuff.com/mod/302");
 	
 	public final String name;
 	public final URL url;

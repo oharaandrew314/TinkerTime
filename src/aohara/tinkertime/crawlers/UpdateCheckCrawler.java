@@ -5,7 +5,7 @@ import java.net.URL;
 import java.util.Date;
 import java.util.concurrent.Callable;
 
-import aohara.common.Version;
+import aohara.common.version.Version;
 
 public class UpdateCheckCrawler implements Callable<Boolean> {
 	

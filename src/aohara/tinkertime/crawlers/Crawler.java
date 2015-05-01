@@ -11,8 +11,8 @@ import java.util.concurrent.Callable;
 
 import javax.swing.JOptionPane;
 
-import aohara.common.VersionParser;
-import aohara.common.Version;
+import aohara.common.version.Version;
+import aohara.common.version.VersionParser;
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 import aohara.tinkertime.models.Mod;
 

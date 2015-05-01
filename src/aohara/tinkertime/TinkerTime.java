@@ -11,6 +11,7 @@ import javax.swing.JOptionPane;
 
 import aohara.common.selectorPanel.SelectorPanelBuilder;
 import aohara.common.selectorPanel.SelectorPanelController;
+import aohara.common.version.Version;
 import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.crawlers.pageLoaders.JsonLoader;
@@ -21,8 +22,6 @@ import aohara.tinkertime.resources.ModLoader;
 import aohara.tinkertime.views.ModListCellRenderer;
 import aohara.tinkertime.views.ModView;
 import aohara.tinkertime.views.menus.MenuFactory;
-
-import aohara.common.Version;
 
 /**
  * Main Class for Tinker Time

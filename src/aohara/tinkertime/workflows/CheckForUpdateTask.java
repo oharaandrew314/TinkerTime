@@ -3,11 +3,10 @@ package aohara.tinkertime.workflows;
 import java.io.IOException;
 import java.util.Date;
 
+import aohara.common.version.Version;
 import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.UpdateCheckCrawler;
-
-import aohara.common.Version;
 
 /**
  * Workflow Task that returns true if an update for a file is available.

@@ -4,8 +4,7 @@ import java.io.IOException;
 
 import javax.swing.JOptionPane;
 
-import aohara.common.Version;
-
+import aohara.common.version.Version;
 import aohara.common.workflows.tasks.BrowserGoToTask;
 import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.crawlers.Crawler;

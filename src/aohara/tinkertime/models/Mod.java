@@ -5,11 +5,10 @@ import java.nio.file.Path;
 import java.util.Calendar;
 import java.util.Date;
 
-import aohara.common.VersionParser;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.crawlers.Crawler;
-
-import aohara.common.Version;
+import aohara.common.version.Version;
+import aohara.common.version.VersionParser;
 
 /**
  * Model for holding Mod information and status.
