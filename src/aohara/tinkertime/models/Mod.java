@@ -1,5 +1,6 @@
 package aohara.tinkertime.models;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Calendar;
@@ -54,8 +55,8 @@ public class Mod implements Comparable<Mod> {
 		);
 	}
 	
-	public static Mod newTempMod(URL url){
-		return newTempMod(url, null);
+	public static Mod newTempMod(Crawler<?> crawler) throws MalformedURLException{
+		return newTempMod(crawler.getApiUrl(), null);
 	}
 	
 	public static Mod newTempMod(URL url, Version version){

@@ -82,8 +82,8 @@ public class ModManager extends Listenable<TaskCallback> {
 		}
 	}
 	
-	public void downloadMod(URL url) throws UnsupportedHostException {
-		ModWorkflowBuilder builder = new ModWorkflowBuilder(Mod.newTempMod(url), crawlerFactory);
+	public void downloadMod(URL url) throws UnsupportedHostException, MalformedURLException {
+		ModWorkflowBuilder builder = new ModWorkflowBuilder(Mod.newTempMod(crawlerFactory.getCrawler(url)), crawlerFactory);
 		builder.downloadNewMod(config, modLoader);
 		submitDownloadWorkflow(builder);
 	}
