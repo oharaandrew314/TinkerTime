@@ -40,5 +40,20 @@ public class TestKerbalStuffCrawler extends AbstractTestModCrawler {
 			"13.2"
 		);
 	}
+	
+	@Test
+	public void testBackgroundProcessing() throws IOException, UnsupportedHostException {
+		compare(
+			ModStubs.BackgroundProcessing,
+			"kerbalstuff.com-api-mod-302",
+			Calendar.getInstance().getTime(),
+			"jamespicone",
+			"BackgroundProcessing 0.4.0.1.zip",
+			"https://kerbalstuff.com/mod/302/BackgroundProcessing/download/0.4.0.1",
+			null,
+			"0.9.0",
+			"0.4.0.1"
+		);
+	}
 
 }
