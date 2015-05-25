@@ -1,13 +1,41 @@
 package aohara.tinkertime.controllers.launcher;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 
+import aohara.common.OS;
 import aohara.tinkertime.TinkerConfig;
 
 abstract class GameExecStrategy {
+	
+	public boolean use64BitGame() throws IOException{
+		switch(OS.getOs()){
+		case Windows:
+			// No 64-bit version in KSP >= 1.0
+			return false;
+		case Linux:
+			// If Linux, run 64-bit if system is 64-bit
+			try(
+				BufferedReader r = new BufferedReader(new InputStreamReader(
+					Runtime.getRuntime().exec("uname -m").getInputStream()
+				))
+			){
+				return r.readLine().toLowerCase().equals("x86_64");
+			} catch (IOException e) {
+				e.printStackTrace();
+				return false;
+			}
+		case Osx:
+			// If OSX, always run 64-bit
+			return true;
+		default:
+			throw new IllegalStateException();
+		}
+	}
 	
 	public abstract ProcessBuilder getExecCommand(TinkerConfig config) throws IOException;
 	
@@ -35,8 +63,7 @@ abstract class GameExecStrategy {
 
 		@Override
 		public ProcessBuilder getExecCommand(TinkerConfig config) throws IOException {
-			Path path = config.getGameDataPath();
-			path = path.resolve(config.use64BitGame() ? "../KSP_x64.exe" : "../KSP.exe");
+			Path path = config.getGameDataPath().resolve("../KSP.exe");
 			return getProcessBuilder(config, path);
 		}
 	}
@@ -46,7 +73,7 @@ abstract class GameExecStrategy {
 		@Override
 		public ProcessBuilder getExecCommand(TinkerConfig config) throws IOException {
 			Path path = config.getGameDataPath();
-			path = path.resolve(config.use64BitGame() ? "../KSP.x86_64" : "../KSP.x86");
+			path = path.resolve(use64BitGame() ? "../KSP.x86_64" : "../KSP.x86");
 			return getProcessBuilder(config, path);
 		}
 	}
