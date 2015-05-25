@@ -32,6 +32,10 @@ The [Tinker Time Wiki](https://github.com/oharaandrew314/TinkerTime/wiki) contai
 
 ### Change Log
 
+##### v1.4.1
+- Fix error related to mod version parsing
+- Fix error when trying to check for updates when local mod is installed
+
 ##### v1.4
 
 ###### New Features
