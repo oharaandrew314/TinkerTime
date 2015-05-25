@@ -13,6 +13,7 @@ sourceSets {
     main {
         java {
             srcDirs ('src', 'Common/src')
+            exclude ('src/aohara/tinkertime/CountDownloads.java')
         }
         resources {
             srcDir 'res'
