@@ -248,6 +248,7 @@ class Actions {
 		}
 	}
 	
+	@SuppressWarnings("serial")
 	static class ContactAction extends TinkerAction {
 		
 		ContactAction(JComponent parent, ModManager mm){
