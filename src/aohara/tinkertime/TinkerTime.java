@@ -1,6 +1,7 @@
 package aohara.tinkertime;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.net.MalformedURLException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -57,7 +58,7 @@ public class TinkerTime {
 		System.setProperty("http.agent", "TinkerTime Bot");
 		
 		// Initialize GUI		
-		SelectorPanelBuilder<Mod> spBuilder = new SelectorPanelBuilder<>();
+		SelectorPanelBuilder<Mod> spBuilder = new SelectorPanelBuilder<>(new Dimension(800, 600), 0.35);
 		ModListCellRenderer renderer = ModListCellRenderer.create(modLoader);
 		spBuilder.setListCellRenderer(renderer);
 		spBuilder.setContextMenu(MenuFactory.createPopupMenu(modManager));
