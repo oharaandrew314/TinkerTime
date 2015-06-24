@@ -24,7 +24,7 @@ public class JenkinsCrawler extends Crawler<JsonElement> {
 	
 	private JsonObject cachedJson;
 	
-	public JenkinsCrawler(URL jenkinsUrl, PageLoader<JsonElement> pageLoader) throws MalformedURLException{
+	public JenkinsCrawler(URL jenkinsUrl, PageLoader<JsonElement> pageLoader) {
 		super(jenkinsUrl, pageLoader);
 	}
 	

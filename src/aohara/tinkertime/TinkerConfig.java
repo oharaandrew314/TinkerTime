@@ -5,6 +5,8 @@ import java.nio.file.Path;
 
 import javax.swing.JFileChooser;
 
+import com.google.inject.Singleton;
+
 import aohara.common.config.Config;
 import aohara.common.config.ConfigBuilder;
 import aohara.common.config.OptionsWindow;
@@ -14,6 +16,7 @@ import aohara.common.config.OptionsWindow;
  * 
  * @author Andrew O'Hara
  */
+@Singleton
 public class TinkerConfig {
 	 
 	private static final String
@@ -26,7 +29,7 @@ public class TinkerConfig {
 		
 	private final Config config;
 	
-	protected TinkerConfig(Config config){
+	public TinkerConfig(Config config){
 		this.config = config;
 	}
 	

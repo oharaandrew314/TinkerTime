@@ -10,12 +10,12 @@ Tinker Time is a Mod Manager for Kerbal Space Program that will allow you to aut
 
 ### Requirements
 - [Java 7](https://java.com/en/download/index.jsp) or better
-  - OpenJDK is not supported, but it may work
 
 #### Supported Mod Hosting Sites
+- KerbalStuff (reccomended)
 - Curse
-- Github (when compiled assets are released)
-- KerbalStuff
+- Github (not reccomended)
+
 
 
 
@@ -31,6 +31,11 @@ The [Tinker Time Wiki](https://github.com/oharaandrew314/TinkerTime/wiki) contai
 - Beta Testers ([foonix](https://github.com/foonix), [jcsntoll](https://github.com/jcsntoll), and [apemanzilla](https://github.com/apemanzilla))
 
 ### Change Log
+
+##### v1.4.3
+- Fix Mod-List Scrollbar not appearing
+- Migrate Dependency Injection to Google Guice Framework (increases JAR file size)
+- Remove Github Fallback crawler (used when API limit exceeded)
 
 ##### v1.4.2
 - Remove option to use 64-bit KSP on Windows (since it was removed in 1.0)

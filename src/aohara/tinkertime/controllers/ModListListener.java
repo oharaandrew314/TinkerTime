@@ -1,18 +1,23 @@
-package aohara.tinkertime;
+package aohara.tinkertime.controllers;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import aohara.common.selectorPanel.SelectorListListener;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import aohara.common.views.Dialogs;
-import aohara.tinkertime.ModManager.NoModSelectedException;
+import aohara.common.views.selectorPanel.SelectorListListener;
+import aohara.tinkertime.controllers.ModExceptions.NoModSelectedException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.views.TinkerDialogs;
 
-class ModListListener implements KeyListener, SelectorListListener<Mod> {
+@Singleton
+public class ModListListener implements KeyListener, SelectorListListener<Mod> {
 	
 	private final ModManager mm;
 	
+	@Inject
 	ModListListener(ModManager mm){
 		this.mm = mm;
 	}

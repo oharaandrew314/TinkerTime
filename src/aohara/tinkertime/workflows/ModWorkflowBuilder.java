@@ -5,23 +5,23 @@ import java.nio.file.Path;
 import java.util.Set;
 
 import aohara.common.workflows.tasks.WorkflowBuilder;
-import aohara.tinkertime.ModManager.ModNotDownloadedException;
 import aohara.tinkertime.TinkerConfig;
+import aohara.tinkertime.controllers.ModExceptions.ModNotDownloadedException;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.resources.ModLoader;
+import aohara.tinkertime.resources.ModMetaLoader;
 import aohara.tinkertime.workflows.DownloadModAssetTask.ModDownloadType;
 
 public class ModWorkflowBuilder extends WorkflowBuilder {
 	
-	private final CrawlerFactory crawlerFactory;
+	private final CrawlerFactory crawlerService;
 	private Crawler<?> cachedCrawler;
 	
-	public ModWorkflowBuilder(Mod context, CrawlerFactory crawlerFactory) {
+	public ModWorkflowBuilder(Mod context, CrawlerFactory crawlerService) {
 		super(context);
-		this.crawlerFactory = crawlerFactory;
+		this.crawlerService = crawlerService;
 		
 		if (context == null){
 			throw new IllegalArgumentException("Context Cannot be null");
@@ -33,21 +33,21 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	}
 	
 	private Crawler<?> getCrawler() throws UnsupportedHostException{
-		return (cachedCrawler != null) ? cachedCrawler : (cachedCrawler = crawlerFactory.getCrawler(getContextMod().pageUrl));
+		return (cachedCrawler != null) ? cachedCrawler : (cachedCrawler = crawlerService.getCrawler(getContextMod().pageUrl));
 	}
 	
 	/**
 	 * Notifies the listeners if an update is available for the given file
 	 * @throws UnsupportedHostException 
 	 */
-	public void checkForUpdates(ModLoader modLoader, boolean markIfAvailable) throws UnsupportedHostException {
+	public void checkForUpdates(ModMetaLoader modLoader, boolean markIfAvailable) throws UnsupportedHostException {
 		addTask(new CheckForUpdateTask(getCrawler(), getContextMod().getVersion(), getContextMod().updatedOn));
 		if (markIfAvailable){
 			addTask(new MarkModUpdatedTask(modLoader, getContextMod()));
 		}
 	}
 	
-	public void downloadNewMod(TinkerConfig config, ModLoader modLoader) throws UnsupportedHostException {		
+	public void downloadNewMod(TinkerConfig config, ModMetaLoader modLoader) throws UnsupportedHostException {		
 		addTask(new SaveModTask.FromMod(modLoader, getContextMod()));  // Create Placeholder Mod
 		downloadMod(config, modLoader);  // DownloadMod
 	}
@@ -56,7 +56,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	 * Downloads the latest version of the mod referenced by the URL.
 	 * @throws UnsupportedHostException 
 	 */
-	public void updateMod(TinkerConfig config, ModLoader modLoader, boolean forceUpdate) throws UnsupportedHostException {
+	public void updateMod(TinkerConfig config, ModMetaLoader modLoader, boolean forceUpdate) throws UnsupportedHostException {
 		// Cleanup operations prior to update
 		if (modLoader.isDownloaded(getContextMod())){
 			if (!forceUpdate){
@@ -79,7 +79,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		downloadMod(config, modLoader);
 	}
 	
-	private void downloadMod(TinkerConfig config, ModLoader modLoader) throws UnsupportedHostException{
+	private void downloadMod(TinkerConfig config, ModMetaLoader modLoader) throws UnsupportedHostException{
 		addTask(new RunCrawlerTask(getCrawler()));  // prefetch metadata
 		addTask(new DownloadModAssetTask(getCrawler(), config, modLoader, ModDownloadType.File));
 		addTask(new DownloadModAssetTask(getCrawler(), config, modLoader, ModDownloadType.Image));
@@ -90,7 +90,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		addTask(new DownloadModInBrowserTask(getCrawler(), getContextMod().getVersion()));
 	}
 	
-	public void addLocalMod(Path zipPath, ModLoader modLoader){
+	public void addLocalMod(Path zipPath, ModMetaLoader modLoader){
 		// Create Placeholder Mod
 		addTask(new SaveModTask.FromMod(modLoader, getContextMod()));
 		
@@ -104,7 +104,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	 * @param mod
 	 * @param config
 	 */
-	public void deleteModZip(final Mod mod, final ModLoader modLoader){
+	public void deleteModZip(final Mod mod, final ModMetaLoader modLoader){
 		delete(modLoader.getZipPath(mod));
 	}
 	
@@ -114,7 +114,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	 * @param config
 	 * @param modLoader
 	 */
-	public void deleteMod(Mod mod, TinkerConfig config, ModLoader modLoader) {
+	public void deleteMod(Mod mod, TinkerConfig config, ModMetaLoader modLoader) {
 		// Try to disable the mod first
 		try {
 			if (modLoader.isEnabled(mod)){
@@ -128,7 +128,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		delete(mod.getCachedImagePath(config));
 	}
 	
-	public void disableMod(Mod mod, ModLoader modLoader) throws ModNotDownloadedException{
+	public void disableMod(Mod mod, ModMetaLoader modLoader) throws ModNotDownloadedException{
 		Set<Path> fileDestPaths = modLoader.getModFileDestPaths(mod);
 		
 		// Check if any files for this mod are dependencies of other mods.
@@ -151,7 +151,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		addTask(new SaveModTask.FromMod(modLoader, mod));
 	}
 	
-	public void enableMod(Mod mod, ModLoader modLoader, TinkerConfig config) throws ModNotDownloadedException {
+	public void enableMod(Mod mod, ModMetaLoader modLoader, TinkerConfig config) throws ModNotDownloadedException {
 		try {
 			Path zipPath = modLoader.getZipPath(mod);
 			if (zipPath == null){

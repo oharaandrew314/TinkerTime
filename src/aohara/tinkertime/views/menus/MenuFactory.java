@@ -5,16 +5,28 @@ import javax.swing.JMenuBar;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 
-import aohara.tinkertime.ModManager;
+import com.google.inject.Inject;
+
+import aohara.tinkertime.TinkerConfig;
+import aohara.tinkertime.controllers.ModManager;
 
 public class MenuFactory {
 	
-	public static JToolBar createToolBar(ModManager mm){
+	private final ModManager mm;
+	private final TinkerConfig config;
+	
+	@Inject
+	MenuFactory(ModManager mm, TinkerConfig config){
+		this.mm = mm;
+		this.config = config;
+	}
+	
+	public JToolBar createToolBar(){
 		JToolBar toolBar = new JToolBar();
 		toolBar.setFloatable(false);
 		
-		toolBar.add(new Actions.LaunchKspAction(toolBar, mm)).setFocusPainted(false);
-		toolBar.add(new Actions.OpenGameDataFolder(toolBar, mm)).setFocusPainted(false);		
+		toolBar.add(new Actions.LaunchKspAction(toolBar, mm, config)).setFocusPainted(false);
+		toolBar.add(new Actions.OpenGameDataFolder(toolBar, mm, config)).setFocusPainted(false);		
 		toolBar.add(new Actions.OptionsAction(toolBar, mm)).setFocusPainted(false);
 		
 		toolBar.addSeparator();
@@ -30,7 +42,7 @@ public class MenuFactory {
 		return toolBar;
 	}
 	
-	public static JMenuBar createMenuBar(ModManager mm){
+	public JMenuBar createMenuBar(){
 		JMenuBar menuBar = new JMenuBar();
 		
 		JMenu modMenu = new JMenu("Mod");
@@ -59,7 +71,7 @@ public class MenuFactory {
 		return menuBar;
 	}
 	
-	public static JPopupMenu createPopupMenu(ModManager mm){
+	public JPopupMenu createPopupMenu(){
 		JPopupMenu popupMenu = new JPopupMenu();
 		popupMenu.add(new Actions.EnableDisableModAction(popupMenu, mm));
 		popupMenu.add(new Actions.UpdateModAction(popupMenu, mm));

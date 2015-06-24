@@ -1,4 +1,4 @@
-package aohara.tinkertime.testutil;
+package aohara.tinkertime.modules;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,46 +12,53 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import aohara.tinkertime.TinkerConfig;
-import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.pageLoaders.JsonLoader;
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 
 import com.google.gson.JsonElement;
+import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
 
-public class MockHelper {
+public class TestModule extends AbstractModule {
+
+	@Override
+	protected void configure() {
+	}
 	
 	private static String urlToPath(URL url){
 		return url.toString().split("://")[1].replace("/", "-");
 	}
 	
-	public static CrawlerFactory newCrawlerFactory(){
-		CrawlerFactory factory = new CrawlerFactory(
-			new PageLoader<Document>(){
-				@Override
-				protected Document loadPage(URL url) throws IOException {
-					String resourceName = "html/" + urlToPath(url);
-					try(InputStream is = getClass().getClassLoader().getResourceAsStream(resourceName)){
-						return Jsoup.parse(is, null, url.toString());
-					} catch (NullPointerException e){
-						throw new RuntimeException("Error opening stream: " + url.toString());
-					}
-				}
-				
-			},
-			new JsonLoader(){
-				@Override
-				protected JsonElement loadPage(URL url) throws IOException {
-					String resourceName = "json/" + urlToPath(url);
-					URL resourceUrl = getClass().getClassLoader().getResource(resourceName);
-					return super.loadPage(resourceUrl);
+	@Provides
+	PageLoader<Document> getDocLoader(){
+		return new PageLoader<Document>(){
+			@Override
+			protected Document loadPage(URL url) throws IOException {
+				String resourceName = "html/" + urlToPath(url);
+				try(InputStream is = getClass().getClassLoader().getResourceAsStream(resourceName)){
+					return Jsoup.parse(is, null, url.toString());
+				} catch (NullPointerException e){
+					throw new RuntimeException("Error opening stream: " + url.toString());
 				}
 			}
-		);
-		factory.setFallbacksEnabled(false);
-		return factory;
+			
+		};
 	}
 	
-	public static TinkerConfig newConfig(){
+	@Provides
+	PageLoader<JsonElement> getJsonLoader(){
+		return new JsonLoader(){
+			@Override
+			protected JsonElement loadPage(URL url) throws IOException {
+				String resourceName = "json/" + urlToPath(url);
+				URL resourceUrl = getClass().getClassLoader().getResource(resourceName);
+				return super.loadPage(resourceUrl);
+			}
+		};
+	}
+	
+	@Provides
+	TinkerConfig getConfig(){
 		return new TinkerConfig(null) {
 			
 			private Path modsListPath;

@@ -1,45 +1,34 @@
 package aohara.tinkertime.crawlers;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
 
 import org.jsoup.nodes.Document;
 
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 
 import com.google.gson.JsonElement;
+import com.google.inject.Inject;
 
-/**
- * Factory for creating crawlers.
- * 
- * @author Andrew O'Hara
- *
- */
 public class CrawlerFactory {
 	
-	static final String
+	public static final String
 		HOST_CURSE = "curse.com",
 		HOST_GITHUB = "github.com",
 		HOST_MODULE_MANAGER = "ksp.sarbian.com",
 		HOST_KERBAL_STUFF = "kerbalstuff.com";
-
+	
 	public static final String[] ACCEPTED_MOD_HOSTS	 = new String[]{
 		HOST_KERBAL_STUFF, HOST_CURSE, HOST_GITHUB
 	};
 	
-	private final PageLoader<Document> htmlLoader;
+	private final PageLoader<Document> docLoader;
 	private final PageLoader<JsonElement> jsonLoader;
-	private boolean fallbacksEnabled = true;
 	
-	public CrawlerFactory(PageLoader<Document> htmlLoader, PageLoader<JsonElement> jsonLoader){
-		this.htmlLoader = htmlLoader;
+	@Inject
+	CrawlerFactory(PageLoader<Document> docLoader, PageLoader<JsonElement> jsonLoader){
+		this.docLoader = docLoader;
 		this.jsonLoader = jsonLoader;
-	}
-	
-	public void setFallbacksEnabled(boolean enabled){
-		this.fallbacksEnabled = enabled;
 	}
 	
 	public static URL getModuleManagerUrl(){
@@ -49,58 +38,26 @@ public class CrawlerFactory {
 			throw new RuntimeException(e); // Programming error if this occurs
 		}
 	}
-	
+
 	public Crawler<?> getCrawler(URL url) throws UnsupportedHostException{
-		return getCrawler(url, false);
-	}
-	
-	public Crawler<?> getCrawler(URL url, boolean fallback) throws UnsupportedHostException{
 		String host = url.getHost();
-		
 		if (host.contains(HOST_CURSE)){
-			return new CurseCrawler(url, htmlLoader);
+			return new CurseCrawler(url, docLoader);
 		} else if (host.contains(HOST_GITHUB)){
-			if (!fallback || !fallbacksEnabled){
-				try {
-					Crawler<?> crawler = new GithubJsonCrawler(url, jsonLoader);
-					if (fallbacksEnabled){
-						crawler.getPage(crawler.getApiUrl());  // Test connection; throw IOException if failure
-					}
-					return crawler;
-				} catch (IOException e) {
-					return getCrawler(url, true);
-				}
-			}
-			return new GithubHtmlCrawler(url, htmlLoader);
+			return new GithubCrawler(url, jsonLoader);
 		} else if (host.contains(HOST_KERBAL_STUFF)){
 			return new KerbalStuffCrawler(url, jsonLoader);
 		} else if (host.equals(HOST_MODULE_MANAGER)){
-			try {
-				return new JenkinsCrawler(url, jsonLoader);
-			} catch (MalformedURLException e) {
-				throw new RuntimeException(e);
-			}
+			return new JenkinsCrawler(url, jsonLoader);
 		}
-		
 		throw new UnsupportedHostException(host);
 	}
 	
 	@SuppressWarnings("serial")
 	public static class UnsupportedHostException extends Exception {
 		
-		private final String host;
-		
 		private UnsupportedHostException(String host){
-			this.host = host;
-		}
-		
-		@Override
-		public String getMessage(){
-			return (
-				"Mod data could not be deciphered for " + host + ".\n"
-				+ "Either the URL is invalid, or the site layout has been updated.\n"
-				+ " Valid hosts are: " + Arrays.asList(ACCEPTED_MOD_HOSTS)
-			);
+			super(String.format("Unsupported host: %s", host)); 
 		}
 	}
 }
