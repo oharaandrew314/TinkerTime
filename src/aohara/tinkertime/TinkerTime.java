@@ -50,14 +50,12 @@ public class TinkerTime {
 		
 		// Initialize GUI Elements
 		SelectorPanelController<Mod> selectorPanel = injector.getInstance(ModSelectorPanelFactory.class).create(new Dimension(800, 600), 0.35);
-		ModListCellRenderer renderer = injector.getInstance(ModListCellRenderer.class);
 		
 		// Add Listeners
 		modLoader.addListener(selectorPanel);
-		modManager.addListener(renderer);
+		modManager.addListener(injector.getInstance(ModListCellRenderer.class));
 
 		// Start Application
-		renderer.startFramerateTimer();
 		modLoader.init();  // Load mods (will notify selector panel)
 		
 		try {	

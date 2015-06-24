@@ -2,8 +2,6 @@ package aohara.tinkertime.views;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -13,10 +11,6 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
-import javax.swing.Timer;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 
 import thirdParty.CompoundIcon;
 import aohara.common.Util;
@@ -29,6 +23,9 @@ import aohara.common.workflows.tasks.WorkflowTask.TaskExceptionEvent;
 import aohara.tinkertime.controllers.ModExceptions.ModNotDownloadedException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.resources.ModMetaLoader;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 /**
  * Custom ListCellRenderer for a Mod to be displayed on a JList.
@@ -44,7 +41,6 @@ public class ModListCellRenderer extends TaskCallback implements ListCellRendere
 	private final Map<Mod, ProgressSpinnerPanel> elements = new HashMap<>();
 	private final ModMetaLoader modLoader;
 	private final ImageManager imageManager;
-	private JList<? extends Mod> list;
 	
 	@Inject
 	ModListCellRenderer(ImageManager imageManager, ModMetaLoader modLoader){
@@ -95,23 +91,10 @@ public class ModListCellRenderer extends TaskCallback implements ListCellRendere
 		}
 		return icons.toArray(new ImageIcon[0]);
 	}
-	
-	public void startFramerateTimer(){
-		new Timer(10, new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (list != null){
-					list.repaint();
-				}
-			}
-		}).start();
-	}
 
 	@Override
 	public Component getListCellRendererComponent(final JList<? extends Mod> list,
 			Mod mod, int index, boolean isSelected, boolean cellHasFocus) {
-		
-		this.list = list;
 		
 		// Compile list of icons
 		ImageIcon[] icons = getCurrentIcons(mod);
@@ -132,6 +115,9 @@ public class ModListCellRenderer extends TaskCallback implements ListCellRendere
 		ele.setIcon(new CompoundIcon(icons));
 		ele.setBorder(isSelected ? BorderFactory.createLineBorder(Color.black) : null);
 		ele.setToolTipText(tooltipText);
+		
+		list.repaint();
+		
 		return ele;
 	}
 	
