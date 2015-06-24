@@ -1,6 +1,7 @@
 package aohara.tinkertime.crawlers;
 
 import java.io.IOException;
+import java.net.URL;
 
 import org.junit.Test;
 
@@ -56,6 +57,11 @@ public class TestCurseCrawler extends AbstractTestModCrawler {
 			"0.24.2",
 			"0.25"
 		);
+	}
+
+	@Override
+	protected Crawler<?> getCrawler(URL url) {
+		return new CurseCrawler(url, getDocLoader());
 	}
 
 }

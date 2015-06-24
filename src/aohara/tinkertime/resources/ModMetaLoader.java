@@ -13,20 +13,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipFile;
 
-import javax.swing.JOptionPane;
-
 import aohara.common.Listenable;
-import aohara.common.selectorPanel.SelectorPanelController;
-import aohara.tinkertime.ModManager;
-import aohara.tinkertime.ModManager.ModNotDownloadedException;
+import aohara.common.views.selectorPanel.SelectorPanelController;
 import aohara.tinkertime.TinkerConfig;
+import aohara.tinkertime.controllers.ModExceptions.ModNotDownloadedException;
 import aohara.tinkertime.models.DefaultMods;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.views.FileChoosers;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 /**
  * Controller for Storing and Retrieving persistent mod state.
@@ -36,7 +33,8 @@ import com.google.gson.reflect.TypeToken;
  * 
  * @author Andrew O'Hara
  */
-public class ModLoader extends Listenable<SelectorPanelController<Mod>> {
+@Singleton
+public class ModMetaLoader extends Listenable<SelectorPanelController<Mod>> {
 	
 	private static final Type MODS_TYPE = new TypeToken<Set<Mod>>() {}.getType();
 	
@@ -46,19 +44,16 @@ public class ModLoader extends Listenable<SelectorPanelController<Mod>> {
 	
 	// -- Initializers ----------------------------------------
 	
-	private ModLoader(TinkerConfig config, Gson gson){
+	@Inject
+	ModMetaLoader(TinkerConfig config, Gson gson){
 		this.config = config;
 		this.gson = gson;
 	}
 	
-	public ModLoader(TinkerConfig config){
-		this(config, new GsonBuilder().setPrettyPrinting().create());
-	}
-	
-	public synchronized void init(ModManager mm) {
+	public synchronized void init() {
 		modCache.clear();
 		updateViews();
-		importMods(config.getModsListPath(), mm);
+		importMods(config.getModsListPath());
 	}
 	
 	//-- Public Methods ----------------------------------------
@@ -126,8 +121,8 @@ public class ModLoader extends Listenable<SelectorPanelController<Mod>> {
 	 * @param mm ModManager reference
 	 * @throws IOException 
 	 */
-	public synchronized void importMods(Path path, ModManager mm) {		
-		for (Mod mod : loadMods(path, mm)){
+	public synchronized void importMods(Path path) {		
+		for (Mod mod : loadMods(path)){
 			cacheMod(mod);
 		}
 		updateViews();
@@ -193,7 +188,7 @@ public class ModLoader extends Listenable<SelectorPanelController<Mod>> {
 	 * @param mm ModManager reference
 	 * @return set of mods loaded from the file
 	 */
-	private Set<Mod> loadMods(Path path, ModManager mm){
+	private Set<Mod> loadMods(Path path){
 		Set<Mod> mods = new HashSet<>();
 		
 		try(FileReader reader = new FileReader(path.toFile())){
@@ -201,7 +196,7 @@ public class ModLoader extends Listenable<SelectorPanelController<Mod>> {
 			Set<Mod> newMods = gson.fromJson(reader, MODS_TYPE);
 			for (Mod newMod : newMods){
 				// If mod is updateable, or if the local zip file is available, add mod
-				if (newMod.isUpdateable() || isDownloaded(newMod) || trySatisfyLocalFiles(newMod, mm)){
+				if (newMod.isUpdateable() || isDownloaded(newMod)){
 					mods.add(newMod);
 				}
 			}
@@ -213,21 +208,6 @@ public class ModLoader extends Listenable<SelectorPanelController<Mod>> {
 		
 		DefaultMods.ensureDefaults(mods);
 		return mods;
-	}
-	
-	private boolean trySatisfyLocalFiles(Mod mod, ModManager mm) throws FileNotFoundException{
-		if (JOptionPane.showConfirmDialog(
-			null,
-			mod.name + " does not have an update url.\n"
-			+ "Would you like to select a zip file to use?",
-			"Import Local Mod?",
-			JOptionPane.YES_NO_OPTION,
-			JOptionPane.QUESTION_MESSAGE
-		) == JOptionPane.YES_OPTION){
-			mm.addModZip(FileChoosers.chooseModZip());
-			return true;
-		}
-		return false;
 	}
 	
 	private void saveMods(Set<Mod> mods, Path path){

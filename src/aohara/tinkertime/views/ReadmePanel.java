@@ -9,17 +9,17 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import aohara.common.selectorPanel.SelectorView;
+import aohara.common.views.selectorPanel.SelectorView;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.resources.ModLoader;
+import aohara.tinkertime.resources.ModMetaLoader;
 
 public class ReadmePanel extends SelectorView.AbstractSelectorView<Mod> {
 	
 	private final JPanel panel = new JPanel();
-	private final ModLoader modLoader;
+	private final ModMetaLoader modLoader;
 	private JTextArea textArea;
 	
-	public ReadmePanel(ModLoader modLoader){
+	public ReadmePanel(ModMetaLoader modLoader){
 		this.modLoader = modLoader;
 		
 		textArea = new JTextArea();

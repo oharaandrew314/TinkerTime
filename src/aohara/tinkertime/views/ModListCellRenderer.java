@@ -15,6 +15,9 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import javax.swing.Timer;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import thirdParty.CompoundIcon;
 import aohara.common.Util;
 import aohara.common.content.ImageManager;
@@ -23,9 +26,9 @@ import aohara.common.views.ProgressSpinnerPanel;
 import aohara.common.workflows.tasks.TaskCallback;
 import aohara.common.workflows.tasks.WorkflowTask.TaskEvent;
 import aohara.common.workflows.tasks.WorkflowTask.TaskExceptionEvent;
-import aohara.tinkertime.ModManager.ModNotDownloadedException;
+import aohara.tinkertime.controllers.ModExceptions.ModNotDownloadedException;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.resources.ModLoader;
+import aohara.tinkertime.resources.ModMetaLoader;
 
 /**
  * Custom ListCellRenderer for a Mod to be displayed on a JList.
@@ -35,41 +38,42 @@ import aohara.tinkertime.resources.ModLoader;
  *  
  * @author Andrew O'Hara
  */
+@Singleton
 public class ModListCellRenderer extends TaskCallback implements ListCellRenderer<Mod> {
 	
-	private final ModLoader modLoader;
-	private final ImageIcon enabledIcon, disabledIcon, errorIcon, updateIcon, localIcon;
 	private final Map<Mod, ProgressSpinnerPanel> elements = new HashMap<>();
-	
+	private final ModMetaLoader modLoader;
+	private final ImageManager imageManager;
 	private JList<? extends Mod> list;
 	
-	public ModListCellRenderer(
-			ModLoader modLoader, ImageIcon checkIcon, ImageIcon xIcon,
-			ImageIcon errorIcon, ImageIcon updateIcon, ImageIcon localIcon	
-	){
+	@Inject
+	ModListCellRenderer(ImageManager imageManager, ModMetaLoader modLoader){
+		this.imageManager = imageManager;
 		this.modLoader = modLoader;
-		this.enabledIcon = checkIcon;
-		this.disabledIcon = xIcon;
-		this.errorIcon = errorIcon;
-		this.updateIcon = updateIcon;
-		this.localIcon = localIcon;		
 	}
 	
-	public static ModListCellRenderer create(ModLoader modLoader){
-		 ImageManager imageManager = new ImageManager("icon/");
-		 return new ModListCellRenderer(
-			 modLoader,
-			 loadIcon(imageManager, "glyphicons_152_check.png", "Mod Enabled", new Color(70, 210, 70)),
-			 loadIcon(imageManager, "glyphicons_207_remove_2.png", "Mod Disabled", new Color(205, 20, 20)),
-			 loadIcon(imageManager, "glyphicons_078_warning_sign.png", "Mod Zip not found.  Please update", new Color(215, 160, 0)),
-			 loadIcon(imageManager, "glyphicons_213_up_arrow.png", "Update Available", new Color(255, 200, 0)),
-			 loadIcon(imageManager, "glyphicons_410_compressed.png", "Mod added locally.  Not updateable", new Color(0, 0, 0))
-		);
-		 
+	protected ImageIcon getEnabledIcon(){
+		return loadIcon(imageManager, "glyphicons_152_check.png", "Mod Enabled", new Color(70, 210, 70));
 	}
 	
-	private static ImageIcon loadIcon(ImageManager imageManager, String name, String description, Color colour){
-		BufferedImage image = imageManager.getImage(name);
+	protected ImageIcon getDisabledIcon(){
+		return  loadIcon(imageManager, "glyphicons_207_remove_2.png", "Mod Disabled", new Color(205, 20, 20));
+	}
+	
+	protected ImageIcon getErrorIcon(){
+		return loadIcon(imageManager, "glyphicons_078_warning_sign.png", "Mod Zip not found.  Please update", new Color(215, 160, 0));
+	}
+	
+	protected ImageIcon getUpdateIcon(){
+		return loadIcon(imageManager, "glyphicons_213_up_arrow.png", "Update Available", new Color(255, 200, 0));
+	}
+	
+	protected ImageIcon getLocalIcon(){
+		return loadIcon(imageManager, "glyphicons_410_compressed.png", "Mod added locally.  Not updateable", new Color(0, 0, 0));
+	}
+	
+	private ImageIcon loadIcon(ImageManager imageManager, String name, String description, Color colour){
+		BufferedImage image = imageManager.getImage("icon/" + name);
 		image = colour != null ? imageManager.colorize(image, colour) : image;
 		return new ImageIcon(image, description);
 	}
@@ -77,17 +81,17 @@ public class ModListCellRenderer extends TaskCallback implements ListCellRendere
 	private ImageIcon[] getCurrentIcons(Mod mod){
 		LinkedList<ImageIcon> icons = new LinkedList<>();
 		try {
-			icons.add(modLoader.isEnabled(mod) ? enabledIcon : disabledIcon);
+			icons.add(modLoader.isEnabled(mod) ? getEnabledIcon() : getDisabledIcon());
 		} catch (ModNotDownloadedException e){
-			icons.add(errorIcon);
+			icons.add(getErrorIcon());
 		}
 		
 		if (mod.updateAvailable){
-			icons.add(updateIcon);
+			icons.add(getUpdateIcon());
 		}
 		
 		if (mod.pageUrl == null){
-			icons.add(localIcon);
+			icons.add(getLocalIcon());
 		}
 		return icons.toArray(new ImageIcon[0]);
 	}

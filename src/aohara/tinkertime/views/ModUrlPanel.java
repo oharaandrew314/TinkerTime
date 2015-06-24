@@ -8,8 +8,8 @@ import java.io.IOException;
 import javax.swing.JLabel;
 
 import aohara.common.Util;
-import aohara.common.selectorPanel.SelectorView;
 import aohara.common.views.Dialogs;
+import aohara.common.views.selectorPanel.SelectorView;
 import aohara.tinkertime.models.Mod;
 
 /**
