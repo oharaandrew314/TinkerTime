@@ -11,7 +11,7 @@ import aohara.common.workflows.tasks.FileTransferTask;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.resources.ModLoader;
+import aohara.tinkertime.resources.ModMetaLoader;
 
 
 class DownloadModAssetTask extends FileTransferTask {
@@ -21,9 +21,9 @@ class DownloadModAssetTask extends FileTransferTask {
 	private final Crawler<?> crawler;
 	private final ModDownloadType type;
 	private final TinkerConfig config;
-	private final ModLoader modLoader;
+	private final ModMetaLoader modLoader;
 	
-	DownloadModAssetTask(Crawler<?> crawler, TinkerConfig config, ModLoader modLoader, ModDownloadType type){
+	DownloadModAssetTask(Crawler<?> crawler, TinkerConfig config, ModMetaLoader modLoader, ModDownloadType type){
 		super(null, null);
 		this.crawler = crawler;
 		this.modLoader = modLoader;

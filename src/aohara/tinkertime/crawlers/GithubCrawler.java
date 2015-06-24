@@ -15,9 +15,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-public class GithubJsonCrawler extends Crawler<JsonElement> {
+public class GithubCrawler extends Crawler<JsonElement> {
 
-	public GithubJsonCrawler(URL url, PageLoader<JsonElement> pageLoader) {
+	public GithubCrawler(URL url, PageLoader<JsonElement> pageLoader) {
 		super(url, pageLoader);
 	}
 	

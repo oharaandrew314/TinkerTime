@@ -10,10 +10,13 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import aohara.common.selectorPanel.SelectorView;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
+import aohara.common.views.selectorPanel.SelectorView;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.resources.ModLoader;
+import aohara.tinkertime.resources.ModMetaLoader;
 
 /**
  * Panel for displaying a Mod's information.
@@ -22,6 +25,7 @@ import aohara.tinkertime.resources.ModLoader;
  * 
  * @author Andrew O'Hara
  */
+@Singleton
 public class ModView extends SelectorView.AbstractSelectorView<Mod> {
 	
 	private final JPanel panel = new JPanel();
@@ -37,7 +41,10 @@ public class ModView extends SelectorView.AbstractSelectorView<Mod> {
 	
 	private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
 	
-	public ModView(final ModLoader modLoader, TinkerConfig config){
+	@Inject
+	ModView(final ModMetaLoader modLoader, TinkerConfig config, ModImageView imageView){
+		this.imageView = imageView;
+		
 		panel.setLayout(new BorderLayout());
 		panel.setPreferredSize(new java.awt.Dimension(500, 600));
 		
@@ -54,7 +61,7 @@ public class ModView extends SelectorView.AbstractSelectorView<Mod> {
 		
 		// Create Top Panel (Info Panel and Mod Image)
 		topPanel.add(infoPanel, BorderLayout.CENTER);
-		topPanel.add((imageView = new ModImageView(config)).getComponent(), BorderLayout.EAST);
+		topPanel.add(imageView.getComponent(), BorderLayout.EAST);
 		panel.add(topPanel, BorderLayout.NORTH);
 		
 		// Create Bottom (Readme) Panel

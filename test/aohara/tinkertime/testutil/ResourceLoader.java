@@ -5,24 +5,27 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
 import aohara.tinkertime.crawlers.Crawler;
+import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.Crawler.Asset;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.resources.ModLoader;
+import aohara.tinkertime.modules.TestModule;
+import aohara.tinkertime.resources.ModMetaLoader;
 import aohara.tinkertime.resources.ModStructure;
 
 public class ResourceLoader {
 	
-	private static final ModLoader modLoader = new ModLoader(MockHelper.newConfig());
+	private static final Injector injector = Guice.createInjector(new TestModule());
+	private static final ModMetaLoader modLoader = injector.getInstance(ModMetaLoader.class);
 	
-	public static Crawler<?> loadCrawler(ModStubs stub){
-		return loadCrawler(stub, false);
-	}
-	
-	public static Crawler<?> loadCrawler(ModStubs stub, boolean fallback){
+	private static Crawler<?> loadCrawler(ModStubs stub){
+		CrawlerFactory crawlerServce = injector.getInstance(CrawlerFactory.class);
 		try {
-			Crawler<?> crawler = MockHelper.newCrawlerFactory().getCrawler(stub.url, fallback);
+			Crawler<?> crawler = crawlerServce.getCrawler(stub.url);
 			crawler.setAssetSelector(new StaticAssetSelector());
 			return crawler;
 		} catch (UnsupportedHostException e) {
@@ -54,7 +57,7 @@ public class ResourceLoader {
 		return new ModStructure(modLoader.getZipPath(loadMod(stub)));
 	}
 	
-	private static class StaticAssetSelector implements Crawler.AssetSelector {
+	public static class StaticAssetSelector implements Crawler.AssetSelector {
 
 		@Override
 		public Asset selectAsset(String modName, Collection<Asset> assets) {

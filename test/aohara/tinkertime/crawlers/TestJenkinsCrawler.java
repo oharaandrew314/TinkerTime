@@ -1,6 +1,7 @@
 package aohara.tinkertime.crawlers;
 
 import java.io.IOException;
+import java.net.URL;
 
 import org.junit.Test;
 
@@ -24,5 +25,10 @@ public class TestJenkinsCrawler extends AbstractTestModCrawler {
 				null,
 				"2.5.12"
 		);
+	}
+
+	@Override
+	protected Crawler<?> getCrawler(URL url) {
+		return new JenkinsCrawler(url, getJsonLoader());
 	}
 }

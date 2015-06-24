@@ -8,8 +8,10 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
+import com.google.inject.Inject;
+
 import aohara.common.content.ImageManager;
-import aohara.common.selectorPanel.SelectorView;
+import aohara.common.views.selectorPanel.SelectorView;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.models.Mod;
 
@@ -25,7 +27,8 @@ public class ModImageView extends SelectorView.AbstractSelectorView<Mod> {
 	private final JLabel label = new JLabel();
 	private final TinkerConfig config;
 	
-	public ModImageView(TinkerConfig config){
+	@Inject
+	ModImageView(TinkerConfig config){
 		this.config = config;
 		label.setMaximumSize(MAX_IMAGE_SIZE);
 	}

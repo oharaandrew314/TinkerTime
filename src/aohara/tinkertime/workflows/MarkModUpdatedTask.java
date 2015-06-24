@@ -4,14 +4,14 @@ import java.io.IOException;
 
 import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.resources.ModLoader;
+import aohara.tinkertime.resources.ModMetaLoader;
 
 public class MarkModUpdatedTask extends WorkflowTask {
 	
-	private final ModLoader modLoader;
+	private final ModMetaLoader modLoader;
 	private final Mod mod;
 
-	public MarkModUpdatedTask(ModLoader modLoader, Mod mod) {
+	public MarkModUpdatedTask(ModMetaLoader modLoader, Mod mod) {
 		super("Registering Available Update");
 		this.modLoader = modLoader;
 		this.mod = mod;

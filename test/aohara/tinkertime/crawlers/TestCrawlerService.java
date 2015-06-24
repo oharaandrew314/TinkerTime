@@ -1,6 +1,6 @@
 package aohara.tinkertime.crawlers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -8,26 +8,25 @@ import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
 
-import aohara.tinkertime.crawlers.Crawler;
-import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
-import aohara.tinkertime.crawlers.CurseCrawler;
-import aohara.tinkertime.crawlers.GithubHtmlCrawler;
-import aohara.tinkertime.crawlers.GithubJsonCrawler;
-import aohara.tinkertime.crawlers.KerbalStuffCrawler;
-import aohara.tinkertime.testutil.MockHelper;
+import aohara.tinkertime.modules.TestModule;
 
-public class TestCrawlerFactory {
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
+public class TestCrawlerService {
 	
-	private CrawlerFactory factory;
+	private static final Injector injector = Guice.createInjector(new TestModule());
+	
+	private CrawlerFactory factory; 
 	
 	@Before
 	public void setUp(){
-		factory = MockHelper.newCrawlerFactory();
+		factory = injector.getInstance(CrawlerFactory.class);
 	}
 	
 	private void test(String url, Class<? extends Crawler<?>> crawlerClass, boolean fallback) throws MalformedURLException, UnsupportedHostException{
-		assertTrue(crawlerClass.isInstance(factory.getCrawler(new URL(url), fallback)));
+		assertTrue(crawlerClass.isInstance(factory.getCrawler(new URL(url))));
 	}
 
 	@Test
@@ -52,16 +51,12 @@ public class TestCrawlerFactory {
 	
 	@Test
 	public void testGithubCom() throws MalformedURLException, UnsupportedHostException{
-		test("https://github.com/foo/bar", GithubJsonCrawler.class, false);
-		factory.setFallbacksEnabled(true);
-		test("https://github.com/foo/bar", GithubHtmlCrawler.class, true);
+		test("https://github.com/foo/bar", GithubCrawler.class, false);
 	}
 	
 	@Test
 	public void testWwwGithubCom() throws MalformedURLException, UnsupportedHostException{
-		test("https://www.github.com/bar/foo", GithubJsonCrawler.class, false);
-		factory.setFallbacksEnabled(true);
-		test("https://www.github.com/bar/foo", GithubHtmlCrawler.class, true);
+		test("https://www.github.com/bar/foo", GithubCrawler.class, false);
 	}
 
 }

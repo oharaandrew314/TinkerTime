@@ -17,9 +17,10 @@ import aohara.common.Util;
 import aohara.common.content.ImageManager;
 import aohara.common.views.Dialogs;
 import aohara.common.views.UrlLabels;
-import aohara.tinkertime.ModManager;
-import aohara.tinkertime.ModManager.NoModSelectedException;
+import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.TinkerTime;
+import aohara.tinkertime.controllers.ModExceptions.NoModSelectedException;
+import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.launcher.GameLauncher;
 import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.models.Mod;
@@ -248,6 +249,7 @@ class Actions {
 		}
 	}
 	
+	@SuppressWarnings("serial")
 	static class ContactAction extends TinkerAction {
 		
 		ContactAction(JComponent parent, ModManager mm){
@@ -339,9 +341,9 @@ class Actions {
 		
 		private final GameLauncher launcher;
 		
-		LaunchKspAction(JComponent parent, ModManager mm){
+		LaunchKspAction(JComponent parent, ModManager mm, TinkerConfig config){
 			super("Launch KSP", "icon/rocket.png", parent, mm);
-			launcher = GameLauncher.create(mm.config);
+			launcher = GameLauncher.create(config);
 		}
 
 		@Override
@@ -353,13 +355,16 @@ class Actions {
 	@SuppressWarnings("serial")
 	static class OpenGameDataFolder extends TinkerAction {
 		
-		public OpenGameDataFolder(JComponent parent, ModManager mm) {
+		private final TinkerConfig config;
+		
+		public OpenGameDataFolder(JComponent parent, ModManager mm, TinkerConfig config) {
 			super("Open GameData Folder", "icon/glyphicons_144_folder_open.png", parent, mm);
+			this.config = config;
 		}
 
 		@Override
 		protected void call() throws Exception {
-			Desktop.getDesktop().open(mm.config.getGameDataPath().toFile());
+			Desktop.getDesktop().open(config.getGameDataPath().toFile());
 		}
 		
 	}
