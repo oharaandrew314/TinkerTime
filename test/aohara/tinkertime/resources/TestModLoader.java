@@ -18,8 +18,6 @@ import aohara.tinkertime.testutil.ModStubs;
 import aohara.tinkertime.testutil.ResourceLoader;
 
 public class TestModLoader {
-
-	private static final Injector injector = Guice.createInjector(new TestModule());
 	
 	private Mod mod1, mod2;
 	private ModMetaLoader modLoader;
@@ -54,6 +52,7 @@ public class TestModLoader {
 		mod1 = ResourceLoader.loadMod(ModStubs.Mechjeb);
 		mod2 = ResourceLoader.loadMod(ModStubs.Engineer);
 		
+		Injector injector = Guice.createInjector(new TestModule());
 		modLoader = injector.getInstance(ModMetaLoader.class);
 	}
 
