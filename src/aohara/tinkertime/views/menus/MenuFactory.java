@@ -7,6 +7,7 @@ import javax.swing.JToolBar;
 
 import com.google.inject.Inject;
 
+import aohara.tinkertime.ConfigController;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.controllers.ModManager;
 
@@ -14,11 +15,13 @@ public class MenuFactory {
 	
 	private final ModManager mm;
 	private final TinkerConfig config;
+	private final ConfigController configController;
 	
 	@Inject
-	MenuFactory(ModManager mm, TinkerConfig config){
+	MenuFactory(ModManager mm, TinkerConfig config, ConfigController configController){
 		this.mm = mm;
 		this.config = config;
+		this.configController = configController;
 	}
 	
 	public JToolBar createToolBar(){
@@ -27,7 +30,7 @@ public class MenuFactory {
 		
 		toolBar.add(new Actions.LaunchKspAction(toolBar, mm, config)).setFocusPainted(false);
 		toolBar.add(new Actions.OpenGameDataFolder(toolBar, mm, config)).setFocusPainted(false);		
-		toolBar.add(new Actions.OptionsAction(toolBar, mm)).setFocusPainted(false);
+		toolBar.add(new Actions.OptionsAction(toolBar, configController)).setFocusPainted(false);
 		
 		toolBar.addSeparator();
 		

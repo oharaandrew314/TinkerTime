@@ -11,12 +11,11 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.zip.ZipFile;
 
-import aohara.common.Listenable;
-import aohara.common.views.selectorPanel.SelectorPanelController;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.controllers.ModExceptions.ModNotDownloadedException;
+import aohara.tinkertime.controllers.ModMetaHelper;
+import aohara.tinkertime.controllers.ModUpdateHandler;
 import aohara.tinkertime.models.DefaultMods;
 import aohara.tinkertime.models.Mod;
 
@@ -34,31 +33,35 @@ import com.google.inject.Singleton;
  * @author Andrew O'Hara
  */
 @Singleton
-public class ModMetaLoader extends Listenable<SelectorPanelController<Mod>> {
+public class ModMetaLoader implements ModUpdateHandler {
 	
 	private static final Type MODS_TYPE = new TypeToken<Set<Mod>>() {}.getType();
 	
 	private final Gson gson;
 	private final TinkerConfig config;
+	private final ModMetaHelper modMetaHelper;
 	private final Map<Mod, ModStructure> modCache = new LinkedHashMap<>();
 	
 	// -- Initializers ----------------------------------------
 	
 	@Inject
-	ModMetaLoader(TinkerConfig config, Gson gson){
+	ModMetaLoader(TinkerConfig config, Gson gson, ModMetaHelper modMetaHelper){
 		this.config = config;
 		this.gson = gson;
-	}
-	
-	public synchronized void init() {
-		modCache.clear();
-		updateViews();
-		importMods(config.getModsListPath());
+		this.modMetaHelper = modMetaHelper;
 	}
 	
 	//-- Public Methods ----------------------------------------
 	
+	public void clear(){
+		modCache.clear();
+	}
+	
 	public synchronized Set<Mod> getMods(){
+		if (modCache.isEmpty()){
+			importMods(config.getModsListPath());
+		}
+		
 		return modCache.keySet();
 	}
 	
@@ -72,7 +75,6 @@ public class ModMetaLoader extends Listenable<SelectorPanelController<Mod>> {
 		modDeleted(mod);	
 		
 		cacheMod(mod);
-		updateViews();
 		saveMods(modCache.keySet(), config.getModsListPath());
 	}
 	
@@ -90,14 +92,7 @@ public class ModMetaLoader extends Listenable<SelectorPanelController<Mod>> {
 			}
 		}
 		
-		updateViews();
 		saveMods(modCache.keySet(), config.getModsListPath());
-	}
-	
-	private void updateViews(){
-		for (SelectorPanelController<Mod> l : getListeners()){
-			l.setData(new LinkedHashSet<>(modCache.keySet()));
-		}
 	}
 	
 	public synchronized void exportEnabledMods(Path path){
@@ -125,7 +120,15 @@ public class ModMetaLoader extends Listenable<SelectorPanelController<Mod>> {
 		for (Mod mod : loadMods(path)){
 			cacheMod(mod);
 		}
-		updateViews();
+	}
+	
+	public synchronized boolean isEnabled(Mod mod) throws ModNotDownloadedException{
+		for (Path filePath : getModFileDestPaths(mod)){
+			if (filePath.getFileName().toString().contains(".") && !filePath.toFile().exists()){
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	public synchronized Set<Path> getModFilePaths(Mod mod) throws ModNotDownloadedException {
@@ -143,36 +146,6 @@ public class ModMetaLoader extends Listenable<SelectorPanelController<Mod>> {
 			paths.add(destFolder.resolve(path));
 		}
 		return paths;
-	}
-	
-	public boolean isDownloaded(Mod mod){
-		Path zipPath = getZipPath(mod);
-		return zipPath != null && zipPath.toFile().exists();
-	}
-	
-	public Path getZipPath(Mod mod){
-		if (mod.newestFileName != null){
-			String safePathFileName = mod.newestFileName.replaceAll(":", "").replaceAll("/", "");
-			return config.getModsZipPath().resolve(safePathFileName);
-		}
-		return null;
-	}
-	
-	public ZipFile getZipFile(Mod mod) throws ModNotDownloadedException {
-		try {
-			return new ZipFile(getZipPath(mod).toFile());
-		} catch (NullPointerException | IOException e) {
-			throw new ModNotDownloadedException(mod, e.toString());
-		}
-	}
-	
-	public synchronized boolean isEnabled(Mod mod) throws ModNotDownloadedException{
-		for (Path filePath : getModFileDestPaths(mod)){
-			if (filePath.getFileName().toString().contains(".") && !filePath.toFile().exists()){
-				return false;
-			}
-		}
-		return true;
 	}
 	
 	public synchronized ModStructure getStructure(Mod mod){
@@ -196,7 +169,7 @@ public class ModMetaLoader extends Listenable<SelectorPanelController<Mod>> {
 			Set<Mod> newMods = gson.fromJson(reader, MODS_TYPE);
 			for (Mod newMod : newMods){
 				// If mod is updateable, or if the local zip file is available, add mod
-				if (newMod.isUpdateable() || isDownloaded(newMod)){
+				if (newMod.isUpdateable() || modMetaHelper.isDownloaded(newMod)){
 					mods.add(newMod);
 				}
 			}
@@ -219,6 +192,6 @@ public class ModMetaLoader extends Listenable<SelectorPanelController<Mod>> {
 	}
 	
 	private final void cacheMod(Mod mod) {
-		modCache.put(mod, new ModStructure(getZipPath(mod)));
+		modCache.put(mod, new ModStructure(modMetaHelper.getZipPath(mod)));
 	}
 }

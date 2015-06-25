@@ -8,16 +8,27 @@ import java.nio.file.Paths;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
 
+import com.google.inject.Guice;
+
+import aohara.tinkertime.modules.TestModule;
 import aohara.tinkertime.resources.ModStructure;
 import aohara.tinkertime.testutil.ModStubs;
 import aohara.tinkertime.testutil.ResourceLoader;
 
 public class TestModStructure {
 	
+	private ResourceLoader resourceLoader;
+	
+	@Before
+	public void setUp(){
+		resourceLoader = Guice.createInjector(new TestModule()).getInstance(ResourceLoader.class);
+	}
+	
 	private void testFiles(ModStubs stub, String... paths) throws IOException{
-		ModStructure struct = ResourceLoader.getStructure(stub);
+		ModStructure struct = resourceLoader.getStructure(stub);
 		
 		Set<Path> expectedPaths = new LinkedHashSet<>();
 		for (String path : paths){

@@ -49,10 +49,12 @@ public class TestModLoader {
 
 	@Before
 	public void setUp() throws Throwable {
-		mod1 = ResourceLoader.loadMod(ModStubs.Mechjeb);
-		mod2 = ResourceLoader.loadMod(ModStubs.Engineer);
-		
 		Injector injector = Guice.createInjector(new TestModule());
+		ResourceLoader resourceLoader = injector.getInstance(ResourceLoader.class);
+		
+		mod1 = resourceLoader.loadMod(ModStubs.Mechjeb);
+		mod2 = resourceLoader.loadMod(ModStubs.Engineer);
+		
 		modLoader = injector.getInstance(ModMetaLoader.class);
 	}
 

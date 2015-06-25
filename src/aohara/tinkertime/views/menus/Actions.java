@@ -17,6 +17,7 @@ import aohara.common.Util;
 import aohara.common.content.ImageManager;
 import aohara.common.views.Dialogs;
 import aohara.common.views.UrlLabels;
+import aohara.tinkertime.ConfigController;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.controllers.ModExceptions.NoModSelectedException;
@@ -203,13 +204,16 @@ class Actions {
 	@SuppressWarnings("serial")
 	static class OptionsAction extends TinkerAction {
 		
-		OptionsAction(JComponent parent, ModManager mm){
-			super("Options", "icon/glyphicons_439_wrench.png", parent, mm);
+		private final ConfigController configController;
+		
+		OptionsAction(JComponent parent, ConfigController configController){
+			super("Options", "icon/glyphicons_439_wrench.png", parent, null);
+			this.configController = configController;
 		}
 
 		@Override
 		protected void call() throws Exception {
-			mm.openConfigWindow();
+			configController.openConfigDialog();
 		}
 	}
 	

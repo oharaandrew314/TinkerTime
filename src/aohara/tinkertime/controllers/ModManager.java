@@ -13,15 +13,16 @@ import aohara.common.Listenable;
 import aohara.common.workflows.tasks.TaskCallback;
 import aohara.common.workflows.tasks.WorkflowBuilder;
 import aohara.common.workflows.tasks.WorkflowTask.TaskEvent;
+import aohara.tinkertime.ConfigController;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.controllers.ModExceptions.*;
-import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.DefaultMods;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.resources.ModMetaLoader;
 import aohara.tinkertime.workflows.ModWorkflowBuilder;
+import aohara.tinkertime.workflows.ModWorkflowBuilderFactory;
 
 /**
  * Controller for initiating Asynchronous Tasks for Mod Processing.
@@ -36,20 +37,22 @@ import aohara.tinkertime.workflows.ModWorkflowBuilder;
 public class ModManager extends Listenable<TaskCallback> {
 	
 	private final TinkerConfig config;
-	private final CrawlerFactory crawlerService;
 	private final ThreadPoolExecutor downloadExecutor;
 	private final Executor enablerExecutor;
 	private final ModMetaLoader modLoader;
+	private final ModWorkflowBuilderFactory workflowBuilderFactory;
+	private final ConfigController configController;
 
 	private Mod selectedMod;
 
 	@Inject
-	ModManager(ModMetaLoader loader, TinkerConfig config, ThreadPoolExecutor downloadExecutor, Executor enablerExecutor, CrawlerFactory crawlerService){
+	ModManager(ModMetaLoader loader, TinkerConfig config, ThreadPoolExecutor downloadExecutor, Executor enablerExecutor, ModWorkflowBuilderFactory workflowBuilderFactory, ConfigController configController){
 		this.modLoader = loader;
 		this.config = config;
 		this.downloadExecutor = downloadExecutor;
 		this.enablerExecutor = enablerExecutor;
-		this.crawlerService = crawlerService;
+		this.workflowBuilderFactory = workflowBuilderFactory;
+		this.configController = configController;
 	}
 	
 	// -- Interface --------------------------------------------------------
@@ -61,7 +64,7 @@ public class ModManager extends Listenable<TaskCallback> {
 		return selectedMod;
 	}
 	
-	void selectMod(Mod mod){
+	public void selectMod(Mod mod){
 		this.selectedMod = mod;
 	}
 	
@@ -70,24 +73,24 @@ public class ModManager extends Listenable<TaskCallback> {
 			throw new ModUpdateFailedError(mod, "Mod is a local zip only, and cannot be updated.");
 		}
 		try {
-			ModWorkflowBuilder builder = new ModWorkflowBuilder(mod, crawlerService);
-			builder.updateMod(config, modLoader, forceUpdate);
-			submitDownloadWorkflow(builder);
+			ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder();
+			builder.updateMod(mod, forceUpdate);
+			submitDownloadWorkflow(builder, mod);
 		} catch (UnsupportedHostException e) {
 			throw new ModUpdateFailedError(e);
 		}
 	}
 	
 	public void downloadMod(URL url) throws MalformedURLException, UnsupportedHostException {
-		ModWorkflowBuilder builder = new ModWorkflowBuilder(Mod.newTempMod(crawlerService.getCrawler(url)), crawlerService);
-		builder.downloadNewMod(config, modLoader);
-		submitDownloadWorkflow(builder);
+		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder();
+		Mod tempMod = builder.downloadNewMod(url);
+		submitDownloadWorkflow(builder, tempMod);
 	}
 	
 	public void addModZip(Path zipPath){
-		ModWorkflowBuilder builder = new ModWorkflowBuilder(Mod.newTempMod(zipPath), crawlerService);
-		builder.addLocalMod(zipPath, modLoader);
-		submitDownloadWorkflow(builder);
+		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder();
+		Mod tempMod = builder.addLocalMod(zipPath);
+		submitDownloadWorkflow(builder, tempMod);
 	}
 	
 	public void updateMods() throws ModUpdateFailedError, ModNotDownloadedException{
@@ -99,14 +102,14 @@ public class ModManager extends Listenable<TaskCallback> {
 	}
 	
 	public void toggleMod(final Mod mod) {
-		ModWorkflowBuilder builder = new ModWorkflowBuilder(mod, crawlerService);
+		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder();
 		try {
 			if (modLoader.isEnabled(mod)){
-				builder.disableMod(mod, modLoader);
+				builder.disableMod(mod);
 			} else {
-				builder.enableMod(mod, modLoader, config);
+				builder.enableMod(mod);
 			}			
-			submitEnablerWorkflow(builder);
+			submitEnablerWorkflow(builder, mod);
 		} catch (ModNotDownloadedException e){
 			// Ignore user input if mod not downloaded
 		}
@@ -116,10 +119,9 @@ public class ModManager extends Listenable<TaskCallback> {
 		if (DefaultMods.isBuiltIn(mod)){
 			throw new CannotDeleteModException(mod, "Built-in");
 		}
-		
-		ModWorkflowBuilder builder = new ModWorkflowBuilder(mod, crawlerService);
-		builder.deleteMod(mod, config, modLoader);
-		builder.addListener(new TaskCallback.WorkflowCompleteCallback() {
+		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder();
+		builder.deleteMod(mod);
+		builder.addListener(new TaskCallback.WorkflowCompleteCallback() {  // TODO Remove this callback
 			
 			@Override
 			protected void processTaskEvent(TaskEvent event) {
@@ -127,7 +129,7 @@ public class ModManager extends Listenable<TaskCallback> {
 			}
 		});
 		
-		submitEnablerWorkflow(builder);
+		submitEnablerWorkflow(builder, mod);
 	}
 	
 	public void checkForModUpdates() throws Exception{
@@ -136,9 +138,9 @@ public class ModManager extends Listenable<TaskCallback> {
 		for (final Mod mod : modLoader.getMods()){
 			try {
 				if (mod.isUpdateable()){
-					ModWorkflowBuilder builder = new ModWorkflowBuilder(mod, crawlerService);
-					builder.checkForUpdates(modLoader, true);
-					submitDownloadWorkflow(builder);
+					ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder();
+					builder.checkForUpdates(mod, true);
+					submitDownloadWorkflow(builder, mod);
 				}
 			} catch (UnsupportedHostException ex) {
 				ex.printStackTrace();
@@ -160,26 +162,20 @@ public class ModManager extends Listenable<TaskCallback> {
 	}
 	
 	public void tryUpdateModManager() throws UnsupportedHostException, MalformedURLException {
-		ModWorkflowBuilder builder = new ModWorkflowBuilder(
-			Mod.newTempMod(new URL(TinkerTime.DOWNLOAD_URL), TinkerTime.VERSION),
-			crawlerService
-		);
-		builder.checkForUpdates(modLoader, false);
-		builder.downloadModInBrowser();
+		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder();
+		Mod tempMod = Mod.newTempMod(new URL(TinkerTime.DOWNLOAD_URL), TinkerTime.VERSION);
+		builder.checkForUpdates(tempMod, false);
+		builder.downloadModInBrowser(tempMod);
+		submitDownloadWorkflow(builder, tempMod);
 	}
 	
-	public void openConfigWindow(){
-		config.updateConfig();
-		reloadMods();
-	}
-	
-	private void reloadMods(){
-		modLoader.init();  // Reload mods (top update views)
+	public void reloadMods(){
+		configController.reloadMods();
 	}
 	
 	// -- Helpers -----------------------------------------------------------
 	
-	private void submitDownloadWorkflow(WorkflowBuilder builder){
+	private void submitDownloadWorkflow(WorkflowBuilder builder, Mod context){
 		for(TaskCallback callback : getListeners()){
 			builder.addListener(callback);
 		}
@@ -191,13 +187,13 @@ public class ModManager extends Listenable<TaskCallback> {
 			downloadExecutor.setMaximumPoolSize(numDownloadThreads);
 		}
 		
-		builder.execute(downloadExecutor);
+		builder.execute(downloadExecutor, context);
 	}
 	
-	private void submitEnablerWorkflow(WorkflowBuilder builder){
+	private void submitEnablerWorkflow(WorkflowBuilder builder, Mod context){
 		for(TaskCallback callback : getListeners()){
 			builder.addListener(callback);
 		}
-		builder.execute(enablerExecutor);
+		builder.execute(enablerExecutor, context);
 	}
 }

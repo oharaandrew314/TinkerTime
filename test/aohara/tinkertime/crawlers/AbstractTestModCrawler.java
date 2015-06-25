@@ -8,6 +8,14 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.jsoup.nodes.Document;
+import org.junit.Before;
+
+import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
+import aohara.tinkertime.models.Mod;
+import aohara.tinkertime.modules.TestModule;
+import aohara.tinkertime.testutil.ModStubs;
+import aohara.tinkertime.testutil.StaticAssetSelector;
 
 import com.google.gson.JsonElement;
 import com.google.inject.Guice;
@@ -15,17 +23,14 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 
-import aohara.tinkertime.crawlers.Crawler;
-import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
-import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
-import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.modules.TestModule;
-import aohara.tinkertime.testutil.ModStubs;
-import aohara.tinkertime.testutil.ResourceLoader;
-
 public abstract class AbstractTestModCrawler {
 	
-	private static final Injector injector = Guice.createInjector(new TestModule());
+	private Injector injector;
+	
+	@Before
+	public void setUp(){
+		injector = Guice.createInjector(new TestModule());
+	}
 	
 	protected void compare(
 		ModStubs stub, String id, Date updatedOn, String creator,
@@ -33,7 +38,7 @@ public abstract class AbstractTestModCrawler {
 		String version
 	) throws IOException, UnsupportedHostException {
 		Crawler<?> crawler = getCrawler(stub);
-		crawler.setAssetSelector(new ResourceLoader.StaticAssetSelector());
+		crawler.setAssetSelector(new StaticAssetSelector());
 		
 		Mod actualMod = crawler.call();
 		assertEquals(id, actualMod.id);

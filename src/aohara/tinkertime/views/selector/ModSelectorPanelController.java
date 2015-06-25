@@ -1,7 +1,6 @@
-package aohara.tinkertime.views.factories;
+package aohara.tinkertime.views.selector;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -17,53 +16,48 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.Collection;
 
-import com.google.inject.Inject;
+import javax.swing.JSplitPane;
 
 import aohara.common.views.Dialogs;
-import aohara.common.views.selectorPanel.SelectorPanelBuilder;
+import aohara.common.views.selectorPanel.DecoratedComponent;
 import aohara.common.views.selectorPanel.SelectorPanelController;
-import aohara.tinkertime.controllers.ModListListener;
 import aohara.tinkertime.controllers.ModManager;
+import aohara.tinkertime.controllers.ModUpdateHandler;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.views.ModListCellRenderer;
-import aohara.tinkertime.views.ModView;
-import aohara.tinkertime.views.menus.MenuFactory;
 
-public class ModSelectorPanelFactory {
+public class ModSelectorPanelController implements ModUpdateHandler, DecoratedComponent<JSplitPane> {
+
+	private final SelectorPanelController<Mod> spc;
 	
-	private final ModListCellRenderer renderer;
-	private final MenuFactory menuFactory;
-	private final ModListListener listListener;
-	private final ModView modView;
-	private final ModManager mm;
-	
-	@Inject
-	ModSelectorPanelFactory(ModListCellRenderer renderer, MenuFactory menuFactory, ModListListener listListener, ModView modView, ModManager mm){
-		this.renderer = renderer;
-		this.menuFactory = menuFactory;
-		this.listListener = listListener;
-		this.modView = modView;
-		this.mm = mm;
+	ModSelectorPanelController(SelectorPanelController<Mod> spc, ModManager mm){
+		this.spc = spc;
+		new DropTarget(spc.getList(), new DragDropListener(spc.getList(), mm));
+	}
+
+	@Override
+	public void modUpdated(Mod mod) {
+		spc.add(mod);
+	}
+
+	@Override
+	public void modDeleted(Mod mod) {
+		spc.remove(mod);
+	}
+
+	@Override
+	public JSplitPane getComponent() {
+		return spc.getComponent();
 	}
 	
-	public SelectorPanelController<Mod> create(Dimension panelSize, double dividerRatio){
-		SelectorPanelBuilder<Mod> spBuilder = new SelectorPanelBuilder<>(panelSize, dividerRatio);
-		spBuilder.setListCellRenderer(renderer);
-		spBuilder.setContextMenu(menuFactory.createPopupMenu());
-		spBuilder.addKeyListener(listListener);
-		spBuilder.addSelectionListener(listListener);
-		SelectorPanelController<Mod> sp = spBuilder.createSelectorPanel(modView);
-		new DropTarget(sp.getList(), new DragDropListener(sp.getList()));
-		return sp;
-	}
-	
-	private class DragDropListener implements DropTargetListener {
+private static class DragDropListener implements DropTargetListener {
 		
 		private final Component listenTo;
+		private final ModManager mm;
 		
-		private DragDropListener(Component listenTo){
+		private DragDropListener(Component listenTo, ModManager mm){
 			this.listenTo = listenTo;
+			this.mm = mm;
 		}
 
 		@Override

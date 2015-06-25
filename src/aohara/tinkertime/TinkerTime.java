@@ -8,16 +8,16 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import aohara.common.version.Version;
-import aohara.common.views.selectorPanel.SelectorPanelController;
 import aohara.tinkertime.controllers.ModManager;
+import aohara.tinkertime.controllers.ModUpdateCoordinator;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
-import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.modules.MainModule;
 import aohara.tinkertime.resources.Icons;
 import aohara.tinkertime.resources.ModMetaLoader;
 import aohara.tinkertime.views.ModListCellRenderer;
-import aohara.tinkertime.views.factories.ModSelectorPanelFactory;
 import aohara.tinkertime.views.menus.MenuFactory;
+import aohara.tinkertime.views.selector.ModSelectorPanelController;
+import aohara.tinkertime.views.selector.ModSelectorPanelFactory;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -40,7 +40,7 @@ public class TinkerTime {
 	
 	public static void main(String[] args) {
 		// Set HTTP User-agent
-		System.setProperty("http.agent", "TinkerTime Bot");
+		System.setProperty("http.agent", "TinkerTime Bot");  // FIXME Move to PageLoaders
 		
 		Injector injector = Guice.createInjector(new MainModule());
 		
@@ -49,16 +49,18 @@ public class TinkerTime {
 		ModManager modManager = injector.getInstance(ModManager.class);
 		
 		// Initialize GUI Elements
-		SelectorPanelController<Mod> selectorPanel = injector.getInstance(ModSelectorPanelFactory.class).create(new Dimension(800, 600), 0.35);
+		ModSelectorPanelController selectorPanel = injector.getInstance(ModSelectorPanelFactory.class).create(new Dimension(800, 600), 0.35);
 		
 		// Add Listeners
-		modLoader.addListener(selectorPanel);
-		modManager.addListener(injector.getInstance(ModListCellRenderer.class));
-
-		// Start Application
-		modLoader.init();  // Load mods (will notify selector panel)
+		ModUpdateCoordinator modUpdateCoordinator = injector.getInstance(ModUpdateCoordinator.class);
+		modUpdateCoordinator.addHandler(modLoader);
+		modUpdateCoordinator.addHandler(selectorPanel);
 		
-		try {	
+		modManager.reloadMods();
+		
+		modManager.addListener(injector.getInstance(ModListCellRenderer.class));  // TODO See if can be ported to ModUpdateCoordinator
+		
+		try {
 			// Check for App update on Startup
 			TinkerConfig config = injector.getInstance(TinkerConfig.class);
 			if (config.isCheckForMMUpdatesOnStartup()){

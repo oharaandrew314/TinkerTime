@@ -3,22 +3,22 @@ package aohara.tinkertime.workflows;
 import java.io.IOException;
 
 import aohara.common.workflows.tasks.WorkflowTask;
+import aohara.tinkertime.controllers.ModUpdateCoordinator;
 import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.resources.ModMetaLoader;
 
 abstract class SaveModTask extends WorkflowTask {
 	
-	private final ModMetaLoader modLoader;
+	private final ModUpdateCoordinator updateCoordinator;
 
-	SaveModTask(ModMetaLoader modLoader) {
+	SaveModTask(ModUpdateCoordinator updateCoordinator) {
 		super("Saving Mod");
-		this.modLoader = modLoader;
+		this.updateCoordinator = updateCoordinator;
 	}
 
 	@Override
 	public boolean execute() throws IOException {
-		modLoader.modUpdated(getMod());
+		updateCoordinator.modUpdated(this, getMod());
 		return true;
 	}
 
@@ -33,8 +33,8 @@ abstract class SaveModTask extends WorkflowTask {
 		
 		private final Mod mod;
 		
-		FromMod(ModMetaLoader modLoader, Mod mod){
-			super(modLoader);
+		FromMod(ModUpdateCoordinator updateCoordinator, Mod mod){
+			super(updateCoordinator);
 			this.mod = mod;
 		}
 
@@ -48,8 +48,8 @@ abstract class SaveModTask extends WorkflowTask {
 		
 		private final Crawler<?> crawler;
 
-		FromCrawler(ModMetaLoader modLoader, Crawler<?> crawler) {
-			super(modLoader);
+		FromCrawler(ModUpdateCoordinator updateCoordinator, Crawler<?> crawler) {
+			super(updateCoordinator);
 			this.crawler = crawler;
 		}
 

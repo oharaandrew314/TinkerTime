@@ -5,11 +5,10 @@ import java.nio.file.Path;
 
 import javax.swing.JFileChooser;
 
-import com.google.inject.Singleton;
-
 import aohara.common.config.Config;
 import aohara.common.config.ConfigBuilder;
-import aohara.common.config.OptionsWindow;
+
+import com.google.inject.Singleton;
 
 /**
  * Stores and Retrieves User Configuration Data.
@@ -27,7 +26,7 @@ public class TinkerConfig {
 		WIN_64 = "win64",
 		STARTUP_CHECK_MM_UPDATES = "Check for App Updates on Startup";
 		
-	private final Config config;
+	final Config config;
 	
 	public TinkerConfig(Config config){
 		this.config = config;
@@ -94,11 +93,5 @@ public class TinkerConfig {
 	
 	public boolean isCheckForMMUpdatesOnStartup(){
 		return config.getProperty(STARTUP_CHECK_MM_UPDATES).getValueAsBool();
-	}
-	
-	// -- Verification ----------------------------------------------------
-	
-	public void updateConfig(){
-		new OptionsWindow(config).toDialog();
 	}
 }
