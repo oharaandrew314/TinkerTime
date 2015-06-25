@@ -18,7 +18,14 @@ import aohara.tinkertime.crawlers.CrawlerFactory;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.resources.ModMetaLoader;
-import aohara.tinkertime.workflows.DownloadModAssetTask.ModDownloadType;
+import aohara.tinkertime.workflows.tasks.CheckForUpdateTask;
+import aohara.tinkertime.workflows.tasks.DownloadModAssetTask;
+import aohara.tinkertime.workflows.tasks.DownloadModInBrowserTask;
+import aohara.tinkertime.workflows.tasks.MarkModUpdatedTask;
+import aohara.tinkertime.workflows.tasks.RemoveModTask;
+import aohara.tinkertime.workflows.tasks.RunCrawlerTask;
+import aohara.tinkertime.workflows.tasks.SaveModTask;
+import aohara.tinkertime.workflows.tasks.DownloadModAssetTask.ModDownloadType;
 
 public class ModWorkflowBuilder extends WorkflowBuilder {
 	
@@ -138,6 +145,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 			// Do nothing
 		}
 		
+		addTask(new RemoveModTask(mod, updateCoordinator));
 		deleteModZip(mod);
 		delete(mod.getCachedImagePath(config));
 	}

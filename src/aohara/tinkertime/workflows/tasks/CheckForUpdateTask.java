@@ -1,4 +1,4 @@
-package aohara.tinkertime.workflows;
+package aohara.tinkertime.workflows.tasks;
 
 import java.io.IOException;
 import java.util.Date;
@@ -17,7 +17,7 @@ public class CheckForUpdateTask extends WorkflowTask {
 	
 	private final UpdateCheckCrawler crawler;
 
-	CheckForUpdateTask(Crawler<?> crawler, Version currentVersion, Date lastUpdatedOn) {
+	public CheckForUpdateTask(Crawler<?> crawler, Version currentVersion, Date lastUpdatedOn) {
 		this(new UpdateCheckCrawler(crawler, currentVersion, lastUpdatedOn));
 	}
 	

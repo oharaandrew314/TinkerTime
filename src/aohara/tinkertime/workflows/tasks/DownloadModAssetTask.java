@@ -1,4 +1,4 @@
-package aohara.tinkertime.workflows;
+package aohara.tinkertime.workflows.tasks;
 
 import java.io.IOException;
 import java.net.URL;
@@ -14,7 +14,7 @@ import aohara.tinkertime.crawlers.Crawler;
 import aohara.tinkertime.models.Mod;
 
 
-class DownloadModAssetTask extends FileTransferTask {
+public class DownloadModAssetTask extends FileTransferTask {
 	
 	public static enum ModDownloadType { File, Image };
 	
@@ -23,7 +23,7 @@ class DownloadModAssetTask extends FileTransferTask {
 	private final TinkerConfig config;
 	private final ModMetaHelper modHelper;
 	
-	DownloadModAssetTask(Crawler<?> crawler, TinkerConfig config, ModMetaHelper modHelper, ModDownloadType type){
+	public DownloadModAssetTask(Crawler<?> crawler, TinkerConfig config, ModMetaHelper modHelper, ModDownloadType type){
 		super(null, null);
 		this.crawler = crawler;
 		this.modHelper = modHelper;

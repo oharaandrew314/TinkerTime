@@ -6,23 +6,25 @@ import java.nio.file.Path;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
 import aohara.common.Listenable;
 import aohara.common.workflows.tasks.TaskCallback;
 import aohara.common.workflows.tasks.WorkflowBuilder;
-import aohara.common.workflows.tasks.WorkflowTask.TaskEvent;
 import aohara.tinkertime.ConfigController;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.TinkerTime;
-import aohara.tinkertime.controllers.ModExceptions.*;
+import aohara.tinkertime.controllers.ModExceptions.CannotDeleteModException;
+import aohara.tinkertime.controllers.ModExceptions.ModNotDownloadedException;
+import aohara.tinkertime.controllers.ModExceptions.ModUpdateFailedError;
+import aohara.tinkertime.controllers.ModExceptions.NoModSelectedException;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
 import aohara.tinkertime.models.DefaultMods;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.resources.ModMetaLoader;
 import aohara.tinkertime.workflows.ModWorkflowBuilder;
 import aohara.tinkertime.workflows.ModWorkflowBuilderFactory;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 /**
  * Controller for initiating Asynchronous Tasks for Mod Processing.
@@ -121,14 +123,6 @@ public class ModManager extends Listenable<TaskCallback> {
 		}
 		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder();
 		builder.deleteMod(mod);
-		builder.addListener(new TaskCallback.WorkflowCompleteCallback() {  // TODO Remove this callback
-			
-			@Override
-			protected void processTaskEvent(TaskEvent event) {
-				modLoader.modDeleted(mod);
-			}
-		});
-		
 		submitEnablerWorkflow(builder, mod);
 	}
 	

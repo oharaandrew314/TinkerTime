@@ -1,15 +1,15 @@
-package aohara.tinkertime.workflows;
+package aohara.tinkertime.workflows.tasks;
 
 import java.io.IOException;
 
 import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.crawlers.Crawler;
 
-class RunCrawlerTask extends WorkflowTask {
+public class RunCrawlerTask extends WorkflowTask {
 	
 	private final Crawler<?> crawler;
 
-	RunCrawlerTask(Crawler<?> crawler) {
+	public RunCrawlerTask(Crawler<?> crawler) {
 		super(String.format("Crawling %s page", crawler.pageUrl.getHost()));
 		this.crawler = crawler;
 	}
