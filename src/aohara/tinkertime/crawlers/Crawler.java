@@ -46,8 +46,8 @@ public abstract class Crawler<T> {
 	}
 	
 	public abstract URL getImageUrl() throws IOException;
+	public abstract Date getUpdatedOn() throws IOException;
 
-	protected abstract Date getUpdatedOn() throws IOException;
 	protected abstract String getName() throws IOException;
 	protected abstract String getCreator() throws IOException;
 	protected abstract String getKspVersion() throws IOException;

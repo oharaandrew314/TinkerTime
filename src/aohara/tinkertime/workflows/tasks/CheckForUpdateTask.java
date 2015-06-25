@@ -6,7 +6,6 @@ import java.util.Date;
 import aohara.common.version.Version;
 import aohara.common.workflows.tasks.WorkflowTask;
 import aohara.tinkertime.crawlers.Crawler;
-import aohara.tinkertime.crawlers.UpdateCheckCrawler;
 
 /**
  * Workflow Task that returns true if an update for a file is available.
@@ -15,20 +14,28 @@ import aohara.tinkertime.crawlers.UpdateCheckCrawler;
  */
 public class CheckForUpdateTask extends WorkflowTask {
 	
-	private final UpdateCheckCrawler crawler;
+	private final Crawler<?> crawler;
+	private final Version currentVersion;
+	private final Date lastUpdatedOn;
 
 	public CheckForUpdateTask(Crawler<?> crawler, Version currentVersion, Date lastUpdatedOn) {
-		this(new UpdateCheckCrawler(crawler, currentVersion, lastUpdatedOn));
-	}
-	
-	CheckForUpdateTask(UpdateCheckCrawler updateCheckCrawler){
 		super("Comparing Versions");
-		this.crawler = updateCheckCrawler;
+		this.crawler = crawler;
+		this.currentVersion = currentVersion;
+		this.lastUpdatedOn = lastUpdatedOn;
 	}
 
 	@Override
 	public boolean execute() throws IOException {
-		return crawler.isUpdateAvailable();
+		try{
+			return crawler.getVersion().greaterThan(currentVersion);
+		} catch (NullPointerException e){
+			try {
+				return crawler.getUpdatedOn().before(lastUpdatedOn);
+			} catch (NullPointerException | IOException e1) {
+				return false;
+			}
+		}
 	}
 	
 	@Override
