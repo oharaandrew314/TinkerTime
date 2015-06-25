@@ -9,7 +9,9 @@ import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 
 import com.google.gson.JsonElement;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
+@Singleton
 public class CrawlerFactory {
 	
 	public static final String

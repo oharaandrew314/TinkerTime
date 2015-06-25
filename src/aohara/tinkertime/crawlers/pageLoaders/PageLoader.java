@@ -17,6 +17,8 @@ import aohara.common.content.ExpiryCache;
  */
 public abstract class PageLoader<T> {
 	
+	public static final String USER_AGENT = "TinkerTime Mod Manager Agent";
+
 	public static final int CACHING_TIME_MS = 10 * 60 * 1000;
 	private final ExpiryCache<URL, T> cache = new ExpiryCache<>(CACHING_TIME_MS);
 	

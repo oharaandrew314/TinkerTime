@@ -39,25 +39,16 @@ public class TinkerTime {
 		FULL_NAME = String.format("%s v%s by %s", NAME, VERSION, AUTHOR);
 	
 	public static void main(String[] args) {
-		// Set HTTP User-agent
-		System.setProperty("http.agent", "TinkerTime Bot");  // FIXME Move to PageLoaders
-		
 		Injector injector = Guice.createInjector(new MainModule());
 		
-		// Initialize Controllers
-		ModMetaLoader modLoader = injector.getInstance(ModMetaLoader.class);
-		ModManager modManager = injector.getInstance(ModManager.class);
-		
-		// Initialize GUI Elements
-		ModSelectorPanelController selectorPanel = injector.getInstance(ModSelectorPanelFactory.class).create(new Dimension(800, 600), 0.35);
-		
-		// Add Listeners
+		// Set Listeners
 		ModUpdateCoordinator modUpdateCoordinator = injector.getInstance(ModUpdateCoordinator.class);
-		modUpdateCoordinator.addHandler(modLoader);
+		modUpdateCoordinator.addHandler(injector.getInstance(ModMetaLoader.class));
+		ModSelectorPanelController selectorPanel = injector.getInstance(ModSelectorPanelFactory.class).create(new Dimension(800, 600), 0.35);
 		modUpdateCoordinator.addHandler(selectorPanel);
 		
+		ModManager modManager = injector.getInstance(ModManager.class);
 		modManager.reloadMods();
-		
 		modManager.addListener(injector.getInstance(ModListCellRenderer.class));  // TODO See if can be ported to ModUpdateCoordinator
 		
 		try {

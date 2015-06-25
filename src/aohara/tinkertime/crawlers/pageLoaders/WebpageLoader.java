@@ -3,6 +3,7 @@ package aohara.tinkertime.crawlers.pageLoaders;
 import java.io.IOException;
 import java.net.URL;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 	
@@ -13,10 +14,15 @@ import org.jsoup.nodes.Document;
  */
 public class WebpageLoader extends PageLoader<Document>{
 	
-	private static final int TIMEOUT_MS = 10 * 1000;
+	private Connection connection;
 
 	@Override
 	protected Document loadPage(URL url) throws IOException {
-		return Jsoup.parse(url, TIMEOUT_MS);
+		if (connection == null){
+			connection = Jsoup.connect(url.toString()).userAgent(USER_AGENT);
+			return connection.get();
+		}
+
+		return connection.url(url).get();
 	}
 }
