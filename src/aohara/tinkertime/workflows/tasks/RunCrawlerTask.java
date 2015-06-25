@@ -15,8 +15,8 @@ public class RunCrawlerTask extends WorkflowTask {
 	}
 
 	@Override
-	public boolean execute() throws Exception {
-		crawler.call();
+	public boolean execute() throws IOException {
+		crawler.testConnection();
 		return true;
 	}
 

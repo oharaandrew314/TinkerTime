@@ -35,7 +35,7 @@ public class ResourceLoader {
 	
 	public Mod loadMod(ModStubs stub){
 		try {
-			return loadCrawler(stub).call();
+			return loadCrawler(stub).getMod();
 		} catch (IOException e) {
 			throw new RuntimeException("Error creating mod for stub: " + stub.name, e);
 		}

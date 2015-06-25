@@ -19,10 +19,11 @@ public class WebpageLoader extends PageLoader<Document>{
 	@Override
 	protected Document loadPage(URL url) throws IOException {
 		if (connection == null){
-			connection = Jsoup.connect(url.toString()).userAgent(USER_AGENT);
-			return connection.get();
+			connection = Jsoup.connect(url.toString());
+		} else {
+			connection.url(url);
 		}
 
-		return connection.url(url).get();
+		return connection.get();
 	}
 }

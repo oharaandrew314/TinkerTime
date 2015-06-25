@@ -40,7 +40,7 @@ public abstract class AbstractTestModCrawler {
 		Crawler<?> crawler = getCrawler(stub);
 		crawler.setAssetSelector(new StaticAssetSelector());
 		
-		Mod actualMod = crawler.call();
+		Mod actualMod = crawler.getMod();
 		assertEquals(id, actualMod.id);
 		assertEquals(stub.name, actualMod.name);
 		assertEquals(newestFile, actualMod.newestFileName);

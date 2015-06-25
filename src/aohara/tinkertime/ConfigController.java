@@ -18,6 +18,8 @@ public class ConfigController {
 		this.config = config;
 		this.modLoader = modLoader;
 		this.updateCoordinator = updateCoordinator;
+
+		System.setProperty("http.agent", "TinkerTime Mod Manager Agent");  // Set User-Agent
 	}
 	
 	public void openConfigDialog() {
