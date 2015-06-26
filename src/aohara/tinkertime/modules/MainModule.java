@@ -6,7 +6,12 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import org.jsoup.nodes.Document;
 
+import aohara.common.OS;
 import aohara.tinkertime.TinkerConfig;
+import aohara.tinkertime.controllers.launcher.GameExecStrategy;
+import aohara.tinkertime.controllers.launcher.LinuxExecStrategy;
+import aohara.tinkertime.controllers.launcher.OsxExecStrategy;
+import aohara.tinkertime.controllers.launcher.WindowsExecStrategy;
 import aohara.tinkertime.crawlers.pageLoaders.JsonLoader;
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
 import aohara.tinkertime.crawlers.pageLoaders.WebpageLoader;
@@ -24,6 +29,16 @@ public class MainModule extends AbstractModule {
 	protected void configure() {
 		bind(new TypeLiteral<PageLoader<Document>>(){}).to(WebpageLoader.class);
 		bind(new TypeLiteral<PageLoader<JsonElement>>(){}).to(JsonLoader.class);
+		bind(GameExecStrategy.class).to(getExecStrategyType());
+	}
+
+	private Class<? extends GameExecStrategy> getExecStrategyType(){
+		switch(OS.getOs()){
+		case Windows: return WindowsExecStrategy.class;
+		case Linux: return LinuxExecStrategy.class;
+		case Osx: return OsxExecStrategy.class;
+		default: throw new IllegalStateException();
+		}
 	}
 	
 	@Provides
@@ -45,5 +60,4 @@ public class MainModule extends AbstractModule {
 	TinkerConfig getTinkerConfig(){
 		return TinkerConfig.create();
 	}
-
 }

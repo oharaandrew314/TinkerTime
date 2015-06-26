@@ -10,25 +10,28 @@ import com.google.inject.Inject;
 import aohara.tinkertime.ConfigController;
 import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.controllers.ModManager;
+import aohara.tinkertime.controllers.launcher.GameLauncher;
 
 public class MenuFactory {
 	
 	private final ModManager mm;
 	private final TinkerConfig config;
 	private final ConfigController configController;
+	private final GameLauncher gameLauncher;
 	
 	@Inject
-	MenuFactory(ModManager mm, TinkerConfig config, ConfigController configController){
+	MenuFactory(ModManager mm, TinkerConfig config, ConfigController configController, GameLauncher gameLauncher){
 		this.mm = mm;
 		this.config = config;
 		this.configController = configController;
+		this.gameLauncher = gameLauncher;
 	}
 	
 	public JToolBar createToolBar(){
 		JToolBar toolBar = new JToolBar();
 		toolBar.setFloatable(false);
 		
-		toolBar.add(new Actions.LaunchKspAction(toolBar, mm, config)).setFocusPainted(false);
+		toolBar.add(new Actions.LaunchKspAction(toolBar, mm, config, gameLauncher)).setFocusPainted(false);
 		toolBar.add(new Actions.OpenGameDataFolder(toolBar, mm, config)).setFocusPainted(false);		
 		toolBar.add(new Actions.OptionsAction(toolBar, configController)).setFocusPainted(false);
 		

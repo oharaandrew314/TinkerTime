@@ -345,9 +345,9 @@ class Actions {
 		
 		private final GameLauncher launcher;
 		
-		LaunchKspAction(JComponent parent, ModManager mm, TinkerConfig config){
+		LaunchKspAction(JComponent parent, ModManager mm, TinkerConfig config, GameLauncher launcher){
 			super("Launch KSP", "icon/rocket.png", parent, mm);
-			launcher = GameLauncher.create(config);
+			this.launcher = launcher;
 		}
 
 		@Override
