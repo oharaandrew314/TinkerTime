@@ -1,12 +1,15 @@
 package aohara.tinkertime;
 
 
+import java.io.IOException;
 import java.nio.file.Path;
 
 import javax.swing.JFileChooser;
 
 import aohara.common.config.Config;
 import aohara.common.config.ConfigBuilder;
+import aohara.common.config.OptionsWindow;
+import aohara.common.config.Constraint.InvalidInputException;
 
 import com.google.inject.Singleton;
 
@@ -48,9 +51,21 @@ public class TinkerConfig {
 			"TinkerTime-Options.json"
 		);
 		
+		// Verify Config
+		try {
+			config.reload();
+		} catch (InvalidInputException | IOException e) {
+			new OptionsWindow(config).toDialog();
+			try {
+				config.reload();
+			} catch (IOException | InvalidInputException e1) {
+				throw new RuntimeException(e);
+			}
+		}
+
 		return new TinkerConfig(config);
 	}
-	
+
 	// -- Getters -------------------------------------------------------
 	
 	public Path getGameDataPath(){
