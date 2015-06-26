@@ -88,7 +88,7 @@ public class TinkerConfig {
 	}
 	
 	public String getLaunchArguments(){
-		return config.getProperty(KSP_WIN_LAUNCH_ARGS).toString();
+		return config.getProperty(KSP_WIN_LAUNCH_ARGS).getValueAsString();
 	}
 	
 	public boolean isCheckForMMUpdatesOnStartup(){
