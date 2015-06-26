@@ -53,8 +53,8 @@ public class MenuFactory {
 		
 		JMenu modMenu = new JMenu("Mod");
 		modMenu.add(new Actions.EnableDisableModAction(menuBar, mm).withoutIcon());
-		modMenu.add(new Actions.DeleteModAction(menuBar, mm).withoutIcon());
 		modMenu.add(new Actions.UpdateModAction(menuBar, mm).withoutIcon());
+		modMenu.add(new Actions.DeleteModAction(menuBar, mm).withoutIcon());
 		menuBar.add(modMenu);
 		
 		JMenu updateMenu = new JMenu("Updates");
