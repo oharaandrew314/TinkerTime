@@ -28,7 +28,7 @@ public class ConfigController {
 	}
 	
 	public void reloadMods(){
-		modLoader.clear();
+		updateCoordinator.clearMods();
 		for (Mod modToLoad : modLoader.getMods()){
 			updateCoordinator.modUpdated(modLoader, modToLoad);
 		}

@@ -46,6 +46,11 @@ public class ModSelectorPanelController implements ModUpdateHandler, DecoratedCo
 	}
 
 	@Override
+	public void clear() {
+		spc.clear();
+	}
+
+	@Override
 	public JSplitPane getComponent() {
 		return spc.getComponent();
 	}

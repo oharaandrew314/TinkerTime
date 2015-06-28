@@ -16,8 +16,10 @@ public class ModUpdateCoordinator {
 		listeners.add(handler);
 	}
 	
-	public void clear(){
-		listeners.clear();
+	public void clearMods(){
+		for (ModUpdateHandler handler : listeners){
+			handler.clear();
+		}
 	}
 
 	public void modUpdated(Object source, Mod mod) {
