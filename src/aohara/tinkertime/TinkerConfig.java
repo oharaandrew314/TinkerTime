@@ -1,6 +1,7 @@
 package aohara.tinkertime;
 
 
+import java.io.IOException;
 import java.nio.file.Path;
 
 import javax.swing.JFileChooser;
@@ -8,12 +9,16 @@ import javax.swing.JFileChooser;
 import aohara.common.config.Config;
 import aohara.common.config.ConfigBuilder;
 import aohara.common.config.OptionsWindow;
+import aohara.common.config.Constraint.InvalidInputException;
+
+import com.google.inject.Singleton;
 
 /**
  * Stores and Retrieves User Configuration Data.
  * 
  * @author Andrew O'Hara
  */
+@Singleton
 public class TinkerConfig {
 	 
 	private static final String
@@ -24,9 +29,9 @@ public class TinkerConfig {
 		WIN_64 = "win64",
 		STARTUP_CHECK_MM_UPDATES = "Check for App Updates on Startup";
 		
-	private final Config config;
+	final Config config;
 	
-	protected TinkerConfig(Config config){
+	public TinkerConfig(Config config){
 		this.config = config;
 	}
 	
@@ -46,9 +51,21 @@ public class TinkerConfig {
 			"TinkerTime-Options.json"
 		);
 		
+		// Verify Config
+		try {
+			config.reload();
+		} catch (InvalidInputException | IOException e) {
+			new OptionsWindow(config).toDialog();
+			try {
+				config.reload();
+			} catch (IOException | InvalidInputException e1) {
+				throw new RuntimeException(e);
+			}
+		}
+
 		return new TinkerConfig(config);
 	}
-	
+
 	// -- Getters -------------------------------------------------------
 	
 	public Path getGameDataPath(){
@@ -86,16 +103,10 @@ public class TinkerConfig {
 	}
 	
 	public String getLaunchArguments(){
-		return config.getProperty(KSP_WIN_LAUNCH_ARGS).toString();
+		return config.getProperty(KSP_WIN_LAUNCH_ARGS).getValueAsString();
 	}
 	
 	public boolean isCheckForMMUpdatesOnStartup(){
 		return config.getProperty(STARTUP_CHECK_MM_UPDATES).getValueAsBool();
-	}
-	
-	// -- Verification ----------------------------------------------------
-	
-	public void updateConfig(){
-		new OptionsWindow(config).toDialog();
 	}
 }

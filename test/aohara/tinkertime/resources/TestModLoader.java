@@ -9,16 +9,18 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.resources.ModLoader;
-import aohara.tinkertime.testutil.MockHelper;
+import aohara.tinkertime.modules.TestModule;
 import aohara.tinkertime.testutil.ModStubs;
 import aohara.tinkertime.testutil.ResourceLoader;
 
 public class TestModLoader {
-
+	
 	private Mod mod1, mod2;
-	private ModLoader modLoader;
+	private ModMetaLoader modLoader;
 	private Set<Mod> mods;
 	
 	private static Mod getUpdatedMod(final Mod mod, final String newestFile){
@@ -47,10 +49,13 @@ public class TestModLoader {
 
 	@Before
 	public void setUp() throws Throwable {
-		mod1 = ResourceLoader.loadMod(ModStubs.Mechjeb);
-		mod2 = ResourceLoader.loadMod(ModStubs.Engineer);
-
-		modLoader = new ModLoader(MockHelper.newConfig());
+		Injector injector = Guice.createInjector(new TestModule());
+		ResourceLoader resourceLoader = injector.getInstance(ResourceLoader.class);
+		
+		mod1 = resourceLoader.loadMod(ModStubs.Mechjeb);
+		mod2 = resourceLoader.loadMod(ModStubs.Engineer);
+		
+		modLoader = injector.getInstance(ModMetaLoader.class);
 	}
 
 	@Test

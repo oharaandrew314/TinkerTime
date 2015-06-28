@@ -1,6 +1,7 @@
 package aohara.tinkertime.crawlers;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Calendar;
 
 import org.junit.Test;
@@ -54,6 +55,11 @@ public class TestKerbalStuffCrawler extends AbstractTestModCrawler {
 			"0.9.0",
 			"0.4.0.1"
 		);
+	}
+
+	@Override
+	protected Crawler<?> getCrawler(URL url) {
+		return new KerbalStuffCrawler(url, getJsonLoader());
 	}
 
 }

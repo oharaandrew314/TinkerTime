@@ -24,7 +24,7 @@ public class JenkinsCrawler extends Crawler<JsonElement> {
 	
 	private JsonObject cachedJson;
 	
-	public JenkinsCrawler(URL jenkinsUrl, PageLoader<JsonElement> pageLoader) throws MalformedURLException{
+	public JenkinsCrawler(URL jenkinsUrl, PageLoader<JsonElement> pageLoader) {
 		super(jenkinsUrl, pageLoader);
 	}
 	
@@ -88,7 +88,7 @@ public class JenkinsCrawler extends Crawler<JsonElement> {
 			JsonObject artifactObj = artifactEle.getAsJsonObject();
 			String fileName = artifactObj.get("relativePath").getAsString();
 			Version version = Version.valueOf(VersionParser.parseVersionString(fileName));
-			if (latestVersion == null || version.greaterThan(latestVersion) && fileName.endsWith(".dll")){
+			if (latestVersion == null || (!latestVersion.greaterThan(version) && fileName.endsWith(".dll"))){
 				latestVersion = version;
 				latestArtifact = artifactObj;
 			}

@@ -5,17 +5,35 @@ import javax.swing.JMenuBar;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 
-import aohara.tinkertime.ModManager;
+import com.google.inject.Inject;
+
+import aohara.tinkertime.ConfigController;
+import aohara.tinkertime.TinkerConfig;
+import aohara.tinkertime.controllers.ModManager;
+import aohara.tinkertime.controllers.launcher.GameLauncher;
 
 public class MenuFactory {
 	
-	public static JToolBar createToolBar(ModManager mm){
+	private final ModManager mm;
+	private final TinkerConfig config;
+	private final ConfigController configController;
+	private final GameLauncher gameLauncher;
+	
+	@Inject
+	MenuFactory(ModManager mm, TinkerConfig config, ConfigController configController, GameLauncher gameLauncher){
+		this.mm = mm;
+		this.config = config;
+		this.configController = configController;
+		this.gameLauncher = gameLauncher;
+	}
+	
+	public JToolBar createToolBar(){
 		JToolBar toolBar = new JToolBar();
 		toolBar.setFloatable(false);
 		
-		toolBar.add(new Actions.LaunchKspAction(toolBar, mm)).setFocusPainted(false);
-		toolBar.add(new Actions.OpenGameDataFolder(toolBar, mm)).setFocusPainted(false);		
-		toolBar.add(new Actions.OptionsAction(toolBar, mm)).setFocusPainted(false);
+		toolBar.add(new Actions.LaunchKspAction(toolBar, mm, config, gameLauncher)).setFocusPainted(false);
+		toolBar.add(new Actions.OpenGameDataFolder(toolBar, mm, config)).setFocusPainted(false);		
+		toolBar.add(new Actions.OptionsAction(toolBar, configController)).setFocusPainted(false);
 		
 		toolBar.addSeparator();
 		
@@ -30,13 +48,13 @@ public class MenuFactory {
 		return toolBar;
 	}
 	
-	public static JMenuBar createMenuBar(ModManager mm){
+	public JMenuBar createMenuBar(){
 		JMenuBar menuBar = new JMenuBar();
 		
 		JMenu modMenu = new JMenu("Mod");
 		modMenu.add(new Actions.EnableDisableModAction(menuBar, mm).withoutIcon());
-		modMenu.add(new Actions.DeleteModAction(menuBar, mm).withoutIcon());
 		modMenu.add(new Actions.UpdateModAction(menuBar, mm).withoutIcon());
+		modMenu.add(new Actions.DeleteModAction(menuBar, mm).withoutIcon());
 		menuBar.add(modMenu);
 		
 		JMenu updateMenu = new JMenu("Updates");
@@ -59,7 +77,7 @@ public class MenuFactory {
 		return menuBar;
 	}
 	
-	public static JPopupMenu createPopupMenu(ModManager mm){
+	public JPopupMenu createPopupMenu(){
 		JPopupMenu popupMenu = new JPopupMenu();
 		popupMenu.add(new Actions.EnableDisableModAction(popupMenu, mm));
 		popupMenu.add(new Actions.UpdateModAction(popupMenu, mm));

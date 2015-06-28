@@ -7,7 +7,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.concurrent.Callable;
 
 import javax.swing.JOptionPane;
 
@@ -26,7 +25,7 @@ import aohara.tinkertime.models.Mod;
  *
  * @param <T> Type of Page that is to be returned by getPage
  */
-public abstract class Crawler<T> implements Callable<Mod> {
+public abstract class Crawler<T> {
 	
 	public static final String[] VALID_ASSET_EXTENSIONS = new String[]{ ".zip", ".dll" };
 	
@@ -34,9 +33,7 @@ public abstract class Crawler<T> implements Callable<Mod> {
 	public final URL pageUrl;
 	
 	private Asset cachedAsset;
-	private Mod cachedMod;
 	private AssetSelector assetSelector = new DialogAssetSelector();
-	private boolean wasRun = false;
 	
 	
 	public Crawler(URL url, PageLoader<T> pageLoader) {
@@ -49,8 +46,8 @@ public abstract class Crawler<T> implements Callable<Mod> {
 	}
 	
 	public abstract URL getImageUrl() throws IOException;
+	public abstract Date getUpdatedOn() throws IOException;
 
-	protected abstract Date getUpdatedOn() throws IOException;
 	protected abstract String getName() throws IOException;
 	protected abstract String getCreator() throws IOException;
 	protected abstract String getKspVersion() throws IOException;
@@ -117,31 +114,23 @@ public abstract class Crawler<T> implements Callable<Mod> {
 		return getSelectedAsset().fileName;
 	}
 	
-	// -- Public Methods ---------------------------------------------------
-	
-	@Override
-	public Mod call() throws IOException {
-		wasRun = true;
-		return cachedMod = new Mod(
-			getId(), getName(), getNewestFileName(),
-			getCreator(), pageUrl,
-			getUpdatedOn() != null ? getUpdatedOn() : Calendar.getInstance().getTime(),
-			getKspVersion(), getVersion()
-		);
+	public void testConnection() throws IOException {
+		getPage(getApiUrl());
 	}
 	
+	// -- Public Methods ---------------------------------------------------
+
 	public void setAssetSelector(AssetSelector assetSelector){
 		this.assetSelector = assetSelector;
 	}
 
 	public Mod getMod() throws IOException {
-		if (!wasRun){
-			call();
-		}
-		if (cachedMod == null){
-			throw new IOException("The Crawler could not generate a mod");
-		}
-		return cachedMod;
+		return new Mod(
+			getId(), getName(), getNewestFileName(),
+			getCreator(), pageUrl,
+			getUpdatedOn() != null ? getUpdatedOn() : Calendar.getInstance().getTime(),
+			getKspVersion(), getVersion()
+		);
 	}
 	
 	public final URL getDownloadLink() throws IOException{
