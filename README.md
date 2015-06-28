@@ -32,6 +32,9 @@ The [Tinker Time Wiki](https://github.com/oharaandrew314/TinkerTime/wiki) contai
 
 ### Change Log
 
+##### v1.4.4
+- Fix App Auto-Updater
+
 ##### v1.4.3
 - Fix Mod-List Scrollbar not appearing
 - Remove Github Fallback crawler (used when API limit exceeded)
