@@ -34,8 +34,10 @@ The [Tinker Time Wiki](https://github.com/oharaandrew314/TinkerTime/wiki) contai
 
 ##### v1.4.3
 - Fix Mod-List Scrollbar not appearing
-- Migrate Dependency Injection to Google Guice Framework (increases JAR file size)
 - Remove Github Fallback crawler (used when API limit exceeded)
+- Fix GameLauncher not including launch arguments
+- Fix JenkinsCrawler to get and install correct artifact
+- Various refactorings, including migration to Google Guice Framework
 
 ##### v1.4.2
 - Remove option to use 64-bit KSP on Windows (since it was removed in 1.0)
