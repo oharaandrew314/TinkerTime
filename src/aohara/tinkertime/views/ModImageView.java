@@ -8,12 +8,12 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
-import com.google.inject.Inject;
-
 import aohara.common.content.ImageManager;
 import aohara.common.views.selectorPanel.SelectorView;
-import aohara.tinkertime.TinkerConfig;
+import aohara.tinkertime.models.ConfigFactory;
 import aohara.tinkertime.models.Mod;
+
+import com.google.inject.Inject;
 
 /**
  * Component which displays the Mod's image from a given URL.
@@ -21,15 +21,15 @@ import aohara.tinkertime.models.Mod;
  * @author Andrew O'Hara
  */
 public class ModImageView extends SelectorView.AbstractSelectorView<Mod> {
-	
+
 	private static final Dimension MAX_IMAGE_SIZE = new Dimension(250, 250);
 	private final ImageManager imageManager = new ImageManager();
 	private final JLabel label = new JLabel();
-	private final TinkerConfig config;
-	
+	private final ConfigFactory configFactory;
+
 	@Inject
-	ModImageView(TinkerConfig config){
-		this.config = config;
+	ModImageView(ConfigFactory configFactory){
+		this.configFactory = configFactory;
 		label.setMaximumSize(MAX_IMAGE_SIZE);
 	}
 
@@ -39,22 +39,22 @@ public class ModImageView extends SelectorView.AbstractSelectorView<Mod> {
 	}
 
 	@Override
-	protected void onElementChanged(Mod element) {		
+	protected void onElementChanged(Mod element) {
 		try {
 			if (element == null){
 				throw new NoModSelectedException();
 			}
-			
-			BufferedImage image = imageManager.getImage(element.getCachedImagePath(config));
+
+			BufferedImage image = imageManager.getImage(element.getCachedImagePath(configFactory.getConfig()));
 			Dimension size = imageManager.scaleToFit(image, new Dimension(MAX_IMAGE_SIZE.width, MAX_IMAGE_SIZE.height));
 			image = imageManager.resizeImage(image, size);
 			label.setIcon(new ImageIcon(image));
-			
+
 		} catch (IOException | NoModSelectedException e) {
 			label.setIcon(null);
 		}
 	}
-	
+
 	@SuppressWarnings("serial")
 	private static class NoModSelectedException extends Exception {}
 }

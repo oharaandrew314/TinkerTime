@@ -20,9 +20,8 @@ import aohara.common.views.ProgressSpinnerPanel;
 import aohara.common.workflows.tasks.TaskCallback;
 import aohara.common.workflows.tasks.WorkflowTask.TaskEvent;
 import aohara.common.workflows.tasks.WorkflowTask.TaskExceptionEvent;
-import aohara.tinkertime.controllers.ModExceptions.ModNotDownloadedException;
+import aohara.tinkertime.controllers.ModMetaHelper;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.resources.ModMetaLoader;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -39,13 +38,13 @@ import com.google.inject.Singleton;
 public class ModListCellRenderer extends TaskCallback implements ListCellRenderer<Mod> {
 	
 	private final Map<Mod, ProgressSpinnerPanel> elements = new HashMap<>();
-	private final ModMetaLoader modLoader;
+	private final ModMetaHelper modHelper;
 	private final ImageManager imageManager;
 	
 	@Inject
-	ModListCellRenderer(ImageManager imageManager, ModMetaLoader modLoader){
+	ModListCellRenderer(ImageManager imageManager, ModMetaHelper modHelper){
 		this.imageManager = imageManager;
-		this.modLoader = modLoader;
+		this.modHelper = modHelper;
 	}
 	
 	protected ImageIcon getEnabledIcon(){
@@ -76,17 +75,13 @@ public class ModListCellRenderer extends TaskCallback implements ListCellRendere
 	
 	private ImageIcon[] getCurrentIcons(Mod mod){
 		LinkedList<ImageIcon> icons = new LinkedList<>();
-		try {
-			icons.add(modLoader.isEnabled(mod) ? getEnabledIcon() : getDisabledIcon());
-		} catch (ModNotDownloadedException e){
-			icons.add(getErrorIcon());
-		}
+		icons.add(modHelper.isEnabled(mod) ? getEnabledIcon() : getDisabledIcon());
 		
-		if (mod.updateAvailable){
+		if (mod.isUpdateAvailable()){
 			icons.add(getUpdateIcon());
 		}
 		
-		if (mod.pageUrl == null){
+		if (mod.getUrl() == null){
 			icons.add(getLocalIcon());
 		}
 		return icons.toArray(new ImageIcon[0]);
@@ -100,7 +95,7 @@ public class ModListCellRenderer extends TaskCallback implements ListCellRendere
 		ImageIcon[] icons = getCurrentIcons(mod);
 		
 		// Create cell label
-		String text = mod.name;
+		String text = mod.getName();
 		if (mod.getSupportedVersion() != null){
 			text = String.format("[%s] %s", mod.getSupportedVersion(), text);
 		}

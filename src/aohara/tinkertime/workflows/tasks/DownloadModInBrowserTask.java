@@ -32,7 +32,7 @@ public class DownloadModInBrowserTask extends WorkflowTask {
 				"Would you like to download it?%n" +
 				"%n" + 
 				"You currently have v%s",
-				result.name, result.getVersion(), currentVersion
+				result.getName(), result.getModVersion(), currentVersion
 			),
 			"Update Tinker Time",
 			JOptionPane.YES_NO_OPTION,

@@ -25,12 +25,11 @@ public class TestModLoader {
 	
 	private static Mod getUpdatedMod(final Mod mod, final String newestFile){
 		return new Mod(
-			mod.id,
-			mod.name,
+			mod.getName(),
 			newestFile,
-			mod.creator,
-			mod.pageUrl,
-			mod.updatedOn,
+			mod.getCreator(),
+			mod.getUrl(),
+			mod.getUpdatedOn(),
 			mod.getSupportedVersion(),
 			null
 		);
@@ -86,15 +85,15 @@ public class TestModLoader {
 	public void testSaveUpdatedMod() throws Throwable {	
 		testSaveOne();
 		
-		String newestFile = mod1.newestFileName + "-updated";
+		String newestFile = mod1.getNewestFileName() + "-updated";
 		Mod newer = getUpdatedMod(mod1, newestFile);
-		assertEquals(newestFile, newer.newestFileName);
+		assertEquals(newestFile, newer.getNewestFileName());
 		
 		update(newer, false);
 		
 		assertEquals(1, mods.size());
 		assertTrue(mods.contains(newer));
-		assertEquals(newestFile, mods.iterator().next().newestFileName);
+		assertEquals(newestFile, mods.iterator().next().getNewestFileName());
 	}
 	
 	@Test

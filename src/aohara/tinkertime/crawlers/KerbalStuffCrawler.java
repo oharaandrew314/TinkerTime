@@ -18,8 +18,8 @@ public class KerbalStuffCrawler extends Crawler<JsonElement>{
 	
 	private static Pattern ID_PATTERN = Pattern.compile("(mod/)(\\d+)(/*)");
 
-	public KerbalStuffCrawler(URL url, PageLoader<JsonElement> pageLoader) {
-		super(url, pageLoader);
+	public KerbalStuffCrawler(URL url, PageLoader<JsonElement> pageLoader, Integer existingModId) {
+		super(url, pageLoader, existingModId);
 	}
 	
 	@Override

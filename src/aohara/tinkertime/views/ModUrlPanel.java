@@ -31,7 +31,7 @@ public class ModUrlPanel extends SelectorView.AbstractSelectorView<Mod> {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
-					Util.goToHyperlink(getElement().pageUrl);
+					Util.goToHyperlink(getElement().getUrl());
 				} catch (IOException e1) {
 					Dialogs.errorDialog(label, e1);
 				}
@@ -49,12 +49,12 @@ public class ModUrlPanel extends SelectorView.AbstractSelectorView<Mod> {
 		if (mod.isUpdateable()){
 			String previewText = String.format(
 				"Go to Mod Page (on %s)",
-				mod.pageUrl.getHost()
+				mod.getUrl().getHost()
 			);
 			
 			label.setText(String.format(
 				LABEL_TEMPLATE,
-				mod.pageUrl,
+				mod.getUrl(),
 				previewText
 			));
 		}

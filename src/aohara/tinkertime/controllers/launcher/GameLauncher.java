@@ -2,22 +2,22 @@ package aohara.tinkertime.controllers.launcher;
 
 import java.io.IOException;
 
+import aohara.tinkertime.models.ConfigFactory;
+
 import com.google.inject.Inject;
 
-import aohara.tinkertime.TinkerConfig;
-
 public class GameLauncher {
-	
-	private final TinkerConfig config;
+
+	private final ConfigFactory configFactory;
 	private final GameExecStrategy strategy;
-	
+
 	@Inject
-	GameLauncher(TinkerConfig config, GameExecStrategy launchStrategy){
-		this.config = config;
+	GameLauncher(ConfigFactory configFactory, GameExecStrategy launchStrategy){
+		this.configFactory = configFactory;
 		this.strategy = launchStrategy;
 	}
-	
+
 	public void launchGame() throws IOException{
-		strategy.getProcessBuilder(config).start();
+		strategy.getProcessBuilder(configFactory.getConfig()).start();
 	}
 }

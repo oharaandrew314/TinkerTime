@@ -20,8 +20,8 @@ import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
  */
 public class CurseCrawler extends Crawler<Document> {
 	
-	public CurseCrawler(URL url, PageLoader<Document> pageLoader){
-		super(url, pageLoader);
+	public CurseCrawler(URL url, PageLoader<Document> pageLoader, Integer existingModId){
+		super(url, pageLoader, existingModId);
 	}
 	
 	@Override

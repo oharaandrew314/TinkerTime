@@ -34,7 +34,7 @@ public class ModListListener implements KeyListener, SelectorListListener<Mod> {
 			switch(evt.getKeyChar()){
 			case KeyEvent.VK_DELETE:
 				Mod selectedMod = mm.getSelectedMod();
-				if (TinkerDialogs.confirmDeleteMod(evt.getComponent(), selectedMod.name)){
+				if (TinkerDialogs.confirmDeleteMod(evt.getComponent(), selectedMod.getName())){
 					mm.deleteMod(selectedMod);
 				}
 				break;

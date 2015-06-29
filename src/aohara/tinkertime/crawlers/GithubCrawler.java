@@ -17,8 +17,8 @@ import com.google.gson.JsonObject;
 
 public class GithubCrawler extends Crawler<JsonElement> {
 
-	public GithubCrawler(URL url, PageLoader<JsonElement> pageLoader) {
-		super(url, pageLoader);
+	public GithubCrawler(URL url, PageLoader<JsonElement> pageLoader, Integer existingModId) {
+		super(url, pageLoader, existingModId);
 	}
 	
 	@Override

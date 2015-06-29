@@ -12,7 +12,7 @@ public class RemoveModTask extends WorkflowTask {
 	private final ModUpdateCoordinator updateCoordinator;
 
 	public RemoveModTask(Mod mod, ModUpdateCoordinator updateCoordinator) {
-		super("Removing " + mod.name);
+		super("Removing " + mod);
 		this.mod = mod;
 		this.updateCoordinator = updateCoordinator;
 	}

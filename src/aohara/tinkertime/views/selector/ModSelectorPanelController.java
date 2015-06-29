@@ -24,42 +24,43 @@ import aohara.common.views.selectorPanel.SelectorPanelController;
 import aohara.tinkertime.controllers.ModManager;
 import aohara.tinkertime.controllers.ModUpdateHandler;
 import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.models.Installation;
 import aohara.tinkertime.models.Mod;
 
 public class ModSelectorPanelController implements ModUpdateHandler, DecoratedComponent<JSplitPane> {
 
 	private final SelectorPanelController<Mod> spc;
-	
+
 	ModSelectorPanelController(SelectorPanelController<Mod> spc, ModManager mm){
 		this.spc = spc;
 		new DropTarget(spc.getList(), new DragDropListener(spc.getList(), mm));
 	}
 
 	@Override
-	public void modUpdated(Mod mod) {
+	public void updateMod(Mod mod) {
 		spc.add(mod);
 	}
 
 	@Override
-	public void modDeleted(Mod mod) {
+	public void deleteMod(Mod mod) {
 		spc.remove(mod);
 	}
 
 	@Override
-	public void clear() {
-		spc.clear();
+	public void changeInstallation(Installation newInstallation){
+		spc.setData(newInstallation.getMods());
 	}
 
 	@Override
 	public JSplitPane getComponent() {
 		return spc.getComponent();
 	}
-	
-private static class DragDropListener implements DropTargetListener {
-		
+
+	private static class DragDropListener implements DropTargetListener {
+
 		private final Component listenTo;
 		private final ModManager mm;
-		
+
 		private DragDropListener(Component listenTo, ModManager mm){
 			this.listenTo = listenTo;
 			this.mm = mm;
@@ -69,8 +70,8 @@ private static class DragDropListener implements DropTargetListener {
 		public void dragEnter(DropTargetDragEvent dtde) {
 			try {
 				File file = getFile(dtde.getTransferable());
-				 if (isZip(file) || isUrl(file)){
-					 dtde.acceptDrag(DnDConstants.ACTION_LINK);
+				if (isZip(file) || isUrl(file)){
+					dtde.acceptDrag(DnDConstants.ACTION_LINK);
 				} else {
 					dtde.rejectDrag();
 				}
@@ -80,7 +81,7 @@ private static class DragDropListener implements DropTargetListener {
 			}
 			listenTo.repaint();
 		}
-		
+
 		private File getFile(Transferable t) throws UnsupportedFlavorException, IOException{
 			Object td = t.getTransferData(DataFlavor.javaFileListFlavor);
 			if (td instanceof Collection){
@@ -92,26 +93,26 @@ private static class DragDropListener implements DropTargetListener {
 			}
 			return null;
 		}
-		
+
 		private boolean isZip(File file){
 			return file != null && file.getName().endsWith(".zip");
 		}
-		
+
 		private boolean isUrl(File file){
 			return file != null && file.getName().endsWith(".url");
 		}
-		
+
 		private void handleUrlFile(File file){
-				try {
-					String contents = new String(Files.readAllBytes(file.toPath()));
-					String url = contents.split("URL=")[1].split("]")[0];
-					mm.downloadMod(new URL(url));
-				} catch (IOException | UnsupportedHostException e) {
-					Dialogs.errorDialog(listenTo, e);
-				}
-				
+			try {
+				String contents = new String(Files.readAllBytes(file.toPath()));
+				String url = contents.split("URL=")[1].split("]")[0];
+				mm.downloadMod(new URL(url));
+			} catch (IOException | UnsupportedHostException e) {
+				Dialogs.errorDialog(listenTo, e);
+			}
+
 		}
-		
+
 		private void handleZipFile(File file){
 			mm.addModZip(file.toPath());
 		}

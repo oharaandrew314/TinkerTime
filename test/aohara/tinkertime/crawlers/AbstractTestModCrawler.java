@@ -41,13 +41,12 @@ public abstract class AbstractTestModCrawler {
 		crawler.setAssetSelector(new StaticAssetSelector());
 		
 		Mod actualMod = crawler.getMod();
-		assertEquals(id, actualMod.id);
-		assertEquals(stub.name, actualMod.name);
-		assertEquals(newestFile, actualMod.newestFileName);
-		assertEquals(creator, actualMod.creator);
-		assertEquals(newestFile, actualMod.newestFileName);
-		assertEquals(stub.url, actualMod.pageUrl);
-		assertEquals(version, actualMod.getVersion() != null ? actualMod.getVersion().toString() : null);
+		assertEquals(stub.name, actualMod.getName());
+		assertEquals(newestFile, actualMod.getNewestFileName());
+		assertEquals(creator, actualMod.getCreator());
+		assertEquals(newestFile, actualMod.getNewestFileName());
+		assertEquals(stub.url, actualMod.getUrl());
+		assertEquals(version, actualMod.getModVersion() != null ? actualMod.getModVersion().getNormalVersion() : null);
 		
 		URL imageUrl = crawler.getImageUrl();
 		assertEquals(imageLink, imageUrl != null ? imageUrl.toString() : null);
@@ -56,7 +55,7 @@ public abstract class AbstractTestModCrawler {
 		expectedDate.setTime(updatedOn);
 		
 		Calendar actualDate = Calendar.getInstance();
-		actualDate.setTime(actualMod.updatedOn);
+		actualDate.setTime(actualMod.getUpdatedOn());
 		
 		assertEquals(expectedDate.get(Calendar.YEAR), actualDate.get(Calendar.YEAR));
 		assertEquals(expectedDate.get(Calendar.MONTH), actualDate.get(Calendar.MONTH));

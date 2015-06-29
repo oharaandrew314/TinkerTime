@@ -24,8 +24,8 @@ public class JenkinsCrawler extends Crawler<JsonElement> {
 	
 	private JsonObject cachedJson;
 	
-	public JenkinsCrawler(URL jenkinsUrl, PageLoader<JsonElement> pageLoader) {
-		super(jenkinsUrl, pageLoader);
+	public JenkinsCrawler(URL jenkinsUrl, PageLoader<JsonElement> pageLoader, Integer existingModId) {
+		super(jenkinsUrl, pageLoader, existingModId);
 	}
 	
 	@Override

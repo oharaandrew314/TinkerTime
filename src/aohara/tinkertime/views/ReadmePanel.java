@@ -1,7 +1,6 @@
 package aohara.tinkertime.views;
 
 import java.awt.BorderLayout;
-import java.io.IOException;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -11,17 +10,13 @@ import javax.swing.JTextArea;
 
 import aohara.common.views.selectorPanel.SelectorView;
 import aohara.tinkertime.models.Mod;
-import aohara.tinkertime.resources.ModMetaLoader;
 
 public class ReadmePanel extends SelectorView.AbstractSelectorView<Mod> {
 	
 	private final JPanel panel = new JPanel();
-	private final ModMetaLoader modLoader;
 	private JTextArea textArea;
 	
-	public ReadmePanel(ModMetaLoader modLoader){
-		this.modLoader = modLoader;
-		
+	public ReadmePanel(){		
 		textArea = new JTextArea();
 		textArea.setLineWrap(true);
 		textArea.setWrapStyleWord(true);
@@ -39,14 +34,12 @@ public class ReadmePanel extends SelectorView.AbstractSelectorView<Mod> {
 
 	@Override
 	protected void onElementChanged(Mod mod) {
-		try {
-			String readmeText = modLoader.getStructure(mod).getReadmeText();
-			textArea.setText(readmeText);
-			textArea.setCaretPosition(0);
-			panel.setVisible(readmeText != null && !readmeText.trim().isEmpty());
-		} catch (IOException e) {
-			panel.setVisible(false);
-		}
+		//TODO Reimplement readme loading
+		String readmeText = "Readme loading must be re-implemented";
+		//String readmeText = modLoader.getStructure(mod).getReadmeText();
+		textArea.setText(readmeText);
+		textArea.setCaretPosition(0);
+		panel.setVisible(readmeText != null && !readmeText.trim().isEmpty());
 	}
 
 	@Override

@@ -3,73 +3,98 @@ package aohara.tinkertime.models;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.Calendar;
 import java.util.Date;
 
-import aohara.tinkertime.TinkerConfig;
-import aohara.tinkertime.crawlers.Crawler;
 import aohara.common.version.Version;
-import aohara.common.version.VersionParser;
+
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 /**
  * Model for holding Mod information and status.
- * 
+ *
  * Two flags can be set: enabled, and update available.
  * The Application will display this mod differently depending on the state
  * of these flags.
- * 
+ *
  * @author Andrew O'Hara
  */
+@DatabaseTable(tableName = "mods")
 public class Mod implements Comparable<Mod> {
-	
-	public final Date updatedOn;
-	public final String id, name, creator, kspVersion, newestFileName;
-	public final URL pageUrl;
-	private final String version;
-	public boolean updateAvailable = false;
-	
+
+	public static final int MODULE_MANAGER_ID = 3141;
+
+	@DatabaseField(generatedId=true)
+	private int id;
+
+	@DatabaseField
+	private Date updatedOn;
+
+	@DatabaseField
+	private String name, creator, modVersion, kspVersion, newestFileName, url;
+
+	@DatabaseField
+	private boolean updateAvailable = false;
+
+	@DatabaseField(foreign = true)
+	private Installation installation;
+
+	// Required by ormlite
+	Mod() { }
+
 	public Mod(
-		String id, String modName, String newestFileName, String creator,
-		URL pageUrl, Date updatedOn, String kspVersion, Version version
-	){
+			String modName, String newestFileName, String creator,
+			URL pageUrl, Date updatedOn, String kspVersion, Version version
+			){
+		this(Integer.MIN_VALUE, modName, newestFileName, creator, pageUrl, updatedOn, kspVersion, version);
+	}
+
+	public Mod(
+			int id, String modName, String newestFileName, String creator,
+			URL pageUrl, Date updatedOn, String kspVersion, Version version
+			){
 		this.id = id;
 		this.newestFileName = newestFileName;
 		this.updatedOn = updatedOn;
-		this.pageUrl = pageUrl;
+		this.url = pageUrl.toString();
 		this.name = modName;
 		this.creator = creator;
 		this.kspVersion = kspVersion;
-		this.version = version != null ? version.getNormalVersion() : null;
+		this.modVersion = version != null ? version.getNormalVersion() : null;
 	}
-	
-	public static Mod newTempMod(Path zipPath){
-		String fileName = zipPath.getFileName().toString();
-		String prettyName = fileName;
-		if (prettyName.indexOf(".") > 0) {
-			prettyName = prettyName.substring(0, prettyName.lastIndexOf("."));
+
+	public int getId(){
+		return id;
+	}
+
+	public String getName(){
+		return name;
+	}
+
+	public String getNewestFileName(){
+		return newestFileName;
+	}
+
+	public String getCreator(){
+		return creator;
+	}
+
+	public URL getUrl(){
+		try {
+			return new URL(url);
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
 		}
-		return new Mod(
-			fileName, prettyName, fileName, null, null,
-			Calendar.getInstance().getTime(), null,
-			Version.valueOf(VersionParser.parseVersionString(prettyName))
-		);
 	}
-	
-	public static Mod newTempMod(Crawler<?> crawler) throws MalformedURLException{
-		return newTempMod(crawler.getApiUrl(), null);
+
+	public Date getUpdatedOn(){
+		return updatedOn;
 	}
-	
-	public static Mod newTempMod(URL url, Version version){
-		return new Mod(
-				Crawler.urlToId(url), String.format("New %s Mod",
-				url.getHost()), null, null, url, null, null, version
-			);
+
+	public Version getModVersion(){
+		return modVersion != null ? Version.valueOf(modVersion) : null;
 	}
-	
-	public Path getCachedImagePath(TinkerConfig config){
-		return config.getImageCachePath().resolve(id + ".jpg");
-	}
-	
+
 	/**
 	 * Returns the version of KSP that this mod version supports.
 	 * @return supported KSP version
@@ -77,36 +102,56 @@ public class Mod implements Comparable<Mod> {
 	public String getSupportedVersion(){
 		return kspVersion;
 	}
-	
+
 	public boolean isUpdateable(){
-		return pageUrl != null;
+		return url != null;
 	}
-	
+
+	public boolean isUpdateAvailable(){
+		return updateAvailable;
+	}
+
+	public void setUpdateAvailable(boolean updateAvailable){
+		this.updateAvailable = updateAvailable;
+	}
+
+	public Path getCachedImagePath(ConfigData config){
+		return config.getImageCachePath().resolve(getId() + ".jpg");
+	}
+
+	public boolean isBuiltIn(){
+		return MODULE_MANAGER_ID == getId();
+	}
+
+	////////////////
+	// Comparable //
+	////////////////
+
+	@Override
+	public int compareTo(Mod other) {
+		return Integer.compare(getId(), other.getId());
+	}
+
+	////////////
+	// Object //
+	////////////
+
 	@Override
 	public String toString(){
 		return name;
 	}
-	
+
 	@Override
 	public int hashCode(){
-		return id.hashCode();
+		return Integer.hashCode(id);
 	}
-	
+
 	@Override
 	public boolean equals(Object o){
 		if (o instanceof Mod){
 			Mod mod = (Mod) o;
-			return id.equals(mod.id) || name.equals(mod.name);
+			return getId() == mod.getId() || name.equals(mod.name);
 		}
 		return false;
-	}
-	
-	public Version getVersion(){
-		return version != null ? Version.valueOf(version) : null;
-	}
-
-	@Override
-	public int compareTo(Mod other) {
-		return id.compareTo(other.id);
 	}
 }

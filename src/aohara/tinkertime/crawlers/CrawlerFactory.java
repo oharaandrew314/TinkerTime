@@ -6,6 +6,7 @@ import java.net.URL;
 import org.jsoup.nodes.Document;
 
 import aohara.tinkertime.crawlers.pageLoaders.PageLoader;
+import aohara.tinkertime.models.Mod;
 
 import com.google.gson.JsonElement;
 import com.google.inject.Inject;
@@ -41,16 +42,16 @@ public class CrawlerFactory {
 		}
 	}
 
-	public Crawler<?> getCrawler(URL url) throws UnsupportedHostException{
+	public Crawler<?> getCrawler(URL url, Integer existingModId) throws UnsupportedHostException{
 		String host = url.getHost();
 		if (host.contains(HOST_CURSE)){
-			return new CurseCrawler(url, docLoader);
+			return new CurseCrawler(url, docLoader, existingModId);
 		} else if (host.contains(HOST_GITHUB)){
-			return new GithubCrawler(url, jsonLoader);
+			return new GithubCrawler(url, jsonLoader, existingModId);
 		} else if (host.contains(HOST_KERBAL_STUFF)){
-			return new KerbalStuffCrawler(url, jsonLoader);
+			return new KerbalStuffCrawler(url, jsonLoader, existingModId);
 		} else if (host.equals(HOST_MODULE_MANAGER)){
-			return new JenkinsCrawler(url, jsonLoader);
+			return new JenkinsCrawler(url, jsonLoader, Mod.MODULE_MANAGER_ID);
 		}
 		throw new UnsupportedHostException(host);
 	}

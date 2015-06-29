@@ -4,18 +4,18 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import aohara.tinkertime.TinkerConfig;
+import aohara.tinkertime.models.ConfigData;
 
 public abstract class GameExecStrategy {
-	
-	public ProcessBuilder getProcessBuilder(TinkerConfig config) throws IOException{
+
+	public ProcessBuilder getProcessBuilder(ConfigData config) throws IOException{
 		List<String> commands = new LinkedList<>();
-		
+
 		// Add any commands to run the executable
 		for (String command : getCommands(config)){
 			commands.add(command);
 		}
-		
+
 		// Add executable arguments if any are set in the config
 		String args = config.getLaunchArguments();
 		if (args != null && !args.trim().isEmpty()){
@@ -24,6 +24,6 @@ public abstract class GameExecStrategy {
 
 		return new ProcessBuilder(commands);
 	}
-	
-	protected abstract List<String> getCommands(TinkerConfig config);
+
+	protected abstract List<String> getCommands(ConfigData config);
 }

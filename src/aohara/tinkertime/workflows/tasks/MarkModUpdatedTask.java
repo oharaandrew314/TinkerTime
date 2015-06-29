@@ -19,7 +19,7 @@ public class MarkModUpdatedTask extends WorkflowTask {
 
 	@Override
 	public boolean execute() throws Exception {
-		mod.updateAvailable = true;
+		mod.setUpdateAvailable(true);
 		updateCoordinator.modUpdated(this, mod);
 		return true;
 	}

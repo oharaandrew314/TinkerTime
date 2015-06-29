@@ -8,29 +8,29 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 import aohara.common.workflows.tasks.FileTransferTask;
-import aohara.tinkertime.TinkerConfig;
 import aohara.tinkertime.controllers.ModMetaHelper;
 import aohara.tinkertime.crawlers.Crawler;
+import aohara.tinkertime.models.ConfigFactory;
 import aohara.tinkertime.models.Mod;
 
 
 public class DownloadModAssetTask extends FileTransferTask {
-	
+
 	public static enum ModDownloadType { File, Image };
-	
+
 	private final Crawler<?> crawler;
 	private final ModDownloadType type;
-	private final TinkerConfig config;
+	private final ConfigFactory configFactory;
 	private final ModMetaHelper modHelper;
-	
-	public DownloadModAssetTask(Crawler<?> crawler, TinkerConfig config, ModMetaHelper modHelper, ModDownloadType type){
+
+	public DownloadModAssetTask(Crawler<?> crawler, ConfigFactory configFactory, ModMetaHelper modHelper, ModDownloadType type){
 		super(null, null);
 		this.crawler = crawler;
 		this.modHelper = modHelper;
-		this.config = config;
+		this.configFactory = configFactory;
 		this.type = type;
 	}
-	
+
 	private URL getUrl() throws IOException{
 		switch(type){
 		case File: return crawler.getDownloadLink();
@@ -38,12 +38,12 @@ public class DownloadModAssetTask extends FileTransferTask {
 		default: throw new IllegalStateException();
 		}
 	}
-	
+
 	private Path getDest() throws IOException{
 		Mod mod = crawler.getMod();
 		switch(type){
 		case File: return modHelper.getZipPath(mod);
-		case Image: return mod.getCachedImagePath(config);
+		case Image: return mod.getCachedImagePath(configFactory.getConfig());
 		default: throw new IllegalStateException();
 		}
 	}
@@ -52,14 +52,14 @@ public class DownloadModAssetTask extends FileTransferTask {
 	public boolean execute() throws Exception {
 		Path dest = getDest();
 		Path tempDest = Paths.get(dest.toString() + ".tempDownload");
-		
+
 		try {
 			transfer(getUrl(), tempDest);  // Copy to temp file
 			Files.move(tempDest, dest, StandardCopyOption.REPLACE_EXISTING);  // Rename to dest file
 		} catch (NullSourceException e){
 			// Do Nothing
 		}
-		
+
 		setResult(crawler.getMod());
 		return true;
 	}

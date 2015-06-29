@@ -1,11 +1,12 @@
 package aohara.tinkertime.controllers;
 
+import aohara.tinkertime.models.Installation;
 import aohara.tinkertime.models.Mod;
 
 public interface ModUpdateHandler {
-	
-	public void modUpdated(Mod mod);
-	public void modDeleted(Mod mod);
-	public void clear();
-	
+
+	public void updateMod(Mod mod);
+	public void deleteMod(Mod mod);
+	public void changeInstallation(Installation installation);
+
 }

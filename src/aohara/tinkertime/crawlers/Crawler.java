@@ -30,15 +30,17 @@ public abstract class Crawler<T> {
 	public static final String[] VALID_ASSET_EXTENSIONS = new String[]{ ".zip", ".dll" };
 	
 	private final PageLoader<T> pageLoader;
+	private final Integer existingModId;
 	public final URL pageUrl;
 	
 	private Asset cachedAsset;
 	private AssetSelector assetSelector = new DialogAssetSelector();
 	
 	
-	public Crawler(URL url, PageLoader<T> pageLoader) {
+	public Crawler(URL url, PageLoader<T> pageLoader, Integer existingModId) {
 		this.pageUrl = url;
 		this.pageLoader = pageLoader;
+		this.existingModId = existingModId;
 	}
 	
 	public T getPage(URL url) throws IOException {
@@ -53,10 +55,6 @@ public abstract class Crawler<T> {
 	protected abstract String getKspVersion() throws IOException;
 	protected abstract String getVersionString() throws IOException;
 	protected abstract Collection<Asset> getNewestAssets() throws IOException;
-	
-	private String getId() throws MalformedURLException{
-		return urlToId(getApiUrl());
-	}
 	
 	public URL getApiUrl() throws MalformedURLException{
 		return pageUrl;
@@ -126,7 +124,7 @@ public abstract class Crawler<T> {
 
 	public Mod getMod() throws IOException {
 		return new Mod(
-			getId(), getName(), getNewestFileName(),
+			existingModId, getName(), getNewestFileName(),
 			getCreator(), pageUrl,
 			getUpdatedOn() != null ? getUpdatedOn() : Calendar.getInstance().getTime(),
 			getKspVersion(), getVersion()
@@ -135,10 +133,6 @@ public abstract class Crawler<T> {
 	
 	public final URL getDownloadLink() throws IOException{
 		return getSelectedAsset().downloadLink;
-	}
-	
-	public static String urlToId(URL url) {
-		return url.toString().split("://")[1].replace("/", "-");
 	}
 	
 	// -- Inner Asset Class ---------------------------------------------------
