@@ -32,6 +32,9 @@ The [Tinker Time Wiki](https://github.com/oharaandrew314/TinkerTime/wiki) contai
 
 ### Change Log
 
+##### v1.4.5
+- Fix first-time startup error related to empty GameData Path
+
 ##### v1.4.4
 - Fix App Auto-Updater
 
