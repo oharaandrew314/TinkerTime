@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'eclipse'
 
-mainClassName = "aohara.tinkertime.launcher.TinkerTimeLauncher"
+mainClassName = "io.andrewohara.tinkertime.launcher.TinkerTimeLauncher"
 
 repositories {
     mavenCentral()
