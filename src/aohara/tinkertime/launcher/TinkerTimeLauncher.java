@@ -46,6 +46,7 @@ public class TinkerTimeLauncher implements Runnable {
 
 	@Override
 	public void run() {
+		System.setProperty("http.agent", "TinkerTime Mod Manager Agent");
 		for (Runnable task : startupTasks){
 			task.run();
 		}

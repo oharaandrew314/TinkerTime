@@ -1,8 +1,8 @@
 CREATE TABLE  `config` (
 	`id` INTEGER PRIMARY KEY NOT NULL,
-	`checkForAppUpdatesOnStartup` BOOLEAN DEFAULT 1,
-	`checkForModUpdatesOnStartup` BOOLEAN DEFAULT 1,
-	`numConcurrentDownloads` INTEGER DEFAULT 4,
+	`checkForAppUpdatesOnStartup` BOOLEAN,
+	`checkForModUpdatesOnStartup` BOOLEAN,
+	`numConcurrentDownloads` INTEGER,
 	`selectedInstallation_id` INTEGER,
 	`launchArguments` VARCHAR
 );

@@ -19,11 +19,11 @@ public class ConfigData {
 	@DatabaseField(id=true)
 	private int id = CONFIG_ID;
 
-	@DatabaseField(defaultValue = "true")
-	private boolean checkForAppUpdatesOnStartup, checkForModUpdatesOnStartup;
+	@DatabaseField()
+	private boolean checkForAppUpdatesOnStartup = true, checkForModUpdatesOnStartup = true;
 
-	@DatabaseField(defaultValue = "4")
-	private int numConcurrentDownloads;
+	@DatabaseField()
+	private int numConcurrentDownloads = 4;;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh=true)
 	private Installation selectedInstallation;
