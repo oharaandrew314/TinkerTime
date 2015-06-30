@@ -6,7 +6,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 
 import aohara.tinkertime.controllers.ModManager;
-import aohara.tinkertime.controllers.launcher.GameLauncher;
+import aohara.tinkertime.io.kspLauncher.GameLauncher;
 import aohara.tinkertime.models.ConfigFactory;
 import aohara.tinkertime.views.InstallationSelector;
 

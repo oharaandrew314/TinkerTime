@@ -2,6 +2,7 @@ package aohara.tinkertime.controllers;
 
 import java.util.List;
 
+import aohara.tinkertime.controllers.coordinators.ModUpdateHandler;
 import aohara.tinkertime.models.Installation;
 import aohara.tinkertime.models.Mod;
 

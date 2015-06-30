@@ -7,7 +7,7 @@ import java.util.Calendar;
 
 import aohara.common.version.Version;
 import aohara.common.version.VersionParser;
-import aohara.tinkertime.crawlers.Crawler;
+import aohara.tinkertime.io.crawlers.Crawler;
 
 public class ModFactory {
 	

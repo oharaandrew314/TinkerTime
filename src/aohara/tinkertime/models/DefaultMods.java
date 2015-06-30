@@ -3,7 +3,7 @@ package aohara.tinkertime.models;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import aohara.tinkertime.crawlers.CrawlerFactory;
+import aohara.tinkertime.io.crawlers.CrawlerFactory;
 
 // TODO Remove me whe migrations added
 public class DefaultMods {

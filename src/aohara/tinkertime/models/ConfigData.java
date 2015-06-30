@@ -2,7 +2,7 @@ package aohara.tinkertime.models;
 
 import java.nio.file.Path;
 
-import aohara.tinkertime.TinkerTime;
+import aohara.tinkertime.launcher.TinkerTimeLauncher;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -82,6 +82,6 @@ public class ConfigData {
 	}
 
 	private Path getModCachePath(){
-		return getSubFolder(getSelectedInstallation().getPath().getParent(), TinkerTime.SAFE_NAME);
+		return getSubFolder(getSelectedInstallation().getPath().getParent(), TinkerTimeLauncher.SAFE_NAME);
 	}
 }

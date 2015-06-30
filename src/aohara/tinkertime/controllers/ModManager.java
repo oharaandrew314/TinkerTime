@@ -3,24 +3,20 @@ package aohara.tinkertime.controllers;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import aohara.common.Listenable;
 import aohara.common.workflows.tasks.TaskCallback;
-import aohara.common.workflows.tasks.WorkflowBuilder;
-import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.controllers.ModExceptions.CannotDeleteModException;
 import aohara.tinkertime.controllers.ModExceptions.ModNotDownloadedException;
 import aohara.tinkertime.controllers.ModExceptions.ModUpdateFailedError;
 import aohara.tinkertime.controllers.ModExceptions.NoModSelectedException;
-import aohara.tinkertime.crawlers.CrawlerFactory.UnsupportedHostException;
-import aohara.tinkertime.models.ConfigFactory;
+import aohara.tinkertime.controllers.workflows.ModWorkflowBuilder;
+import aohara.tinkertime.controllers.workflows.ModWorkflowBuilderFactory;
+import aohara.tinkertime.io.crawlers.CrawlerFactory.UnsupportedHostException;
+import aohara.tinkertime.launcher.TinkerTimeLauncher;
 import aohara.tinkertime.models.DefaultMods;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.models.ModFactory;
-import aohara.tinkertime.workflows.ModWorkflowBuilder;
-import aohara.tinkertime.workflows.ModWorkflowBuilderFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -37,25 +33,17 @@ import com.google.inject.Singleton;
 @Singleton
 public class ModManager extends Listenable<TaskCallback> {
 
-	private final ThreadPoolExecutor downloadExecutor;
-	private final Executor enablerExecutor;
+	private final TaskLauncher taskLauncher;
 	private final ModWorkflowBuilderFactory workflowBuilderFactory;
 	private final ModLoader modLoader;
-	private final ConfigFactory configFactory;
 
 	private Mod selectedMod;
 
 	@Inject
-	ModManager(
-			ThreadPoolExecutor downloadExecutor, Executor enablerExecutor,
-			ModWorkflowBuilderFactory workflowBuilderFactory, ModLoader modLoader,
-			ConfigFactory configFactory
-			){
-		this.downloadExecutor = downloadExecutor;
-		this.enablerExecutor = enablerExecutor;
+	ModManager(ModWorkflowBuilderFactory workflowBuilderFactory, ModLoader modLoader, TaskLauncher taskLauncher){
 		this.workflowBuilderFactory = workflowBuilderFactory;
 		this.modLoader = modLoader;
-		this.configFactory = configFactory;
+		this.taskLauncher = taskLauncher;
 	}
 
 	// -- Interface --------------------------------------------------------
@@ -78,7 +66,7 @@ public class ModManager extends Listenable<TaskCallback> {
 		try {
 			ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder();
 			builder.updateMod(mod, forceUpdate);
-			submitDownloadWorkflow(builder, mod);
+			taskLauncher.submitDownloadWorkflow(builder, mod);
 		} catch (UnsupportedHostException e) {
 			throw new ModUpdateFailedError(e);
 		}
@@ -87,13 +75,13 @@ public class ModManager extends Listenable<TaskCallback> {
 	public void downloadMod(URL url) throws MalformedURLException, UnsupportedHostException {
 		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder();
 		Mod tempMod = builder.downloadNewMod(url);
-		submitDownloadWorkflow(builder, tempMod);
+		taskLauncher.submitDownloadWorkflow(builder, tempMod);
 	}
 
 	public void addModZip(Path zipPath){
 		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder();
 		Mod tempMod = builder.addLocalMod(zipPath);
-		submitDownloadWorkflow(builder, tempMod);
+		taskLauncher.submitDownloadWorkflow(builder, tempMod);
 	}
 
 	public void updateMods() throws ModUpdateFailedError, ModNotDownloadedException{
@@ -127,18 +115,18 @@ public class ModManager extends Listenable<TaskCallback> {
 		}
 		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder();
 		builder.deleteMod(mod);
-		submitEnablerWorkflow(builder, mod);
+		taskLauncher.submitFileWorkflow(builder, mod);
 	}
 
-	public void checkForModUpdates() throws Exception{
-		Exception e = null;
+	public void checkForModUpdates() throws UnsupportedHostException{  // TODO Throw multi-exception
+		UnsupportedHostException e = null;
 
 		for (final Mod mod : modLoader.getMods()){
 			try {
 				if (mod.isUpdateable()){
 					ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder();
 					builder.checkForUpdates(mod, true);
-					submitDownloadWorkflow(builder, mod);
+					taskLauncher.submitDownloadWorkflow(builder, mod);
 				}
 			} catch (UnsupportedHostException ex) {
 				ex.printStackTrace();
@@ -164,38 +152,14 @@ public class ModManager extends Listenable<TaskCallback> {
 
 	public void tryUpdateModManager() throws UnsupportedHostException, MalformedURLException {
 		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder();
-		Mod tempMod = ModFactory.newTempMod(new URL(TinkerTime.DOWNLOAD_URL), TinkerTime.VERSION);
+		Mod tempMod = ModFactory.newTempMod(new URL(TinkerTimeLauncher.DOWNLOAD_URL), TinkerTimeLauncher.VERSION);
 		builder.checkForUpdates(tempMod, false);
 		builder.downloadModInBrowser(tempMod);
-		submitDownloadWorkflow(builder, tempMod);
+		taskLauncher.submitDownloadWorkflow(builder, tempMod);
 	}
 
 	public void reloadMods(){
 		//configController.reloadMods();
 		//TODO reimplement reloadMods
-	}
-
-	// -- Helpers -----------------------------------------------------------
-
-	private void submitDownloadWorkflow(WorkflowBuilder builder, Mod context){
-		for(TaskCallback callback : getListeners()){
-			builder.addListener(callback);
-		}
-
-		// Reset thread pool size if size in options has changed
-		int numDownloadThreads = configFactory.getConfig().getNumConcurrentDownloads();
-		if (downloadExecutor.getMaximumPoolSize() != numDownloadThreads){
-			downloadExecutor.setCorePoolSize(numDownloadThreads);
-			downloadExecutor.setMaximumPoolSize(numDownloadThreads);
-		}
-
-		builder.execute(downloadExecutor, context);
-	}
-
-	private void submitEnablerWorkflow(WorkflowBuilder builder, Mod context){
-		for(TaskCallback callback : getListeners()){
-			builder.addListener(callback);
-		}
-		builder.execute(enablerExecutor, context);
 	}
 }

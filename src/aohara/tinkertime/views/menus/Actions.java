@@ -17,11 +17,11 @@ import aohara.common.Util;
 import aohara.common.content.ImageManager;
 import aohara.common.views.Dialogs;
 import aohara.common.views.UrlLabels;
-import aohara.tinkertime.TinkerTime;
 import aohara.tinkertime.controllers.ModExceptions.NoModSelectedException;
 import aohara.tinkertime.controllers.ModManager;
-import aohara.tinkertime.controllers.launcher.GameLauncher;
-import aohara.tinkertime.crawlers.CrawlerFactory;
+import aohara.tinkertime.io.crawlers.CrawlerFactory;
+import aohara.tinkertime.io.kspLauncher.GameLauncher;
+import aohara.tinkertime.launcher.TinkerTimeLauncher;
 import aohara.tinkertime.models.ConfigFactory;
 import aohara.tinkertime.models.Mod;
 import aohara.tinkertime.views.FileChoosers;
@@ -239,18 +239,18 @@ class Actions {
 		@Override
 		protected void call() throws Exception {
 			Object[] message = {
-					TinkerTime.FULL_NAME,
+					TinkerTimeLauncher.FULL_NAME,
 					"\n",
 					"This work is licensed under the Creative Commons \n" +
 							"Attribution-ShareAlike 4.0 International License.\n",
 							new UrlLabels.UrlLink("View a copy of this license", new URL("http://creativecommons.org/licenses/by-sa/4.0/")).getComponent(),
 							"\n",
-							TinkerTime.NAME + " uses Glyphicons (glyphicons.com)"
+							TinkerTimeLauncher.NAME + " uses Glyphicons (glyphicons.com)"
 			};
 			JOptionPane.showMessageDialog(
 					parent,
 					message,
-					"About " + TinkerTime.NAME,
+					"About " + TinkerTimeLauncher.NAME,
 					JOptionPane.INFORMATION_MESSAGE
 					);
 		}
