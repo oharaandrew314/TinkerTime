@@ -3,7 +3,7 @@ package io.andrewohara.tinkertime.controllers.workflows.tasks;
 import io.andrewohara.common.workflows.tasks.WorkflowTask;
 import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinator;
 import io.andrewohara.tinkertime.io.crawlers.Crawler;
-import io.andrewohara.tinkertime.models.Mod;
+import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.io.IOException;
 
@@ -55,7 +55,7 @@ public abstract class SaveModTask extends WorkflowTask {
 
 		@Override
 		protected Mod getMod() throws IOException {
-			return crawler.getMod();
+			return crawler.getUpdatedMod();
 		}
 
 	}

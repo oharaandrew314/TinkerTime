@@ -8,11 +8,10 @@ import io.andrewohara.tinkertime.controllers.ModExceptions.ModUpdateFailedError;
 import io.andrewohara.tinkertime.controllers.ModExceptions.NoModSelectedException;
 import io.andrewohara.tinkertime.controllers.workflows.ModWorkflowBuilder;
 import io.andrewohara.tinkertime.controllers.workflows.ModWorkflowBuilderFactory;
+import io.andrewohara.tinkertime.db.ModLoader;
 import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory.UnsupportedHostException;
-import io.andrewohara.tinkertime.launcher.TinkerTimeLauncher;
-import io.andrewohara.tinkertime.models.DefaultMods;
-import io.andrewohara.tinkertime.models.Mod;
-import io.andrewohara.tinkertime.models.ModFactory;
+import io.andrewohara.tinkertime.models.mod.Mod;
+import io.andrewohara.tinkertime.models.mod.ModFactory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -36,14 +35,16 @@ public class ModManager extends Listenable<TaskCallback> {
 	private final TaskLauncher taskLauncher;
 	private final ModWorkflowBuilderFactory workflowBuilderFactory;
 	private final ModLoader modLoader;
+	private final ModFactory modFactory;
 
 	private Mod selectedMod;
 
 	@Inject
-	ModManager(ModWorkflowBuilderFactory workflowBuilderFactory, ModLoader modLoader, TaskLauncher taskLauncher){
+	ModManager(ModWorkflowBuilderFactory workflowBuilderFactory, ModLoader modLoader, TaskLauncher taskLauncher, ModFactory modFactory){
 		this.workflowBuilderFactory = workflowBuilderFactory;
 		this.modLoader = modLoader;
 		this.taskLauncher = taskLauncher;
+		this.modFactory = modFactory;
 	}
 
 	// -- Interface --------------------------------------------------------
@@ -64,24 +65,26 @@ public class ModManager extends Listenable<TaskCallback> {
 			throw new ModUpdateFailedError(mod, "Mod is a local zip only, and cannot be updated.");
 		}
 		try {
-			ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder();
-			builder.updateMod(mod, forceUpdate);
-			taskLauncher.submitDownloadWorkflow(builder, mod);
+			ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder(mod);
+			builder.updateMod(forceUpdate);
+			taskLauncher.submitDownloadWorkflow(builder);
 		} catch (UnsupportedHostException e) {
 			throw new ModUpdateFailedError(e);
 		}
 	}
 
-	public void downloadMod(URL url) throws MalformedURLException, UnsupportedHostException {
-		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder();
-		Mod tempMod = builder.downloadNewMod(url);
-		taskLauncher.submitDownloadWorkflow(builder, tempMod);
+	public void downloadNewMod(URL url) throws MalformedURLException, UnsupportedHostException {
+		Mod newMod = modFactory.newMod(url);
+		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder(newMod);
+		builder.downloadNewMod();
+		taskLauncher.submitDownloadWorkflow(builder);
 	}
 
 	public void addModZip(Path zipPath){
-		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder();
-		Mod tempMod = builder.addLocalMod(zipPath);
-		taskLauncher.submitDownloadWorkflow(builder, tempMod);
+		Mod newMod = modFactory.newLocalMod();
+		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder(newMod);
+		builder.addLocalMod(zipPath);
+		taskLauncher.submitDownloadWorkflow(builder);
 	}
 
 	public void updateMods() throws ModUpdateFailedError, ModNotDownloadedException{
@@ -109,13 +112,13 @@ public class ModManager extends Listenable<TaskCallback> {
 		 */
 	}
 
-	public void deleteMod(final Mod mod) throws CannotDeleteModException {
-		if (DefaultMods.isBuiltIn(mod)){
-			throw new CannotDeleteModException(mod, "Built-in");
-		}
-		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder();
-		builder.deleteMod(mod);
-		taskLauncher.submitFileWorkflow(builder, mod);
+	public void deleteMod(Mod mod) throws CannotDeleteModException {
+		//if (DefaultMods.isBuiltIn(mod)){  TODO Reimplement forbid delete builtin mod
+		//	throw new CannotDeleteModException(mod, "Built-in");
+		//}
+		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder(mod);
+		builder.deleteMod();
+		taskLauncher.submitFileWorkflow(builder);
 	}
 
 	public void checkForModUpdates() throws UnsupportedHostException{  // TODO Throw multi-exception
@@ -124,9 +127,9 @@ public class ModManager extends Listenable<TaskCallback> {
 		for (final Mod mod : modLoader.getMods()){
 			try {
 				if (mod.isUpdateable()){
-					ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder();
-					builder.checkForUpdates(mod, true);
-					taskLauncher.submitDownloadWorkflow(builder, mod);
+					ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder(mod);
+					builder.checkForUpdates(true);
+					taskLauncher.submitDownloadWorkflow(builder);
 				}
 			} catch (UnsupportedHostException ex) {
 				ex.printStackTrace();
@@ -151,15 +154,12 @@ public class ModManager extends Listenable<TaskCallback> {
 	 */
 
 	public void tryUpdateModManager() throws UnsupportedHostException, MalformedURLException {
+		/* TODO Reimplement.  Try to keep TT as a mod in the DB, but have an internal=false flag, or something
 		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder();
 		Mod tempMod = ModFactory.newTempMod(new URL(TinkerTimeLauncher.DOWNLOAD_URL), TinkerTimeLauncher.VERSION);
 		builder.checkForUpdates(tempMod, false);
 		builder.downloadModInBrowser(tempMod);
 		taskLauncher.submitDownloadWorkflow(builder, tempMod);
-	}
-
-	public void reloadMods(){
-		//configController.reloadMods();
-		//TODO reimplement reloadMods
+		 */
 	}
 }

@@ -29,13 +29,14 @@ public class TinkerTimeLauncher implements Runnable {
 
 	public static String getDbUrl(){
 		Path path = Paths.get(System.getProperty("user.home"), "Documents", NAME, "TinkerTime-db");
-		return String.format("jdbc:sqlite:file:%s", path.toString());
+		//return String.format("jdbc:sqlite:file:%s", path.toString());
+		return String.format("jdbc:h2:file:%s", path.toString());
 	}
 
 	private final Collection<Runnable> startupTasks = new LinkedList<>();
 
 	@Inject
-	TinkerTimeLauncher(DatabaseMigrator migrator, ConfigVerifier configVerifier, SetupListeners setupListeners, StartupModLoader startupModLoader, UpdateChecker updateChecker, MainFrameLauncher mainFrameLauncher){
+	TinkerTimeLauncher(DatabaseMigrator migrator, ConfigVerifier configVerifier, SetupListeners setupListeners, LoadModsTask startupModLoader, UpdateChecker updateChecker, MainFrameLauncher mainFrameLauncher){
 		startupTasks.add(migrator);
 		startupTasks.add(configVerifier);
 		startupTasks.add(setupListeners);

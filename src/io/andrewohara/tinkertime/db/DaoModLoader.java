@@ -1,12 +1,15 @@
-package io.andrewohara.tinkertime.controllers;
+package io.andrewohara.tinkertime.db;
 
 import io.andrewohara.tinkertime.models.ConfigData;
 import io.andrewohara.tinkertime.models.ConfigFactory;
 import io.andrewohara.tinkertime.models.Installation;
-import io.andrewohara.tinkertime.models.Mod;
+import io.andrewohara.tinkertime.models.mod.Mod;
 
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
+
+import org.flywaydb.core.internal.util.ObjectUtils;
 
 import com.google.inject.Inject;
 import com.j256.ormlite.dao.Dao;
@@ -27,7 +30,7 @@ public class DaoModLoader implements ModLoader {
 	@Override
 	public void updateMod(Mod mod) {
 		try {
-			modDao.update(mod);
+			modDao.createOrUpdate(mod);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -60,6 +63,16 @@ public class DaoModLoader implements ModLoader {
 	@Override
 	public List<Mod> getMods() {
 		return getInstallation().getMods();
+	}
+
+	@Override
+	public Mod getByUrl(URL url) {
+		for (Mod mod : getMods()){
+			if (ObjectUtils.nullSafeEquals(mod.getUrl(), url)){
+				return mod;
+			}
+		}
+		return null;
 	}
 
 }

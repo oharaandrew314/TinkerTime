@@ -1,8 +1,8 @@
 package io.andrewohara.tinkertime.launcher;
 
 import io.andrewohara.common.OS;
-import io.andrewohara.tinkertime.controllers.DaoModLoader;
-import io.andrewohara.tinkertime.controllers.ModLoader;
+import io.andrewohara.tinkertime.db.DaoModLoader;
+import io.andrewohara.tinkertime.db.ModLoader;
 import io.andrewohara.tinkertime.io.crawlers.pageLoaders.JsonLoader;
 import io.andrewohara.tinkertime.io.crawlers.pageLoaders.PageLoader;
 import io.andrewohara.tinkertime.io.crawlers.pageLoaders.WebpageLoader;
@@ -14,7 +14,8 @@ import io.andrewohara.tinkertime.models.ConfigData;
 import io.andrewohara.tinkertime.models.ConfigFactory;
 import io.andrewohara.tinkertime.models.DaoConfigFactory;
 import io.andrewohara.tinkertime.models.Installation;
-import io.andrewohara.tinkertime.models.Mod;
+import io.andrewohara.tinkertime.models.ModFile;
+import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.sql.SQLException;
 import java.util.concurrent.Executor;
@@ -33,6 +34,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
 
 public class MainModule extends AbstractModule {
 
@@ -87,8 +89,9 @@ public class MainModule extends AbstractModule {
 	@Provides
 	Dao<Mod, Integer> getModsDao(){
 		try {
+			//return DaoManager.createDao(getConnectionSource();, Mod.class);
 			ConnectionSource connection = getConnectionSource();
-			//TableUtils.createTableIfNotExists(dbConnection, Mod.class);  //TODO Remove when migrations added
+			TableUtils.createTableIfNotExists(connection, Mod.class);  //TODO Remove when migration created
 			return DaoManager.createDao(connection, Mod.class);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
@@ -98,9 +101,10 @@ public class MainModule extends AbstractModule {
 	@Provides
 	Dao<Installation, Integer> getInstallationsDao(){
 		try {
-			ConnectionSource connection = getConnectionSource();
-			//TableUtils.createTableIfNotExists(dbConnection, Installation.class);  //TODO Remove when migrations added
-			return DaoManager.createDao(connection, Installation.class);
+			//return DaoManager.createDao(getConnectionSource(), Installation.class);
+			ConnectionSource source = getConnectionSource();
+			TableUtils.createTableIfNotExists(source, Installation.class);  //TODO Remove when migration created
+			return DaoManager.createDao(source, Installation.class);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -109,9 +113,21 @@ public class MainModule extends AbstractModule {
 	@Provides
 	Dao<ConfigData, Integer> getConfigDao(){
 		try {
-			ConnectionSource connection = getConnectionSource();
-			//TableUtils.createTableIfNotExists(dbConnection, ConfigData.class);  //TODO Remove when migrations added
-			return DaoManager.createDao(connection, ConfigData.class);
+			//return DaoManager.createDao(getConnectionSource(), ConfigData.class);
+			ConnectionSource source = getConnectionSource();
+			TableUtils.createTableIfNotExists(source, ConfigData.class);  //TODO Remove when migration created
+			return DaoManager.createDao(source, ConfigData.class);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Provides
+	Dao<ModFile, Integer> getModFilesDao(){
+		try {
+			ConnectionSource source = getConnectionSource();
+			TableUtils.createTableIfNotExists(source, ModFile.class);  //TODO Remove when migration created
+			return DaoManager.createDao(source, ModFile.class);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}

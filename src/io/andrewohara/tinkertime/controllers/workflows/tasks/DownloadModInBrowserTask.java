@@ -4,7 +4,7 @@ import io.andrewohara.common.version.Version;
 import io.andrewohara.common.workflows.tasks.BrowserGoToTask;
 import io.andrewohara.common.workflows.tasks.WorkflowTask;
 import io.andrewohara.tinkertime.io.crawlers.Crawler;
-import io.andrewohara.tinkertime.models.Mod;
+import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.io.IOException;
 
@@ -23,7 +23,7 @@ public class DownloadModInBrowserTask extends WorkflowTask {
 
 	@Override
 	public boolean execute() throws Exception {
-		Mod result = crawler.getMod();
+		Mod result = crawler.getUpdatedMod();
 		
 		if (JOptionPane.showConfirmDialog(
 			null,

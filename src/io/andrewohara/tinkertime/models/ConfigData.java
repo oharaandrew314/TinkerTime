@@ -1,9 +1,5 @@
 package io.andrewohara.tinkertime.models;
 
-import io.andrewohara.tinkertime.launcher.TinkerTimeLauncher;
-
-import java.nio.file.Path;
-
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -19,10 +15,10 @@ public class ConfigData {
 	@DatabaseField(id=true)
 	private int id = CONFIG_ID;
 
-	@DatabaseField()
+	@DatabaseField(canBeNull = false)
 	private boolean checkForAppUpdatesOnStartup = true, checkForModUpdatesOnStartup = true;
 
-	@DatabaseField()
+	@DatabaseField(canBeNull = false)
 	private int numConcurrentDownloads = 4;;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh=true)
@@ -34,18 +30,6 @@ public class ConfigData {
 	///////////////
 	// Interface //
 	///////////////
-
-	public Path getModsZipPath(){
-		return getSubFolder(getModCachePath(), "modCache");
-	}
-
-	public Path getImageCachePath(){
-		return getSubFolder(getModCachePath(), "imageCache");
-	}
-
-	public Path getModsListPath(){
-		return getModCachePath().resolve("TinkerTime-mods.json");
-	}
 
 	public boolean isCheckForAppUpdatesOnStartup(){
 		return checkForAppUpdatesOnStartup;
@@ -71,17 +55,4 @@ public class ConfigData {
 		return launchArguments;
 	}
 
-	/////////////
-	// Helpers //
-	/////////////
-
-	private Path getSubFolder(Path parent, String subFolder){
-		Path path = parent.resolve(subFolder);
-		path.toFile().mkdir();
-		return path;
-	}
-
-	private Path getModCachePath(){
-		return getSubFolder(getSelectedInstallation().getPath().getParent(), TinkerTimeLauncher.SAFE_NAME);
-	}
 }

@@ -25,3 +25,11 @@ CREATE TABLE `mods` (
 	`updateAvailable` BOOLEAN,
 	`installation_id` INTEGER REFERENCES installations(id)
 ); 
+
+CREATE TABLE `modFiles` (
+	`id` INTEGER PRIMARY KEY AUTOINCREMENT,
+	`mod_id` INTEGER REFERENCES mods(id),
+	`srcPath` VARCHAR NOT NULL,
+	`destPath` VARCHAR NOT NULL,
+	`inZip` BOOLEAN NOT NULL
+);

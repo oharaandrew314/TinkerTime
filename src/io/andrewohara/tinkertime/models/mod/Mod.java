@@ -1,6 +1,7 @@
-package io.andrewohara.tinkertime.models;
+package io.andrewohara.tinkertime.models.mod;
 
 import io.andrewohara.common.version.Version;
+import io.andrewohara.tinkertime.models.Installation;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -22,8 +23,6 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "mods")
 public class Mod implements Comparable<Mod> {
 
-	public static final int MODULE_MANAGER_ID = 3141;
-
 	@DatabaseField(generatedId=true)
 	private int id;
 
@@ -31,36 +30,34 @@ public class Mod implements Comparable<Mod> {
 	private Date updatedOn;
 
 	@DatabaseField
-	private String name, creator, modVersion, kspVersion, newestFileName, url;
+	private String name, creator, modVersion, kspVersion, url;
 
 	@DatabaseField
 	private boolean updateAvailable = false;
 
-	@DatabaseField(foreign = true)
+	@DatabaseField(foreign = true, canBeNull = false)
 	private Installation installation;
 
 	// Required by ormlite
 	Mod() { }
 
-	public Mod(
-			String modName, String newestFileName, String creator,
-			URL pageUrl, Date updatedOn, String kspVersion, Version version
-			){
-		this(Integer.MIN_VALUE, modName, newestFileName, creator, pageUrl, updatedOn, kspVersion, version);
+	public Mod(URL url, Installation installation){
+		this.url = url.toString();
+		this.installation = installation;
 	}
 
-	public Mod(
-			int id, String modName, String newestFileName, String creator,
-			URL pageUrl, Date updatedOn, String kspVersion, Version version
-			){
-		this.id = id;
-		this.newestFileName = newestFileName;
+	public Mod(String modName, String creator, URL pageUrl, Date updatedOn, String kspVersion, Version version, Installation installation){
+		this(pageUrl, installation);
 		this.updatedOn = updatedOn;
-		this.url = pageUrl.toString();
 		this.name = modName;
 		this.creator = creator;
 		this.kspVersion = kspVersion;
 		this.modVersion = version != null ? version.getNormalVersion() : null;
+	}
+
+	public Mod(int id, String modName, String creator, URL pageUrl, Date updatedOn, String kspVersion, Version version, Installation installation){
+		this(modName, creator, pageUrl, updatedOn, kspVersion, version, installation);
+		this.id = id;
 	}
 
 	public int getId(){
@@ -68,11 +65,10 @@ public class Mod implements Comparable<Mod> {
 	}
 
 	public String getName(){
+		if (name == null && url != null){
+			return getUrl().getHost() + " Mod";
+		}
 		return name;
-	}
-
-	public String getNewestFileName(){
-		return newestFileName;
 	}
 
 	public String getCreator(){
@@ -83,7 +79,7 @@ public class Mod implements Comparable<Mod> {
 		try {
 			return new URL(url);
 		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(e);  // Should not happen
 		}
 	}
 
@@ -111,16 +107,29 @@ public class Mod implements Comparable<Mod> {
 		return updateAvailable;
 	}
 
+	public Installation getInstallation(){
+		return installation;
+	}
+
 	public void setUpdateAvailable(boolean updateAvailable){
 		this.updateAvailable = updateAvailable;
 	}
 
-	public Path getCachedImagePath(ConfigData config){
-		return config.getImageCachePath().resolve(getId() + ".jpg");
+	public Path getImagePath(){
+		return installation.getImagePath().resolve(getId() + ".jpg");
 	}
 
-	public boolean isBuiltIn(){
-		return MODULE_MANAGER_ID == getId();
+	public Path getZipPath(){
+		return installation.getModZipsPath().resolve(getId() + ".zip");
+	}
+
+	public boolean isDownloaded(){
+		Path zipPath = getZipPath();
+		return zipPath != null && zipPath.toFile().exists();
+	}
+
+	public boolean isEnabled(){
+		return false;  // TODO Reimplement
 	}
 
 	////////////////

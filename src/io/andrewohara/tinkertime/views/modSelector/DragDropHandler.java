@@ -69,7 +69,7 @@ class DragDropHandler implements DropTargetListener {
 		try {
 			String contents = new String(Files.readAllBytes(file.toPath()));
 			String url = contents.split("URL=")[1].split("]")[0];
-			mm.downloadMod(new URL(url));
+			mm.downloadNewMod(new URL(url));
 		} catch (IOException | UnsupportedHostException e) {
 			Dialogs.errorDialog(listenTo, e);
 		}

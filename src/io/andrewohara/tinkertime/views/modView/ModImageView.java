@@ -2,8 +2,7 @@ package io.andrewohara.tinkertime.views.modView;
 
 import io.andrewohara.common.content.ImageManager;
 import io.andrewohara.common.views.selectorPanel.SelectorView;
-import io.andrewohara.tinkertime.models.ConfigFactory;
-import io.andrewohara.tinkertime.models.Mod;
+import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
@@ -25,11 +24,9 @@ public class ModImageView extends SelectorView.AbstractSelectorView<Mod> {
 	private static final Dimension MAX_IMAGE_SIZE = new Dimension(250, 250);
 	private final ImageManager imageManager = new ImageManager();
 	private final JLabel label = new JLabel();
-	private final ConfigFactory configFactory;
 
 	@Inject
-	ModImageView(ConfigFactory configFactory){
-		this.configFactory = configFactory;
+	ModImageView(){
 		label.setMaximumSize(MAX_IMAGE_SIZE);
 	}
 
@@ -45,7 +42,7 @@ public class ModImageView extends SelectorView.AbstractSelectorView<Mod> {
 				throw new NoModSelectedException();
 			}
 
-			BufferedImage image = imageManager.getImage(element.getCachedImagePath(configFactory.getConfig()));
+			BufferedImage image = imageManager.getImage(element.getImagePath());
 			Dimension size = imageManager.scaleToFit(image, new Dimension(MAX_IMAGE_SIZE.width, MAX_IMAGE_SIZE.height));
 			image = imageManager.resizeImage(image, size);
 			label.setIcon(new ImageIcon(image));

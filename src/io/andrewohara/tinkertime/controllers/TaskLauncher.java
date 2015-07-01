@@ -3,7 +3,6 @@ package io.andrewohara.tinkertime.controllers;
 import io.andrewohara.common.workflows.tasks.WorkflowBuilder;
 import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinator;
 import io.andrewohara.tinkertime.models.ConfigFactory;
-import io.andrewohara.tinkertime.models.Mod;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -25,7 +24,7 @@ public class TaskLauncher {
 		this.modUpdateCoordinator = modUpdateCoordinator;
 	}
 
-	public void submitDownloadWorkflow(WorkflowBuilder builder, Mod context){
+	public void submitDownloadWorkflow(WorkflowBuilder builder){
 		builder.addListener(modUpdateCoordinator);
 
 		// Reset thread pool size if size in options has changed
@@ -35,11 +34,11 @@ public class TaskLauncher {
 			downloadExecutor.setMaximumPoolSize(numDownloadThreads);
 		}
 
-		builder.execute(downloadExecutor, context);
+		builder.execute(downloadExecutor);
 	}
 
-	public void submitFileWorkflow(WorkflowBuilder builder, Mod context){
+	public void submitFileWorkflow(WorkflowBuilder builder){
 		builder.addListener(modUpdateCoordinator);
-		builder.execute(fileExecutor, context);
+		builder.execute(fileExecutor);
 	}
 }

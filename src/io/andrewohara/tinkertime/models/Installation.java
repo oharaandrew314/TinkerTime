@@ -1,5 +1,8 @@
 package io.andrewohara.tinkertime.models;
 
+import io.andrewohara.tinkertime.launcher.TinkerTimeLauncher;
+import io.andrewohara.tinkertime.models.mod.Mod;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -16,7 +19,7 @@ public class Installation {
 	@DatabaseField(generatedId=true)
 	private int id;
 
-	@DatabaseField
+	@DatabaseField(canBeNull=false)
 	private String name, path;
 
 	@ForeignCollectionField
@@ -55,6 +58,18 @@ public class Installation {
 
 	public void unlinkMod(Mod mod){
 		mods.remove(mod);
+	}
+
+	private Path getMetaPath(){
+		return getPath().getParent().resolve(TinkerTimeLauncher.SAFE_NAME);
+	}
+
+	public Path getModZipsPath(){
+		return getMetaPath().resolve("modCache");
+	}
+
+	public Path getImagePath(){
+		return getMetaPath().resolve("imageCache");
 	}
 
 	////////////

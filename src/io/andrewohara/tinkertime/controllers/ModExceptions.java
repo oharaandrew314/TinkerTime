@@ -1,6 +1,6 @@
 package io.andrewohara.tinkertime.controllers;
 
-import io.andrewohara.tinkertime.models.Mod;
+import io.andrewohara.tinkertime.models.mod.Mod;
 
 public abstract class ModExceptions {
 	

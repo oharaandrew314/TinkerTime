@@ -1,6 +1,7 @@
 package io.andrewohara.tinkertime.io.crawlers;
 
 import io.andrewohara.tinkertime.io.crawlers.pageLoaders.PageLoader;
+import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.io.IOException;
 import java.net.URL;
@@ -15,21 +16,21 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class KerbalStuffCrawler extends Crawler<JsonElement>{
-	
+
 	private static Pattern ID_PATTERN = Pattern.compile("(mod/)(\\d+)(/*)");
 
-	public KerbalStuffCrawler(URL url, PageLoader<JsonElement> pageLoader, Integer existingModId) {
-		super(url, pageLoader, existingModId);
+	public KerbalStuffCrawler(Mod mod, PageLoader<JsonElement> pageLoader) {
+		super(mod, pageLoader);
 	}
-	
+
 	@Override
 	public URL getApiUrl(){
 		try {
 			return new URL(
-				"https",
-				CrawlerFactory.HOST_KERBAL_STUFF,
-				String.format("/api/mod/%s", generateId(pageUrl))
-			);
+					"https",
+					CrawlerFactory.HOST_KERBAL_STUFF,
+					String.format("/api/mod/%s", generateId(getPageUrl()))
+					);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -49,7 +50,7 @@ public class KerbalStuffCrawler extends Crawler<JsonElement>{
 		}
 		return null;
 	}
-	
+
 	protected JsonObject getLatestVersion() throws IOException {
 		JsonArray versions = getPage(getApiUrl()).getAsJsonObject().get("versions").getAsJsonArray();
 		if (versions.size() > 0){
@@ -72,12 +73,12 @@ public class KerbalStuffCrawler extends Crawler<JsonElement>{
 	public String getKspVersion() throws IOException {
 		return getLatestVersion().get("ksp_version").getAsString();
 	}
-	
+
 	@Override
 	public String getVersionString() throws IOException{
 		return getLatestVersion().get("friendly_version").getAsString();
 	}
-	
+
 	private static String generateId(URL url) {
 		Matcher m = ID_PATTERN.matcher(url.getPath());
 		if (m.find()){
@@ -89,16 +90,16 @@ public class KerbalStuffCrawler extends Crawler<JsonElement>{
 	@Override
 	protected Collection<Asset> getNewestAssets() throws IOException {
 		String fileName = String.format(
-			"%s %s.zip", getName(),
-			getLatestVersion().get("friendly_version").getAsString()
-		);
-		
+				"%s %s.zip", getName(),
+				getLatestVersion().get("friendly_version").getAsString()
+				);
+
 		URL downloadLink = new URL(
-			"https",
-			CrawlerFactory.HOST_KERBAL_STUFF,
-			getLatestVersion().get("download_path").getAsString()
-		);
-		
+				"https",
+				CrawlerFactory.HOST_KERBAL_STUFF,
+				getLatestVersion().get("download_path").getAsString()
+				);
+
 		Collection<Asset> assets = new LinkedList<>();
 		assets.add(new Asset(fileName, downloadLink));
 		return assets;

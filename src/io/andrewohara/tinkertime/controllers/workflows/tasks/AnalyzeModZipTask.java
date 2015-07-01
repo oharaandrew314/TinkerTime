@@ -1,68 +1,57 @@
-package io.andrewohara.tinkertime.models;
+package io.andrewohara.tinkertime.controllers.workflows.tasks;
+
+import io.andrewohara.common.workflows.tasks.WorkflowTask;
+import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinator;
+import io.andrewohara.tinkertime.models.ModFile;
+import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.Enumeration;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.LinkedList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.commons.io.IOUtils;
+public class AnalyzeModZipTask extends WorkflowTask {
 
-/**
- * Model for discovering and reporting the structure of a Mod Zip File.
- * 
- * Mods can contain a Readme, and contain at least one Module.  Modules can contain
- * the main mod data, or its bundled dependency data.
- * 
- * @author Andrew O'Hara
- *
- */
-public class ModStructure {
-	
-	private final Map<Path, ZipEntry> zipEntries = new LinkedHashMap<>();
+	private final Mod mod;
 	private final Path zipPath;
-	private String readmeText;
-	private boolean loaded = false;
-	
-	public ModStructure(Path zipPath){
+	private final ModUpdateCoordinator modUpdateCoordinator;
+
+	public AnalyzeModZipTask(Mod mod, Path zipPath, ModUpdateCoordinator modUpdateCoordinator) {
+		super("Analyzing Mod");
+		this.mod = mod;
 		this.zipPath = zipPath;
+		this.modUpdateCoordinator = modUpdateCoordinator;
 	}
-	
-	// Factory Methods
-	
-	private boolean isZip(){
-		return zipPath.toString().endsWith(".zip");
-	}
-	
-	private void inspectArchive() throws IOException {
+
+	@Override
+	public boolean execute() throws Exception {
+		Collection<ModFile> files = new LinkedList<>();
+
 		if (zipPath == null){
 			throw new FileNotFoundException();
 		} else if(!zipPath.toFile().exists()){
 			throw new FileNotFoundException(zipPath.toString());
 		}
-		
+
 		if (!isZip()){
-			zipEntries.put(zipPath.getFileName(), null);
+			files.add(new ModFile(mod, zipPath.getFileName(), Paths.get("/"), false));
 		} else {
 			try(ZipFile zipFile = new ZipFile(zipPath.toFile())){
 				Path gameDataPath = null;
-				
-				//Make first pass of entries to get key information 
+
+				//Make first pass of entries to get key information
 				Enumeration<? extends ZipEntry> entries = zipFile.entries();
 				for (ZipEntry entry; entries.hasMoreElements(); ){
 					entry = entries.nextElement();
-					
+
 					// Find Gamedata path
 					if (gameDataPath == null && entry.getName().toLowerCase().contains("gamedata")){
-						
+
 						// Once a candidate has been found, find the exact path to the folder
 						Path tempPath = Paths.get(entry.getName());
 						while(tempPath != null && gameDataPath == null){
@@ -73,7 +62,8 @@ public class ModStructure {
 							}
 						}
 					}
-					
+
+					/* TODO reimplement readmeText
 					// Find Readme text
 					if (readmeText == null && !entry.isDirectory() && entry.getName().toLowerCase().contains("readme")){
 						try(StringWriter writer = new StringWriter(); InputStream is = zipFile.getInputStream(entry)){
@@ -81,8 +71,9 @@ public class ModStructure {
 							readmeText = writer.toString();
 						} catch (IOException e) {}
 					}
+					 */
 				}
-				
+
 				// Make second pass of entries to get all Mod Files
 				entries = zipFile.entries();
 				if (gameDataPath == null){
@@ -92,7 +83,8 @@ public class ModStructure {
 						entry = entries.nextElement();
 						Path entryPath = Paths.get(entry.getName());
 						if (entryPath.getNameCount() >= 2){
-							zipEntries.put(entryPath, entry);
+							//zipEntries.put(entryPath, entry);
+							files.add(new ModFile(mod, entryPath, entryPath));
 						}
 					}
 				} else {
@@ -101,16 +93,18 @@ public class ModStructure {
 						entry = entries.nextElement();
 						Path entryPath = Paths.get(entry.getName());
 						if (
-							entryPath.startsWith(gameDataPath) && !entryPath.equals(gameDataPath) &&
-							!(entry.getName().contains("ModuleManager") && entry.getName().endsWith(".dll"))
-						){
-							zipEntries.put(gameDataPath.relativize(entryPath), entry);
+								entryPath.startsWith(gameDataPath) && !entryPath.equals(gameDataPath) &&
+								!(entry.getName().contains("ModuleManager") && entry.getName().endsWith(".dll"))
+								){
+							//zipEntries.put(gameDataPath.relativize(entryPath), entry);
+							files.add(new ModFile(mod, entryPath, gameDataPath.relativize(entryPath)));
 						}
 					}
 				}
 			}
 		}
-		
+
+		/*
 		// Ensure that all folders added to zipEntries
 		for (Path path : new LinkedHashSet<Path>(zipEntries.keySet())){
 			while(path.getParent() != null){
@@ -118,27 +112,18 @@ public class ModStructure {
 				zipEntries.put(path, null);
 			}
 		}
+		 */
+
+		modUpdateCoordinator.updateModFiles(mod, files);
+		return true;
 	}
-	
-	public Set<Path> getPaths() throws IOException{
-		ensureLoaded();
-		return new LinkedHashSet<>(zipEntries.keySet());
+
+	private boolean isZip(){
+		return zipPath.toString().endsWith(".zip");
 	}
-	
-	public Map<Path, ZipEntry> getZipEntries() throws IOException{
-		ensureLoaded();
-		return new LinkedHashMap<>(zipEntries);
-	}
-	
-	public String getReadmeText() throws IOException{
-		ensureLoaded();
-		return readmeText;
-	}
-	
-	private void ensureLoaded() throws IOException{
-		if (!loaded){
-			inspectArchive();
-			loaded = true;
-		}
+
+	@Override
+	protected int findTargetProgress() throws IOException {
+		return 0;
 	}
 }

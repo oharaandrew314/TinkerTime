@@ -1,10 +1,8 @@
 package io.andrewohara.tinkertime.controllers.workflows.tasks;
 
 import io.andrewohara.common.workflows.tasks.FileTransferTask;
-import io.andrewohara.tinkertime.controllers.ModMetaHelper;
 import io.andrewohara.tinkertime.io.crawlers.Crawler;
-import io.andrewohara.tinkertime.models.ConfigFactory;
-import io.andrewohara.tinkertime.models.Mod;
+import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.io.IOException;
 import java.net.URL;
@@ -20,14 +18,10 @@ public class DownloadModAssetTask extends FileTransferTask {
 
 	private final Crawler<?> crawler;
 	private final ModDownloadType type;
-	private final ConfigFactory configFactory;
-	private final ModMetaHelper modHelper;
 
-	public DownloadModAssetTask(Crawler<?> crawler, ConfigFactory configFactory, ModMetaHelper modHelper, ModDownloadType type){
+	public DownloadModAssetTask(Crawler<?> crawler, ModDownloadType type){
 		super(null, null);
 		this.crawler = crawler;
-		this.modHelper = modHelper;
-		this.configFactory = configFactory;
 		this.type = type;
 	}
 
@@ -40,10 +34,10 @@ public class DownloadModAssetTask extends FileTransferTask {
 	}
 
 	private Path getDest() throws IOException{
-		Mod mod = crawler.getMod();
+		Mod mod = crawler.getUpdatedMod();
 		switch(type){
-		case File: return modHelper.getZipPath(mod);
-		case Image: return mod.getCachedImagePath(configFactory.getConfig());
+		case File: return mod.getZipPath();
+		case Image: return mod.getImagePath();
 		default: throw new IllegalStateException();
 		}
 	}
@@ -60,7 +54,7 @@ public class DownloadModAssetTask extends FileTransferTask {
 			// Do Nothing
 		}
 
-		setResult(crawler.getMod());
+		setResult(crawler.getUpdatedMod());
 		return true;
 	}
 

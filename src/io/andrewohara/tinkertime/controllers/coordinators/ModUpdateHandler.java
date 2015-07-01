@@ -1,7 +1,7 @@
 package io.andrewohara.tinkertime.controllers.coordinators;
 
 import io.andrewohara.tinkertime.models.Installation;
-import io.andrewohara.tinkertime.models.Mod;
+import io.andrewohara.tinkertime.models.mod.Mod;
 
 public interface ModUpdateHandler {
 

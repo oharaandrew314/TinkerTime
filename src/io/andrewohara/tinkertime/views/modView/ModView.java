@@ -1,7 +1,7 @@
 package io.andrewohara.tinkertime.views.modView;
 
 import io.andrewohara.common.views.selectorPanel.SelectorView;
-import io.andrewohara.tinkertime.models.Mod;
+import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.awt.BorderLayout;
 import java.awt.Component;

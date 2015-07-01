@@ -1,122 +1,112 @@
 package io.andrewohara.tinkertime.controllers.workflows;
 
 import io.andrewohara.common.workflows.tasks.WorkflowBuilder;
-import io.andrewohara.tinkertime.controllers.ModMetaHelper;
 import io.andrewohara.tinkertime.controllers.ModExceptions.ModNotDownloadedException;
 import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinator;
+import io.andrewohara.tinkertime.controllers.workflows.tasks.AnalyzeModZipTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.CheckForUpdateTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.DownloadModAssetTask;
+import io.andrewohara.tinkertime.controllers.workflows.tasks.DownloadModAssetTask.ModDownloadType;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.DownloadModInBrowserTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.MarkModUpdatedTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.RemoveModTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.RunCrawlerTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.SaveModTask;
-import io.andrewohara.tinkertime.controllers.workflows.tasks.DownloadModAssetTask.ModDownloadType;
 import io.andrewohara.tinkertime.io.crawlers.Crawler;
 import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory;
 import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory.UnsupportedHostException;
-import io.andrewohara.tinkertime.models.ConfigFactory;
-import io.andrewohara.tinkertime.models.Mod;
-import io.andrewohara.tinkertime.models.ModFactory;
+import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Path;
 
 import com.google.inject.Inject;
 
 public class ModWorkflowBuilder extends WorkflowBuilder {
 
-	private final ConfigFactory configFactory;
 	private final CrawlerFactory crawlerService;
-	private final ModMetaHelper modMetaHelper;
 	private final ModUpdateCoordinator updateCoordinator;
 
 	private Crawler<?> cachedCrawler;
 
 	@Inject
-	public ModWorkflowBuilder(
-			ConfigFactory configFactory, CrawlerFactory crawlerService,
-			ModUpdateCoordinator updateCoordinator, ModMetaHelper modMetaHelper
-			) {
-		this.configFactory = configFactory;
+	public ModWorkflowBuilder(CrawlerFactory crawlerService, ModUpdateCoordinator updateCoordinator, Mod mod) {
+		super(mod);
 		this.crawlerService = crawlerService;
 		this.updateCoordinator = updateCoordinator;
-		this.modMetaHelper = modMetaHelper;
 	}
 
-	private Crawler<?> getCrawler(Mod mod) throws UnsupportedHostException{
-		return (cachedCrawler != null) ? cachedCrawler : (cachedCrawler = crawlerService.getCrawler(mod.getUrl(), mod.getId()));
+	private Mod getMod(){
+		return (Mod) context;
+	}
+
+	private Crawler<?> getCrawler() throws UnsupportedHostException{
+		return (cachedCrawler != null) ? cachedCrawler : (cachedCrawler = crawlerService.getCrawler(getMod()));
 	}
 
 	/**
 	 * Notifies the listeners if an update is available for the given file
 	 * @throws UnsupportedHostException
 	 */
-	public void checkForUpdates(Mod mod, boolean markIfAvailable) throws UnsupportedHostException {
-		addTask(new CheckForUpdateTask(getCrawler(mod), mod.getModVersion(), mod.getUpdatedOn()));
+	public void checkForUpdates(boolean markIfAvailable) throws UnsupportedHostException {
+		addTask(new CheckForUpdateTask(getCrawler(), getMod().getModVersion(), getMod().getUpdatedOn()));  // TODO Just pass in mod
 		if (markIfAvailable){
-			addTask(new MarkModUpdatedTask(updateCoordinator, mod));
+			addTask(new MarkModUpdatedTask(updateCoordinator, getMod()));
 		}
 	}
 
-	public Mod downloadNewMod(URL url) throws UnsupportedHostException, MalformedURLException {
-		Mod tempMod = ModFactory.newTempMod(crawlerService.getCrawler(url, null));
-		addTask(new SaveModTask.FromMod(updateCoordinator, tempMod));  // Create Placeholder Mod
-		downloadMod(tempMod);
-		return tempMod;
+	public void downloadNewMod() throws UnsupportedHostException, MalformedURLException {
+		addTask(new SaveModTask.FromMod(updateCoordinator, getMod()));
+		downloadMod();
 	}
 
 	/**
 	 * Downloads the latest version of the mod referenced by the URL.
 	 * @throws UnsupportedHostException
 	 */
-	public void updateMod(Mod mod, boolean forceUpdate) throws UnsupportedHostException {
+	public void updateMod(boolean forceUpdate) throws UnsupportedHostException {
 		// Cleanup operations prior to update
-		if (modMetaHelper.isDownloaded(mod)){
+		if (getMod().isDownloaded()){
 			if (!forceUpdate){
-				checkForUpdates(mod, true);
+				checkForUpdates(true);
 			}
 
 			// Disable Mod if it is enabled
 			try {
-				if (modMetaHelper.isEnabled(mod)){
-					disableMod(mod);
+				if (getMod().isEnabled()){
+					disableMod();
 				}
 			} catch (ModNotDownloadedException e) {
 				// Do Nothing
 			}
 
-			addTask(new RunCrawlerTask(getCrawler(mod)));  // Get user to select asset before deleting
-			deleteModZip(mod);
+			addTask(new RunCrawlerTask(getCrawler()));  // Get user to select asset before deleting
+			deleteModZip();
 		}
 
-		downloadMod(mod);
+		downloadMod();
 	}
 
-	private void downloadMod(Mod mod) throws UnsupportedHostException{
-		Crawler<?> crawler = getCrawler(mod);
+	private void downloadMod() throws UnsupportedHostException{
+		Crawler<?> crawler = getCrawler();
 		addTask(new RunCrawlerTask(crawler));  // prefetch metadata
-		addTask(new DownloadModAssetTask(crawler, configFactory, modMetaHelper, ModDownloadType.File));
-		addTask(new DownloadModAssetTask(crawler, configFactory, modMetaHelper, ModDownloadType.Image));
+		addTask(new DownloadModAssetTask(crawler, ModDownloadType.File));
+		addTask(new DownloadModAssetTask(crawler, ModDownloadType.Image));
+		addTask(new AnalyzeModZipTask(getMod(), getMod().getZipPath(), updateCoordinator));
 		addTask(new SaveModTask.FromCrawler(updateCoordinator, crawler));
 	}
 
 	public void downloadModInBrowser(Mod mod) throws UnsupportedHostException{
-		addTask(new DownloadModInBrowserTask(getCrawler(mod), mod.getModVersion()));
+		addTask(new DownloadModInBrowserTask(getCrawler(), mod.getModVersion()));
 	}
 
-	public Mod addLocalMod(Path zipPath){
-		Mod tempMod = ModFactory.newTempMod(zipPath);
-
+	public void addLocalMod(Path zipPath){
 		// Create Placeholder Mod
-		addTask(new SaveModTask.FromMod(updateCoordinator, tempMod));
+		addTask(new SaveModTask.FromMod(updateCoordinator, getMod()));
 
 		// Add Mod
-		copy(zipPath, modMetaHelper.getZipPath(tempMod));
-		addTask(new SaveModTask.FromMod(updateCoordinator, tempMod));
-
-		return tempMod;
+		copy(zipPath, getMod().getZipPath());
+		addTask(new SaveModTask.FromMod(updateCoordinator, getMod()));
 	}
 
 	/**
@@ -124,8 +114,8 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	 * @param mod
 	 * @param config
 	 */
-	public void deleteModZip(final Mod mod){
-		delete(modMetaHelper.getZipPath(mod));
+	public void deleteModZip(){
+		delete(getMod().getZipPath());
 	}
 
 	/**
@@ -134,22 +124,22 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	 * @param config
 	 * @param modLoader
 	 */
-	public void deleteMod(Mod mod) {
+	public void deleteMod() {
 		// Try to disable the mod first
 		try {
-			if (modMetaHelper.isEnabled(mod)){
-				disableMod(mod);
+			if (getMod().isEnabled()){
+				disableMod();
 			}
 		} catch (ModNotDownloadedException e) {
 			// Do nothing
 		}
 
-		addTask(new RemoveModTask(mod, updateCoordinator));
-		deleteModZip(mod);
-		delete(mod.getCachedImagePath(configFactory.getConfig()));
+		addTask(new RemoveModTask(getMod(), updateCoordinator));
+		deleteModZip();
+		delete(getMod().getImagePath());
 	}
 
-	public void disableMod(Mod mod) throws ModNotDownloadedException{
+	public void disableMod() throws ModNotDownloadedException{
 		//TODO Reimplement disableMod
 		/*
 		Set<Path> fileDestPaths = modLoader.getModFileDestPaths(mod);

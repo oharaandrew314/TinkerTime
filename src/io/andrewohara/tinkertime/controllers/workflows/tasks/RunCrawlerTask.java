@@ -6,11 +6,11 @@ import io.andrewohara.tinkertime.io.crawlers.Crawler;
 import java.io.IOException;
 
 public class RunCrawlerTask extends WorkflowTask {
-	
+
 	private final Crawler<?> crawler;
 
 	public RunCrawlerTask(Crawler<?> crawler) {
-		super(String.format("Crawling %s page", crawler.pageUrl.getHost()));
+		super(String.format("Crawling %s page", crawler.getPageUrl().getHost()));
 		this.crawler = crawler;
 	}
 

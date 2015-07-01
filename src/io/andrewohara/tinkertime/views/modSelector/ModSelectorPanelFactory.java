@@ -2,7 +2,7 @@ package io.andrewohara.tinkertime.views.modSelector;
 
 import io.andrewohara.common.views.selectorPanel.SelectorPanelBuilder;
 import io.andrewohara.tinkertime.controllers.ModManager;
-import io.andrewohara.tinkertime.models.Mod;
+import io.andrewohara.tinkertime.models.mod.Mod;
 import io.andrewohara.tinkertime.views.menus.MenuFactory;
 import io.andrewohara.tinkertime.views.modView.ModView;
 

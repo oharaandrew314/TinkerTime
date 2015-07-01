@@ -10,7 +10,7 @@ import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory;
 import io.andrewohara.tinkertime.io.kspLauncher.GameLauncher;
 import io.andrewohara.tinkertime.launcher.TinkerTimeLauncher;
 import io.andrewohara.tinkertime.models.ConfigFactory;
-import io.andrewohara.tinkertime.models.Mod;
+import io.andrewohara.tinkertime.models.mod.Mod;
 import io.andrewohara.tinkertime.views.FileChoosers;
 import io.andrewohara.tinkertime.views.InstallationSelector;
 import io.andrewohara.tinkertime.views.TinkerDialogs;
@@ -110,9 +110,9 @@ class Actions {
 
 			// Try to add Mod
 			try {
-				mm.downloadMod(new URL(urlString));
+				mm.downloadNewMod(new URL(urlString));
 			} catch(MalformedURLException ex){
-				mm.downloadMod(new URL("http://" + urlString));
+				mm.downloadNewMod(new URL("http://" + urlString));
 			}
 		}
 	}

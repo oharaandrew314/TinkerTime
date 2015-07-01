@@ -5,7 +5,7 @@ import io.andrewohara.common.views.selectorPanel.SelectorPanelController;
 import io.andrewohara.tinkertime.controllers.ModManager;
 import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateHandler;
 import io.andrewohara.tinkertime.models.Installation;
-import io.andrewohara.tinkertime.models.Mod;
+import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.awt.dnd.DropTarget;
 

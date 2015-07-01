@@ -7,8 +7,7 @@ import io.andrewohara.common.views.ProgressSpinnerPanel;
 import io.andrewohara.common.workflows.tasks.TaskCallback;
 import io.andrewohara.common.workflows.tasks.WorkflowTask.TaskEvent;
 import io.andrewohara.common.workflows.tasks.WorkflowTask.TaskExceptionEvent;
-import io.andrewohara.tinkertime.controllers.ModMetaHelper;
-import io.andrewohara.tinkertime.models.Mod;
+import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -29,59 +28,57 @@ import com.google.inject.Singleton;
 
 /**
  * Custom ListCellRenderer for a Mod to be displayed on a JList.
- * 
+ *
  * Displays the Mod name, all status icons to the left of it, and the Progress
  * Spinner to the right.
- *  
+ *
  * @author Andrew O'Hara
  */
 @Singleton
 public class ModListCellRenderer extends TaskCallback implements ListCellRenderer<Mod> {
-	
+
 	private final Map<Mod, ProgressSpinnerPanel> elements = new HashMap<>();
-	private final ModMetaHelper modHelper;
 	private final ImageManager imageManager;
-	
+
 	@Inject
-	ModListCellRenderer(ImageManager imageManager, ModMetaHelper modHelper){
+	ModListCellRenderer(ImageManager imageManager){
 		this.imageManager = imageManager;
-		this.modHelper = modHelper;
 	}
-	
+
 	protected ImageIcon getEnabledIcon(){
 		return loadIcon(imageManager, "glyphicons_152_check.png", "Mod Enabled", new Color(70, 210, 70));
 	}
-	
+
 	protected ImageIcon getDisabledIcon(){
 		return  loadIcon(imageManager, "glyphicons_207_remove_2.png", "Mod Disabled", new Color(205, 20, 20));
 	}
-	
+
 	protected ImageIcon getErrorIcon(){
 		return loadIcon(imageManager, "glyphicons_078_warning_sign.png", "Mod Zip not found.  Please update", new Color(215, 160, 0));
 	}
-	
+
 	protected ImageIcon getUpdateIcon(){
 		return loadIcon(imageManager, "glyphicons_213_up_arrow.png", "Update Available", new Color(255, 200, 0));
 	}
-	
+
 	protected ImageIcon getLocalIcon(){
 		return loadIcon(imageManager, "glyphicons_410_compressed.png", "Mod added locally.  Not updateable", new Color(0, 0, 0));
 	}
-	
+
 	private ImageIcon loadIcon(ImageManager imageManager, String name, String description, Color colour){
 		BufferedImage image = imageManager.getImage("icon/" + name);
 		image = colour != null ? imageManager.colorize(image, colour) : image;
 		return new ImageIcon(image, description);
 	}
-	
+
 	private ImageIcon[] getCurrentIcons(Mod mod){
 		LinkedList<ImageIcon> icons = new LinkedList<>();
-		icons.add(modHelper.isEnabled(mod) ? getEnabledIcon() : getDisabledIcon());
-		
+		icons.add(mod.isEnabled() ? getEnabledIcon() : getDisabledIcon());
+
 		if (mod.isUpdateAvailable()){
 			icons.add(getUpdateIcon());
 		}
-		
+
 		if (mod.getUrl() == null){
 			icons.add(getLocalIcon());
 		}
@@ -91,18 +88,18 @@ public class ModListCellRenderer extends TaskCallback implements ListCellRendere
 	@Override
 	public Component getListCellRendererComponent(final JList<? extends Mod> list,
 			Mod mod, int index, boolean isSelected, boolean cellHasFocus) {
-		
+
 		// Compile list of icons
 		ImageIcon[] icons = getCurrentIcons(mod);
-		
+
 		// Create cell label
 		String text = mod.getName();
 		if (mod.getSupportedVersion() != null){
 			text = String.format("[%s] %s", mod.getSupportedVersion(), text);
 		}
-		
+
 		String tooltipText = String.format("<html>%s</html>", Util.joinStrings(icons, "<br/>"));
-		
+
 		if (!elements.containsKey(mod)){
 			elements.put(mod, ProgressSpinnerPanel.create());
 		}
@@ -111,21 +108,21 @@ public class ModListCellRenderer extends TaskCallback implements ListCellRendere
 		ele.setIcon(new CompoundIcon(icons));
 		ele.setBorder(isSelected ? BorderFactory.createLineBorder(Color.black) : null);
 		ele.setToolTipText(tooltipText);
-		
+
 		list.repaint();
-		
+
 		return ele;
 	}
-	
+
 	@Override
 	protected void processTaskEvent(final TaskEvent event) {
 		Object context  = event.getTask().getWorkflow().context;
 		if (context == null || !elements.containsKey(context)){
 			return;
 		}
-		
+
 		final ProgressSpinnerPanel element = elements.get(context);
-		
+
 		switch(event.getTask().getStatus()){
 		case Ready:
 			break;  // Ignored

@@ -1,6 +1,7 @@
 package io.andrewohara.tinkertime.io.crawlers;
 
 import io.andrewohara.tinkertime.io.crawlers.pageLoaders.PageLoader;
+import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.io.IOException;
 import java.net.URL;
@@ -15,15 +16,15 @@ import org.jsoup.nodes.Element;
 
 /**
  * Crawler for gethering Mod File Data from curse.com
- * 
+ *
  * @author Andrew O'Hara
  */
 public class CurseCrawler extends Crawler<Document> {
-	
-	public CurseCrawler(URL url, PageLoader<Document> pageLoader, Integer existingModId){
-		super(url, pageLoader, existingModId);
+
+	public CurseCrawler(Mod mod, PageLoader<Document> pageLoader){
+		super(mod, pageLoader);
 	}
-	
+
 	@Override
 	public Date getUpdatedOn() throws IOException {
 		Document mainPage = getPage(getApiUrl());
@@ -67,26 +68,26 @@ public class CurseCrawler extends Crawler<Document> {
 	@Override
 	protected Collection<Asset> getNewestAssets() throws IOException {
 		Document mainPage = getPage(getApiUrl());
-		
+
 		// Get File Name From Main Page
 		Element ele = mainPage.getElementById("project-overview");
 		ele = ele.getElementsContainingOwnText("Newest File").first();
-		
+
 		// Add zip extension to filename if author did not add it
 		String fileName = ele.text().split(":")[1].trim();
 		if (!fileName.toLowerCase().endsWith(".zip")){
 			fileName += ".zip";
 		}
-		
+
 		// Get Download Page Link
 		String downloadPageLink = mainPage.select("ul.regular-dl a").first().absUrl("href");
 		URL downloadPageUrl = new URL(downloadPageLink);
-		
+
 		// Get Mod Download Link from Download Page
 		Document downloadPage = getPage(downloadPageUrl);
 		String downloadLink = downloadPage.select("a.download-link").first().absUrl("data-href");
 		URL downloadUrl = new URL(downloadLink.replace(" ", "%20"));
-		
+
 		// Return Asset
 		Collection<Asset> assets = new LinkedList<>();
 		assets.add(new Asset(fileName, downloadUrl));

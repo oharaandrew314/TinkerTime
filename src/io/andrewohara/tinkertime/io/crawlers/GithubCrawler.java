@@ -1,6 +1,7 @@
 package io.andrewohara.tinkertime.io.crawlers;
 
 import io.andrewohara.tinkertime.io.crawlers.pageLoaders.PageLoader;
+import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -17,19 +18,19 @@ import com.google.gson.JsonObject;
 
 public class GithubCrawler extends Crawler<JsonElement> {
 
-	public GithubCrawler(URL url, PageLoader<JsonElement> pageLoader, Integer existingModId) {
-		super(url, pageLoader, existingModId);
+	public GithubCrawler(Mod mod, PageLoader<JsonElement> pageLoader) {
+		super(mod, pageLoader);
 	}
-	
+
 	@Override
 	public URL getApiUrl() throws MalformedURLException{
-		String pagePath = pageUrl.getPath();
+		String pagePath = getPageUrl().getPath();
 		if (pagePath.contains("/releases")){
 			pagePath = pagePath.split("/releases")[0];
 		}
 		return new URL("https", "api.github.com", "/repos" + pagePath);
 	}
-	
+
 	private JsonObject getLatestRelease() throws IOException{
 		URL releasesUrl = new URL("https", "api.github.com", getApiUrl().getPath() + "/releases");
 		for (JsonElement releaseEle : getPage(releasesUrl).getAsJsonArray()){
@@ -41,7 +42,7 @@ public class GithubCrawler extends Crawler<JsonElement> {
 		}
 		throw new IOException("No Releases found for " + getName());
 	}
-	
+
 	private JsonObject getRepoDoc() throws IOException {
 		return getPage(getApiUrl()).getAsJsonObject();
 	}
@@ -49,7 +50,7 @@ public class GithubCrawler extends Crawler<JsonElement> {
 	@Override
 	public Date getUpdatedOn() throws IOException {
 		String dateStr = getLatestRelease().get("published_at").getAsString();
-  		try {
+		try {
 			return new SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
 		} catch (ParseException e) {
 			throw new IOException(e);
@@ -84,13 +85,13 @@ public class GithubCrawler extends Crawler<JsonElement> {
 	@Override
 	protected Collection<Asset> getNewestAssets() throws IOException {
 		Collection<Asset> assets = new LinkedList<>();
-		
+
 		for (JsonElement assetEle : getLatestRelease().get("assets").getAsJsonArray()){
 			JsonObject assetObj = assetEle.getAsJsonObject();
 			assets.add(new Asset(
-				assetObj.get("name").getAsString(),
-				new URL(assetObj.get("browser_download_url").getAsString())
-			));
+					assetObj.get("name").getAsString(),
+					new URL(assetObj.get("browser_download_url").getAsString())
+					));
 		}
 		return assets;
 	}
