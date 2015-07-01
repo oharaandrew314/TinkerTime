@@ -57,7 +57,7 @@ public class TinkerTimeLauncher implements Runnable {
 
 	@Inject
 	TinkerTimeLauncher(DatabaseMigrator migrator, ConfigVerifier configVerifier, SetupListeners setupListeners, LoadModsTask startupModLoader, UpdateChecker updateChecker, MainFrameLauncher mainFrameLauncher){
-		//startupTasks.add(migrator);  FIXME renable migrator later
+		//startupTasks.add(migrator);  FIXME re-enable migrator later
 		startupTasks.add(configVerifier);
 		startupTasks.add(setupListeners);
 		startupTasks.add(startupModLoader);

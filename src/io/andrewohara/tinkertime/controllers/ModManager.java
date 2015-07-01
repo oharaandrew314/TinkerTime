@@ -151,12 +151,10 @@ public class ModManager extends Listenable<TaskCallback> {
 	}
 
 	public void tryUpdateModManager() throws UnsupportedHostException, MalformedURLException {
-		/* TODO Reimplement.  Try to keep TT as a mod in the DB, but have an internal=false flag, or something
-		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder();
-		Mod tempMod = ModFactory.newTempMod(new URL(TinkerTimeLauncher.DOWNLOAD_URL), TinkerTimeLauncher.VERSION);
-		builder.checkForUpdates(tempMod, false);
+		Mod tempMod = modFactory.newModManagerMod();
+		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder(tempMod);
+		builder.checkForUpdates(false);
 		builder.downloadModInBrowser(tempMod);
-		taskLauncher.submitDownloadWorkflow(builder, tempMod);
-		 */
+		taskLauncher.submitDownloadWorkflow(builder);
 	}
 }

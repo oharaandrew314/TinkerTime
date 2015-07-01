@@ -1,10 +1,12 @@
 package io.andrewohara.tinkertime.models.mod;
 
+import io.andrewohara.tinkertime.TinkerTimeLauncher;
 import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinatorImpl;
 import io.andrewohara.tinkertime.db.ConfigFactory;
 import io.andrewohara.tinkertime.db.ModLoader;
 import io.andrewohara.tinkertime.models.Installation;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 
@@ -42,5 +44,15 @@ public class ModFactory {
 			return mod;
 		}
 		return mod;
+	}
+
+	public Mod newModManagerMod(){
+		try {
+			Mod mod = new Mod(new URL(TinkerTimeLauncher.DOWNLOAD_URL), (Installation) null);
+			mod.update(null, null, null, TinkerTimeLauncher.VERSION, null);
+			return mod;
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

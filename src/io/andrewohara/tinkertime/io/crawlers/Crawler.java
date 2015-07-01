@@ -67,8 +67,9 @@ public abstract class Crawler<T> {
 
 	public void updatedMod() throws IOException {
 		Date updatedOn = getUpdatedOn() != null ? getUpdatedOn() : Calendar.getInstance().getTime();
-		mod.update(getName(), getCreator(), updatedOn, getVersion(), getKspVersion());
 		mod.setUpdateAvailable(isUpdateAvailable());
+		mod.update(getName(), getCreator(), updatedOn, getVersion(), getKspVersion());
+
 	}
 
 	public final URL getDownloadLink() throws IOException{

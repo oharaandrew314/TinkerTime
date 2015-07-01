@@ -6,6 +6,7 @@ import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.io.IOException;
 
+// TODO Replace with SaveModTask
 public class MarkModUpdatedTask extends WorkflowTask {
 
 	ModUpdateCoordinatorImpl updateCoordinator;
