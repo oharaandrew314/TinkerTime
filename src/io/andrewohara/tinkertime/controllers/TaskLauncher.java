@@ -1,7 +1,7 @@
 package io.andrewohara.tinkertime.controllers;
 
 import io.andrewohara.common.workflows.tasks.WorkflowBuilder;
-import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinator;
+import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinatorImpl;
 import io.andrewohara.tinkertime.models.ConfigFactory;
 
 import java.util.concurrent.Executor;
@@ -14,10 +14,10 @@ public class TaskLauncher {
 	private final ConfigFactory configFactory;
 	private final ThreadPoolExecutor downloadExecutor;
 	private final Executor fileExecutor;
-	private final ModUpdateCoordinator modUpdateCoordinator;
+	private final ModUpdateCoordinatorImpl modUpdateCoordinator;
 
 	@Inject
-	TaskLauncher(ConfigFactory configFactory, ThreadPoolExecutor downloadExecutor, Executor fileExecutor, ModUpdateCoordinator modUpdateCoordinator){
+	TaskLauncher(ConfigFactory configFactory, ThreadPoolExecutor downloadExecutor, Executor fileExecutor, ModUpdateCoordinatorImpl modUpdateCoordinator){
 		this.configFactory = configFactory;
 		this.downloadExecutor = downloadExecutor;
 		this.fileExecutor = fileExecutor;

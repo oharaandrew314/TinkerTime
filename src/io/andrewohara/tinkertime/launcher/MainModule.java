@@ -1,6 +1,8 @@
 package io.andrewohara.tinkertime.launcher;
 
 import io.andrewohara.common.OS;
+import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinator;
+import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinatorImpl;
 import io.andrewohara.tinkertime.db.DaoModLoader;
 import io.andrewohara.tinkertime.db.ModLoader;
 import io.andrewohara.tinkertime.io.crawlers.pageLoaders.JsonLoader;
@@ -47,6 +49,7 @@ public class MainModule extends AbstractModule {
 		bind(GameExecStrategy.class).to(getExecStrategyType());
 		bind(ConfigFactory.class).to(DaoConfigFactory.class);
 		bind(ModLoader.class).to(DaoModLoader.class);
+		bind(ModUpdateCoordinator.class).to(ModUpdateCoordinatorImpl.class);
 		getModsDao();
 	}
 

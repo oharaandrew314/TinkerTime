@@ -18,13 +18,11 @@ import java.util.zip.ZipFile;
 public class AnalyzeModZipTask extends WorkflowTask {
 
 	private final Mod mod;
-	private final Path zipPath;
 	private final ModUpdateCoordinator modUpdateCoordinator;
 
-	public AnalyzeModZipTask(Mod mod, Path zipPath, ModUpdateCoordinator modUpdateCoordinator) {
+	public AnalyzeModZipTask(Mod mod, ModUpdateCoordinator modUpdateCoordinator) {
 		super("Analyzing Mod");
 		this.mod = mod;
-		this.zipPath = zipPath;
 		this.modUpdateCoordinator = modUpdateCoordinator;
 	}
 
@@ -32,6 +30,7 @@ public class AnalyzeModZipTask extends WorkflowTask {
 	public boolean execute() throws Exception {
 		Collection<ModFile> files = new LinkedList<>();
 
+		Path zipPath = mod.getZipPath();
 		if (zipPath == null){
 			throw new FileNotFoundException();
 		} else if(!zipPath.toFile().exists()){

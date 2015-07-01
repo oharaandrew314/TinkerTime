@@ -1,7 +1,7 @@
 package io.andrewohara.tinkertime.controllers.workflows.tasks;
 
 import io.andrewohara.common.workflows.tasks.WorkflowTask;
-import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinator;
+import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinatorImpl;
 import io.andrewohara.tinkertime.io.crawlers.Crawler;
 import io.andrewohara.tinkertime.models.mod.Mod;
 
@@ -9,9 +9,9 @@ import java.io.IOException;
 
 public abstract class SaveModTask extends WorkflowTask {
 
-	private final ModUpdateCoordinator updateCoordinator;
+	private final ModUpdateCoordinatorImpl updateCoordinator;
 
-	SaveModTask(ModUpdateCoordinator updateCoordinator) {
+	SaveModTask(ModUpdateCoordinatorImpl updateCoordinator) {
 		super("Saving Mod");
 		this.updateCoordinator = updateCoordinator;
 	}
@@ -33,7 +33,7 @@ public abstract class SaveModTask extends WorkflowTask {
 
 		private final Mod mod;
 
-		public FromMod(ModUpdateCoordinator updateCoordinator, Mod mod){
+		public FromMod(ModUpdateCoordinatorImpl updateCoordinator, Mod mod){
 			super(updateCoordinator);
 			this.mod = mod;
 		}
@@ -48,7 +48,7 @@ public abstract class SaveModTask extends WorkflowTask {
 
 		private final Crawler<?> crawler;
 
-		public FromCrawler(ModUpdateCoordinator updateCoordinator, Crawler<?> crawler) {
+		public FromCrawler(ModUpdateCoordinatorImpl updateCoordinator, Crawler<?> crawler) {
 			super(updateCoordinator);
 			this.crawler = crawler;
 		}

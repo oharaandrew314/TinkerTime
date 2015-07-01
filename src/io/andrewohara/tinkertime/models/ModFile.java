@@ -3,6 +3,7 @@ package io.andrewohara.tinkertime.models;
 import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -28,6 +29,10 @@ public class ModFile {
 		this.mod = mod;
 		this.entryName = entryName.toString();
 		this.relDestPath = relPath.toString();
+	}
+
+	public Path getRelDestPath(){
+		return Paths.get(relDestPath);
 	}
 
 	public Path getDestPath(){

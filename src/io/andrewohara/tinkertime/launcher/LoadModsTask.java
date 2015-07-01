@@ -1,17 +1,17 @@
 package io.andrewohara.tinkertime.launcher;
 
-import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinator;
+import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinatorImpl;
 import io.andrewohara.tinkertime.models.ConfigFactory;
 
 import com.google.inject.Inject;
 
 public class LoadModsTask implements Runnable {
 
-	private final ModUpdateCoordinator updateCooridnator;
+	private final ModUpdateCoordinatorImpl updateCooridnator;
 	private final ConfigFactory configFactory;
 
 	@Inject
-	LoadModsTask(ModUpdateCoordinator updateCooridnator, ConfigFactory configFactory){
+	LoadModsTask(ModUpdateCoordinatorImpl updateCooridnator, ConfigFactory configFactory){
 		this.updateCooridnator = updateCooridnator;
 		this.configFactory = configFactory;
 	}

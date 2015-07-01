@@ -2,7 +2,7 @@ package io.andrewohara.tinkertime.controllers.workflows;
 
 import io.andrewohara.common.workflows.tasks.WorkflowBuilder;
 import io.andrewohara.tinkertime.controllers.ModExceptions.ModNotDownloadedException;
-import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinator;
+import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinatorImpl;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.AnalyzeModZipTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.CheckForUpdateTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.DownloadModAssetTask;
@@ -35,13 +35,13 @@ import com.google.inject.Inject;
 public class ModWorkflowBuilder extends WorkflowBuilder {
 
 	private final CrawlerFactory crawlerService;
-	private final ModUpdateCoordinator updateCoordinator;
+	private final ModUpdateCoordinatorImpl updateCoordinator;
 	private final ModLoader modLoader;
 
 	private Crawler<?> cachedCrawler;
 
 	@Inject
-	public ModWorkflowBuilder(CrawlerFactory crawlerService, ModUpdateCoordinator updateCoordinator, ModLoader modLoader, Mod mod) {
+	public ModWorkflowBuilder(CrawlerFactory crawlerService, ModUpdateCoordinatorImpl updateCoordinator, ModLoader modLoader, Mod mod) {
 		super(mod);
 		this.crawlerService = crawlerService;
 		this.updateCoordinator = updateCoordinator;
@@ -104,7 +104,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		addTask(new RunCrawlerTask(crawler));  // prefetch metadata
 		addTask(new DownloadModAssetTask(crawler, ModDownloadType.File));
 		addTask(new DownloadModAssetTask(crawler, ModDownloadType.Image));
-		addTask(new AnalyzeModZipTask(getMod(), getMod().getZipPath(), updateCoordinator));
+		addTask(new AnalyzeModZipTask(getMod(), updateCoordinator));
 		addTask(new SaveModTask.FromCrawler(updateCoordinator, crawler));
 	}
 

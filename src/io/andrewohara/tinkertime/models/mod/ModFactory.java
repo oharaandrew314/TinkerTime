@@ -1,6 +1,6 @@
 package io.andrewohara.tinkertime.models.mod;
 
-import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinator;
+import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinatorImpl;
 import io.andrewohara.tinkertime.db.ModLoader;
 import io.andrewohara.tinkertime.models.ConfigFactory;
 import io.andrewohara.tinkertime.models.Installation;
@@ -12,30 +12,15 @@ import com.google.inject.Inject;
 public class ModFactory {
 
 	private final ConfigFactory configFactory;
-	private final ModUpdateCoordinator updateCoordinator;
+	private final ModUpdateCoordinatorImpl updateCoordinator;
 	private final ModLoader modLoader;
 
 	@Inject
-	ModFactory(ConfigFactory configFactory, ModUpdateCoordinator updateCoordinator, ModLoader modLoader){
+	ModFactory(ConfigFactory configFactory, ModUpdateCoordinatorImpl updateCoordinator, ModLoader modLoader){
 		this.configFactory = configFactory;
 		this.updateCoordinator = updateCoordinator;
 		this.modLoader = modLoader;
 	}
-
-	/*
-	public Mod newLocalMod(Path zipPath){
-		String fileName = zipPath.getFileName().toString();
-		String prettyName = fileName;
-		if (prettyName.indexOf(".") > 0) {
-			prettyName = prettyName.substring(0, prettyName.lastIndexOf("."));
-		}
-		return new Mod(
-				prettyName, fileName, null, null,
-				Calendar.getInstance().getTime(), null,
-				Version.valueOf(VersionParser.parseVersionString(prettyName))
-				);
-	}
-	 */
 
 	private Installation getInstallation(){
 		return configFactory.getConfig().getSelectedInstallation();
