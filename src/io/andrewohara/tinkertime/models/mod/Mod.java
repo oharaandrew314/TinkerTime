@@ -200,7 +200,7 @@ public class Mod implements Comparable<Mod> {
 
 	@Override
 	public int hashCode(){
-		return Integer.hashCode(id);
+		return new Integer(id).hashCode();
 	}
 
 	@Override
