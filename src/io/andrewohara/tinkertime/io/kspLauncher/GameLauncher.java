@@ -1,6 +1,6 @@
 package io.andrewohara.tinkertime.io.kspLauncher;
 
-import io.andrewohara.tinkertime.models.ConfigFactory;
+import io.andrewohara.tinkertime.db.ConfigFactory;
 
 import java.io.IOException;
 

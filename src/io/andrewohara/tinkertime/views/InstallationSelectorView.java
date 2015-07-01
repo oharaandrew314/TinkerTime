@@ -1,8 +1,9 @@
 package io.andrewohara.tinkertime.views;
 
 import io.andrewohara.common.views.selectorPanel.DecoratedComponent;
+import io.andrewohara.tinkertime.db.ConfigFactory;
+import io.andrewohara.tinkertime.db.InstallationManager;
 import io.andrewohara.tinkertime.models.ConfigData;
-import io.andrewohara.tinkertime.models.ConfigFactory;
 import io.andrewohara.tinkertime.models.Installation;
 import io.andrewohara.tinkertime.models.Installation.InvalidGameDataPathException;
 
@@ -14,7 +15,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -29,20 +29,19 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import com.google.inject.Inject;
-import com.j256.ormlite.dao.Dao;
 
-public class InstallationSelector implements DecoratedComponent<JPanel> {
+public class InstallationSelectorView implements DecoratedComponent<JPanel> {
 
 	private final JPanel panel = new JPanel();
-	private final Dao<Installation, Integer> dao;
+	private final InstallationManager installationManager;
 	private final JComboBox<Installation> installations;
 	private final ConfigFactory configFactory;
 
 	private JDialog dialog;
 
 	@Inject
-	InstallationSelector(Dao<Installation, Integer> dao, ConfigFactory configFactory){
-		this.dao = dao;
+	InstallationSelectorView(InstallationManager installationManager, ConfigFactory configFactory){
+		this.installationManager = installationManager;
 		this.configFactory = configFactory;
 
 		panel.setLayout(new BorderLayout());
@@ -70,12 +69,8 @@ public class InstallationSelector implements DecoratedComponent<JPanel> {
 	public void toDialog(){
 		// Load Installations
 		installations.removeAllItems();
-		try {
-			for (Installation installation : dao.queryForAll()){
-				installations.addItem(installation);
-			}
-		} catch (SQLException e) {
-			exceptionDialog(e);
+		for (Installation installation : installationManager.getInstallations()){
+			installations.addItem(installation);
 		}
 
 		// Select currently configured installation
@@ -158,11 +153,6 @@ public class InstallationSelector implements DecoratedComponent<JPanel> {
 		exceptionDialog(e, "Error registering installation");
 	}
 
-	private void exceptionDialog(SQLException e){
-		e.printStackTrace();
-		exceptionDialog(e, "Error saving/loading Installations");
-	}
-
 	private void exceptionDialog(Exception e, String title){
 		JOptionPane.showMessageDialog(panel, e.getMessage(), title, JOptionPane.ERROR_MESSAGE);
 	}
@@ -203,14 +193,12 @@ public class InstallationSelector implements DecoratedComponent<JPanel> {
 				String name = getNewName(null);
 				checkForDuplicates(name, folder);
 				Installation newInstallation = new Installation(name, folder);
-				dao.create(newInstallation);
+				installationManager.update(newInstallation);
 				installations.addItem(newInstallation);
 				installations.setSelectedItem(newInstallation);
 			} catch (FileNotFoundException e1) {
 				// Do Nothing
 			} catch (InvalidGameDataPathException | NoNameEnteredException | DuplicatedFieldException e1) {
-				exceptionDialog(e1);
-			} catch (SQLException e1) {
 				exceptionDialog(e1);
 			}
 		}
@@ -226,12 +214,10 @@ public class InstallationSelector implements DecoratedComponent<JPanel> {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				Installation current = getSelected();
-				dao.delete(current);
+				installationManager.delete(current);
 				installations.removeItem(current);
 			} catch (NoSelectedInstallationException e1) {
 				// Do Nothing
-			} catch (SQLException e1) {
-				exceptionDialog(e1);
 			}
 		}
 
@@ -251,11 +237,9 @@ public class InstallationSelector implements DecoratedComponent<JPanel> {
 				checkForDuplicates(newName, null);
 				current.rename(newName);
 				installations.repaint();
-				dao.update(current);
+				installationManager.update(current);
 			} catch (NoSelectedInstallationException e2) {
 				// Do Nothing
-			} catch (SQLException e1) {
-				exceptionDialog(e1);
 			} catch (NoNameEnteredException | DuplicatedFieldException e1) {
 				exceptionDialog(e1);
 			}

@@ -1,4 +1,6 @@
-package io.andrewohara.tinkertime.models;
+package io.andrewohara.tinkertime.db;
+
+import io.andrewohara.tinkertime.models.ConfigData;
 
 import java.sql.SQLException;
 

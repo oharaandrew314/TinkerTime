@@ -75,7 +75,7 @@ public class ModListCellRenderer extends TaskCallback implements ListCellRendere
 		LinkedList<ImageIcon> icons = new LinkedList<>();
 		icons.add(mod.isEnabled() ? getEnabledIcon() : getDisabledIcon());
 
-		if (mod.isUpdateAvailable()){
+		if (mod.isUpdateAvailable() || !mod.isDownloaded()){
 			icons.add(getUpdateIcon());
 		}
 

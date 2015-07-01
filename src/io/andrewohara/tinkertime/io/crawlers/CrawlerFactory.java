@@ -3,9 +3,6 @@ package io.andrewohara.tinkertime.io.crawlers;
 import io.andrewohara.tinkertime.io.crawlers.pageLoaders.PageLoader;
 import io.andrewohara.tinkertime.models.mod.Mod;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import org.jsoup.nodes.Document;
 
 import com.google.gson.JsonElement;
@@ -32,14 +29,6 @@ public class CrawlerFactory {
 	CrawlerFactory(PageLoader<Document> docLoader, PageLoader<JsonElement> jsonLoader){
 		this.docLoader = docLoader;
 		this.jsonLoader = jsonLoader;
-	}
-
-	public static URL getModuleManagerUrl(){
-		try {
-			return new URL("https", HOST_MODULE_MANAGER, "/jenkins/job/ModuleManager");
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(e); // Programming error if this occurs
-		}
 	}
 
 	public Crawler<?> getCrawler(Mod mod) throws UnsupportedHostException{

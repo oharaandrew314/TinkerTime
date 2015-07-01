@@ -1,7 +1,6 @@
 package io.andrewohara.tinkertime.db;
 
 import io.andrewohara.tinkertime.models.ConfigData;
-import io.andrewohara.tinkertime.models.ConfigFactory;
 import io.andrewohara.tinkertime.models.Installation;
 import io.andrewohara.tinkertime.models.ModFile;
 import io.andrewohara.tinkertime.models.mod.Mod;

@@ -96,6 +96,19 @@ public class AnalyzeModZipTask extends WorkflowTask {
 					}
 				}
 			}
+
+			// If no files found, make third pass to get DLLs in root
+			if (files.isEmpty()){
+				entries = zipFile.entries();
+				for (ZipEntry entry; entries.hasMoreElements(); ){
+					entry = entries.nextElement();
+					if (entry.getName().endsWith(".dll")){
+						Path entryPath = Paths.get(entry.getName());
+						Path path = gameDataPath == null ? entryPath : gameDataPath.relativize(entryPath);
+						files.add(new ModFile(mod, entry.getName(), path));
+					}
+				}
+			}
 		}
 
 		modUpdateCoordinator.updateModFiles(mod, files);

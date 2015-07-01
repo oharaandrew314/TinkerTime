@@ -48,13 +48,13 @@ public class Mod implements Comparable<Mod> {
 
 	@ForeignCollectionField
 	private Collection<ModFile> modFiles = new LinkedList<>();
-	private final Collection<ModFile> cachedModFiles = new LinkedList<>();
+	private Collection<ModFile> cachedModFiles;
 
 	// Required by ormlite
 	Mod() { }
 
 	public Mod(URL url, Installation installation){
-		this.url = url.toString();
+		this.url = url != null ? url.toString() : null;
 		this.installation = installation;
 	}
 
@@ -63,7 +63,7 @@ public class Mod implements Comparable<Mod> {
 		this.creator = creator;
 		this.updatedOn = updatedOn;
 		this.kspVersion = kspVersion;
-		this.modVersion = modVersion.getNormalVersion();
+		this.modVersion = modVersion != null ? modVersion.getNormalVersion() : null;
 	}
 
 	public int getId(){
@@ -85,7 +85,7 @@ public class Mod implements Comparable<Mod> {
 		try {
 			return new URL(url);
 		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);  // Should not happen
+			return null;
 		}
 	}
 
@@ -126,11 +126,12 @@ public class Mod implements Comparable<Mod> {
 	}
 
 	public boolean isDownloaded(){
-		Path zipPath = getZipPath();
-		return zipPath != null && zipPath.toFile().exists();
+		return getZipPath().toFile().exists();
 	}
 
 	public boolean isEnabled(){
+		if (getModFiles().isEmpty()) return false;
+
 		for (ModFile modFile : getModFiles()){
 			if (!modFile.getDestPath().toFile().exists()){
 				return false;
@@ -140,8 +141,8 @@ public class Mod implements Comparable<Mod> {
 	}
 
 	public Collection<ModFile> getModFiles(){
-		if (cachedModFiles.isEmpty()){
-			cachedModFiles.addAll(modFiles);
+		if (cachedModFiles == null){
+			cachedModFiles = new LinkedList<>(modFiles);
 		}
 		return cachedModFiles;
 	}

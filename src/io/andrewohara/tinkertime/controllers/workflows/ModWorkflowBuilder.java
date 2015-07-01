@@ -112,11 +112,12 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	}
 
 	public void addLocalMod(Path zipPath){
-		// Create Placeholder Mod
+		// Show Placeholder Mod
 		addTask(new SaveModTask.FromMod(updateCoordinator, getMod()));
 
 		// Add Mod
 		copy(zipPath, getMod().getZipPath());
+		addTask(new AnalyzeModZipTask(getMod(), updateCoordinator));
 		addTask(new SaveModTask.FromMod(updateCoordinator, getMod()));
 	}
 

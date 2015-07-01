@@ -33,22 +33,27 @@ public class DownloadModImageTask extends FileTransferTask {
 
 	@Override
 	public boolean execute() throws Exception {
-		try (
-				InputStream is = getConnection().getInputStream();
-				ByteArrayOutputStream os = new ByteArrayOutputStream();
-				){
-			transfer(is, os);
-			BufferedImage img = ImageIO.read(new ByteArrayInputStream(os.toByteArray()));
-			img = imageManager.resizeImage(img, imageManager.scaleToFit(img, ModImage.MAX_SIZE));
-			updateCoordinator.updateModImage(crawler.getMod(), img);
+		if (crawler.getImageUrl() != null){
+			try (
+					InputStream is = getConnection().getInputStream();
+					ByteArrayOutputStream os = new ByteArrayOutputStream();
+					){
+				transfer(is, os);
+				BufferedImage img = ImageIO.read(new ByteArrayInputStream(os.toByteArray()));
+				img = imageManager.resizeImage(img, imageManager.scaleToFit(img, ModImage.MAX_SIZE));
+				updateCoordinator.updateModImage(crawler.getMod(), img);
+			}
 		}
-
 		return true;
 	}
 
 	private synchronized URLConnection getConnection() throws IOException{
 		if (connection == null){
-			connection = crawler.getImageUrl().openConnection();
+			try {
+				connection = crawler.getImageUrl().openConnection();
+			} catch (NullPointerException e){
+				throw new IOException(e);
+			}
 		}
 		return connection;
 	}

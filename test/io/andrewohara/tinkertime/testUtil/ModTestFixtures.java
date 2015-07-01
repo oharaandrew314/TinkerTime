@@ -98,6 +98,10 @@ public class ModTestFixtures {
 		return new MockMod(13, "https://ksp.sarbian.com/jenkins/job/ModuleManager", "ModuleManager", "ksp.sarbian.com", getDate(2015, 1, 23), "2.5.12", null, testInstallation);
 	}
 
+	public Mod getKSRoverWheelSounds(){
+		return new MockMod(14, "https://kerbalstuff.com/mod/224", "Rover Wheel Sounds", "pizzaoverhead", Calendar.getInstance().getTime(), "1.2", "1.0", testInstallation);
+	}
+
 	//////////////////
 	// Mock Objects //
 	//////////////////

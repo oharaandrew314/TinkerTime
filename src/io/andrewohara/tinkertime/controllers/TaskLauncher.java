@@ -2,7 +2,7 @@ package io.andrewohara.tinkertime.controllers;
 
 import io.andrewohara.common.workflows.tasks.WorkflowBuilder;
 import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinatorImpl;
-import io.andrewohara.tinkertime.models.ConfigFactory;
+import io.andrewohara.tinkertime.db.ConfigFactory;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;

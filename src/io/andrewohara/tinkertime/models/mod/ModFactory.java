@@ -1,11 +1,12 @@
 package io.andrewohara.tinkertime.models.mod;
 
 import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinatorImpl;
+import io.andrewohara.tinkertime.db.ConfigFactory;
 import io.andrewohara.tinkertime.db.ModLoader;
-import io.andrewohara.tinkertime.models.ConfigFactory;
 import io.andrewohara.tinkertime.models.Installation;
 
 import java.net.URL;
+import java.nio.file.Path;
 
 import com.google.inject.Inject;
 
@@ -26,8 +27,9 @@ public class ModFactory {
 		return configFactory.getConfig().getSelectedInstallation();
 	}
 
-	public Mod newLocalMod(){
+	public Mod newLocalMod(Path path){
 		Mod mod = new Mod(null, getInstallation());
+		mod.update(path.getFileName().toString(), null, null, null, null);
 		updateCoordinator.updateMod(mod);
 		return mod;
 	}

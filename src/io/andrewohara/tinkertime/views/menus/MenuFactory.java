@@ -1,9 +1,9 @@
 package io.andrewohara.tinkertime.views.menus;
 
 import io.andrewohara.tinkertime.controllers.ModManager;
+import io.andrewohara.tinkertime.db.ConfigFactory;
 import io.andrewohara.tinkertime.io.kspLauncher.GameLauncher;
-import io.andrewohara.tinkertime.models.ConfigFactory;
-import io.andrewohara.tinkertime.views.InstallationSelector;
+import io.andrewohara.tinkertime.views.InstallationSelectorView;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -17,10 +17,10 @@ public class MenuFactory {
 	private final ModManager mm;
 	private final ConfigFactory configFactory;
 	private final GameLauncher gameLauncher;
-	private final InstallationSelector installationSelector;
+	private final InstallationSelectorView installationSelector;
 
 	@Inject
-	MenuFactory(ModManager mm, ConfigFactory configFactory, GameLauncher gameLauncher, InstallationSelector installationSelector){
+	MenuFactory(ModManager mm, ConfigFactory configFactory, GameLauncher gameLauncher, InstallationSelectorView installationSelector){
 		this.mm = mm;
 		this.configFactory = configFactory;
 		this.gameLauncher = gameLauncher;

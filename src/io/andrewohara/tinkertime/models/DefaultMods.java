@@ -1,26 +1,26 @@
 package io.andrewohara.tinkertime.models;
 
+import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory;
+import io.andrewohara.tinkertime.models.mod.Mod;
 
-// TODO Re-integrate
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Collection;
+import java.util.Collections;
+
+
 public class DefaultMods {
 
-	/*
-	private static Collection<Mod> getDefaults() {
-		Mod mm = new Mod(3141, "ModuleManager", null, CrawlerFactory.getModuleManagerUrl(), null, null, null);
-		return Collections.singleton(mm);
-	}
-
-	public static void ensureDefaults(Collection<Mod> mods) {
-		// Ensure Existence of Default Mods
-		for (Mod builtIn : getDefaults()) {
-			if (!mods.contains(builtIn)) {
-				mods.add(builtIn);
-			}
+	public static URL getModuleManagerUrl(){
+		try {
+			return new URL("https", CrawlerFactory.HOST_MODULE_MANAGER, "/jenkins/job/ModuleManager");
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e); // Programming error if this occurs
 		}
 	}
 
-	public static boolean isBuiltIn(Mod mod) {
-		return getDefaults().contains(mod);
+	public static Collection<Mod> getDefaults(Installation installation) {
+		Mod mod = new Mod(getModuleManagerUrl(), installation);
+		return Collections.singleton(mod);
 	}
-	 */
 }

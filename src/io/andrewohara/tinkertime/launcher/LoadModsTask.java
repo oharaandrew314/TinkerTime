@@ -1,7 +1,7 @@
 package io.andrewohara.tinkertime.launcher;
 
 import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinatorImpl;
-import io.andrewohara.tinkertime.models.ConfigFactory;
+import io.andrewohara.tinkertime.db.ConfigFactory;
 
 import com.google.inject.Inject;
 

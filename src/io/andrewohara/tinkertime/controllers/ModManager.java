@@ -81,7 +81,7 @@ public class ModManager extends Listenable<TaskCallback> {
 	}
 
 	public void addModZip(Path zipPath){
-		Mod newMod = modFactory.newLocalMod();
+		Mod newMod = modFactory.newLocalMod(zipPath);
 		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder(newMod);
 		builder.addLocalMod(zipPath);
 		taskLauncher.submitDownloadWorkflow(builder);

@@ -1,9 +1,9 @@
 package io.andrewohara.tinkertime.launcher;
 
 import io.andrewohara.tinkertime.controllers.ModManager;
+import io.andrewohara.tinkertime.db.ConfigFactory;
 import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory.UnsupportedHostException;
 import io.andrewohara.tinkertime.models.ConfigData;
-import io.andrewohara.tinkertime.models.ConfigFactory;
 
 import java.net.MalformedURLException;
 

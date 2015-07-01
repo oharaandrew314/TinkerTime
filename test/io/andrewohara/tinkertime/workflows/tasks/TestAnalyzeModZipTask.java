@@ -95,6 +95,27 @@ public class TestAnalyzeModZipTask {
 				);
 	}
 
+	@Test
+	public void testRoverWheelSounds() throws IOException {
+		testFiles(
+				modFixtures.getKSRoverWheelSounds(),
+				"WheelSounds/ModuleManager_WheelSounds.cfg",
+				"WheelSounds/Plugins/WheelSounds.dll",
+				"WheelSounds/Sounds/RoveMaxXL3.wav",
+				"WheelSounds/Sounds/RoveMaxS2.wav",
+				"WheelSounds/Sounds/RoveMaxS1.wav",
+				"WheelSounds/Sounds/KerbalMotionTR-2L.wav"
+				);
+	}
+
+	@Test
+	public void testModuleManager() throws IOException {
+		testFiles(
+				modFixtures.getJenkinsModuleManager(),
+				"ModuleManager.2.6.6.dll"
+				);
+	}
+
 	//////////////////
 	// Mock Objects //
 	//////////////////

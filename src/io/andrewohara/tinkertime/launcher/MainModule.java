@@ -3,7 +3,11 @@ package io.andrewohara.tinkertime.launcher;
 import io.andrewohara.common.OS;
 import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinator;
 import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinatorImpl;
+import io.andrewohara.tinkertime.db.ConfigFactory;
+import io.andrewohara.tinkertime.db.DaoConfigFactory;
+import io.andrewohara.tinkertime.db.DaoInstallationManager;
 import io.andrewohara.tinkertime.db.DaoModLoader;
+import io.andrewohara.tinkertime.db.InstallationManager;
 import io.andrewohara.tinkertime.db.ModLoader;
 import io.andrewohara.tinkertime.io.crawlers.pageLoaders.JsonLoader;
 import io.andrewohara.tinkertime.io.crawlers.pageLoaders.PageLoader;
@@ -13,8 +17,6 @@ import io.andrewohara.tinkertime.io.kspLauncher.LinuxExecStrategy;
 import io.andrewohara.tinkertime.io.kspLauncher.OsxExecStrategy;
 import io.andrewohara.tinkertime.io.kspLauncher.WindowsExecStrategy;
 import io.andrewohara.tinkertime.models.ConfigData;
-import io.andrewohara.tinkertime.models.ConfigFactory;
-import io.andrewohara.tinkertime.models.DaoConfigFactory;
 import io.andrewohara.tinkertime.models.Installation;
 import io.andrewohara.tinkertime.models.ModFile;
 import io.andrewohara.tinkertime.models.ModImage;
@@ -51,7 +53,7 @@ public class MainModule extends AbstractModule {
 		bind(ConfigFactory.class).to(DaoConfigFactory.class);
 		bind(ModLoader.class).to(DaoModLoader.class);
 		bind(ModUpdateCoordinator.class).to(ModUpdateCoordinatorImpl.class);
-		getModsDao();
+		bind(InstallationManager.class).to(DaoInstallationManager.class);
 	}
 
 	private Class<? extends GameExecStrategy> getExecStrategyType(){

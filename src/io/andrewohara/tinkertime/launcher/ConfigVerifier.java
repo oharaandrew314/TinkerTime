@@ -1,17 +1,17 @@
 package io.andrewohara.tinkertime.launcher;
 
-import io.andrewohara.tinkertime.models.ConfigFactory;
-import io.andrewohara.tinkertime.views.InstallationSelector;
+import io.andrewohara.tinkertime.db.ConfigFactory;
+import io.andrewohara.tinkertime.views.InstallationSelectorView;
 
 import com.google.inject.Inject;
 
 class ConfigVerifier implements Runnable {
 
 	private final ConfigFactory factory;
-	private final InstallationSelector selector;
+	private final InstallationSelectorView selector;
 
 	@Inject
-	ConfigVerifier(ConfigFactory factory, InstallationSelector selector){
+	ConfigVerifier(ConfigFactory factory, InstallationSelectorView selector){
 		this.factory = factory;
 		this.selector = selector;
 	}

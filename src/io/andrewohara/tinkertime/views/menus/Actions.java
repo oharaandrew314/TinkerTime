@@ -6,13 +6,13 @@ import io.andrewohara.common.views.Dialogs;
 import io.andrewohara.common.views.UrlLabels;
 import io.andrewohara.tinkertime.controllers.ModExceptions.NoModSelectedException;
 import io.andrewohara.tinkertime.controllers.ModManager;
+import io.andrewohara.tinkertime.db.ConfigFactory;
 import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory;
 import io.andrewohara.tinkertime.io.kspLauncher.GameLauncher;
 import io.andrewohara.tinkertime.launcher.TinkerTimeLauncher;
-import io.andrewohara.tinkertime.models.ConfigFactory;
 import io.andrewohara.tinkertime.models.mod.Mod;
 import io.andrewohara.tinkertime.views.FileChoosers;
-import io.andrewohara.tinkertime.views.InstallationSelector;
+import io.andrewohara.tinkertime.views.InstallationSelectorView;
 import io.andrewohara.tinkertime.views.TinkerDialogs;
 
 import java.awt.Desktop;
@@ -381,9 +381,9 @@ class Actions {
 
 	static class LaunchInstallationSelector extends TinkerAction {
 
-		private final InstallationSelector selector;
+		private final InstallationSelectorView selector;
 
-		public LaunchInstallationSelector(JComponent parent, ModManager mm, InstallationSelector selector) {
+		public LaunchInstallationSelector(JComponent parent, ModManager mm, InstallationSelectorView selector) {
 			super("Select KSP Installation", "icon/glyphicons_342_hdd.png", parent, mm);
 			this.selector = selector;
 		}
