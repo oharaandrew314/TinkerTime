@@ -48,6 +48,7 @@ public class Mod implements Comparable<Mod> {
 
 	@ForeignCollectionField
 	private Collection<ModFile> modFiles = new LinkedList<>();
+	private final Collection<ModFile> cachedModFiles = new LinkedList<>();
 
 	// Required by ormlite
 	Mod() { }
@@ -130,7 +131,7 @@ public class Mod implements Comparable<Mod> {
 	}
 
 	public boolean isEnabled(){
-		for (ModFile modFile : modFiles){
+		for (ModFile modFile : getModFiles()){
 			if (!modFile.getDestPath().toFile().exists()){
 				return false;
 			}
@@ -139,7 +140,10 @@ public class Mod implements Comparable<Mod> {
 	}
 
 	public Collection<ModFile> getModFiles(){
-		return modFiles;
+		if (cachedModFiles.isEmpty()){
+			cachedModFiles.addAll(modFiles);
+		}
+		return cachedModFiles;
 	}
 
 	public void setModFiles(Collection<ModFile> modFiles){

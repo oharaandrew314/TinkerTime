@@ -22,7 +22,6 @@ import io.andrewohara.tinkertime.models.mod.Mod;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -180,11 +179,6 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 
 		Path zipPath = getMod().getZipPath();
 		try (ZipFile zipFile = new ZipFile(zipPath.toFile())){
-
-			for (ZipEntry entry : Collections.list(zipFile.entries())){
-				System.out.println(entry.getName());
-			}
-
 			Map<Path, ZipEntry> zipData = new LinkedHashMap<>();
 			for (ModFile modFile : getMod().getModFiles()){
 				zipData.put(modFile.getDestPath(), modFile.getEntry(zipFile));
