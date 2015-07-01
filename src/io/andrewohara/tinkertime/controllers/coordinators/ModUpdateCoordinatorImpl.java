@@ -88,8 +88,6 @@ public class ModUpdateCoordinatorImpl extends TaskCallback implements ModUpdateH
 			Readme readme = mod.setReadmeText(readmeText);
 			readmesDao.createOrUpdate(readme);
 
-			mod.setUpdateAvailable(false);  // TODO See if this can be removed.  Crawler should now set this
-
 			updateMod(mod);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
