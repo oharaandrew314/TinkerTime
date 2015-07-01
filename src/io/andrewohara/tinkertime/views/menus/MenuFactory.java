@@ -66,11 +66,10 @@ public class MenuFactory {
 		updateMenu.add(new Actions.UpdateTinkerTime(menuBar, mm).withoutIcon());
 		menuBar.add(updateMenu);
 
-		//TODO Update to new Version
-		//JMenu importExportMenu = new JMenu("Import/Export");
-		//importExportMenu.add(new Actions.ExportMods(menuBar, mm).withoutIcon());
-		//importExportMenu.add(new Actions.ImportMods(menuBar, mm).withoutIcon());
-		//menuBar.add(importExportMenu);
+		JMenu importExportMenu = new JMenu("Import/Export");
+		importExportMenu.add(new Actions.ExportMods(menuBar, mm).withoutIcon());
+		importExportMenu.add(new Actions.ImportMods(menuBar, mm).withoutIcon());
+		menuBar.add(importExportMenu);
 
 		JMenu helpMenu = new JMenu("Help");
 		helpMenu.add(new Actions.AboutAction(menuBar, mm).withoutIcon());

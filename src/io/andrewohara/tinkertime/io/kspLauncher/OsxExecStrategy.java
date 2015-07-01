@@ -10,7 +10,7 @@ public class OsxExecStrategy extends GameExecStrategy {
 
 	@Override
 	protected List<String> getCommands(ConfigData config) {
-		Path path = config.getSelectedInstallation().getPath().resolve("../KSP.app");
+		Path path = config.getSelectedInstallation().getGameDataPath().resolve("../KSP.app");
 		return Arrays.asList("open", path.toString());
 	}
 }

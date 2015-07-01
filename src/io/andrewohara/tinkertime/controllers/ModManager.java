@@ -96,20 +96,17 @@ public class ModManager extends Listenable<TaskCallback> {
 	}
 
 	public void toggleMod(final Mod mod) {
-		//FIXME not implemented
-		/*
-		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder();
+		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder(mod);
 		try {
-			if (modLoader.isEnabled(mod)){
-				builder.disableMod(mod);
+			if (mod.isEnabled()){
+				builder.disableMod();
 			} else {
-				builder.enableMod(mod);
+				builder.enableMod();
 			}
-			submitEnablerWorkflow(builder, mod);
+			taskLauncher.submitFileWorkflow(builder);
 		} catch (ModNotDownloadedException e){
 			// Ignore user input if mod not downloaded
 		}
-		 */
 	}
 
 	public void deleteMod(Mod mod) throws CannotDeleteModException {
@@ -142,16 +139,16 @@ public class ModManager extends Listenable<TaskCallback> {
 		}
 	}
 
-	//FIXME Update to new version
-	/*
+
 	public void exportEnabledMods(Path path){
-		modLoader.exportEnabledMods(path);
+		//FIXME Update to new version
+		//modLoader.exportEnabledMods(path);
 	}
 
 	public void importMods(Path path){
-		modLoader.importMods(path);
+		//FIXME Update to new version
+		//modLoader.importMods(path);
 	}
-	 */
 
 	public void tryUpdateModManager() throws UnsupportedHostException, MalformedURLException {
 		/* TODO Reimplement.  Try to keep TT as a mod in the DB, but have an internal=false flag, or something

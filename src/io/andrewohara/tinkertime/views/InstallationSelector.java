@@ -132,7 +132,7 @@ public class InstallationSelector implements DecoratedComponent<JPanel> {
 	private String getNewName(Installation installation) throws NoNameEnteredException{
 		String message = "Enter the new name for the installation";
 		if (installation != null){
-			message = String.format("%s at %s", message, installation.getPath());
+			message = String.format("%s at %s", message, installation.getGameDataPath());
 		}
 
 		String newName = JOptionPane.showInputDialog(panel, message, "Rename Installation", JOptionPane.QUESTION_MESSAGE);
@@ -179,7 +179,7 @@ public class InstallationSelector implements DecoratedComponent<JPanel> {
 		for (Installation existing : getChoices()) {
 			if (name != null && existing.getName().equals(name)){
 				throw new DuplicatedFieldException("Name");
-			} else if (path != null && existing.getPath().equals(path)){
+			} else if (path != null && existing.getGameDataPath().equals(path)){
 				throw new DuplicatedFieldException("GameData Path");
 			}
 		}

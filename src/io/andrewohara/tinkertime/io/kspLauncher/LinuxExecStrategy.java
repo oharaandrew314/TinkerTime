@@ -13,7 +13,7 @@ public class LinuxExecStrategy extends GameExecStrategy {
 
 	@Override
 	protected List<String> getCommands(ConfigData config) {
-		Path path = config.getSelectedInstallation().getPath();
+		Path path = config.getSelectedInstallation().getGameDataPath();
 		path = path.resolve(use64Bit() ? "../KSP.x86_64" : "../KSP.x86");
 		return Arrays.asList(path.toString());
 	}

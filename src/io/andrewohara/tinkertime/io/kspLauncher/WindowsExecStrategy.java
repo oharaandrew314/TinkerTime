@@ -9,6 +9,6 @@ public class WindowsExecStrategy extends GameExecStrategy {
 
 	@Override
 	protected List<String> getCommands(ConfigData config) {
-		return Arrays.asList(config.getSelectedInstallation().getPath().resolve("../KSP.exe").toString());
+		return Arrays.asList(config.getSelectedInstallation().getGameDataPath().resolve("../KSP.exe").toString());
 	}
 }

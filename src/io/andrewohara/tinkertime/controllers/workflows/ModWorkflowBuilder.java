@@ -12,13 +12,23 @@ import io.andrewohara.tinkertime.controllers.workflows.tasks.MarkModUpdatedTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.RemoveModTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.RunCrawlerTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.SaveModTask;
+import io.andrewohara.tinkertime.db.ModLoader;
 import io.andrewohara.tinkertime.io.crawlers.Crawler;
 import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory;
 import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory.UnsupportedHostException;
+import io.andrewohara.tinkertime.models.ModFile;
 import io.andrewohara.tinkertime.models.mod.Mod;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import com.google.inject.Inject;
 
@@ -26,14 +36,16 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 
 	private final CrawlerFactory crawlerService;
 	private final ModUpdateCoordinator updateCoordinator;
+	private final ModLoader modLoader;
 
 	private Crawler<?> cachedCrawler;
 
 	@Inject
-	public ModWorkflowBuilder(CrawlerFactory crawlerService, ModUpdateCoordinator updateCoordinator, Mod mod) {
+	public ModWorkflowBuilder(CrawlerFactory crawlerService, ModUpdateCoordinator updateCoordinator, ModLoader modLoader, Mod mod) {
 		super(mod);
 		this.crawlerService = crawlerService;
 		this.updateCoordinator = updateCoordinator;
+		this.modLoader = modLoader;
 	}
 
 	private Mod getMod(){
@@ -49,7 +61,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	 * @throws UnsupportedHostException
 	 */
 	public void checkForUpdates(boolean markIfAvailable) throws UnsupportedHostException {
-		addTask(new CheckForUpdateTask(getCrawler(), getMod().getModVersion(), getMod().getUpdatedOn()));  // TODO Just pass in mod
+		addTask(new CheckForUpdateTask(getCrawler()));
 		if (markIfAvailable){
 			addTask(new MarkModUpdatedTask(updateCoordinator, getMod()));
 		}
@@ -140,53 +152,47 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	}
 
 	public void disableMod() throws ModNotDownloadedException{
-		//TODO Reimplement disableMod
-		/*
-		Set<Path> fileDestPaths = modLoader.getModFileDestPaths(mod);
+		Set<Path> modDestPaths = getModDestPaths(getMod());
 
 		// Check if any files for this mod are dependencies of other mods.
 		// All files which are a dependency will not be deleted
 		for (Mod otherMod : modLoader.getMods()){
-			try{
-				if (!otherMod.equals(mod) && modLoader.isEnabled(otherMod)){
-					fileDestPaths.removeAll(modLoader.getModFileDestPaths(otherMod));
-				}
-			} catch (ModNotDownloadedException e){
-				// Ignore
+			if (!otherMod.equals(getMod()) && otherMod.isEnabled()){
+				modDestPaths.removeAll(getModDestPaths(otherMod));
 			}
 		}
 
-		// Delete the files that do not conflict with other enabled mods
-		for (Path filePath : fileDestPaths){
-			delete(filePath);
-		}
-
-		addTask(new SaveModTask.FromMod(updateCoordinator, mod));
-		 */
+		delete(modDestPaths);
+		cleanupDir(getMod().getInstallation().getGameDataPath());
 	}
 
-	public void enableMod(Mod mod) throws ModNotDownloadedException {
-		//TODO Reimplement enableMod
-		/*
-		try {
-			Path zipPath = modMetaHelper.getZipPath(mod);
-			if (zipPath == null){
-				throw new ModNotDownloadedException(mod, "mod has no zip path");
-			}
-
-			if (zipPath.toString().endsWith(".zip")){
-				// If mod is a zip file, unzip it
-				unzip(zipPath, modLoader.getStructure(mod).getZipEntries(), config.getGameDataPath());
-			} else {
-				// Otherwise, it is just a file.  Copy it
-				copy(zipPath, config.getGameDataPath());
-			}
-
-			addTask(new SaveModTask.FromMod(updateCoordinator, mod));
-
-		} catch (IOException e) {
-			throw new ModNotDownloadedException(mod, e.toString());
+	private Set<Path> getModDestPaths(Mod mod){
+		Set<Path> fileDestPaths = new LinkedHashSet<>();
+		for (ModFile modFile : mod.getModFiles()){
+			fileDestPaths.add(modFile.getDestPath());
 		}
-		 */
+		return fileDestPaths;
+	}
+
+	public void enableMod() throws ModNotDownloadedException {
+		if (!getMod().isDownloaded()){
+			throw new ModNotDownloadedException(getMod(), "mod has no zip path");
+		}
+
+		Path zipPath = getMod().getZipPath();
+		try (ZipFile zipFile = new ZipFile(zipPath.toFile())){
+
+			for (ZipEntry entry : Collections.list(zipFile.entries())){
+				System.out.println(entry.getName());
+			}
+
+			Map<Path, ZipEntry> zipData = new LinkedHashMap<>();
+			for (ModFile modFile : getMod().getModFiles()){
+				zipData.put(modFile.getDestPath(), modFile.getEntry(zipFile));
+			}
+			unzip(zipPath, zipData);
+		} catch (IOException e) {
+			throw new ModNotDownloadedException(getMod(), "Error opening zip");
+		}
 	}
 }

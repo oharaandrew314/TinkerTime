@@ -40,7 +40,7 @@ public class Installation {
 		this.name = name;
 	}
 
-	public Path getPath(){
+	public Path getGameDataPath(){
 		return Paths.get(path);
 	}
 	public void setPath(Path path) throws InvalidGameDataPathException {
@@ -61,7 +61,7 @@ public class Installation {
 	}
 
 	private Path getMetaPath(){
-		return getPath().getParent().resolve(TinkerTimeLauncher.SAFE_NAME);
+		return getGameDataPath().getParent().resolve(TinkerTimeLauncher.SAFE_NAME);
 	}
 
 	public Path getModZipsPath(){

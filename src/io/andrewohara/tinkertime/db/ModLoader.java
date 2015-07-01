@@ -11,6 +11,7 @@ public interface ModLoader extends ModUpdateHandler {
 
 	public Installation getInstallation();
 	public List<Mod> getMods();
+	public Mod get(int id);
 	public Mod getByUrl(URL url);
 
 }

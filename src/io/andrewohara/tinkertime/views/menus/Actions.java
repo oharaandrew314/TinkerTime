@@ -4,8 +4,8 @@ import io.andrewohara.common.Util;
 import io.andrewohara.common.content.ImageManager;
 import io.andrewohara.common.views.Dialogs;
 import io.andrewohara.common.views.UrlLabels;
-import io.andrewohara.tinkertime.controllers.ModManager;
 import io.andrewohara.tinkertime.controllers.ModExceptions.NoModSelectedException;
+import io.andrewohara.tinkertime.controllers.ModManager;
 import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory;
 import io.andrewohara.tinkertime.io.kspLauncher.GameLauncher;
 import io.andrewohara.tinkertime.launcher.TinkerTimeLauncher;
@@ -273,8 +273,6 @@ class Actions {
 
 	}
 
-	//TODO Update to new version
-	/*
 	@SuppressWarnings("serial")
 	static class ExportMods extends TinkerAction {
 
@@ -284,13 +282,15 @@ class Actions {
 
 		@Override
 		protected void call() throws Exception {
+			/* TODO reimplement export mods chooser
 			mm.exportEnabledMods(FileChoosers.chooseJsonFile(true));
 			JOptionPane.showMessageDialog(
-				parent,
-				"Enabled mod data has been exported.",
-				"Exported",
-				JOptionPane.INFORMATION_MESSAGE
-			);
+					parent,
+					"Enabled mod data has been exported.",
+					"Exported",
+					JOptionPane.INFORMATION_MESSAGE
+					);
+			 */
 		}
 	}
 
@@ -303,16 +303,17 @@ class Actions {
 
 		@Override
 		protected void call() throws Exception {
+			/*  TODO reimplement import mods chooser
 			mm.importMods(FileChoosers.chooseJsonFile(false));
 			JOptionPane.showMessageDialog(
-				parent,
-				"The Mods have been imported.",
-				"Imported",
-				JOptionPane.INFORMATION_MESSAGE
-			);
+					parent,
+					"The Mods have been imported.",
+					"Imported",
+					JOptionPane.INFORMATION_MESSAGE
+					);
+			 */
 		}
 	}
-	 */
 
 	@SuppressWarnings("serial")
 	static class UpdateTinkerTime extends TinkerAction {
@@ -373,7 +374,7 @@ class Actions {
 
 		@Override
 		protected void call() throws Exception {
-			Desktop.getDesktop().open(configFactory.getConfig().getSelectedInstallation().getPath().toFile());
+			Desktop.getDesktop().open(configFactory.getConfig().getSelectedInstallation().getGameDataPath().toFile());
 		}
 
 	}

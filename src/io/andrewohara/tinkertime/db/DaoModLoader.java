@@ -3,6 +3,7 @@ package io.andrewohara.tinkertime.db;
 import io.andrewohara.tinkertime.models.ConfigData;
 import io.andrewohara.tinkertime.models.ConfigFactory;
 import io.andrewohara.tinkertime.models.Installation;
+import io.andrewohara.tinkertime.models.ModFile;
 import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.net.URL;
@@ -17,14 +18,24 @@ import com.j256.ormlite.dao.Dao;
 public class DaoModLoader implements ModLoader {
 
 	private final Dao<Mod, Integer> modDao;
+	private final Dao<ModFile, Integer> modFilesDao;
 	private final Dao<Installation, Integer> installationDao;
 	private final ConfigFactory configFactory;
 
 	@Inject
-	DaoModLoader(Dao<Mod, Integer> modDao, Dao<Installation, Integer> installationDao, ConfigFactory configFactory){
+	DaoModLoader(Dao<Mod, Integer> modDao, Dao<ModFile, Integer> modFilesDao, Dao<Installation, Integer> installationDao, ConfigFactory configFactory){
 		this.modDao = modDao;
+		this.modFilesDao = modFilesDao;
 		this.installationDao = installationDao;
 		this.configFactory = configFactory;
+	}
+
+	public Mod get(int id){
+		try {
+			return modDao.queryForId(id);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
@@ -39,6 +50,9 @@ public class DaoModLoader implements ModLoader {
 	@Override
 	public void deleteMod(Mod mod) {
 		try {
+			for (ModFile modFile : mod.getModFiles()){
+				modFilesDao.delete(modFile);
+			}
 			modDao.delete(mod);
 			Installation installation = getInstallation();
 			installation.unlinkMod(mod);

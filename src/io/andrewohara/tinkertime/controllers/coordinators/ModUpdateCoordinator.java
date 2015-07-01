@@ -45,14 +45,14 @@ public class ModUpdateCoordinator extends TaskCallback implements ModUpdateHandl
 
 	@Override
 	public void updateMod(Mod mod) {
-		modSelectorPanelFactory.get().updateMod(mod);
 		modLoader.updateMod(mod);
+		modSelectorPanelFactory.get().updateMod(mod);
 	}
 
 	@Override
 	public void deleteMod(Mod mod) {
-		modSelectorPanelFactory.get().deleteMod(mod);
 		modLoader.deleteMod(mod);
+		modSelectorPanelFactory.get().deleteMod(mod);
 	}
 
 	@Override
@@ -62,10 +62,13 @@ public class ModUpdateCoordinator extends TaskCallback implements ModUpdateHandl
 
 	public void updateModFiles(Mod mod, Collection<ModFile> modFiles){
 		try {
-			modFilesDao.delete(modFilesDao.queryForEq("mod_id", mod));
+			modFilesDao.delete(mod.getModFiles());
 			for (ModFile newFile : modFiles){
 				modFilesDao.create(newFile);
 			}
+			mod.setModFiles(modFiles);
+			mod.setUpdateAvailable(false);
+			updateMod(mod);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}

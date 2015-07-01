@@ -34,7 +34,7 @@ public class DownloadModAssetTask extends FileTransferTask {
 	}
 
 	private Path getDest() throws IOException{
-		Mod mod = crawler.getUpdatedMod();
+		Mod mod = crawler.getMod();
 		switch(type){
 		case File: return mod.getZipPath();
 		case Image: return mod.getImagePath();
@@ -54,7 +54,6 @@ public class DownloadModAssetTask extends FileTransferTask {
 			// Do Nothing
 		}
 
-		setResult(crawler.getUpdatedMod());
 		return true;
 	}
 

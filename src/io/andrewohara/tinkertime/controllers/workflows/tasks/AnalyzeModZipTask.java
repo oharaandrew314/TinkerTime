@@ -38,88 +38,69 @@ public class AnalyzeModZipTask extends WorkflowTask {
 			throw new FileNotFoundException(zipPath.toString());
 		}
 
-		if (!isZip()){
-			files.add(new ModFile(mod, zipPath.getFileName(), Paths.get("/"), false));
-		} else {
-			try(ZipFile zipFile = new ZipFile(zipPath.toFile())){
-				Path gameDataPath = null;
+		try(ZipFile zipFile = new ZipFile(zipPath.toFile())){
+			Path gameDataPath = null;
 
-				//Make first pass of entries to get key information
-				Enumeration<? extends ZipEntry> entries = zipFile.entries();
+			//Make first pass of entries to get key information
+			Enumeration<? extends ZipEntry> entries = zipFile.entries();
+			for (ZipEntry entry; entries.hasMoreElements(); ){
+				entry = entries.nextElement();
+
+				// Find Gamedata path
+				if (gameDataPath == null && entry.getName().toLowerCase().contains("gamedata")){
+
+					// Once a candidate has been found, find the exact path to the folder
+					Path tempPath = Paths.get(entry.getName());
+					while(tempPath != null && gameDataPath == null){
+						if (tempPath.getFileName().toString().toLowerCase().equals("gamedata")){
+							gameDataPath = tempPath;
+						} else {
+							tempPath = tempPath.getParent();
+						}
+					}
+				}
+
+				/* TODO reimplement readmeText
+				// Find Readme text
+				if (readmeText == null && !entry.isDirectory() && entry.getName().toLowerCase().contains("readme")){
+					try(StringWriter writer = new StringWriter(); InputStream is = zipFile.getInputStream(entry)){
+						IOUtils.copy(is, writer);
+						readmeText = writer.toString();
+					} catch (IOException e) {}
+				}
+				 */
+			}
+
+			// Make second pass of entries to get all Mod Files
+			entries = zipFile.entries();
+			if (gameDataPath == null){
+				// If no gameDataPath, get all files with a path length of at least 2.
+				// This is because, we only get files which are within folders in the root of the zip
 				for (ZipEntry entry; entries.hasMoreElements(); ){
 					entry = entries.nextElement();
-
-					// Find Gamedata path
-					if (gameDataPath == null && entry.getName().toLowerCase().contains("gamedata")){
-
-						// Once a candidate has been found, find the exact path to the folder
-						Path tempPath = Paths.get(entry.getName());
-						while(tempPath != null && gameDataPath == null){
-							if (tempPath.getFileName().toString().toLowerCase().equals("gamedata")){
-								gameDataPath = tempPath;
-							} else {
-								tempPath = tempPath.getParent();
-							}
-						}
+					Path entryPath = Paths.get(entry.getName());
+					if (!entry.isDirectory() && entryPath.getNameCount() >= 2){
+						files.add(new ModFile(mod, entry.getName(), entryPath));
 					}
-
-					/* TODO reimplement readmeText
-					// Find Readme text
-					if (readmeText == null && !entry.isDirectory() && entry.getName().toLowerCase().contains("readme")){
-						try(StringWriter writer = new StringWriter(); InputStream is = zipFile.getInputStream(entry)){
-							IOUtils.copy(is, writer);
-							readmeText = writer.toString();
-						} catch (IOException e) {}
-					}
-					 */
 				}
-
-				// Make second pass of entries to get all Mod Files
-				entries = zipFile.entries();
-				if (gameDataPath == null){
-					// If no gameDataPath, get all files with a path length of at least 2.
-					// This is because, we only get files which are within folders in the root of the zip
-					for (ZipEntry entry; entries.hasMoreElements(); ){
-						entry = entries.nextElement();
-						Path entryPath = Paths.get(entry.getName());
-						if (entryPath.getNameCount() >= 2){
-							//zipEntries.put(entryPath, entry);
-							files.add(new ModFile(mod, entryPath, entryPath));
-						}
-					}
-				} else {
-					// Get all files within the GameData directory
-					for (ZipEntry entry; entries.hasMoreElements(); ){
-						entry = entries.nextElement();
-						Path entryPath = Paths.get(entry.getName());
-						if (
-								entryPath.startsWith(gameDataPath) && !entryPath.equals(gameDataPath) &&
-								!(entry.getName().contains("ModuleManager") && entry.getName().endsWith(".dll"))
-								){
-							//zipEntries.put(gameDataPath.relativize(entryPath), entry);
-							files.add(new ModFile(mod, entryPath, gameDataPath.relativize(entryPath)));
-						}
+			} else {
+				// Get all files within the GameData directory
+				for (ZipEntry entry; entries.hasMoreElements(); ){
+					entry = entries.nextElement();
+					Path entryPath = Paths.get(entry.getName());
+					if (
+							!entry.isDirectory() &&
+							entryPath.startsWith(gameDataPath) && !entryPath.equals(gameDataPath) &&
+							!(entry.getName().contains("ModuleManager") && entry.getName().endsWith(".dll"))
+							){
+						files.add(new ModFile(mod, entry.getName(), gameDataPath.relativize(entryPath)));
 					}
 				}
 			}
 		}
-
-		/*
-		// Ensure that all folders added to zipEntries
-		for (Path path : new LinkedHashSet<Path>(zipEntries.keySet())){
-			while(path.getParent() != null){
-				path = path.getParent();
-				zipEntries.put(path, null);
-			}
-		}
-		 */
 
 		modUpdateCoordinator.updateModFiles(mod, files);
 		return true;
-	}
-
-	private boolean isZip(){
-		return zipPath.toString().endsWith(".zip");
 	}
 
 	@Override

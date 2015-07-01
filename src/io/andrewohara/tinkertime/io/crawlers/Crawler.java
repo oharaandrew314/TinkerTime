@@ -124,13 +124,13 @@ public abstract class Crawler<T> {
 		this.assetSelector = assetSelector;
 	}
 
-	public Mod getOriginalMod(){
+	public Mod getMod(){
 		return mod;
 	}
 
-	public Mod getUpdatedMod() throws IOException {
+	public void updatedMod() throws IOException {
 		Date updatedOn = getUpdatedOn() != null ? getUpdatedOn() : Calendar.getInstance().getTime();
-		return new Mod(mod.getId(), getName(), getCreator(), getPageUrl(), updatedOn, getKspVersion(), getVersion(), getOriginalMod().getInstallation());
+		mod.update(getName(), getCreator(), updatedOn, getVersion(), getKspVersion());
 	}
 
 	public final URL getDownloadLink() throws IOException{

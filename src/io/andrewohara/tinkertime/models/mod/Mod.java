@@ -2,13 +2,16 @@ package io.andrewohara.tinkertime.models.mod;
 
 import io.andrewohara.common.version.Version;
 import io.andrewohara.tinkertime.models.Installation;
+import io.andrewohara.tinkertime.models.ModFile;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Date;
 
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
 /**
@@ -38,6 +41,9 @@ public class Mod implements Comparable<Mod> {
 	@DatabaseField(foreign = true, canBeNull = false)
 	private Installation installation;
 
+	@ForeignCollectionField
+	private Collection<ModFile> modFiles;
+
 	// Required by ormlite
 	Mod() { }
 
@@ -46,18 +52,12 @@ public class Mod implements Comparable<Mod> {
 		this.installation = installation;
 	}
 
-	public Mod(String modName, String creator, URL pageUrl, Date updatedOn, String kspVersion, Version version, Installation installation){
-		this(pageUrl, installation);
-		this.updatedOn = updatedOn;
-		this.name = modName;
+	public void update(String name, String creator, Date updatedOn, Version modVersion, String kspVersion){
+		this.name = name;
 		this.creator = creator;
+		this.updatedOn = updatedOn;
 		this.kspVersion = kspVersion;
-		this.modVersion = version != null ? version.getNormalVersion() : null;
-	}
-
-	public Mod(int id, String modName, String creator, URL pageUrl, Date updatedOn, String kspVersion, Version version, Installation installation){
-		this(modName, creator, pageUrl, updatedOn, kspVersion, version, installation);
-		this.id = id;
+		this.modVersion = modVersion.getNormalVersion();
 	}
 
 	public int getId(){
@@ -119,7 +119,7 @@ public class Mod implements Comparable<Mod> {
 		return installation.getImagePath().resolve(getId() + ".jpg");
 	}
 
-	public Path getZipPath(){
+	public Path getZipPath() {
 		return installation.getModZipsPath().resolve(getId() + ".zip");
 	}
 
@@ -129,7 +129,20 @@ public class Mod implements Comparable<Mod> {
 	}
 
 	public boolean isEnabled(){
-		return false;  // TODO Reimplement
+		for (ModFile modFile : modFiles){
+			if (!modFile.getDestPath().toFile().exists()){
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public Collection<ModFile> getModFiles(){
+		return modFiles;
+	}
+
+	public void setModFiles(Collection<ModFile> modFiles){
+		this.modFiles = modFiles;
 	}
 
 	////////////////

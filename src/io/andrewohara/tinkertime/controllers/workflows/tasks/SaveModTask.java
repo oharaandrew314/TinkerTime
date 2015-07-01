@@ -55,7 +55,8 @@ public abstract class SaveModTask extends WorkflowTask {
 
 		@Override
 		protected Mod getMod() throws IOException {
-			return crawler.getUpdatedMod();
+			crawler.updatedMod();
+			return crawler.getMod();
 		}
 
 	}

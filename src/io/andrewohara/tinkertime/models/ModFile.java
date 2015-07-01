@@ -3,6 +3,8 @@ package io.andrewohara.tinkertime.models;
 import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.nio.file.Path;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -17,22 +19,22 @@ public class ModFile {
 	private Mod mod;
 
 	@DatabaseField(canBeNull=false)
-	private String srcPath, destPath;
-
-	@DatabaseField(canBeNull=false)
-	private boolean inZip;
+	private String entryName, relDestPath;
 
 	// Required by ormlite
 	ModFile() { }
 
-	public ModFile(Mod mod, Path srcPath, Path destPath){
-		this(mod, srcPath, destPath, true);
+	public ModFile(Mod mod, String entryName, Path relPath){
+		this.mod = mod;
+		this.entryName = entryName.toString();
+		this.relDestPath = relPath.toString();
 	}
 
-	public ModFile(Mod mod, Path srcPath, Path destPath, boolean inZip){
-		this.mod = mod;
-		this.srcPath = srcPath.toString();
-		this.destPath = destPath.toString();
-		this.inZip = inZip;
+	public Path getDestPath(){
+		return mod.getInstallation().getGameDataPath().resolve(relDestPath);
+	}
+
+	public ZipEntry getEntry(ZipFile zipFile){
+		return zipFile.getEntry(entryName);
 	}
 }
