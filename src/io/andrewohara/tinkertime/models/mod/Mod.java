@@ -39,7 +39,7 @@ public class Mod implements Comparable<Mod> {
 	private String name, creator, modVersion, kspVersion, url;
 
 	@DatabaseField
-	private boolean updateAvailable = false;
+	private boolean updateAvailable = false, builtIn = false;
 
 	@DatabaseField(foreign = true, canBeNull = false)
 	private Installation installation;
@@ -173,11 +173,6 @@ public class Mod implements Comparable<Mod> {
 		if (readme == null) readme = new Readme(this);
 		readme.setText(text);
 		return readme;
-	}
-
-
-	public void setReadme(Readme readme){
-
 	}
 
 	////////////////

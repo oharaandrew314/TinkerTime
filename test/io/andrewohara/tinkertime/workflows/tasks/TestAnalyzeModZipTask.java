@@ -14,10 +14,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Set;
 
 import org.junit.Before;
@@ -122,19 +120,16 @@ public class TestAnalyzeModZipTask {
 
 	private static class MockUpdateCoordinator implements ModUpdateCoordinator {
 
-		private final Map<Mod, Collection<ModFile>> modFilesRegistry = new HashMap<>();
+		private final Collection<ModFile> modFiles = new LinkedList<>();
 
 		@Override
 		public void updateModFiles(Mod mod, Collection<ModFile> modFiles, String readmeText) {
-			if (!modFilesRegistry.containsKey(mod)){
-				modFilesRegistry.put(mod, new LinkedList<>());
-			}
-			modFilesRegistry.get(mod).addAll(modFiles);
+			this.modFiles.addAll(modFiles);
 		}
 
 		public Set<String> getPathsFor(Mod mod){
 			Set<String> paths = new LinkedHashSet<>();
-			for (ModFile modFile : modFilesRegistry.get(mod)){
+			for (ModFile modFile : modFiles){
 				paths.add(modFile.getRelDestPath().toString());
 			}
 			return paths;
