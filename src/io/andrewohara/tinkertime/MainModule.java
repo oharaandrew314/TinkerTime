@@ -1,4 +1,4 @@
-package io.andrewohara.tinkertime.launcher;
+package io.andrewohara.tinkertime;
 
 import io.andrewohara.common.OS;
 import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinator;

@@ -1,6 +1,6 @@
 package io.andrewohara.tinkertime.models;
 
-import io.andrewohara.tinkertime.launcher.TinkerTimeLauncher;
+import io.andrewohara.tinkertime.TinkerTimeLauncher;
 import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.nio.file.Path;
