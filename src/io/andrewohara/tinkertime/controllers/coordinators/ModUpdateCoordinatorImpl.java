@@ -6,6 +6,7 @@ import io.andrewohara.tinkertime.db.ModLoader;
 import io.andrewohara.tinkertime.models.Installation;
 import io.andrewohara.tinkertime.models.ModFile;
 import io.andrewohara.tinkertime.models.ModImage;
+import io.andrewohara.tinkertime.models.Readme;
 import io.andrewohara.tinkertime.models.mod.Mod;
 import io.andrewohara.tinkertime.views.modSelector.ModListCellRenderer;
 import io.andrewohara.tinkertime.views.modSelector.ModSelectorPanelFactory;
@@ -24,6 +25,7 @@ public class ModUpdateCoordinatorImpl extends TaskCallback implements ModUpdateH
 
 	private final Dao<ModFile, Integer> modFilesDao;
 	private final Dao<ModImage, Integer> modImagesDao;
+	private final Dao<Readme, Integer> readmesDao;
 	private final ModLoader modLoader;
 
 	private ModSelectorPanelFactory modSelectorPanelFactory;
@@ -31,10 +33,11 @@ public class ModUpdateCoordinatorImpl extends TaskCallback implements ModUpdateH
 
 
 	@Inject
-	ModUpdateCoordinatorImpl(Dao<ModFile, Integer> modFilesDao, ModLoader modLoader, Dao<ModImage, Integer> modImagesDao){
+	ModUpdateCoordinatorImpl(Dao<ModFile, Integer> modFilesDao, ModLoader modLoader, Dao<ModImage, Integer> modImagesDao, Dao<Readme, Integer> readmesDao){
 		this.modFilesDao = modFilesDao;
 		this.modImagesDao = modImagesDao;
 		this.modLoader = modLoader;
+		this.readmesDao = readmesDao;
 	}
 
 	@Override
@@ -72,14 +75,21 @@ public class ModUpdateCoordinatorImpl extends TaskCallback implements ModUpdateH
 	}
 
 	@Override
-	public void updateModFiles(Mod mod, Collection<ModFile> modFiles){
+	public void updateModFiles(Mod mod, Collection<ModFile> modFiles, String readmeText){
 		try {
+			// Update Mod Files
 			modFilesDao.delete(mod.getModFiles());
 			for (ModFile newFile : modFiles){
 				modFilesDao.create(newFile);
 			}
 			mod.setModFiles(modFiles);
+
+			// Update ReadmeText
+			Readme readme = mod.setReadmeText(readmeText);
+			readmesDao.createOrUpdate(readme);
+
 			mod.setUpdateAvailable(false);  // TODO See if this can be removed.  Crawler should now set this
+
 			updateMod(mod);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);

@@ -125,7 +125,7 @@ public class TestAnalyzeModZipTask {
 		private final Map<Mod, Collection<ModFile>> modFilesRegistry = new HashMap<>();
 
 		@Override
-		public void updateModFiles(Mod mod, Collection<ModFile> modFiles) {
+		public void updateModFiles(Mod mod, Collection<ModFile> modFiles, String readmeText) {
 			if (!modFilesRegistry.containsKey(mod)){
 				modFilesRegistry.put(mod, new LinkedList<>());
 			}

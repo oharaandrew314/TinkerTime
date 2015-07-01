@@ -20,6 +20,7 @@ import io.andrewohara.tinkertime.models.ConfigData;
 import io.andrewohara.tinkertime.models.Installation;
 import io.andrewohara.tinkertime.models.ModFile;
 import io.andrewohara.tinkertime.models.ModImage;
+import io.andrewohara.tinkertime.models.Readme;
 import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.sql.SQLException;
@@ -145,6 +146,17 @@ public class MainModule extends AbstractModule {
 			ConnectionSource source = getConnectionSource();
 			TableUtils.createTableIfNotExists(source, ModImage.class);  //TODO Remove when migration created
 			return DaoManager.createDao(source, ModImage.class);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Provides
+	Dao<Readme, Integer> getReadmesDao(){
+		try {
+			ConnectionSource source = getConnectionSource();
+			TableUtils.createTableIfNotExists(source, Readme.class);  //TODO Remove when migration created
+			return DaoManager.createDao(source, Readme.class);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}

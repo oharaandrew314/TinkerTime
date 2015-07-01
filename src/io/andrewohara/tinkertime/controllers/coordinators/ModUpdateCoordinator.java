@@ -19,7 +19,7 @@ public interface ModUpdateCoordinator {
 
 	public void deleteMod(Mod mod);
 
-	public void updateModFiles(Mod mod, Collection<ModFile> modFiles);
+	public void updateModFiles(Mod mod, Collection<ModFile> modFiles, String readmeText);
 
 	public void updateModImage(Mod mod, BufferedImage image);
 

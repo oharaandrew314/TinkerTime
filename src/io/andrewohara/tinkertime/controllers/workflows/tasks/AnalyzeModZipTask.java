@@ -7,6 +7,8 @@ import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -14,6 +16,8 @@ import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import org.apache.commons.io.IOUtils;
 
 public class AnalyzeModZipTask extends WorkflowTask {
 
@@ -29,6 +33,7 @@ public class AnalyzeModZipTask extends WorkflowTask {
 	@Override
 	public boolean execute() throws Exception {
 		Collection<ModFile> files = new LinkedList<>();
+		String readmeText = null;
 
 		Path zipPath = mod.getZipPath();
 		if (zipPath == null){
@@ -59,7 +64,6 @@ public class AnalyzeModZipTask extends WorkflowTask {
 					}
 				}
 
-				/* TODO reimplement readmeText
 				// Find Readme text
 				if (readmeText == null && !entry.isDirectory() && entry.getName().toLowerCase().contains("readme")){
 					try(StringWriter writer = new StringWriter(); InputStream is = zipFile.getInputStream(entry)){
@@ -67,7 +71,6 @@ public class AnalyzeModZipTask extends WorkflowTask {
 						readmeText = writer.toString();
 					} catch (IOException e) {}
 				}
-				 */
 			}
 
 			// Make second pass of entries to get all Mod Files
@@ -111,7 +114,7 @@ public class AnalyzeModZipTask extends WorkflowTask {
 			}
 		}
 
-		modUpdateCoordinator.updateModFiles(mod, files);
+		modUpdateCoordinator.updateModFiles(mod, files, readmeText);
 		return true;
 	}
 

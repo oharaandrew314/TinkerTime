@@ -4,6 +4,7 @@ import io.andrewohara.common.version.Version;
 import io.andrewohara.tinkertime.models.Installation;
 import io.andrewohara.tinkertime.models.ModFile;
 import io.andrewohara.tinkertime.models.ModImage;
+import io.andrewohara.tinkertime.models.Readme;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -45,6 +46,9 @@ public class Mod implements Comparable<Mod> {
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private ModImage image;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Readme readme;
 
 	@ForeignCollectionField
 	private Collection<ModFile> modFiles = new LinkedList<>();
@@ -149,6 +153,7 @@ public class Mod implements Comparable<Mod> {
 
 	public void setModFiles(Collection<ModFile> modFiles){
 		this.modFiles = modFiles;
+		this.cachedModFiles = modFiles;
 	}
 
 	public void setImage(ModImage image){
@@ -157,6 +162,22 @@ public class Mod implements Comparable<Mod> {
 
 	public ModImage getImage(){
 		return image;
+	}
+
+	public String getReadmeText(){
+		return readme != null ? readme.getText() : null;
+	}
+
+	public Readme setReadmeText(String text) {
+		// Get a temporary readme to work with
+		if (readme == null) readme = new Readme(this);
+		readme.setText(text);
+		return readme;
+	}
+
+
+	public void setReadme(Readme readme){
+
 	}
 
 	////////////////

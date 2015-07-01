@@ -12,20 +12,20 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 public class ReadmePanel extends SelectorView.AbstractSelectorView<Mod> {
-	
+
 	private final JPanel panel = new JPanel();
 	private JTextArea textArea;
-	
-	public ReadmePanel(){		
+
+	public ReadmePanel(){
 		textArea = new JTextArea();
 		textArea.setLineWrap(true);
 		textArea.setWrapStyleWord(true);
 		textArea.setEditable(false);
-		
+
 		JScrollPane scrollPane = new JScrollPane(textArea);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
-		
+
 		panel.setVisible(false);
 		panel.setLayout(new BorderLayout());
 		panel.add(new JLabel("<html><b>Readme:</b></html"), BorderLayout.NORTH);
@@ -34,9 +34,7 @@ public class ReadmePanel extends SelectorView.AbstractSelectorView<Mod> {
 
 	@Override
 	protected void onElementChanged(Mod mod) {
-		//TODO Reimplement readme loading
-		String readmeText = "Readme loading must be re-implemented";
-		//String readmeText = modLoader.getStructure(mod).getReadmeText();
+		String readmeText = mod.getReadmeText();
 		textArea.setText(readmeText);
 		textArea.setCaretPosition(0);
 		panel.setVisible(readmeText != null && !readmeText.trim().isEmpty());
