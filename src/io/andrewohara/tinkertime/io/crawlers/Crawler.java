@@ -12,6 +12,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -27,7 +28,7 @@ import javax.swing.JOptionPane;
  */
 public abstract class Crawler<T> {
 
-	public static final String[] VALID_ASSET_EXTENSIONS = new String[]{ ".zip", ".dll" };
+	public static final String ZIP_EXTENSION = ".zip";
 
 	private final PageLoader<T> pageLoader;
 	private final Mod mod;
@@ -35,24 +36,18 @@ public abstract class Crawler<T> {
 	private Asset cachedAsset;
 	private AssetSelector assetSelector = new DialogAssetSelector();
 
-
 	public Crawler(Mod mod, PageLoader<T> pageLoader) {
 		this.mod = mod;
 		this.pageLoader = pageLoader;
 	}
 
+	/////////
+	// Api //
+	/////////
+
 	public T getPage(URL url) throws IOException {
 		return pageLoader.getPage(url);
 	}
-
-	public abstract URL getImageUrl() throws IOException;
-	public abstract Date getUpdatedOn() throws IOException;
-
-	protected abstract String getName() throws IOException;
-	protected abstract String getCreator() throws IOException;
-	protected abstract String getKspVersion() throws IOException;
-	protected abstract String getVersionString() throws IOException;
-	protected abstract Collection<Asset> getNewestAssets() throws IOException;
 
 	public URL getPageUrl(){
 		return mod.getUrl();
@@ -61,64 +56,6 @@ public abstract class Crawler<T> {
 	public URL getApiUrl() throws MalformedURLException{
 		return getPageUrl();
 	}
-
-	public Version getVersion(){
-		try {
-			// First try to parse version from an available version tag field
-			String versionString = VersionParser.parseVersionString(getVersionString());
-			return Version.valueOf(versionString);
-		} catch(IOException | IllegalArgumentException e){
-			try {
-				// Alternately, try to parse version from the fileName
-				String versionString = VersionParser.parseVersionString(getNewestFileName());
-				return Version.valueOf(versionString);
-			} catch (IOException | IllegalArgumentException e1) {
-				return null;
-			}
-		}
-	}
-
-	private Asset getSelectedAsset() throws IOException {
-		// If there is no cached selected asset, get it
-		if (cachedAsset == null){
-			// Get Valid Assets so one can be chosen
-			Collection<Asset> assets = new LinkedList<>();
-			for (Asset asset : getNewestAssets()){
-				for (String validAssetExtension : VALID_ASSET_EXTENSIONS){
-					if (asset.fileName.endsWith(validAssetExtension)){
-						assets.add(asset);
-					}
-				}
-			}
-
-			switch(assets.size()){
-			case 0:
-				// No non-source downloads
-				throw new IOException("No releases found for this mod");
-			case 1:
-				// One asset; use it by default
-				return assets.iterator().next();
-			default:
-				// Ask user which asset to use
-				cachedAsset = assetSelector.selectAsset(getName(), getNewestAssets());
-			}
-		}
-
-		if (cachedAsset == null){
-			throw new IOException("You must select a download to use the mod!");
-		}
-		return cachedAsset;
-	}
-
-	private final String getNewestFileName() throws IOException {
-		return getSelectedAsset().fileName;
-	}
-
-	public void testConnection() throws IOException {
-		getPage(getApiUrl());
-	}
-
-	// -- Public Methods ---------------------------------------------------
 
 	public void setAssetSelector(AssetSelector assetSelector){
 		this.assetSelector = assetSelector;
@@ -131,10 +68,93 @@ public abstract class Crawler<T> {
 	public void updatedMod() throws IOException {
 		Date updatedOn = getUpdatedOn() != null ? getUpdatedOn() : Calendar.getInstance().getTime();
 		mod.update(getName(), getCreator(), updatedOn, getVersion(), getKspVersion());
+		mod.setUpdateAvailable(isUpdateAvailable());
 	}
 
 	public final URL getDownloadLink() throws IOException{
 		return getSelectedAsset().downloadLink;
+	}
+
+	public void testConnection() throws IOException{
+		getPage(getApiUrl());
+	}
+
+	//////////////////////
+	// Abstract Methods //
+	//////////////////////
+
+	public abstract URL getImageUrl() throws IOException;
+	public abstract Date getUpdatedOn() throws IOException;
+
+	protected abstract String getName() throws IOException;
+	protected abstract String getCreator() throws IOException;
+	protected abstract String getKspVersion() throws IOException;
+	protected abstract String getVersionString() throws IOException;
+	protected abstract Collection<Asset> getNewestAssets() throws IOException;
+
+	/////////////
+	// Helpers //
+	/////////////
+
+	private Version getVersion(){
+		try {
+			// First try to parse version from an available version tag field
+			String versionString = VersionParser.parseVersionString(getVersionString());
+			return Version.valueOf(versionString);
+		} catch(IOException | IllegalArgumentException e){
+			try {
+				// Alternately, try to parse version from the fileName
+				String versionString = VersionParser.parseVersionString(getSelectedAsset().fileName);
+				return Version.valueOf(versionString);
+			} catch (IOException | IllegalArgumentException e1) {
+				return null;
+			}
+		}
+	}
+
+	private Asset getSelectedAsset() throws IOException {
+		// If there is no cached selected asset, get it
+		if (cachedAsset == null){
+			// Get Valid Assets so one can be chosen
+			List<Asset> assets = new LinkedList<>();
+			for (Asset asset : getNewestAssets()){
+				if (asset.fileName.endsWith(ZIP_EXTENSION)){
+					assets.add(asset);
+				}
+			}
+
+			switch(assets.size()){
+			case 0:
+				// No non-source downloads
+				throw new IOException("No releases found for this mod");
+			case 1:
+				// One asset; use it by default
+				cachedAsset = assets.get(0);
+				break;
+			default:
+				// Ask user which asset to use
+				cachedAsset = assetSelector.selectAsset(getName(), getNewestAssets());
+				break;
+			}
+
+			if (cachedAsset == null){
+				throw new IOException("You must select a download to use the mod!");
+			}
+		}
+
+		return cachedAsset;
+	}
+
+	private boolean isUpdateAvailable(){
+		try{
+			return getVersion().greaterThan(mod.getModVersion());
+		} catch (NullPointerException e){
+			try {
+				return getUpdatedOn().before(mod.getUpdatedOn());
+			} catch (NullPointerException | IOException e1) {
+				return false;
+			}
+		}
 	}
 
 	// -- Inner Asset Class ---------------------------------------------------

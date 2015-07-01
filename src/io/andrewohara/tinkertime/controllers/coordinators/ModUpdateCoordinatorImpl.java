@@ -5,10 +5,13 @@ import io.andrewohara.common.workflows.tasks.WorkflowTask.TaskEvent;
 import io.andrewohara.tinkertime.db.ModLoader;
 import io.andrewohara.tinkertime.models.Installation;
 import io.andrewohara.tinkertime.models.ModFile;
+import io.andrewohara.tinkertime.models.ModImage;
 import io.andrewohara.tinkertime.models.mod.Mod;
 import io.andrewohara.tinkertime.views.modSelector.ModListCellRenderer;
 import io.andrewohara.tinkertime.views.modSelector.ModSelectorPanelFactory;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
 
@@ -20,6 +23,7 @@ import com.j256.ormlite.dao.Dao;
 public class ModUpdateCoordinatorImpl extends TaskCallback implements ModUpdateHandler, ModUpdateCoordinator {
 
 	private final Dao<ModFile, Integer> modFilesDao;
+	private final Dao<ModImage, Integer> modImagesDao;
 	private final ModLoader modLoader;
 
 	private ModSelectorPanelFactory modSelectorPanelFactory;
@@ -27,8 +31,9 @@ public class ModUpdateCoordinatorImpl extends TaskCallback implements ModUpdateH
 
 
 	@Inject
-	ModUpdateCoordinatorImpl(Dao<ModFile, Integer> modFilesDao, ModLoader modLoader){
+	ModUpdateCoordinatorImpl(Dao<ModFile, Integer> modFilesDao, ModLoader modLoader, Dao<ModImage, Integer> modImagesDao){
 		this.modFilesDao = modFilesDao;
+		this.modImagesDao = modImagesDao;
 		this.modLoader = modLoader;
 	}
 
@@ -52,8 +57,13 @@ public class ModUpdateCoordinatorImpl extends TaskCallback implements ModUpdateH
 
 	@Override
 	public void deleteMod(Mod mod) {
-		modLoader.deleteMod(mod);
-		modSelectorPanelFactory.get().deleteMod(mod);
+		try {
+			modImagesDao.delete(mod.getImage());
+			modLoader.deleteMod(mod);
+			modSelectorPanelFactory.get().deleteMod(mod);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
@@ -69,9 +79,22 @@ public class ModUpdateCoordinatorImpl extends TaskCallback implements ModUpdateH
 				modFilesDao.create(newFile);
 			}
 			mod.setModFiles(modFiles);
-			mod.setUpdateAvailable(false);
+			mod.setUpdateAvailable(false);  // TODO See if this can be removed.  Crawler should now set this
 			updateMod(mod);
 		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public void updateModImage(Mod mod, BufferedImage image){
+		try {
+			ModImage modImage = ModImage.createModImage(mod, image);
+			modImagesDao.createOrUpdate(modImage);
+
+			mod.setImage(modImage);
+			updateMod(mod);
+		} catch (IOException | SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}

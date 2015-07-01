@@ -10,6 +10,7 @@ import io.andrewohara.tinkertime.testUtil.ModTestFixtures;
 import io.andrewohara.tinkertime.views.modSelector.ModListCellRenderer;
 import io.andrewohara.tinkertime.views.modSelector.ModSelectorPanelFactory;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -122,5 +123,6 @@ public class TestAnalyzeModZipTask {
 		@Override public void setListeners(ModSelectorPanelFactory modSelectorPanelFactory, ModListCellRenderer modListCellRender) { }
 		@Override public void deleteMod(Mod mod) { }
 		@Override public void changeInstallation(Installation newInstallation) { }
+		@Override public void updateModImage(Mod mod, BufferedImage image) { }
 	}
 }

@@ -5,9 +5,9 @@ import io.andrewohara.tinkertime.controllers.ModExceptions.ModNotDownloadedExcep
 import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinatorImpl;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.AnalyzeModZipTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.CheckForUpdateTask;
-import io.andrewohara.tinkertime.controllers.workflows.tasks.DownloadModAssetTask;
-import io.andrewohara.tinkertime.controllers.workflows.tasks.DownloadModAssetTask.ModDownloadType;
+import io.andrewohara.tinkertime.controllers.workflows.tasks.DownloadModImageTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.DownloadModInBrowserTask;
+import io.andrewohara.tinkertime.controllers.workflows.tasks.DownloadModZipTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.MarkModUpdatedTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.RemoveModTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.RunCrawlerTask;
@@ -102,8 +102,8 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	private void downloadMod() throws UnsupportedHostException{
 		Crawler<?> crawler = getCrawler();
 		addTask(new RunCrawlerTask(crawler));  // prefetch metadata
-		addTask(new DownloadModAssetTask(crawler, ModDownloadType.File));
-		addTask(new DownloadModAssetTask(crawler, ModDownloadType.Image));
+		addTask(new DownloadModZipTask(crawler));
+		addTask(new DownloadModImageTask(crawler, updateCoordinator));
 		addTask(new AnalyzeModZipTask(getMod(), updateCoordinator));
 		addTask(new SaveModTask.FromCrawler(updateCoordinator, crawler));
 	}
@@ -148,7 +148,6 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 
 		addTask(new RemoveModTask(getMod(), updateCoordinator));
 		deleteModZip();
-		delete(getMod().getImagePath());
 	}
 
 	public void disableMod() throws ModNotDownloadedException{

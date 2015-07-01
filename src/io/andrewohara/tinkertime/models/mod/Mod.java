@@ -3,12 +3,14 @@ package io.andrewohara.tinkertime.models.mod;
 import io.andrewohara.common.version.Version;
 import io.andrewohara.tinkertime.models.Installation;
 import io.andrewohara.tinkertime.models.ModFile;
+import io.andrewohara.tinkertime.models.ModImage;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedList;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
@@ -41,8 +43,11 @@ public class Mod implements Comparable<Mod> {
 	@DatabaseField(foreign = true, canBeNull = false)
 	private Installation installation;
 
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private ModImage image;
+
 	@ForeignCollectionField
-	private Collection<ModFile> modFiles;
+	private Collection<ModFile> modFiles = new LinkedList<>();
 
 	// Required by ormlite
 	Mod() { }
@@ -115,10 +120,6 @@ public class Mod implements Comparable<Mod> {
 		this.updateAvailable = updateAvailable;
 	}
 
-	public Path getImagePath(){
-		return installation.getImagePath().resolve(getId() + ".jpg");
-	}
-
 	public Path getZipPath() {
 		return installation.getModZipsPath().resolve(getId() + ".zip");
 	}
@@ -143,6 +144,14 @@ public class Mod implements Comparable<Mod> {
 
 	public void setModFiles(Collection<ModFile> modFiles){
 		this.modFiles = modFiles;
+	}
+
+	public void setImage(ModImage image){
+		this.image = image;
+	}
+
+	public ModImage getImage(){
+		return image;
 	}
 
 	////////////////

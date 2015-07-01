@@ -1,12 +1,8 @@
 package io.andrewohara.tinkertime.views.modView;
 
-import io.andrewohara.common.content.ImageManager;
 import io.andrewohara.common.views.selectorPanel.SelectorView;
+import io.andrewohara.tinkertime.models.ModImage;
 import io.andrewohara.tinkertime.models.mod.Mod;
-
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -21,13 +17,11 @@ import com.google.inject.Inject;
  */
 public class ModImageView extends SelectorView.AbstractSelectorView<Mod> {
 
-	private static final Dimension MAX_IMAGE_SIZE = new Dimension(250, 250);
-	private final ImageManager imageManager = new ImageManager();
 	private final JLabel label = new JLabel();
 
 	@Inject
 	ModImageView(){
-		label.setMaximumSize(MAX_IMAGE_SIZE);
+		label.setMaximumSize(ModImage.MAX_SIZE);
 	}
 
 	@Override
@@ -38,20 +32,15 @@ public class ModImageView extends SelectorView.AbstractSelectorView<Mod> {
 	@Override
 	protected void onElementChanged(Mod element) {
 		try {
-			if (element == null){
-				throw new NoModSelectedException();
+			if (element == null || element.getImage() == null){
+				throw new NoModImageException();
 			}
-
-			BufferedImage image = imageManager.getImage(element.getImagePath());
-			Dimension size = imageManager.scaleToFit(image, new Dimension(MAX_IMAGE_SIZE.width, MAX_IMAGE_SIZE.height));
-			image = imageManager.resizeImage(image, size);
-			label.setIcon(new ImageIcon(image));
-
-		} catch (IOException | NoModSelectedException e) {
+			label.setIcon(new ImageIcon(element.getImage().getImage()));
+		} catch (NoModImageException e) {
 			label.setIcon(null);
 		}
 	}
 
 	@SuppressWarnings("serial")
-	private static class NoModSelectedException extends Exception {}
+	private static class NoModImageException extends Exception {}
 }

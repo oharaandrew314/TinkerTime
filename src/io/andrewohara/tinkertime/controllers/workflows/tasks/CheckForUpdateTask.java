@@ -2,7 +2,6 @@ package io.andrewohara.tinkertime.controllers.workflows.tasks;
 
 import io.andrewohara.common.workflows.tasks.WorkflowTask;
 import io.andrewohara.tinkertime.io.crawlers.Crawler;
-import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.io.IOException;
 
@@ -22,16 +21,8 @@ public class CheckForUpdateTask extends WorkflowTask {
 
 	@Override
 	public boolean execute() throws IOException {
-		Mod mod = crawler.getMod();
-		try{
-			return crawler.getVersion().greaterThan(mod.getModVersion());
-		} catch (NullPointerException e){
-			try {
-				return crawler.getUpdatedOn().before(mod.getUpdatedOn());
-			} catch (NullPointerException | IOException e1) {
-				return false;
-			}
-		}
+		crawler.updatedMod();
+		return crawler.getMod().isUpdateAvailable();
 	}
 
 	@Override

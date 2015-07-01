@@ -2,7 +2,6 @@ package io.andrewohara.tinkertime.controllers.workflows.tasks;
 
 import io.andrewohara.common.workflows.tasks.FileTransferTask;
 import io.andrewohara.tinkertime.io.crawlers.Crawler;
-import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.io.IOException;
 import java.net.URL;
@@ -12,39 +11,22 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 
-public class DownloadModAssetTask extends FileTransferTask {
-
-	public static enum ModDownloadType { File, Image };
+public class DownloadModZipTask extends FileTransferTask {
 
 	private final Crawler<?> crawler;
-	private final ModDownloadType type;
 
-	public DownloadModAssetTask(Crawler<?> crawler, ModDownloadType type){
+	public DownloadModZipTask(Crawler<?> crawler){
 		super(null, null);
 		this.crawler = crawler;
-		this.type = type;
 	}
 
 	private URL getUrl() throws IOException{
-		switch(type){
-		case File: return crawler.getDownloadLink();
-		case Image: return crawler.getImageUrl();
-		default: throw new IllegalStateException();
-		}
-	}
-
-	private Path getDest() throws IOException{
-		Mod mod = crawler.getMod();
-		switch(type){
-		case File: return mod.getZipPath();
-		case Image: return mod.getImagePath();
-		default: throw new IllegalStateException();
-		}
+		return crawler.getDownloadLink();
 	}
 
 	@Override
 	public boolean execute() throws Exception {
-		Path dest = getDest();
+		Path dest = crawler.getMod().getZipPath();
 		Path tempDest = Paths.get(dest.toString() + ".tempDownload");
 
 		try {
