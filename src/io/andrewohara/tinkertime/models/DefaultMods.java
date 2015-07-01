@@ -20,7 +20,7 @@ public class DefaultMods {
 	}
 
 	public static Collection<Mod> getDefaults(Installation installation) {
-		Mod mod = new Mod(getModuleManagerUrl(), installation);
+		Mod mod = new Mod(getModuleManagerUrl(), installation, true);
 		return Collections.singleton(mod);
 	}
 }

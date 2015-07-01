@@ -58,8 +58,13 @@ public class Mod implements Comparable<Mod> {
 	Mod() { }
 
 	public Mod(URL url, Installation installation){
+		this(url, installation, false);
+	}
+
+	public Mod(URL url, Installation installation, boolean builtIn){
 		this.url = url != null ? url.toString() : null;
 		this.installation = installation;
+		this.builtIn = builtIn;
 	}
 
 	public void update(String name, String creator, Date updatedOn, Version modVersion, String kspVersion){
@@ -173,6 +178,10 @@ public class Mod implements Comparable<Mod> {
 		if (readme == null) readme = new Readme(this);
 		readme.setText(text);
 		return readme;
+	}
+
+	public boolean isBuiltIn(){
+		return builtIn;
 	}
 
 	////////////////

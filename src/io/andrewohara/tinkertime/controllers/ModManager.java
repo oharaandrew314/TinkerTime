@@ -4,7 +4,7 @@ import io.andrewohara.common.Listenable;
 import io.andrewohara.common.workflows.tasks.TaskCallback;
 import io.andrewohara.tinkertime.controllers.ModExceptions.CannotDeleteModException;
 import io.andrewohara.tinkertime.controllers.ModExceptions.ModNotDownloadedException;
-import io.andrewohara.tinkertime.controllers.ModExceptions.ModUpdateFailedError;
+import io.andrewohara.tinkertime.controllers.ModExceptions.ModUpdateFailedException;
 import io.andrewohara.tinkertime.controllers.ModExceptions.NoModSelectedException;
 import io.andrewohara.tinkertime.controllers.workflows.ModWorkflowBuilder;
 import io.andrewohara.tinkertime.controllers.workflows.ModWorkflowBuilderFactory;
@@ -60,16 +60,16 @@ public class ModManager extends Listenable<TaskCallback> {
 		this.selectedMod = mod;
 	}
 
-	public void updateMod(Mod mod, boolean forceUpdate) throws ModUpdateFailedError, ModNotDownloadedException {
+	public void updateMod(Mod mod, boolean forceUpdate) throws ModUpdateFailedException, ModNotDownloadedException {
 		if (!mod.isUpdateable()){
-			throw new ModUpdateFailedError(mod, "Mod is a local zip only, and cannot be updated.");
+			throw new ModUpdateFailedException(mod, "Mod is a local zip only, and cannot be updated.");
 		}
 		try {
 			ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder(mod);
 			builder.updateMod(forceUpdate);
 			taskLauncher.submitDownloadWorkflow(builder);
 		} catch (UnsupportedHostException e) {
-			throw new ModUpdateFailedError(e);
+			throw new ModUpdateFailedException(e);
 		}
 	}
 
@@ -87,7 +87,7 @@ public class ModManager extends Listenable<TaskCallback> {
 		taskLauncher.submitDownloadWorkflow(builder);
 	}
 
-	public void updateMods() throws ModUpdateFailedError, ModNotDownloadedException{
+	public void updateMods() throws ModUpdateFailedException, ModNotDownloadedException{
 		for (Mod mod : modLoader.getMods()){
 			if (mod.isUpdateable()){
 				updateMod(mod, false);
@@ -110,17 +110,15 @@ public class ModManager extends Listenable<TaskCallback> {
 	}
 
 	public void deleteMod(Mod mod) throws CannotDeleteModException {
-		//if (DefaultMods.isBuiltIn(mod)){  TODO Reimplement forbid delete builtin mod
-		//	throw new CannotDeleteModException(mod, "Built-in");
-		//}
+		if (mod.isBuiltIn()){
+			throw new CannotDeleteModException(mod, "Built-in");
+		}
 		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder(mod);
 		builder.deleteMod();
 		taskLauncher.submitFileWorkflow(builder);
 	}
 
-	public void checkForModUpdates() throws UnsupportedHostException{  // TODO Throw multi-exception
-		UnsupportedHostException e = null;
-
+	public void checkForModUpdates() throws UnsupportedHostException{
 		for (final Mod mod : modLoader.getMods()){
 			try {
 				if (mod.isUpdateable()){
@@ -129,13 +127,8 @@ public class ModManager extends Listenable<TaskCallback> {
 					taskLauncher.submitDownloadWorkflow(builder);
 				}
 			} catch (UnsupportedHostException ex) {
-				ex.printStackTrace();
-				e = ex;
+				throw new RuntimeException(ex);
 			}
-		}
-
-		if (e != null){
-			throw e;
 		}
 	}
 
