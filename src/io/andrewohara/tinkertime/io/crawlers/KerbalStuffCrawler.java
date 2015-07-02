@@ -4,6 +4,7 @@ import io.andrewohara.tinkertime.io.crawlers.pageLoaders.PageLoader;
 import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
@@ -18,23 +19,29 @@ import com.google.gson.JsonObject;
 public class KerbalStuffCrawler extends Crawler<JsonElement>{
 
 	private static Pattern ID_PATTERN = Pattern.compile("(mod/)(\\d+)(/*)");
+	private URL cachedApiUrl = null;
 
 	public KerbalStuffCrawler(Mod mod, PageLoader<JsonElement> pageLoader) {
 		super(mod, pageLoader);
 	}
 
 	@Override
-	public URL getApiUrl(){
-		try {
-			return new URL(
-					"https",
-					CrawlerFactory.HOST_KERBAL_STUFF,
-					String.format("/api/mod/%s", generateId(getPageUrl()))
-					);
-		} catch (IOException e) {
-			e.printStackTrace();
+	protected URL getApiUrl() throws MalformedURLException {
+		if (cachedApiUrl == null){
+			try {
+				// Get Id from path
+				Matcher m = ID_PATTERN.matcher(getPageUrl().getPath());
+				if (!m.find()){
+					throw new MalformedURLException();
+				}
+
+				// Construct API URL
+				cachedApiUrl = new URL("https", CrawlerFactory.HOST_KERBAL_STUFF, String.format("/api/mod/%s", m.group(2)));
+			} catch (IOException e) {
+				throw new MalformedURLException(e.getMessage());
+			}
 		}
-		return null;
+		return cachedApiUrl;
 	}
 
 	@Override
@@ -49,14 +56,6 @@ public class KerbalStuffCrawler extends Crawler<JsonElement>{
 			return new URL("https", getApiUrl().getHost(), bgElement.getAsString());
 		}
 		return null;
-	}
-
-	protected JsonObject getLatestVersion() throws IOException {
-		JsonArray versions = getPage(getApiUrl()).getAsJsonObject().get("versions").getAsJsonArray();
-		if (versions.size() > 0){
-			return versions.get(0).getAsJsonObject();
-		}
-		throw new IOException("No latest version available");
 	}
 
 	@Override
@@ -79,14 +78,6 @@ public class KerbalStuffCrawler extends Crawler<JsonElement>{
 		return getLatestVersion().get("friendly_version").getAsString();
 	}
 
-	private static String generateId(URL url) {
-		Matcher m = ID_PATTERN.matcher(url.getPath());
-		if (m.find()){
-			return m.group(2);
-		}
-		return null;
-	}
-
 	@Override
 	protected Collection<Asset> getNewestAssets() throws IOException {
 		String fileName = String.format(
@@ -103,5 +94,17 @@ public class KerbalStuffCrawler extends Crawler<JsonElement>{
 		Collection<Asset> assets = new LinkedList<>();
 		assets.add(new Asset(fileName, downloadLink));
 		return assets;
+	}
+
+	/////////////
+	// Helpers //
+	/////////////
+
+	private JsonObject getLatestVersion() throws IOException {
+		JsonArray versions = getPage(getApiUrl()).getAsJsonObject().get("versions").getAsJsonArray();
+		if (versions.size() > 0){
+			return versions.get(0).getAsJsonObject();
+		}
+		throw new IOException("No latest version available");
 	}
 }

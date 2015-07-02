@@ -21,7 +21,7 @@ public class CheckForUpdateTask extends WorkflowTask {
 
 	@Override
 	public boolean execute() throws IOException {
-		crawler.updatedMod();
+		crawler.updateMod();
 		return crawler.getMod().isUpdateAvailable();
 	}
 

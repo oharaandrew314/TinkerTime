@@ -10,7 +10,7 @@ public class RunCrawlerTask extends WorkflowTask {
 	private final Crawler<?> crawler;
 
 	public RunCrawlerTask(Crawler<?> crawler) {
-		super(String.format("Crawling %s page", crawler.getPageUrl().getHost()));
+		super("Crawling Page");
 		this.crawler = crawler;
 	}
 

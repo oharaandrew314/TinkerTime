@@ -45,18 +45,6 @@ public abstract class Crawler<T> {
 	// Api //
 	/////////
 
-	public T getPage(URL url) throws IOException {
-		return pageLoader.getPage(url);
-	}
-
-	public URL getPageUrl(){
-		return mod.getUrl();
-	}
-
-	public URL getApiUrl() throws MalformedURLException{
-		return getPageUrl();
-	}
-
 	public void setAssetSelector(AssetSelector assetSelector){
 		this.assetSelector = assetSelector;
 	}
@@ -65,11 +53,10 @@ public abstract class Crawler<T> {
 		return mod;
 	}
 
-	public void updatedMod() throws IOException {
+	public void updateMod() throws IOException {
 		Date updatedOn = getUpdatedOn() != null ? getUpdatedOn() : Calendar.getInstance().getTime();
 		mod.setUpdateAvailable(isUpdateAvailable());
 		mod.update(getName(), getCreator(), updatedOn, getVersion(), getKspVersion());
-
 	}
 
 	public final URL getDownloadLink() throws IOException{
@@ -96,6 +83,18 @@ public abstract class Crawler<T> {
 	/////////////
 	// Helpers //
 	/////////////
+
+	protected URL getPageUrl(){
+		return mod.getUrl();
+	}
+
+	protected URL getApiUrl() throws MalformedURLException{
+		return getPageUrl();
+	}
+
+	protected T getPage(URL url) throws IOException {
+		return pageLoader.getPage(url);
+	}
 
 	private Version getVersion(){
 		try {

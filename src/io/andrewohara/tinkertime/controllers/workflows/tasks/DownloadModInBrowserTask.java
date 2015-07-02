@@ -23,7 +23,7 @@ public class DownloadModInBrowserTask extends WorkflowTask {
 
 	@Override
 	public boolean execute() throws Exception {
-		crawler.updatedMod();
+		crawler.updateMod();
 		Mod result = crawler.getMod();
 
 		if (JOptionPane.showConfirmDialog(
