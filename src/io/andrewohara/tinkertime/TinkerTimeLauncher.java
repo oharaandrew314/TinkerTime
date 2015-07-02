@@ -6,6 +6,7 @@ import io.andrewohara.tinkertime.controllers.ModManager;
 import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinator;
 import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinatorImpl;
 import io.andrewohara.tinkertime.db.ConfigFactory;
+import io.andrewohara.tinkertime.db.DbConnectionString;
 import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory.UnsupportedHostException;
 import io.andrewohara.tinkertime.models.ConfigData;
 import io.andrewohara.tinkertime.views.InstallationSelectorView;
@@ -15,8 +16,6 @@ import io.andrewohara.tinkertime.views.modSelector.ModSelectorPanelFactory;
 import java.awt.BorderLayout;
 import java.awt.Image;
 import java.net.MalformedURLException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -49,11 +48,6 @@ public class TinkerTimeLauncher implements Runnable {
 	SAFE_NAME = NAME.replace(" ", ""),
 	FULL_NAME = String.format("%s v%s by %s", NAME, VERSION, AUTHOR);
 
-	public static String getDbUrl(){
-		Path path = Paths.get(System.getProperty("user.home"), "Documents", NAME, "TinkerTime-db");
-		return String.format("jdbc:h2:file:%s", path.toString());
-	}
-
 	private final Collection<Runnable> startupTasks = new LinkedList<>();
 
 	@Inject
@@ -85,12 +79,19 @@ public class TinkerTimeLauncher implements Runnable {
 
 	private static class DatabaseMigrator implements Runnable {
 
+		private final DbConnectionString connectionString;
+
+		@Inject
+		DatabaseMigrator(DbConnectionString connectionString){
+			this.connectionString = connectionString;
+		}
+
 		@Override
 		public void run() {
 			Flyway flyway = new Flyway();
 			flyway.setBaselineOnMigrate(true);
 			flyway.setLocations("io/andrewohara/tinkertime/db/migration");
-			flyway.setDataSource(TinkerTimeLauncher.getDbUrl(), null, null);  // TODO Inject URL
+			flyway.setDataSource(connectionString.getUrl(), null, null);
 			flyway.migrate();
 		}
 	}

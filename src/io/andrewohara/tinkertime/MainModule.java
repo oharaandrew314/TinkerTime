@@ -9,6 +9,8 @@ import io.andrewohara.tinkertime.db.ConfigFactory;
 import io.andrewohara.tinkertime.db.DaoConfigFactory;
 import io.andrewohara.tinkertime.db.DaoInstallationManager;
 import io.andrewohara.tinkertime.db.DaoModLoader;
+import io.andrewohara.tinkertime.db.DbConnectionString;
+import io.andrewohara.tinkertime.db.DbConnectionStringImpl;
 import io.andrewohara.tinkertime.db.InstallationManager;
 import io.andrewohara.tinkertime.db.ModLoader;
 import io.andrewohara.tinkertime.io.crawlers.pageLoaders.JsonLoader;
@@ -63,6 +65,7 @@ public class MainModule extends AbstractModule {
 		bind(ModLoader.class).to(DaoModLoader.class);
 		bind(ModUpdateCoordinator.class).to(ModUpdateCoordinatorImpl.class);
 		bind(InstallationManager.class).to(DaoInstallationManager.class);
+		bind(DbConnectionString.class).to(DbConnectionStringImpl.class);
 	}
 
 	@Provides
@@ -92,8 +95,8 @@ public class MainModule extends AbstractModule {
 
 	@Singleton
 	@Provides
-	ConnectionSource getConnectionSource() throws SQLException {
-		return new JdbcConnectionSource(TinkerTimeLauncher.getDbUrl());
+	ConnectionSource getConnectionSource(DbConnectionString connectionString) throws SQLException {
+		return new JdbcConnectionSource(connectionString.getUrl());
 	}
 
 	@Provides
