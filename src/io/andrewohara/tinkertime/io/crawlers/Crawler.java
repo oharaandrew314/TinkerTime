@@ -67,6 +67,18 @@ public abstract class Crawler<T> {
 		getPage(getApiUrl());
 	}
 
+	public boolean isUpdateAvailable(){
+		try{
+			return getVersion().greaterThan(mod.getModVersion());
+		} catch (NullPointerException e){
+			try {
+				return getUpdatedOn().before(mod.getUpdatedOn());
+			} catch (NullPointerException | IOException e1) {
+				return false;
+			}
+		}
+	}
+
 	//////////////////////
 	// Abstract Methods //
 	//////////////////////
@@ -143,18 +155,6 @@ public abstract class Crawler<T> {
 		}
 
 		return cachedAsset;
-	}
-
-	private boolean isUpdateAvailable(){
-		try{
-			return getVersion().greaterThan(mod.getModVersion());
-		} catch (NullPointerException e){
-			try {
-				return getUpdatedOn().before(mod.getUpdatedOn());
-			} catch (NullPointerException | IOException e1) {
-				return false;
-			}
-		}
 	}
 
 	// -- Inner Asset Class ---------------------------------------------------

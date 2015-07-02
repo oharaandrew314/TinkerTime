@@ -8,7 +8,6 @@ import io.andrewohara.tinkertime.controllers.workflows.tasks.CheckForUpdateTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.DownloadModImageTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.DownloadModInBrowserTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.DownloadModZipTask;
-import io.andrewohara.tinkertime.controllers.workflows.tasks.MarkModUpdatedTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.RemoveModTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.RunCrawlerTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.SaveModTask;
@@ -62,7 +61,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	public void checkForUpdates(boolean markIfAvailable) throws UnsupportedHostException {
 		addTask(new CheckForUpdateTask(getCrawler()));
 		if (markIfAvailable){
-			addTask(new MarkModUpdatedTask(updateCoordinator, getMod()));
+			addTask(new SaveModTask.FromMod(updateCoordinator, getMod()));
 		}
 	}
 
