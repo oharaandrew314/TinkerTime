@@ -17,22 +17,9 @@ public class ModTestFixtures {
 
 	private final Installation testInstallation;
 
-	public ModTestFixtures(Installation testInstallation){
-		this.testInstallation = testInstallation;
-	}
-
-	/////////////
-	// Factory //
-	/////////////
-
-	public static ModTestFixtures create(){
-		try {
-			Path gameDataPath = Paths.get(Installation.class.getClassLoader().getResource("GameData").toURI());
-			Installation installation = new Installation("test", gameDataPath);
-			return new ModTestFixtures(installation);
-		} catch (URISyntaxException | InvalidGameDataPathException e) {
-			throw new RuntimeException(e);
-		}
+	public ModTestFixtures() throws URISyntaxException, InvalidGameDataPathException{
+		Path gameDataPath = Paths.get(getClass().getClassLoader().getResource("GameData").toURI());
+		this.testInstallation = new Installation("test", gameDataPath);
 	}
 
 	////////////////////

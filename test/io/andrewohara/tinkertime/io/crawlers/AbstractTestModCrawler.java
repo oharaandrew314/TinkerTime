@@ -1,15 +1,16 @@
 package io.andrewohara.tinkertime.io.crawlers;
 
 import static org.junit.Assert.assertEquals;
-import io.andrewohara.tinkertime.io.crawlers.Crawler;
 import io.andrewohara.tinkertime.io.crawlers.pageLoaders.JsonLoader;
 import io.andrewohara.tinkertime.io.crawlers.pageLoaders.PageLoader;
+import io.andrewohara.tinkertime.models.Installation.InvalidGameDataPathException;
 import io.andrewohara.tinkertime.models.mod.Mod;
 import io.andrewohara.tinkertime.testUtil.ModTestFixtures;
 import io.andrewohara.tinkertime.testUtil.StaticAssetSelector;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
@@ -25,8 +26,8 @@ public abstract class AbstractTestModCrawler {
 	protected ModTestFixtures testFixtures;
 
 	@Before
-	public void setUp(){
-		testFixtures = ModTestFixtures.create();
+	public void setUp() throws URISyntaxException, InvalidGameDataPathException{
+		testFixtures = new ModTestFixtures();
 	}
 
 	protected void testMod(Mod expectedMod) throws IOException {

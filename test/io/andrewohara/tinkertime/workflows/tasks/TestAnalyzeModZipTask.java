@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinator;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.AnalyzeModZipTask;
 import io.andrewohara.tinkertime.models.Installation;
+import io.andrewohara.tinkertime.models.Installation.InvalidGameDataPathException;
 import io.andrewohara.tinkertime.models.ModFile;
 import io.andrewohara.tinkertime.models.mod.Mod;
 import io.andrewohara.tinkertime.testUtil.ModTestFixtures;
@@ -12,6 +13,7 @@ import io.andrewohara.tinkertime.views.modSelector.ModSelectorPanelFactory;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -27,9 +29,9 @@ public class TestAnalyzeModZipTask {
 	private MockUpdateCoordinator uc;
 
 	@Before
-	public void setUp(){
+	public void setUp() throws URISyntaxException, InvalidGameDataPathException{
 		uc = new MockUpdateCoordinator();
-		modFixtures = ModTestFixtures.create();
+		modFixtures = new ModTestFixtures();
 	}
 
 	private void testFiles(Mod mod, String... paths) throws IOException{
