@@ -1,4 +1,4 @@
-package io.andrewohara.tinkertime.views.menus;
+package io.andrewohara.tinkertime.views;
 
 import io.andrewohara.common.Util;
 import io.andrewohara.common.content.ImageManager;
@@ -12,9 +12,6 @@ import io.andrewohara.tinkertime.db.ConfigFactory;
 import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory;
 import io.andrewohara.tinkertime.io.kspLauncher.GameLauncher;
 import io.andrewohara.tinkertime.models.mod.Mod;
-import io.andrewohara.tinkertime.views.FileChoosers;
-import io.andrewohara.tinkertime.views.InstallationSelectorView;
-import io.andrewohara.tinkertime.views.TinkerDialogs;
 
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
@@ -30,11 +27,12 @@ import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
-class Actions {
+public class Actions {
 
 	// -- Helpers ---------------------------------------------------------
 
 	@SuppressWarnings("serial")
+	public
 	static abstract class TinkerAction extends AbstractAction {
 
 		private static final ImageManager IMAGE_MANAGER = new ImageManager();;
@@ -88,9 +86,9 @@ class Actions {
 	// -- Actions -----------------------------------------------------------
 
 	@SuppressWarnings("serial")
-	static class AddModAction extends TinkerAction {
+	public static class AddModAction extends TinkerAction {
 
-		AddModAction(JComponent parent, ModManager mm){
+		public AddModAction(JComponent parent, ModManager mm){
 			super("Add Mod", "icon/glyphicons_432_plus.png", parent, mm);
 		}
 
@@ -120,9 +118,9 @@ class Actions {
 	}
 
 	@SuppressWarnings("serial")
-	static class DeleteModAction extends TinkerAction {
+	public static class DeleteModAction extends TinkerAction {
 
-		DeleteModAction(JComponent parent, ModManager mm){
+		public DeleteModAction(JComponent parent, ModManager mm){
 			super("Delete Mod", "icon/glyphicons_433_minus.png", parent, mm);
 		}
 
@@ -141,9 +139,9 @@ class Actions {
 	}
 
 	@SuppressWarnings("serial")
-	static class UpdateModAction extends TinkerAction {
+	public static class UpdateModAction extends TinkerAction {
 
-		UpdateModAction(JComponent parent, ModManager mm){
+		public UpdateModAction(JComponent parent, ModManager mm){
 			this("Update Mod", parent, mm);
 		}
 
@@ -162,9 +160,9 @@ class Actions {
 	}
 
 	@SuppressWarnings("serial")
-	static class UpdateAllAction extends UpdateModAction {
+	public static class UpdateAllAction extends UpdateModAction {
 
-		UpdateAllAction(JComponent parent, ModManager mm) {
+		public UpdateAllAction(JComponent parent, ModManager mm) {
 			super("Update All", parent, mm);
 		}
 
@@ -175,9 +173,9 @@ class Actions {
 	}
 
 	@SuppressWarnings("serial")
-	static class CheckforUpdatesAction extends TinkerAction {
+	public static class CheckforUpdatesAction extends TinkerAction {
 
-		CheckforUpdatesAction(JComponent parent, ModManager mm){
+		public CheckforUpdatesAction(JComponent parent, ModManager mm){
 			super("Check for Mod Updates", "icon/glyphicons_027_search.png", parent, mm);
 		}
 
@@ -188,9 +186,9 @@ class Actions {
 	}
 
 	@SuppressWarnings("serial")
-	static class EnableDisableModAction extends TinkerAction {
+	public static class EnableDisableModAction extends TinkerAction {
 
-		EnableDisableModAction(JComponent parent, ModManager mm){
+		public EnableDisableModAction(JComponent parent, ModManager mm){
 			super("Enable/Disable", "icon/glyphicons_457_transfer.png", parent, mm);
 		}
 
@@ -222,7 +220,7 @@ class Actions {
 	}
 	 */
 
-	static TinkerAction newHelpAction(JComponent parent){
+	public static TinkerAction newHelpAction(JComponent parent){
 		return new GoToUrlAction(
 				"Help",
 				"https://github.com/oharaandrew314/TinkerTime/wiki",
@@ -232,9 +230,9 @@ class Actions {
 	}
 
 	@SuppressWarnings("serial")
-	static class AboutAction extends TinkerAction {
+	public static class AboutAction extends TinkerAction {
 
-		AboutAction(JComponent parent, ModManager mm){
+		public AboutAction(JComponent parent, ModManager mm){
 			super("About", "icon/glyphicons_003_user.png", parent, mm);
 		}
 
@@ -259,9 +257,9 @@ class Actions {
 	}
 
 	@SuppressWarnings("serial")
-	static class ContactAction extends TinkerAction {
+	public static class ContactAction extends TinkerAction {
 
-		ContactAction(JComponent parent, ModManager mm){
+		public ContactAction(JComponent parent, ModManager mm){
 			super("Contact Me", "icon/glyphicons_010_envelope.png", parent, mm);
 		}
 
@@ -276,11 +274,11 @@ class Actions {
 	}
 
 	@SuppressWarnings("serial")
-	static class ExportMods extends TinkerAction {
+	public static class ExportMods extends TinkerAction {
 
 		private final ImportController importController;
 
-		ExportMods(JComponent parent, ImportController importController){
+		public ExportMods(JComponent parent, ImportController importController){
 			super("Export Mods", "icon/glyphicons_359_file_export.png", parent, null);
 			this.importController = importController;
 		}
@@ -308,11 +306,11 @@ class Actions {
 	}
 
 	@SuppressWarnings("serial")
-	static class ImportMods extends TinkerAction {
+	public static class ImportMods extends TinkerAction {
 
 		private final ImportController importController;
 
-		ImportMods(JComponent parent, ImportController importController){
+		public ImportMods(JComponent parent, ImportController importController){
 			super("Import Mods", "icon/glyphicons-359-file-import.png", parent, null);
 			this.importController = importController;
 		}
@@ -330,9 +328,9 @@ class Actions {
 	}
 
 	@SuppressWarnings("serial")
-	static class UpdateTinkerTime extends TinkerAction {
+	public static class UpdateTinkerTime extends TinkerAction {
 
-		UpdateTinkerTime(JComponent parent, ModManager mm){
+		public UpdateTinkerTime(JComponent parent, ModManager mm){
 			super("Check for Tinker Time Update", null, parent, mm);
 		}
 
@@ -344,9 +342,9 @@ class Actions {
 	}
 
 	@SuppressWarnings("serial")
-	static class AddModZip extends TinkerAction {
+	public static class AddModZip extends TinkerAction {
 
-		AddModZip(JComponent parent, ModManager mm){
+		public AddModZip(JComponent parent, ModManager mm){
 			super("Add Mod from Zip File", "icon/glyphicons_410_compressed.png", parent, mm);
 		}
 
@@ -361,11 +359,11 @@ class Actions {
 	}
 
 	@SuppressWarnings("serial")
-	static class LaunchKspAction extends TinkerAction {
+	public static class LaunchKspAction extends TinkerAction {
 
 		private final GameLauncher launcher;
 
-		LaunchKspAction(JComponent parent, ModManager mm, GameLauncher launcher){
+		public LaunchKspAction(JComponent parent, ModManager mm, GameLauncher launcher){
 			super("Launch KSP", "icon/rocket.png", parent, mm);
 			this.launcher = launcher;
 		}
@@ -377,7 +375,7 @@ class Actions {
 	}
 
 	@SuppressWarnings("serial")
-	static class OpenGameDataFolder extends TinkerAction {
+	public static class OpenGameDataFolder extends TinkerAction {
 
 		private final ConfigFactory configFactory;
 
@@ -393,7 +391,7 @@ class Actions {
 
 	}
 
-	static class LaunchInstallationSelector extends TinkerAction {
+	public static class LaunchInstallationSelector extends TinkerAction {
 
 		private final InstallationSelectorView selector;
 

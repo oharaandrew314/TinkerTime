@@ -9,7 +9,6 @@ import io.andrewohara.tinkertime.db.ConfigFactory;
 import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory.UnsupportedHostException;
 import io.andrewohara.tinkertime.models.ConfigData;
 import io.andrewohara.tinkertime.views.InstallationSelectorView;
-import io.andrewohara.tinkertime.views.menus.MenuFactory;
 import io.andrewohara.tinkertime.views.modSelector.ModListCellRenderer;
 import io.andrewohara.tinkertime.views.modSelector.ModSelectorPanelFactory;
 
@@ -24,7 +23,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
+import javax.swing.JToolBar;
 
 import org.flywaydb.core.Flyway;
 
@@ -187,13 +188,15 @@ public class TinkerTimeLauncher implements Runnable {
 
 	private static class MainFrameLauncher implements Runnable {
 
-		private final MenuFactory menuFactory;
 		private final ModSelectorPanelFactory selectorFactory;
+		private final JMenuBar menuBar;
+		private final JToolBar toolBar;
 
 		@Inject
-		MainFrameLauncher(MenuFactory menuFactory, ModSelectorPanelFactory selectorFactory){
-			this.menuFactory = menuFactory;
+		MainFrameLauncher(ModSelectorPanelFactory selectorFactory, JMenuBar menuBar, JToolBar toolBar){
 			this.selectorFactory = selectorFactory;
+			this.menuBar = menuBar;
+			this.toolBar = toolBar;
 		}
 
 		@Override
@@ -211,8 +214,8 @@ public class TinkerTimeLauncher implements Runnable {
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			frame.setLayout(new BorderLayout());
 			frame.setIconImages(appIcons);
-			frame.setJMenuBar(menuFactory.createMenuBar());
-			frame.add(menuFactory.createToolBar(), BorderLayout.NORTH);
+			frame.setJMenuBar(menuBar);
+			frame.add(toolBar, BorderLayout.NORTH);
 			frame.add(selectorFactory.get().getComponent(), BorderLayout.CENTER);
 			frame.pack();
 			frame.setLocationRelativeTo(null);

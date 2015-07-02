@@ -1,6 +1,8 @@
 package io.andrewohara.tinkertime;
 
 import io.andrewohara.common.OS;
+import io.andrewohara.tinkertime.controllers.ImportController;
+import io.andrewohara.tinkertime.controllers.ModManager;
 import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinator;
 import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinatorImpl;
 import io.andrewohara.tinkertime.db.ConfigFactory;
@@ -13,6 +15,7 @@ import io.andrewohara.tinkertime.io.crawlers.pageLoaders.JsonLoader;
 import io.andrewohara.tinkertime.io.crawlers.pageLoaders.PageLoader;
 import io.andrewohara.tinkertime.io.crawlers.pageLoaders.WebpageLoader;
 import io.andrewohara.tinkertime.io.kspLauncher.GameExecStrategy;
+import io.andrewohara.tinkertime.io.kspLauncher.GameLauncher;
 import io.andrewohara.tinkertime.io.kspLauncher.LinuxExecStrategy;
 import io.andrewohara.tinkertime.io.kspLauncher.OsxExecStrategy;
 import io.andrewohara.tinkertime.io.kspLauncher.WindowsExecStrategy;
@@ -22,11 +25,18 @@ import io.andrewohara.tinkertime.models.ModFile;
 import io.andrewohara.tinkertime.models.ModImage;
 import io.andrewohara.tinkertime.models.Readme;
 import io.andrewohara.tinkertime.models.mod.Mod;
+import io.andrewohara.tinkertime.views.Actions;
+import io.andrewohara.tinkertime.views.InstallationSelectorView;
 
 import java.sql.SQLException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JPopupMenu;
+import javax.swing.JToolBar;
 
 import org.jsoup.nodes.Document;
 
@@ -160,5 +170,69 @@ public class MainModule extends AbstractModule {
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Provides
+	public JToolBar createToolBar(ModManager mm, GameLauncher gameLauncher, ConfigFactory configFactory, InstallationSelectorView installationSelector){
+		JToolBar toolBar = new JToolBar();
+		toolBar.setFloatable(false);
+
+		toolBar.add(new Actions.LaunchKspAction(toolBar, mm, gameLauncher)).setFocusPainted(false);
+		toolBar.addSeparator();
+
+		toolBar.add(new Actions.OpenGameDataFolder(toolBar, mm, configFactory)).setFocusPainted(false);
+		toolBar.add(new Actions.LaunchInstallationSelector(toolBar, mm, installationSelector)).setFocusPainted(false);
+		//toolBar.add(new Actions.OptionsAction(toolBar, configController)).setFocusPainted(false); FIXME reimplement options toolbar button
+
+		toolBar.addSeparator();
+
+		toolBar.add(new Actions.AddModAction(toolBar, mm)).setFocusPainted(false);
+		toolBar.add(new Actions.AddModZip(toolBar, mm)).setFocusPainted(false);
+
+		toolBar.addSeparator();
+
+		toolBar.add(new Actions.UpdateModAction(toolBar, mm)).setFocusPainted(false);
+		toolBar.add(new Actions.CheckforUpdatesAction(toolBar, mm)).setFocusPainted(false);
+
+		return toolBar;
+	}
+
+	@Provides
+	public JMenuBar createMenuBar(ModManager mm, ImportController importController){
+		JMenuBar menuBar = new JMenuBar();
+
+		JMenu modMenu = new JMenu("Mod");
+		modMenu.add(new Actions.EnableDisableModAction(menuBar, mm).withoutIcon());
+		modMenu.add(new Actions.UpdateModAction(menuBar, mm).withoutIcon());
+		modMenu.add(new Actions.DeleteModAction(menuBar, mm).withoutIcon());
+		menuBar.add(modMenu);
+
+		JMenu updateMenu = new JMenu("Updates");
+		updateMenu.add(new Actions.UpdateAllAction(menuBar, mm).withoutIcon());
+		updateMenu.add(new Actions.CheckforUpdatesAction(menuBar, mm).withoutIcon());
+		updateMenu.add(new Actions.UpdateTinkerTime(menuBar, mm).withoutIcon());
+		menuBar.add(updateMenu);
+
+		JMenu importExportMenu = new JMenu("Import/Export");
+		importExportMenu.add(new Actions.ImportMods(menuBar, importController).withoutIcon());
+		importExportMenu.add(new Actions.ExportMods(menuBar, importController).withoutIcon());
+		menuBar.add(importExportMenu);
+
+		JMenu helpMenu = new JMenu("Help");
+		helpMenu.add(new Actions.AboutAction(menuBar, mm).withoutIcon());
+		helpMenu.add(Actions.newHelpAction(menuBar).withoutIcon());
+		helpMenu.add(new Actions.ContactAction(menuBar, mm).withoutIcon());
+		menuBar.add(helpMenu);
+
+		return menuBar;
+	}
+
+	@Provides
+	public JPopupMenu createPopupMenu(ModManager mm){
+		JPopupMenu popupMenu = new JPopupMenu();
+		popupMenu.add(new Actions.EnableDisableModAction(popupMenu, mm));
+		popupMenu.add(new Actions.UpdateModAction(popupMenu, mm));
+		popupMenu.add(new Actions.DeleteModAction(popupMenu, mm));
+		return popupMenu;
 	}
 }
