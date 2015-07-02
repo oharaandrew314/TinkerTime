@@ -140,7 +140,7 @@ public class TestAnalyzeModZipTask {
 		@Override public void updateMod(Mod mod) { }
 		@Override public void setListeners(ModSelectorPanelFactory modSelectorPanelFactory, ModListCellRenderer modListCellRender) { }
 		@Override public void deleteMod(Mod mod) { }
-		@Override public void changeInstallation(Installation newInstallation) { }
+		@Override public void reload(Installation newInstallation) { }
 		@Override public void updateModImage(Mod mod, BufferedImage image) { }
 	}
 }

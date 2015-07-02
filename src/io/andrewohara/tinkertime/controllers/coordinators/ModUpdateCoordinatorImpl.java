@@ -21,7 +21,7 @@ import com.google.inject.Singleton;
 import com.j256.ormlite.dao.Dao;
 
 @Singleton
-public class ModUpdateCoordinatorImpl extends TaskCallback implements ModUpdateHandler, ModUpdateCoordinator {
+public class ModUpdateCoordinatorImpl extends TaskCallback implements ModUpdateCoordinator {
 
 	private final Dao<ModFile, Integer> modFilesDao;
 	private final Dao<ModImage, Integer> modImagesDao;
@@ -47,9 +47,9 @@ public class ModUpdateCoordinatorImpl extends TaskCallback implements ModUpdateH
 	}
 
 	@Override
-	public void changeInstallation(Installation newInstallation){
-		modLoader.changeInstallation(newInstallation);
-		modSelectorPanelFactory.get().changeInstallation(newInstallation);
+	public void reload(Installation newInstallation){
+		modLoader.reload(newInstallation);
+		modSelectorPanelFactory.get().reload(newInstallation);
 	}
 
 	@Override
@@ -106,5 +106,4 @@ public class ModUpdateCoordinatorImpl extends TaskCallback implements ModUpdateH
 			throw new RuntimeException(e);
 		}
 	}
-
 }

@@ -7,6 +7,6 @@ public interface ModUpdateHandler {
 
 	public void updateMod(Mod mod);
 	public void deleteMod(Mod mod);
-	public void changeInstallation(Installation installation);
+	public void reload(Installation installation);
 
 }

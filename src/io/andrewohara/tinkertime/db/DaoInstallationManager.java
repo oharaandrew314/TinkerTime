@@ -1,5 +1,7 @@
 package io.andrewohara.tinkertime.db;
 
+import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinator;
+import io.andrewohara.tinkertime.models.ConfigData;
 import io.andrewohara.tinkertime.models.DefaultMods;
 import io.andrewohara.tinkertime.models.Installation;
 import io.andrewohara.tinkertime.models.mod.Mod;
@@ -14,11 +16,15 @@ public class DaoInstallationManager implements InstallationManager {
 
 	private final Dao<Installation, Integer> dao;
 	private final ModLoader modLoader;
+	private final ConfigFactory configFactory;
+	private final ModUpdateCoordinator modUpdateCoordinator;
 
 	@Inject
-	public DaoInstallationManager(Dao<Installation, Integer> dao, ModLoader modLoader) {
+	public DaoInstallationManager(Dao<Installation, Integer> dao, ModLoader modLoader, ConfigFactory configFactory, ModUpdateCoordinator modUpdateCoordinator) {
 		this.dao = dao;
 		this.modLoader = modLoader;
+		this.configFactory = configFactory;
+		this.modUpdateCoordinator = modUpdateCoordinator;
 	}
 
 	@Override
@@ -51,6 +57,14 @@ public class DaoInstallationManager implements InstallationManager {
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public void changeInstallation(Installation installation) {
+		ConfigData config = configFactory.getConfig();
+		config.setSelectedInstallation(installation);
+		configFactory.update(config);
+		modUpdateCoordinator.reload(installation);
 	}
 
 }

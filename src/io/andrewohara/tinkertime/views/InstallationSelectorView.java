@@ -3,7 +3,6 @@ package io.andrewohara.tinkertime.views;
 import io.andrewohara.common.views.selectorPanel.DecoratedComponent;
 import io.andrewohara.tinkertime.db.ConfigFactory;
 import io.andrewohara.tinkertime.db.InstallationManager;
-import io.andrewohara.tinkertime.models.ConfigData;
 import io.andrewohara.tinkertime.models.Installation;
 import io.andrewohara.tinkertime.models.Installation.InvalidGameDataPathException;
 
@@ -255,9 +254,7 @@ public class InstallationSelectorView implements DecoratedComponent<JPanel> {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				ConfigData config = configFactory.getConfig();
-				config.setSelectedInstallation(getSelected());
-				configFactory.update(config);
+				installationManager.changeInstallation(getSelected());
 				if (dialog != null){
 					dialog.setVisible(false);
 				}

@@ -62,7 +62,7 @@ public class DaoModLoader implements ModLoader {
 	}
 
 	@Override
-	public void changeInstallation(Installation installation) {
+	public void reload(Installation installation) {
 		ConfigData config = configFactory.getConfig();
 		config.setSelectedInstallation(installation);
 		configFactory.update(config);

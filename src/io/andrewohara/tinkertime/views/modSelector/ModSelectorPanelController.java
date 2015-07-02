@@ -31,7 +31,7 @@ public class ModSelectorPanelController implements ModUpdateHandler, DecoratedCo
 	}
 
 	@Override
-	public void changeInstallation(Installation newInstallation){
+	public void reload(Installation newInstallation){
 		spc.setData(newInstallation.getMods());
 	}
 

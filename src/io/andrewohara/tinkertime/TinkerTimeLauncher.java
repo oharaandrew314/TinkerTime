@@ -146,7 +146,7 @@ public class TinkerTimeLauncher implements Runnable {
 
 		@Override
 		public void run() {
-			updateCooridnator.changeInstallation(configFactory.getConfig().getSelectedInstallation());
+			updateCooridnator.reload(configFactory.getConfig().getSelectedInstallation());
 		}
 
 	}

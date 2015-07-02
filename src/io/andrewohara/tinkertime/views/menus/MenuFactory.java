@@ -13,6 +13,7 @@ import javax.swing.JToolBar;
 
 import com.google.inject.Inject;
 
+//TODO these methods could probably be converted to providers
 public class MenuFactory {
 
 	private final ModManager mm;
