@@ -45,6 +45,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
@@ -54,24 +55,22 @@ import com.j256.ormlite.table.TableUtils;
 
 public class MainModule extends AbstractModule {
 
-	private ConnectionSource dbConnection;
-
 	@Override
 	protected void configure() {
 		bind(new TypeLiteral<PageLoader<Document>>(){}).to(WebpageLoader.class);
 		bind(new TypeLiteral<PageLoader<JsonElement>>(){}).to(JsonLoader.class);
-		bind(GameExecStrategy.class).to(getExecStrategyType());
 		bind(ConfigFactory.class).to(DaoConfigFactory.class);
 		bind(ModLoader.class).to(DaoModLoader.class);
 		bind(ModUpdateCoordinator.class).to(ModUpdateCoordinatorImpl.class);
 		bind(InstallationManager.class).to(DaoInstallationManager.class);
 	}
 
-	private Class<? extends GameExecStrategy> getExecStrategyType(){
+	@Provides
+	GameExecStrategy getGameExecStrategy(){
 		switch(OS.getOs()){
-		case Windows: return WindowsExecStrategy.class;
-		case Linux: return LinuxExecStrategy.class;
-		case Osx: return OsxExecStrategy.class;
+		case Windows: return new WindowsExecStrategy();
+		case Linux: return new LinuxExecStrategy();
+		case Osx: return new OsxExecStrategy();
 		default: throw new IllegalStateException();
 		}
 	}
@@ -91,85 +90,46 @@ public class MainModule extends AbstractModule {
 		return (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
 	}
 
+	@Singleton
 	@Provides
-	ConnectionSource getConnectionSource(){
-		try {
-			if (dbConnection == null){
-				dbConnection = new JdbcConnectionSource(TinkerTimeLauncher.getDbUrl());
-			}
-			return dbConnection;
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+	ConnectionSource getConnectionSource() throws SQLException {
+		return new JdbcConnectionSource(TinkerTimeLauncher.getDbUrl());
 	}
 
 	@Provides
-	Dao<Mod, Integer> getModsDao(){
-		try {
-			//return DaoManager.createDao(getConnectionSource();, Mod.class);
-			ConnectionSource connection = getConnectionSource();
-			TableUtils.createTableIfNotExists(connection, Mod.class);  //TODO Remove when migration created
-			return DaoManager.createDao(connection, Mod.class);
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+	Dao<Mod, Integer> getModsDao(ConnectionSource source) throws SQLException{
+		TableUtils.createTableIfNotExists(source, Mod.class);  //TODO Remove when migration created
+		return DaoManager.createDao(source, Mod.class);
 	}
 
 	@Provides
-	Dao<Installation, Integer> getInstallationsDao(){
-		try {
-			//return DaoManager.createDao(getConnectionSource(), Installation.class);
-			ConnectionSource source = getConnectionSource();
-			TableUtils.createTableIfNotExists(source, Installation.class);  //TODO Remove when migration created
-			return DaoManager.createDao(source, Installation.class);
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+	Dao<Installation, Integer> getInstallationsDao(ConnectionSource source) throws SQLException{
+		TableUtils.createTableIfNotExists(source, Installation.class);  //TODO Remove when migration created
+		return DaoManager.createDao(source, Installation.class);
 	}
 
 	@Provides
-	Dao<ConfigData, Integer> getConfigDao(){
-		try {
-			//return DaoManager.createDao(getConnectionSource(), ConfigData.class);
-			ConnectionSource source = getConnectionSource();
-			TableUtils.createTableIfNotExists(source, ConfigData.class);  //TODO Remove when migration created
-			return DaoManager.createDao(source, ConfigData.class);
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+	Dao<ConfigData, Integer> getConfigDao(ConnectionSource source) throws SQLException{
+		TableUtils.createTableIfNotExists(source, ConfigData.class);  //TODO Remove when migration created
+		return DaoManager.createDao(source, ConfigData.class);
 	}
 
 	@Provides
-	Dao<ModFile, Integer> getModFilesDao(){
-		try {
-			ConnectionSource source = getConnectionSource();
-			TableUtils.createTableIfNotExists(source, ModFile.class);  //TODO Remove when migration created
-			return DaoManager.createDao(source, ModFile.class);
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+	Dao<ModFile, Integer> getModFilesDao(ConnectionSource source) throws SQLException{
+		TableUtils.createTableIfNotExists(source, ModFile.class);  //TODO Remove when migration created
+		return DaoManager.createDao(source, ModFile.class);
 	}
 
 	@Provides
-	Dao<ModImage, Integer> getModImageDao(){
-		try {
-			ConnectionSource source = getConnectionSource();
-			TableUtils.createTableIfNotExists(source, ModImage.class);  //TODO Remove when migration created
-			return DaoManager.createDao(source, ModImage.class);
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+	Dao<ModImage, Integer> getModImageDao(ConnectionSource source) throws SQLException{
+		TableUtils.createTableIfNotExists(source, ModImage.class);  //TODO Remove when migration created
+		return DaoManager.createDao(source, ModImage.class);
 	}
 
 	@Provides
-	Dao<Readme, Integer> getReadmesDao(){
-		try {
-			ConnectionSource source = getConnectionSource();
-			TableUtils.createTableIfNotExists(source, Readme.class);  //TODO Remove when migration created
-			return DaoManager.createDao(source, Readme.class);
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+	Dao<Readme, Integer> getReadmesDao(ConnectionSource source) throws SQLException{
+		TableUtils.createTableIfNotExists(source, Readme.class);  //TODO Remove when migration created
+		return DaoManager.createDao(source, Readme.class);
 	}
 
 	@Provides
