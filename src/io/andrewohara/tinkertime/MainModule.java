@@ -35,6 +35,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import javax.swing.JCheckBox;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPopupMenu;
@@ -90,7 +91,7 @@ public class MainModule extends AbstractModule {
 
 	@Provides
 	ThreadPoolExecutor provideThreadedExecutor(){
-		return (ThreadPoolExecutor) Executors.newFixedThreadPool(4);
+		return (ThreadPoolExecutor) Executors.newFixedThreadPool(ConfigData.NUM_CONCURRENT_DOWNLOADS);
 	}
 
 	@Singleton
@@ -145,7 +146,6 @@ public class MainModule extends AbstractModule {
 
 		toolBar.add(new Actions.OpenGameDataFolder(toolBar, mm, configFactory)).setFocusPainted(false);
 		toolBar.add(new Actions.LaunchInstallationSelector(toolBar, mm, installationSelector)).setFocusPainted(false);
-		//toolBar.add(new Actions.OptionsAction(toolBar, configController)).setFocusPainted(false); FIXME reimplement options toolbar button
 
 		toolBar.addSeparator();
 
@@ -161,7 +161,7 @@ public class MainModule extends AbstractModule {
 	}
 
 	@Provides
-	public JMenuBar createMenuBar(ModManager mm, ImportController importController){
+	public JMenuBar createMenuBar(ModManager mm, ImportController importController, ConfigFactory configFactory){
 		JMenuBar menuBar = new JMenuBar();
 
 		JMenu modMenu = new JMenu("Mod");
@@ -180,6 +180,21 @@ public class MainModule extends AbstractModule {
 		importExportMenu.add(new Actions.ImportMods(menuBar, importController).withoutIcon());
 		importExportMenu.add(new Actions.ExportMods(menuBar, importController).withoutIcon());
 		menuBar.add(importExportMenu);
+
+		ConfigData config = configFactory.getConfig();
+		JMenu optionsMenu = new JMenu("Options");
+		JCheckBox checkAppUpdatesBox = new JCheckBox(
+				String.format("Check for Updates to %s on Startup", TinkerTimeLauncher.NAME),
+				config.isCheckForAppUpdatesOnStartup()
+				);
+		checkAppUpdatesBox.addActionListener(new Actions.CheckForAppUpdatesAction(checkAppUpdatesBox, configFactory));
+		optionsMenu.add(checkAppUpdatesBox);
+
+		JCheckBox checkModUpdatesBox = new JCheckBox("Check for Updates to Mods on Startup", config.isCheckForModUpdatesOnStartup());
+		checkModUpdatesBox.addActionListener(new Actions.CheckForModUpdatesAction(checkModUpdatesBox, configFactory));
+		optionsMenu.add(checkModUpdatesBox);
+
+		menuBar.add(optionsMenu);
 
 		JMenu helpMenu = new JMenu("Help");
 		helpMenu.add(new Actions.AboutAction(menuBar, mm).withoutIcon());

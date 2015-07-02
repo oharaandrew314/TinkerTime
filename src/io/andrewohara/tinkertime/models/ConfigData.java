@@ -8,6 +8,8 @@ public class ConfigData {
 
 	public static final Integer CONFIG_ID = 1;
 
+	public static final int NUM_CONCURRENT_DOWNLOADS = 4;
+
 	/////////////
 	// Columns //
 	/////////////
@@ -17,9 +19,6 @@ public class ConfigData {
 
 	@DatabaseField(canBeNull = false)
 	private boolean checkForAppUpdatesOnStartup = true, checkForModUpdatesOnStartup = true;
-
-	@DatabaseField(canBeNull = false)
-	private int numConcurrentDownloads = 4;;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh=true)
 	private Installation selectedInstallation;
@@ -34,13 +33,15 @@ public class ConfigData {
 	public boolean isCheckForAppUpdatesOnStartup(){
 		return checkForAppUpdatesOnStartup;
 	}
+	public void setCheckForAppUpdatesOnStartup(boolean check){
+		this.checkForAppUpdatesOnStartup = check;
+	}
 
 	public boolean isCheckForModUpdatesOnStartup(){
 		return checkForModUpdatesOnStartup;
 	}
-
-	public int getNumConcurrentDownloads(){
-		return numConcurrentDownloads;
+	public void setCheckForModUpdatesOnStartup(boolean check){
+		this.checkForModUpdatesOnStartup = check;
 	}
 
 	public Installation getSelectedInstallation() {

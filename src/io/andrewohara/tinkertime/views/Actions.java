@@ -11,10 +11,12 @@ import io.andrewohara.tinkertime.controllers.ModManager;
 import io.andrewohara.tinkertime.db.ConfigFactory;
 import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory;
 import io.andrewohara.tinkertime.io.kspLauncher.GameLauncher;
+import io.andrewohara.tinkertime.models.ConfigData;
 import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -24,6 +26,7 @@ import java.util.Arrays;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
@@ -202,24 +205,6 @@ public class Actions {
 		}
 	}
 
-	/*
-	@SuppressWarnings("serial")
-	static class OptionsAction extends TinkerAction {
-
-		private final ConfigController configController;
-
-		OptionsAction(JComponent parent, ConfigController configController){
-			super("Options", "icon/glyphicons_439_wrench.png", parent, null);
-			this.configController = configController;
-		}
-
-		@Override
-		protected void call() throws Exception {
-			configController.openConfigDialog();
-		}
-	}
-	 */
-
 	public static TinkerAction newHelpAction(JComponent parent){
 		return new GoToUrlAction(
 				"Help",
@@ -388,7 +373,6 @@ public class Actions {
 		protected void call() throws Exception {
 			Desktop.getDesktop().open(configFactory.getConfig().getSelectedInstallation().getGameDataPath().toFile());
 		}
-
 	}
 
 	public static class LaunchInstallationSelector extends TinkerAction {
@@ -404,6 +388,45 @@ public class Actions {
 		protected void call() throws Exception {
 			selector.toDialog();
 		}
+	}
 
+	//////////////////////////////
+	// Options Action Listeners //
+	//////////////////////////////
+
+	public static class CheckForAppUpdatesAction implements ActionListener {
+
+		private final JCheckBox checkBox;
+		private final ConfigFactory configFactory;
+
+		public CheckForAppUpdatesAction(JCheckBox checkBox, ConfigFactory configFactory){
+			this.checkBox = checkBox;
+			this.configFactory = configFactory;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			ConfigData config = configFactory.getConfig();
+			config.setCheckForAppUpdatesOnStartup(checkBox.isSelected());
+			configFactory.update(config);
+		}
+	}
+
+	public static class CheckForModUpdatesAction implements ActionListener {
+
+		private final JCheckBox checkBox;
+		private final ConfigFactory configFactory;
+
+		public CheckForModUpdatesAction(JCheckBox checkBox, ConfigFactory configFactory){
+			this.checkBox = checkBox;
+			this.configFactory = configFactory;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			ConfigData config = configFactory.getConfig();
+			config.setCheckForModUpdatesOnStartup(checkBox.isSelected());
+			configFactory.update(config);
+		}
 	}
 }
