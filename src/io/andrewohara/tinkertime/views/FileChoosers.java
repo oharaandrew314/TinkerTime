@@ -42,6 +42,21 @@ public class FileChoosers {
 		return lastGameDataLocation = showOpenDialog(chooser);
 	}
 
+	public static Path chooseImportExportFile(boolean exportMods) throws FileNotFoundException{
+		JFileChooser chooser = new JFileChooser(lastJsonLocation != null ? lastJsonLocation.toFile() : null);
+		chooser.setDialogTitle(String.format("Choose Mod %s file", exportMods ? "Export" : "Import"));
+
+		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);  // Only accept files
+		if (exportMods){
+			chooser.setFileFilter(new FileNameExtensionFilter("Text File (.txt)", "txt"));
+		} else {
+			chooser.setFileFilter(new FileNameExtensionFilter("txt or legacy json file", "txt", "json"));
+		}
+
+
+		return lastJsonLocation = exportMods ? showSaveDialog(chooser) : showOpenDialog(chooser);
+	}
+
 	//-- Helpers --------------------------------------------------------------
 
 	private static Path showSaveDialog(JFileChooser chooser) throws FileNotFoundException {

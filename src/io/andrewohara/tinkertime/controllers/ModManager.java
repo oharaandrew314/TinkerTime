@@ -73,11 +73,15 @@ public class ModManager extends Listenable<TaskCallback> {
 		}
 	}
 
-	public void downloadNewMod(URL url) throws MalformedURLException, UnsupportedHostException {
-		Mod newMod = modFactory.newMod(url);
-		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder(newMod);
-		builder.downloadNewMod();
-		taskLauncher.submitDownloadWorkflow(builder);
+	public boolean downloadNewMod(URL url) throws MalformedURLException, UnsupportedHostException {
+		if (modLoader.getByUrl(url) == null){
+			Mod newMod = modFactory.newMod(url);
+			ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder(newMod);
+			builder.downloadNewMod();
+			taskLauncher.submitDownloadWorkflow(builder);
+			return true;
+		}
+		return false;
 	}
 
 	public void addModZip(Path zipPath){
@@ -130,17 +134,6 @@ public class ModManager extends Listenable<TaskCallback> {
 				throw new RuntimeException(ex);
 			}
 		}
-	}
-
-
-	public void exportEnabledMods(Path path){
-		//FIXME Update to new version
-		//modLoader.exportEnabledMods(path);
-	}
-
-	public void importMods(Path path){
-		//FIXME Update to new version
-		//modLoader.importMods(path);
 	}
 
 	public void tryUpdateModManager() throws UnsupportedHostException, MalformedURLException {

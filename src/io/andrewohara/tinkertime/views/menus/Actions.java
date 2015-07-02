@@ -5,6 +5,7 @@ import io.andrewohara.common.content.ImageManager;
 import io.andrewohara.common.views.Dialogs;
 import io.andrewohara.common.views.UrlLabels;
 import io.andrewohara.tinkertime.TinkerTimeLauncher;
+import io.andrewohara.tinkertime.controllers.ImportController;
 import io.andrewohara.tinkertime.controllers.ModExceptions.NoModSelectedException;
 import io.andrewohara.tinkertime.controllers.ModManager;
 import io.andrewohara.tinkertime.db.ConfigFactory;
@@ -21,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 import javax.swing.AbstractAction;
@@ -276,42 +278,54 @@ class Actions {
 	@SuppressWarnings("serial")
 	static class ExportMods extends TinkerAction {
 
-		ExportMods(JComponent parent, ModManager mm){
-			super("Export Enabled Mods", "icon/glyphicons_359_file_export.png", parent, mm);
+		private final ImportController importController;
+
+		ExportMods(JComponent parent, ImportController importController){
+			super("Export Mods", "icon/glyphicons_359_file_export.png", parent, null);
+			this.importController = importController;
 		}
 
 		@Override
 		protected void call() throws Exception {
-			/* TODO reimplement export mods chooser
-			mm.exportEnabledMods(FileChoosers.chooseJsonFile(true));
+			int result = JOptionPane.showConfirmDialog(parent, "Would you like to export only the enabled mods?  Otherwise, all.", "Choose mods to export", JOptionPane.YES_NO_CANCEL_OPTION);
+			boolean enabledOnly = false;
+			switch(result){
+			case JOptionPane.YES_OPTION: enabledOnly = true; break;
+			case JOptionPane.NO_OPTION: enabledOnly = false; break;
+			case JOptionPane.CANCEL_OPTION:
+			default: return;
+			}
+
+			Path exportPath = FileChoosers.chooseImportExportFile(true);
+			int exported = importController.exportMods(exportPath, enabledOnly);
 			JOptionPane.showMessageDialog(
 					parent,
-					"Enabled mod data has been exported.",
+					String.format("%d Mods have been exported.", exported),
 					"Exported",
 					JOptionPane.INFORMATION_MESSAGE
 					);
-			 */
 		}
 	}
 
 	@SuppressWarnings("serial")
 	static class ImportMods extends TinkerAction {
 
-		ImportMods(JComponent parent, ModManager mm){
-			super("Import Mods", "icon/glyphicons-359-file-import.png", parent, mm);
+		private final ImportController importController;
+
+		ImportMods(JComponent parent, ImportController importController){
+			super("Import Mods", "icon/glyphicons-359-file-import.png", parent, null);
+			this.importController = importController;
 		}
 
 		@Override
 		protected void call() throws Exception {
-			/*  TODO reimplement import mods chooser
-			mm.importMods(FileChoosers.chooseJsonFile(false));
+			int imported = importController.importMods(FileChoosers.chooseImportExportFile(false));
 			JOptionPane.showMessageDialog(
 					parent,
-					"The Mods have been imported.",
+					String.format("%d Mod(s) have been imported.", imported),
 					"Imported",
 					JOptionPane.INFORMATION_MESSAGE
 					);
-			 */
 		}
 	}
 

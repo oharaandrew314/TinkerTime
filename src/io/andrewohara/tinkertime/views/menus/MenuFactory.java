@@ -1,5 +1,6 @@
 package io.andrewohara.tinkertime.views.menus;
 
+import io.andrewohara.tinkertime.controllers.ImportController;
 import io.andrewohara.tinkertime.controllers.ModManager;
 import io.andrewohara.tinkertime.db.ConfigFactory;
 import io.andrewohara.tinkertime.io.kspLauncher.GameLauncher;
@@ -18,13 +19,15 @@ public class MenuFactory {
 	private final ConfigFactory configFactory;
 	private final GameLauncher gameLauncher;
 	private final InstallationSelectorView installationSelector;
+	private final ImportController importController;
 
 	@Inject
-	MenuFactory(ModManager mm, ConfigFactory configFactory, GameLauncher gameLauncher, InstallationSelectorView installationSelector){
+	MenuFactory(ModManager mm, ConfigFactory configFactory, GameLauncher gameLauncher, InstallationSelectorView installationSelector, ImportController importController){
 		this.mm = mm;
 		this.configFactory = configFactory;
 		this.gameLauncher = gameLauncher;
 		this.installationSelector = installationSelector;
+		this.importController = importController;
 	}
 
 	public JToolBar createToolBar(){
@@ -67,8 +70,8 @@ public class MenuFactory {
 		menuBar.add(updateMenu);
 
 		JMenu importExportMenu = new JMenu("Import/Export");
-		importExportMenu.add(new Actions.ExportMods(menuBar, mm).withoutIcon());
-		importExportMenu.add(new Actions.ImportMods(menuBar, mm).withoutIcon());
+		importExportMenu.add(new Actions.ImportMods(menuBar, importController).withoutIcon());
+		importExportMenu.add(new Actions.ExportMods(menuBar, importController).withoutIcon());
 		menuBar.add(importExportMenu);
 
 		JMenu helpMenu = new JMenu("Help");

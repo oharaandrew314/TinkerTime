@@ -109,7 +109,7 @@ public class ModListCellRenderer extends TaskCallback implements ListCellRendere
 		ele.setBorder(isSelected ? BorderFactory.createLineBorder(Color.black) : null);
 		ele.setToolTipText(tooltipText);
 
-		list.repaint();
+		list.repaint();  //FIXME revert to framerate timer if necesaey
 
 		return ele;
 	}
