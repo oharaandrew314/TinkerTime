@@ -51,6 +51,8 @@ You will need to re-install all your mods. Fortunately, you can import your lega
   - You can now export all of your mods, rather than just enabled ones
 
 - Bug Fixes
+  - Fix slowdown anbd freezing during long use
+    - Reduced Memory Consumption in this case, too
   - Links to KerbalStuff mods will no longer go to the API page
 
 - Other interesting points
