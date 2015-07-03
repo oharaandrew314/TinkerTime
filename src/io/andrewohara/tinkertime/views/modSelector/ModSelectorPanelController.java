@@ -15,7 +15,7 @@ public class ModSelectorPanelController implements ModUpdateHandler, DecoratedCo
 
 	private final SelectorPanelController<Mod> spc;
 
-	ModSelectorPanelController(SelectorPanelController<Mod> spc, ModManager mm){
+	public ModSelectorPanelController(SelectorPanelController<Mod> spc, ModManager mm){
 		this.spc = spc;
 		new DropTarget(spc.getList(), new DragDropHandler(spc.getList(), mm));
 	}

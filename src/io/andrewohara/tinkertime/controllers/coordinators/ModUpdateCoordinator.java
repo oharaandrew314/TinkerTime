@@ -3,14 +3,14 @@ package io.andrewohara.tinkertime.controllers.coordinators;
 import io.andrewohara.tinkertime.models.ModFile;
 import io.andrewohara.tinkertime.models.mod.Mod;
 import io.andrewohara.tinkertime.views.modSelector.ModListCellRenderer;
-import io.andrewohara.tinkertime.views.modSelector.ModSelectorPanelFactory;
+import io.andrewohara.tinkertime.views.modSelector.ModSelectorPanelController;
 
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 
 public interface ModUpdateCoordinator extends ModUpdateHandler {
 
-	public void setListeners(ModSelectorPanelFactory modSelectorPanelFactory, ModListCellRenderer modListCellRender);
+	public void setListeners(ModSelectorPanelController modSelector, ModListCellRenderer modListCellRender);
 
 	public void updateModFiles(Mod mod, Collection<ModFile> modFiles, String readmeText);
 

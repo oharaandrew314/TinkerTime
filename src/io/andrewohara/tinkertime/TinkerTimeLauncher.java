@@ -11,7 +11,7 @@ import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory.UnsupportedHostExcep
 import io.andrewohara.tinkertime.models.ConfigData;
 import io.andrewohara.tinkertime.views.InstallationSelectorView;
 import io.andrewohara.tinkertime.views.modSelector.ModListCellRenderer;
-import io.andrewohara.tinkertime.views.modSelector.ModSelectorPanelFactory;
+import io.andrewohara.tinkertime.views.modSelector.ModSelectorPanelController;
 
 import java.awt.BorderLayout;
 import java.awt.Image;
@@ -124,21 +124,20 @@ public class TinkerTimeLauncher implements Runnable {
 
 	private static class SetupListeners implements Runnable {
 
-		private final ModUpdateCoordinator modUpdateCoordinator;
-		private final ModSelectorPanelFactory modSelectorPanelFactory;
+		private final ModSelectorPanelController modSelectorPanelController;
 		private final ModListCellRenderer modListCellRenderer;
+		private final ModUpdateCoordinator modUpdateCoordinator;
 
 		@Inject
-		SetupListeners(ModUpdateCoordinator modUpdateCoordinator, ModSelectorPanelFactory modSelectorPanelFactory, ModListCellRenderer modListCellRender) {
+		SetupListeners(ModUpdateCoordinator modUpdateCoordinator, ModSelectorPanelController modSelectorPanelController, ModListCellRenderer modListCellRender) {
 			this.modUpdateCoordinator = modUpdateCoordinator;
-
-			this.modSelectorPanelFactory = modSelectorPanelFactory;
+			this.modSelectorPanelController = modSelectorPanelController;
 			this.modListCellRenderer = modListCellRender;
 		}
 
 		@Override
 		public void run() {
-			modUpdateCoordinator.setListeners(modSelectorPanelFactory, modListCellRenderer);
+			modUpdateCoordinator.setListeners(modSelectorPanelController, modListCellRenderer);
 		}
 	}
 
@@ -196,13 +195,13 @@ public class TinkerTimeLauncher implements Runnable {
 
 	private static class MainFrameLauncher implements Runnable {
 
-		private final ModSelectorPanelFactory selectorFactory;
+		private final ModSelectorPanelController modSelectorPanelController;
 		private final JMenuBar menuBar;
 		private final JToolBar toolBar;
 
 		@Inject
-		MainFrameLauncher(ModSelectorPanelFactory selectorFactory, JMenuBar menuBar, JToolBar toolBar){
-			this.selectorFactory = selectorFactory;
+		MainFrameLauncher(ModSelectorPanelController modSelectorPanelController, JMenuBar menuBar, JToolBar toolBar){
+			this.modSelectorPanelController = modSelectorPanelController;
 			this.menuBar = menuBar;
 			this.toolBar = toolBar;
 		}
@@ -224,7 +223,7 @@ public class TinkerTimeLauncher implements Runnable {
 			frame.setIconImages(appIcons);
 			frame.setJMenuBar(menuBar);
 			frame.add(toolBar, BorderLayout.NORTH);
-			frame.add(selectorFactory.get().getComponent(), BorderLayout.CENTER);
+			frame.add(modSelectorPanelController.getComponent(), BorderLayout.CENTER);
 			frame.pack();
 			frame.setLocationRelativeTo(null);
 			frame.setVisible(true);

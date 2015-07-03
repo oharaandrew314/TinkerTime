@@ -1,6 +1,7 @@
 package io.andrewohara.tinkertime;
 
 import io.andrewohara.common.OS;
+import io.andrewohara.common.views.selectorPanel.SelectorPanelBuilder;
 import io.andrewohara.tinkertime.controllers.ImportController;
 import io.andrewohara.tinkertime.controllers.ModManager;
 import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinator;
@@ -27,7 +28,12 @@ import io.andrewohara.tinkertime.models.ModFile;
 import io.andrewohara.tinkertime.models.mod.Mod;
 import io.andrewohara.tinkertime.views.Actions;
 import io.andrewohara.tinkertime.views.InstallationSelectorView;
+import io.andrewohara.tinkertime.views.modSelector.ModListCellRenderer;
+import io.andrewohara.tinkertime.views.modSelector.ModListListener;
+import io.andrewohara.tinkertime.views.modSelector.ModSelectorPanelController;
+import io.andrewohara.tinkertime.views.modView.ModView;
 
+import java.awt.Dimension;
 import java.sql.SQLException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -198,5 +204,18 @@ public class MainModule extends AbstractModule {
 		popupMenu.add(new Actions.UpdateModAction(popupMenu, mm));
 		popupMenu.add(new Actions.DeleteModAction(popupMenu, mm));
 		return popupMenu;
+	}
+
+	@Singleton
+	@Provides
+	public ModSelectorPanelController getModSelector(ModListCellRenderer renderer, ModListListener listListener, JPopupMenu popupMenu, ModManager mm, ModView modView){
+		SelectorPanelBuilder<Mod> spBuilder = new SelectorPanelBuilder<>(new Dimension(800, 600), 0.35);
+		spBuilder.setListCellRenderer(renderer);
+		spBuilder.setContextMenu(popupMenu);
+
+		spBuilder.addKeyListener(listListener);
+		spBuilder.addSelectionListener(listListener);
+
+		return new ModSelectorPanelController(spBuilder.createSelectorPanel(modView), mm);
 	}
 }

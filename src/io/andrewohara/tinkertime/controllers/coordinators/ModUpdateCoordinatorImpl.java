@@ -7,7 +7,7 @@ import io.andrewohara.tinkertime.models.Installation;
 import io.andrewohara.tinkertime.models.ModFile;
 import io.andrewohara.tinkertime.models.mod.Mod;
 import io.andrewohara.tinkertime.views.modSelector.ModListCellRenderer;
-import io.andrewohara.tinkertime.views.modSelector.ModSelectorPanelFactory;
+import io.andrewohara.tinkertime.views.modSelector.ModSelectorPanelController;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -24,7 +24,7 @@ public class ModUpdateCoordinatorImpl extends TaskCallback implements ModUpdateC
 	private final Dao<ModFile, Integer> modFilesDao;
 	private final ModLoader modLoader;
 
-	private ModSelectorPanelFactory modSelectorPanelFactory;
+	private ModSelectorPanelController modSelector;
 	private ModListCellRenderer modListCellRenderer;
 
 
@@ -35,27 +35,27 @@ public class ModUpdateCoordinatorImpl extends TaskCallback implements ModUpdateC
 	}
 
 	@Override
-	public void setListeners(ModSelectorPanelFactory modSelectorPanelFactory, ModListCellRenderer modListCellRender){
-		this.modSelectorPanelFactory = modSelectorPanelFactory;
+	public void setListeners(ModSelectorPanelController modSelector, ModListCellRenderer modListCellRender){
+		this.modSelector = modSelector;
 		this.modListCellRenderer = modListCellRender;
 	}
 
 	@Override
 	public void reload(Installation newInstallation){
 		modLoader.reload(newInstallation);
-		modSelectorPanelFactory.get().reload(newInstallation);
+		modSelector.reload(newInstallation);
 	}
 
 	@Override
 	public void updateMod(Mod mod) {
 		modLoader.updateMod(mod);
-		modSelectorPanelFactory.get().updateMod(mod);
+		modSelector.updateMod(mod);
 	}
 
 	@Override
 	public void deleteMod(Mod mod) {
 		modLoader.deleteMod(mod);
-		modSelectorPanelFactory.get().deleteMod(mod);
+		modSelector.deleteMod(mod);
 	}
 
 	@Override
