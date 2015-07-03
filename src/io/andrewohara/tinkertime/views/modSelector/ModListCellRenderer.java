@@ -20,6 +20,7 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
+import javax.swing.SwingUtilities;
 
 import thirdParty.CompoundIcon;
 
@@ -109,7 +110,18 @@ public class ModListCellRenderer extends TaskCallback implements ListCellRendere
 		ele.setBorder(isSelected ? BorderFactory.createLineBorder(Color.black) : null);
 		ele.setToolTipText(tooltipText);
 
-		list.repaint();  //FIXME revert to framerate timer if necesaey
+		SwingUtilities.invokeLater(new Runnable(){
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(20);
+				} catch (InterruptedException e) {
+					// Do Nothing
+				} finally {
+					list.repaint();
+				}
+			}
+		});
 
 		return ele;
 	}

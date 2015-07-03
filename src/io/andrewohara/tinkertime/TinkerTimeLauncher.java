@@ -230,6 +230,4 @@ public class TinkerTimeLauncher implements Runnable {
 
 		}
 	}
-
-
 }

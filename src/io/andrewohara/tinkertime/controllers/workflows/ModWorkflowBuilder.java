@@ -155,7 +155,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 		// Check if any files for this mod are dependencies of other mods.
 		// All files which are a dependency will not be deleted
 		for (Mod otherMod : modLoader.getMods()){
-			if (!otherMod.equals(getMod()) && otherMod.isEnabled()){
+			if (otherMod != null && !otherMod.equals(getMod()) && otherMod.isEnabled()){
 				modDestPaths.removeAll(getModDestPaths(otherMod));
 			}
 		}
