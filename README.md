@@ -32,11 +32,11 @@ The [Tinker Time Wiki](https://github.com/oharaandrew314/TinkerTime/wiki) contai
 
 ### Change Log
 
-#### v2.0
+##### v2.0
 
 This Major Update converts TinkerTime to use the pure-java H2 Database engine. TinkerTime will now run much faster, as more data can be cached, rather than constantly analyzing the mod zip files.
 
-##### LEGACY BREAKING CHANGES:
+###### LEGACY BREAKING CHANGES:
 
 You will need to re-install all your mods. Fortunately, you can import your legacy TinkerTime-mods.json files, which are stored in Kerbal Space Program/TinkerTime. This will help make for a smoother transition. In the future, the database will be automatically migrated for changes.
 
