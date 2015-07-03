@@ -15,6 +15,7 @@ import io.andrewohara.tinkertime.views.modSelector.ModSelectorPanelController;
 
 import java.awt.BorderLayout;
 import java.awt.Image;
+import java.awt.SplashScreen;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -204,6 +205,12 @@ public class TinkerTimeLauncher implements Runnable {
 			appIcons.add(imageManager.getImage("icon/app/icon 32x32.png"));
 			appIcons.add(imageManager.getImage("icon/app/icon 16x16.png"));
 
+			// Hide Splash Screen so the JFrame does not hide when appearing
+			SplashScreen s = SplashScreen.getSplashScreen();
+			if (s != null){
+				s.close();
+			}
+
 			// Initialize Frame
 			JFrame frame = new JFrame(TinkerTimeLauncher.FULL_NAME);
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -215,6 +222,7 @@ public class TinkerTimeLauncher implements Runnable {
 			frame.pack();
 			frame.setLocationRelativeTo(null);
 			frame.setVisible(true);
+			frame.toFront();
 		}
 	}
 }

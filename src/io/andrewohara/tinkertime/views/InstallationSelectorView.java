@@ -91,6 +91,7 @@ public class InstallationSelectorView implements DecoratedComponent<JPanel> {
 		dialog.setModalityType(Dialog.DEFAULT_MODALITY_TYPE);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		dialog.setAlwaysOnTop(true);
 		dialog.add(getComponent());
 
 		dialog.addWindowListener(new WindowAdapter(){
