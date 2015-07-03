@@ -269,7 +269,11 @@ public class InstallationSelectorView implements DecoratedComponent<JPanel> {
 	//Exceptions //
 	////////////////
 
-	private static class NoNameEnteredException extends Exception { }
+	private static class NoNameEnteredException extends Exception {
+		private NoNameEnteredException(){
+			super("No name was entered for the installation");
+		}
+	}
 
 	private static class DuplicatedFieldException extends Exception {
 		private DuplicatedFieldException(String type){
