@@ -43,7 +43,7 @@ You will need to re-install all your mods. Fortunately, you can import your lega
 - New Features
   - Faster due to the H2 database engine migration
     - you may notice that mod info in the right panel switches far faster than before
-  - Proper Installation Management
+  - Improved KSP Installation Management
     - TinkerTime will now keep track of multiple KSP installations, and can switch them on the fly
   - You can now filter your mods with a text filter
   - New Splash screen on startup
