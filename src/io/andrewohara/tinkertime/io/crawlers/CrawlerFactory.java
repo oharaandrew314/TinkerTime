@@ -32,7 +32,6 @@ public class CrawlerFactory {
 	}
 
 	public Crawler<?> getCrawler(Mod mod) throws UnsupportedHostException{
-		// TODO check for host in ModFactory and cache it in mod, not when getting crawler
 		String host = mod.getUrl().getHost();
 		if (host.contains(HOST_CURSE)){
 			return new CurseCrawler(mod, docLoader);

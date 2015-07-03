@@ -112,19 +112,19 @@ public class MainModule extends AbstractModule {
 
 	@Provides
 	Dao<Installation, Integer> getInstallationsDao(ConnectionSource source) throws SQLException{
-		TableUtils.createTableIfNotExists(source, Installation.class);  //TODO Remove when migration created
+		TableUtils.createTableIfNotExists(source, Installation.class);
 		return DaoManager.createDao(source, Installation.class);
 	}
 
 	@Provides
 	Dao<ConfigData, Integer> getConfigDao(ConnectionSource source) throws SQLException{
-		TableUtils.createTableIfNotExists(source, ConfigData.class);  //TODO Remove when migration created
+		TableUtils.createTableIfNotExists(source, ConfigData.class);
 		return DaoManager.createDao(source, ConfigData.class);
 	}
 
 	@Provides
 	Dao<ModFile, Integer> getModFilesDao(ConnectionSource source) throws SQLException{
-		TableUtils.createTableIfNotExists(source, ModFile.class);  //TODO Remove when migration created
+		TableUtils.createTableIfNotExists(source, ModFile.class);
 		return DaoManager.createDao(source, ModFile.class);
 	}
 

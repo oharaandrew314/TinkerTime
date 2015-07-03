@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'eclipse'
 
-mainClassName = "io.andrewohara.tinkertime.launcher.TinkerTimeLauncher"
+mainClassName = "io.andrewohara.tinkertime.TinkerTimeLauncher"
 
 repositories {
     mavenCentral()
@@ -55,7 +55,10 @@ jar {
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 
     manifest {
-        attributes 'Main-Class': mainClassName
+        attributes(
+			'Main-Class': mainClassName,
+			'SplashScreen-Image': 'splash/splash.png'
+        )
     }
 }
 
