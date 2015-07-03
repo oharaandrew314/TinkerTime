@@ -1,6 +1,6 @@
 package io.andrewohara.tinkertime.views;
 
-import io.andrewohara.common.views.selectorPanel.DecoratedComponent;
+import io.andrewohara.common.views.DecoratedComponent;
 import io.andrewohara.tinkertime.db.ConfigFactory;
 import io.andrewohara.tinkertime.db.InstallationManager;
 import io.andrewohara.tinkertime.models.Installation;

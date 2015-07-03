@@ -44,7 +44,10 @@ public class Mod implements Comparable<Mod> {
 	private Date updatedOn;
 
 	@DatabaseField
-	private String name, creator, modVersion, kspVersion, url;
+	private String name, creator, modVersion, kspVersion;
+
+	@DatabaseField(canBeNull = false)
+	private String url;
 
 	@DatabaseField
 	private boolean updateAvailable = false, builtIn = false;

@@ -1,6 +1,6 @@
 package io.andrewohara.tinkertime.views.modSelector;
 
-import io.andrewohara.common.views.selectorPanel.DecoratedComponent;
+import io.andrewohara.common.views.DecoratedComponent;
 import io.andrewohara.common.views.selectorPanel.SelectorPanelController;
 import io.andrewohara.tinkertime.controllers.ModManager;
 import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateHandler;
