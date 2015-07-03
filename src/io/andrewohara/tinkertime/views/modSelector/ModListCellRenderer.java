@@ -11,6 +11,8 @@ import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -20,7 +22,7 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
-import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 import thirdParty.CompoundIcon;
 
@@ -40,6 +42,7 @@ public class ModListCellRenderer extends TaskCallback implements ListCellRendere
 
 	private final Map<Mod, ProgressSpinnerPanel> elements = new HashMap<>();
 	private final ImageManager imageManager;
+	private Timer frameTimer;
 
 	@Inject
 	ModListCellRenderer(ImageManager imageManager){
@@ -110,18 +113,15 @@ public class ModListCellRenderer extends TaskCallback implements ListCellRendere
 		ele.setBorder(isSelected ? BorderFactory.createLineBorder(Color.black) : null);
 		ele.setToolTipText(tooltipText);
 
-		SwingUtilities.invokeLater(new Runnable(){
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(20);
-				} catch (InterruptedException e) {
-					// Do Nothing
-				} finally {
+		if (frameTimer == null){
+			frameTimer = new Timer(20, new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
 					list.repaint();
 				}
-			}
-		});
+			});
+			frameTimer.start();
+		}
 
 		return ele;
 	}
