@@ -45,7 +45,7 @@ public class TinkerTimeLauncher implements Runnable {
 	NAME = "Tinker Time",
 	AUTHOR = "oharaandrew314",
 	DOWNLOAD_URL = "https://kerbalstuff.com/mod/243";
-	public static final Version VERSION = Version.valueOf("1.4.5");
+	public static final Version VERSION = Version.valueOf("2.0.0");
 	public static final String
 	SAFE_NAME = NAME.replace(" ", ""),
 	FULL_NAME = String.format("%s v%s by %s", NAME, VERSION, AUTHOR);
