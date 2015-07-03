@@ -58,7 +58,6 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
 
 public class MainModule extends AbstractModule {
 
@@ -106,25 +105,21 @@ public class MainModule extends AbstractModule {
 
 	@Provides
 	Dao<Mod, Integer> getModsDao(ConnectionSource source) throws SQLException{
-		TableUtils.createTableIfNotExists(source, Mod.class);  //TODO Remove when migration created
 		return DaoManager.createDao(source, Mod.class);
 	}
 
 	@Provides
 	Dao<Installation, Integer> getInstallationsDao(ConnectionSource source) throws SQLException{
-		TableUtils.createTableIfNotExists(source, Installation.class);
 		return DaoManager.createDao(source, Installation.class);
 	}
 
 	@Provides
 	Dao<ConfigData, Integer> getConfigDao(ConnectionSource source) throws SQLException{
-		TableUtils.createTableIfNotExists(source, ConfigData.class);
 		return DaoManager.createDao(source, ConfigData.class);
 	}
 
 	@Provides
 	Dao<ModFile, Integer> getModFilesDao(ConnectionSource source) throws SQLException{
-		TableUtils.createTableIfNotExists(source, ModFile.class);
 		return DaoManager.createDao(source, ModFile.class);
 	}
 

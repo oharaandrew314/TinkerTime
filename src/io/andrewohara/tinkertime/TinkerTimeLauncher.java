@@ -52,10 +52,9 @@ public class TinkerTimeLauncher implements Runnable {
 	private final Collection<Runnable> startupTasks = new LinkedList<>();
 
 	@Inject
-	TinkerTimeLauncher(DatabaseMigrator migrator, ConfigVerifier configVerifier, SetupListeners setupListeners, LoadModsTask startupModLoader, UpdateChecker updateChecker, MainFrameLauncher mainFrameLauncher){
-		//startupTasks.add(migrator);
-		startupTasks.add(configVerifier);
+	TinkerTimeLauncher(ConfigVerifier configVerifier, SetupListeners setupListeners, LoadModsTask startupModLoader, UpdateChecker updateChecker, MainFrameLauncher mainFrameLauncher){
 		startupTasks.add(setupListeners);
+		startupTasks.add(configVerifier);
 		startupTasks.add(startupModLoader);
 		startupTasks.add(updateChecker);
 		startupTasks.add(mainFrameLauncher);
@@ -70,6 +69,20 @@ public class TinkerTimeLauncher implements Runnable {
 
 	public static void main(String[] args) {
 		Injector injector = Guice.createInjector(new MainModule());
+
+		// Perform Database Migration
+		Flyway flyway = new Flyway();
+		flyway.setBaselineOnMigrate(true);
+		flyway.setLocations("io/andrewohara/tinkertime/db/migration");
+		flyway.setDataSource(injector.getInstance(DbConnectionString.class).getUrl(), null, null);
+		try {
+			flyway.migrate();
+		} catch (FlywayException e){
+			flyway.repair();
+			throw e;
+		}
+
+		// Launch Application
 		TinkerTimeLauncher launcher = injector.getInstance(TinkerTimeLauncher.class);
 		launcher.run();
 	}
@@ -77,31 +90,6 @@ public class TinkerTimeLauncher implements Runnable {
 	///////////////////
 	// Startup Tasks //
 	///////////////////
-
-	private static class DatabaseMigrator implements Runnable {
-
-		private final DbConnectionString connectionString;
-
-		@Inject
-		DatabaseMigrator(DbConnectionString connectionString){
-			this.connectionString = connectionString;
-		}
-
-		@Override
-		public void run() {
-			Flyway flyway = new Flyway();
-			flyway.setBaselineOnMigrate(true);
-			flyway.setLocations("io/andrewohara/tinkertime/db/migration");
-			flyway.setDataSource(connectionString.getUrl(), null, null);
-
-			try {
-				flyway.migrate();
-			} catch (FlywayException e){
-				flyway.repair();
-				throw e;
-			}
-		}
-	}
 
 	private static class ConfigVerifier implements Runnable {
 
@@ -227,7 +215,6 @@ public class TinkerTimeLauncher implements Runnable {
 			frame.pack();
 			frame.setLocationRelativeTo(null);
 			frame.setVisible(true);
-
 		}
 	}
 }
