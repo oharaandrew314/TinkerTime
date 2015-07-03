@@ -102,7 +102,7 @@ public class ModTestFixtures {
 
 		@Override
 		public Path getZipPath(){
-			String path = "TinkerTime/modCache/" + getId() + ".zip";
+			String path = "zips/" + getId() + ".zip";
 			URL url = getClass().getClassLoader().getResource(path);
 			try {
 				return Paths.get(url.toURI());
