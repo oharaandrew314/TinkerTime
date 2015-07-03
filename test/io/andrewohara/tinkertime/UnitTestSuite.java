@@ -16,7 +16,8 @@ import org.junit.runners.Suite;
 	TestJenkinsCrawler.class,
 	TestGithubCrawler.class,
 	TestKerbalStuffCrawler.class,
-	TestAnalyzeModZipTask.class
+	TestAnalyzeModZipTask.class,
+	TestDatabaseMigrationIntegration.class
 })
 
 public class UnitTestSuite {}

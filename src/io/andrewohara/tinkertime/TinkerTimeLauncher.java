@@ -71,17 +71,8 @@ public class TinkerTimeLauncher implements Runnable {
 	public static void main(String[] args) {
 		Injector injector = Guice.createInjector(new MainModule());
 
-		// Perform Database Migration
-		Flyway flyway = new Flyway();
-		flyway.setBaselineOnMigrate(true);
-		flyway.setLocations("io/andrewohara/tinkertime/db/migration");
-		flyway.setDataSource(injector.getInstance(DbConnectionString.class).getUrl(), null, null);
-		try {
-			flyway.migrate();
-		} catch (FlywayException e){
-			flyway.repair();
-			throw e;
-		}
+		// Migrate database
+		injector.getInstance(DatabaseMigrator.class).run();
 
 		// Launch Application
 		TinkerTimeLauncher launcher = injector.getInstance(TinkerTimeLauncher.class);
@@ -91,6 +82,33 @@ public class TinkerTimeLauncher implements Runnable {
 	///////////////////
 	// Startup Tasks //
 	///////////////////
+
+	public static class DatabaseMigrator implements Runnable {
+
+		private final DbConnectionString connectionString;
+
+		@Inject
+		public DatabaseMigrator(DbConnectionString connectionString){
+			this.connectionString = connectionString;
+		}
+
+		@Override
+		public void run() {
+			// Perform Database Migration
+			Flyway flyway = new Flyway();
+			flyway.setBaselineOnMigrate(true);
+			flyway.setLocations("io/andrewohara/tinkertime/db/migration");
+			flyway.setDataSource(connectionString.getUrl(), null, null);
+			try {
+				flyway.migrate();
+			} catch (FlywayException e){
+				flyway.repair();
+				throw e;
+			}
+
+		}
+
+	}
 
 	private static class ConfigVerifier implements Runnable {
 
