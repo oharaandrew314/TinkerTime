@@ -214,6 +214,10 @@ public class Actions {
 				);
 	}
 
+	public static TinkerAction newWebsiteAction(JComponent parent){
+		return new GoToUrlAction("Website", "http://andrewohara.io/TinkerTime", null, parent);
+	}
+
 	@SuppressWarnings("serial")
 	public static class AboutAction extends TinkerAction {
 

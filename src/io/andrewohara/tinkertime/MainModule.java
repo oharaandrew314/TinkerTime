@@ -189,9 +189,10 @@ public class MainModule extends AbstractModule {
 		menuBar.add(optionsMenu);
 
 		JMenu helpMenu = new JMenu("Help");
-		helpMenu.add(new Actions.AboutAction(menuBar, mm).withoutIcon());
-		helpMenu.add(Actions.newHelpAction(menuBar).withoutIcon());
 		helpMenu.add(new Actions.ContactAction(menuBar, mm).withoutIcon());
+		helpMenu.add(Actions.newWebsiteAction(menuBar));
+		helpMenu.add(Actions.newHelpAction(menuBar).withoutIcon());
+		helpMenu.add(new Actions.AboutAction(menuBar, mm).withoutIcon());
 		menuBar.add(helpMenu);
 
 		return menuBar;
