@@ -217,7 +217,7 @@ public class Mod implements Comparable<Mod> {
 
 	@Override
 	public String toString(){
-		return name;
+		return getName();
 	}
 
 	@Override

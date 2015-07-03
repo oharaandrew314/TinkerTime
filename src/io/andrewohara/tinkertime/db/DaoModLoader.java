@@ -29,6 +29,7 @@ public class DaoModLoader implements ModLoader {
 		this.configFactory = configFactory;
 	}
 
+	@Override
 	public Mod get(int id){
 		try {
 			return modDao.queryForId(id);
@@ -40,6 +41,13 @@ public class DaoModLoader implements ModLoader {
 	@Override
 	public void updateMod(Mod mod) {
 		try {
+			// Add mod to installation if it is not already there
+			Installation installation = mod.getInstallation();
+			if (installation.addMod(mod)){
+				installationDao.update(installation);
+			}
+
+			// Create Mod
 			modDao.createOrUpdate(mod);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);

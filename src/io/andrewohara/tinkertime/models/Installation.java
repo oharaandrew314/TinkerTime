@@ -23,7 +23,7 @@ public class Installation {
 	private String name, path;
 
 	@ForeignCollectionField
-	private Collection<Mod> mods;
+	private Collection<Mod> mods = new LinkedList<>();
 
 	// Required by ormlite
 	Installation() { }
@@ -54,6 +54,14 @@ public class Installation {
 
 	public List<Mod> getMods(){
 		return new LinkedList<>(mods);
+	}
+
+	public boolean addMod(Mod mod){
+		if (!mods.contains(mod)){
+			mods.add(mod);
+			return true;
+		}
+		return false;
 	}
 
 	public void unlinkMod(Mod mod){
