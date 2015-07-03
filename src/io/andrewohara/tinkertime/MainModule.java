@@ -24,8 +24,6 @@ import io.andrewohara.tinkertime.io.kspLauncher.WindowsExecStrategy;
 import io.andrewohara.tinkertime.models.ConfigData;
 import io.andrewohara.tinkertime.models.Installation;
 import io.andrewohara.tinkertime.models.ModFile;
-import io.andrewohara.tinkertime.models.ModImage;
-import io.andrewohara.tinkertime.models.Readme;
 import io.andrewohara.tinkertime.models.mod.Mod;
 import io.andrewohara.tinkertime.views.Actions;
 import io.andrewohara.tinkertime.views.InstallationSelectorView;
@@ -122,18 +120,6 @@ public class MainModule extends AbstractModule {
 	Dao<ModFile, Integer> getModFilesDao(ConnectionSource source) throws SQLException{
 		TableUtils.createTableIfNotExists(source, ModFile.class);  //TODO Remove when migration created
 		return DaoManager.createDao(source, ModFile.class);
-	}
-
-	@Provides
-	Dao<ModImage, Integer> getModImageDao(ConnectionSource source) throws SQLException{
-		TableUtils.createTableIfNotExists(source, ModImage.class);  //TODO Remove when migration created
-		return DaoManager.createDao(source, ModImage.class);
-	}
-
-	@Provides
-	Dao<Readme, Integer> getReadmesDao(ConnectionSource source) throws SQLException{
-		TableUtils.createTableIfNotExists(source, Readme.class);  //TODO Remove when migration created
-		return DaoManager.createDao(source, Readme.class);
 	}
 
 	@Provides

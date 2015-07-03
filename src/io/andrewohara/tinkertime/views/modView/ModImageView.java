@@ -1,7 +1,6 @@
 package io.andrewohara.tinkertime.views.modView;
 
 import io.andrewohara.common.views.selectorPanel.SelectorView;
-import io.andrewohara.tinkertime.models.ModImage;
 import io.andrewohara.tinkertime.models.mod.Mod;
 
 import javax.swing.ImageIcon;
@@ -21,7 +20,7 @@ public class ModImageView extends SelectorView.AbstractSelectorView<Mod> {
 
 	@Inject
 	ModImageView(){
-		label.setMaximumSize(ModImage.MAX_SIZE);
+		label.setMaximumSize(Mod.MAX_IMAGE_SIZE);
 	}
 
 	@Override
@@ -35,7 +34,7 @@ public class ModImageView extends SelectorView.AbstractSelectorView<Mod> {
 			if (element == null || element.getImage() == null){
 				throw new NoModImageException();
 			}
-			label.setIcon(new ImageIcon(element.getImage().getImage()));
+			label.setIcon(new ImageIcon(element.getImage()));
 		} catch (NoModImageException e) {
 			label.setIcon(null);
 		}

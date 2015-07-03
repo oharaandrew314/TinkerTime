@@ -5,8 +5,6 @@ import io.andrewohara.common.workflows.tasks.WorkflowTask.TaskEvent;
 import io.andrewohara.tinkertime.db.ModLoader;
 import io.andrewohara.tinkertime.models.Installation;
 import io.andrewohara.tinkertime.models.ModFile;
-import io.andrewohara.tinkertime.models.ModImage;
-import io.andrewohara.tinkertime.models.Readme;
 import io.andrewohara.tinkertime.models.mod.Mod;
 import io.andrewohara.tinkertime.views.modSelector.ModListCellRenderer;
 import io.andrewohara.tinkertime.views.modSelector.ModSelectorPanelFactory;
@@ -24,8 +22,6 @@ import com.j256.ormlite.dao.Dao;
 public class ModUpdateCoordinatorImpl extends TaskCallback implements ModUpdateCoordinator {
 
 	private final Dao<ModFile, Integer> modFilesDao;
-	private final Dao<ModImage, Integer> modImagesDao;
-	private final Dao<Readme, Integer> readmesDao;
 	private final ModLoader modLoader;
 
 	private ModSelectorPanelFactory modSelectorPanelFactory;
@@ -33,11 +29,9 @@ public class ModUpdateCoordinatorImpl extends TaskCallback implements ModUpdateC
 
 
 	@Inject
-	ModUpdateCoordinatorImpl(Dao<ModFile, Integer> modFilesDao, ModLoader modLoader, Dao<ModImage, Integer> modImagesDao, Dao<Readme, Integer> readmesDao){
+	ModUpdateCoordinatorImpl(Dao<ModFile, Integer> modFilesDao, ModLoader modLoader){
 		this.modFilesDao = modFilesDao;
-		this.modImagesDao = modImagesDao;
 		this.modLoader = modLoader;
-		this.readmesDao = readmesDao;
 	}
 
 	@Override
@@ -60,13 +54,8 @@ public class ModUpdateCoordinatorImpl extends TaskCallback implements ModUpdateC
 
 	@Override
 	public void deleteMod(Mod mod) {
-		try {
-			modImagesDao.delete(mod.getImage());
-			modLoader.deleteMod(mod);
-			modSelectorPanelFactory.get().deleteMod(mod);
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+		modLoader.deleteMod(mod);
+		modSelectorPanelFactory.get().deleteMod(mod);
 	}
 
 	@Override
@@ -83,10 +72,7 @@ public class ModUpdateCoordinatorImpl extends TaskCallback implements ModUpdateC
 				modFilesDao.create(newFile);
 			}
 			mod.setModFiles(modFiles);
-
-			// Update ReadmeText
-			Readme readme = mod.setReadmeText(readmeText);
-			readmesDao.createOrUpdate(readme);
+			mod.setReadmeText(readmeText);
 
 			updateMod(mod);
 		} catch (SQLException e) {
@@ -97,13 +83,10 @@ public class ModUpdateCoordinatorImpl extends TaskCallback implements ModUpdateC
 	@Override
 	public void updateModImage(Mod mod, BufferedImage image){
 		try {
-			ModImage modImage = ModImage.createModImage(mod, image);
-			modImagesDao.createOrUpdate(modImage);
-
-			mod.setImage(modImage);
+			mod.setImage(image);
 			updateMod(mod);
-		} catch (IOException | SQLException e) {
-			throw new RuntimeException(e);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 }

@@ -27,6 +27,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 
 import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.FlywayException;
 
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -52,7 +53,7 @@ public class TinkerTimeLauncher implements Runnable {
 
 	@Inject
 	TinkerTimeLauncher(DatabaseMigrator migrator, ConfigVerifier configVerifier, SetupListeners setupListeners, LoadModsTask startupModLoader, UpdateChecker updateChecker, MainFrameLauncher mainFrameLauncher){
-		//startupTasks.add(migrator);  FIXME re-enable migrator later
+		//startupTasks.add(migrator);
 		startupTasks.add(configVerifier);
 		startupTasks.add(setupListeners);
 		startupTasks.add(startupModLoader);
@@ -92,7 +93,13 @@ public class TinkerTimeLauncher implements Runnable {
 			flyway.setBaselineOnMigrate(true);
 			flyway.setLocations("io/andrewohara/tinkertime/db/migration");
 			flyway.setDataSource(connectionString.getUrl(), null, null);
-			flyway.migrate();
+
+			try {
+				flyway.migrate();
+			} catch (FlywayException e){
+				flyway.repair();
+				throw e;
+			}
 		}
 	}
 

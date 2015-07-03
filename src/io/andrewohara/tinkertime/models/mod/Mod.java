@@ -3,9 +3,12 @@ package io.andrewohara.tinkertime.models.mod;
 import io.andrewohara.common.version.Version;
 import io.andrewohara.tinkertime.models.Installation;
 import io.andrewohara.tinkertime.models.ModFile;
-import io.andrewohara.tinkertime.models.ModImage;
-import io.andrewohara.tinkertime.models.Readme;
 
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -13,6 +16,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 
+import javax.imageio.ImageIO;
+
+import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -29,6 +35,8 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "mods")
 public class Mod implements Comparable<Mod> {
 
+	public static final Dimension MAX_IMAGE_SIZE = new Dimension(250, 250);
+
 	@DatabaseField(generatedId=true)
 	private int id;
 
@@ -44,15 +52,15 @@ public class Mod implements Comparable<Mod> {
 	@DatabaseField(foreign = true, canBeNull = false)
 	private Installation installation;
 
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private ModImage image;
-
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private Readme readme;
-
 	@ForeignCollectionField
 	private Collection<ModFile> modFiles = new LinkedList<>();
 	private Collection<ModFile> cachedModFiles;
+
+	@DatabaseField(dataType = DataType.BYTE_ARRAY)
+	private byte[] imageBytes;
+
+	@DatabaseField(dataType = DataType.LONG_STRING)
+	private String readmeText = "";
 
 	// Required by ormlite
 	Mod() { }
@@ -161,23 +169,30 @@ public class Mod implements Comparable<Mod> {
 		this.cachedModFiles = modFiles;
 	}
 
-	public void setImage(ModImage image){
-		this.image = image;
+	public void setImage(BufferedImage image) throws IOException{
+		if (image != null){
+			ByteArrayOutputStream baos=new ByteArrayOutputStream();
+			ImageIO.write(image, "jpg", baos);
+			this.imageBytes = baos.toByteArray();
+		} else {
+			this.imageBytes = null;
+		}
 	}
 
-	public ModImage getImage(){
-		return image;
+	public BufferedImage getImage(){
+		try {
+			return ImageIO.read(new ByteArrayInputStream(imageBytes));
+		} catch (IOException | NullPointerException e) {
+			return null;
+		}
 	}
 
 	public String getReadmeText(){
-		return readme != null ? readme.getText() : null;
+		return readmeText;
 	}
 
-	public Readme setReadmeText(String text) {
-		// Get a temporary readme to work with
-		if (readme == null) readme = new Readme(this);
-		readme.setText(text);
-		return readme;
+	public void setReadmeText(String text) {
+		this.readmeText = text;
 	}
 
 	public boolean isBuiltIn(){
