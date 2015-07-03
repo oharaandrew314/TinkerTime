@@ -48,7 +48,7 @@ public class TinkerTimeLauncher implements Runnable {
 	public static final Version VERSION = Version.valueOf("2.0.0");
 	public static final String
 	SAFE_NAME = NAME.replace(" ", ""),
-	FULL_NAME = String.format("%s v%s by %s", NAME, VERSION, AUTHOR);
+	FULL_NAME = String.format("%s %s by %s", NAME, VERSION, AUTHOR);
 
 	private final Collection<Runnable> startupTasks = new LinkedList<>();
 
