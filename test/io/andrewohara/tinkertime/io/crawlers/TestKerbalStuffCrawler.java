@@ -1,8 +1,6 @@
 package io.andrewohara.tinkertime.io.crawlers;
 
-import io.andrewohara.tinkertime.io.crawlers.Crawler;
 import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory.UnsupportedHostException;
-import io.andrewohara.tinkertime.io.crawlers.KerbalStuffCrawler;
 import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.io.IOException;
@@ -28,6 +26,6 @@ public class TestKerbalStuffCrawler extends AbstractTestModCrawler {
 
 	@Override
 	protected Crawler<?> getCrawler(Mod mod) {
-		return new KerbalStuffCrawler(mod, getJsonLoader());
+		return new KerbalStuffCrawler(mod.getUrl(), getJsonLoader());
 	}
 }

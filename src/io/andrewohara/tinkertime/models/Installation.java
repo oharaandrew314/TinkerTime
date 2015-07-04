@@ -5,16 +5,18 @@ import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
+import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
+import com.j256.ormlite.misc.BaseDaoEnabled;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "installations")
-public class Installation {
+public class Installation extends BaseDaoEnabled<Installation, Integer>{
 
 	@DatabaseField(generatedId=true)
 	private int id;
@@ -22,62 +24,76 @@ public class Installation {
 	@DatabaseField(canBeNull=false)
 	private String name, path;
 
-	@ForeignCollectionField
+	@ForeignCollectionField(eager = true)
 	private Collection<Mod> mods = new LinkedList<>();
 
-	// Required by ormlite
-	Installation() { }
+	Installation() { /* Required by ormlite */ }
 
-	public Installation(String name, Path path) throws InvalidGameDataPathException{
-		rename(name);
-		setPath(path);
-	}
-
-	public String getName(){
-		return name;
-	}
-	public void rename(String name){
+	public Installation(String name, Path path, Dao<Installation, Integer> dao) throws InvalidGameDataPathException, SQLException{
 		this.name = name;
-	}
 
-	public Path getGameDataPath(){
-		return Paths.get(path);
-	}
-	public void setPath(Path path) throws InvalidGameDataPathException {
 		if (!path.endsWith("GameData")) {
 			throw new InvalidGameDataPathException(path, "Must be a GameData Path");
 		} else if (!path.toFile().isDirectory()){
 			throw new InvalidGameDataPathException(path, "Must be an existing directory");
 		}
 		this.path = path.toString();
+
+		setDao(dao);
+		create();
 	}
 
-	public List<Mod> getMods(){
+	/////////////
+	// Setters //
+	/////////////
+
+	public void rename(String name) throws SQLException{
+		this.name = name;
+		update();
+	}
+
+	public void addMod(Mod mod) throws SQLException{
+		if (!mods.contains(mod)){
+			mods.add(mod);
+			update();
+		}
+	}
+
+	public void removeMod(Mod mod) throws SQLException{
+		mods.remove(mod);
+		update();
+	}
+
+	/////////////
+	// Getters //
+	/////////////
+
+	public String getName(){
+		return name;
+	}
+
+	public Path getGameDataPath(){
+		return Paths.get(path);
+	}
+
+	public Collection<Mod> getMods(){
 		return new LinkedList<>(mods);
 	}
 
-	public boolean addMod(Mod mod){
-		if (!mods.contains(mod)){
-			mods.add(mod);
-			return true;
-		}
-		return false;
-	}
-
-	public void unlinkMod(Mod mod){
-		mods.remove(mod);
-	}
-
-	private Path getMetaPath(){
-		return getGameDataPath().getParent().resolve(TinkerTimeLauncher.SAFE_NAME);
-	}
-
 	public Path getModZipsPath(){
-		return getMetaPath().resolve("modCache");
+		return getGameDataPath().getParent().resolve(TinkerTimeLauncher.SAFE_NAME + "-ModCache");
 	}
 
-	public Path getImagePath(){
-		return getMetaPath().resolve("imageCache");
+	/////////
+	// Dao //
+	/////////
+
+	@Override
+	public int delete() throws SQLException {
+		for (Mod mod : getMods()){
+			mod.delete();
+		}
+		return super.delete();
 	}
 
 	////////////

@@ -2,7 +2,6 @@ package io.andrewohara.tinkertime.controllers.workflows.tasks;
 
 import io.andrewohara.common.content.ImageManager;
 import io.andrewohara.common.workflows.tasks.FileTransferTask;
-import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinator;
 import io.andrewohara.tinkertime.io.crawlers.Crawler;
 import io.andrewohara.tinkertime.models.mod.Mod;
 
@@ -19,15 +18,15 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 public class DownloadModImageTask extends FileTransferTask {
 
 	private final Crawler<?> crawler;
-	private final ModUpdateCoordinator updateCoordinator;
+	private final Mod mod;
 	private final ImageManager imageManager;
 
 	private URLConnection connection;
 
-	public DownloadModImageTask(Crawler<?> crawler, ModUpdateCoordinator updateCoordinator) {
+	public DownloadModImageTask(Crawler<?> crawler, Mod mod) {
 		super(null, null);
 		this.crawler = crawler;
-		this.updateCoordinator = updateCoordinator;
+		this.mod = mod;
 		imageManager = new ImageManager();
 	}
 
@@ -41,7 +40,7 @@ public class DownloadModImageTask extends FileTransferTask {
 				transfer(is, os);
 				BufferedImage img = ImageIO.read(new ByteArrayInputStream(os.toByteArray()));
 				img = imageManager.resizeImage(img, imageManager.scaleToFit(img, Mod.MAX_IMAGE_SIZE));
-				updateCoordinator.updateModImage(crawler.getMod(), img);
+				mod.setImage(img);
 			}
 		}
 		return true;

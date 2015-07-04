@@ -1,8 +1,6 @@
 package io.andrewohara.tinkertime.io.crawlers;
 
-import io.andrewohara.tinkertime.io.crawlers.Crawler;
 import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory.UnsupportedHostException;
-import io.andrewohara.tinkertime.io.crawlers.CurseCrawler;
 import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.io.IOException;
@@ -28,7 +26,7 @@ public class TestCurseCrawler extends AbstractTestModCrawler {
 
 	@Override
 	protected Crawler<?> getCrawler(Mod mod) {
-		return new CurseCrawler(mod, getDocLoader());
+		return new CurseCrawler(mod.getUrl(), getDocLoader());
 	}
 
 }

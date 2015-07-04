@@ -1,7 +1,6 @@
 package io.andrewohara.tinkertime.controllers;
 
-import io.andrewohara.tinkertime.db.ModLoader;
-import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory.UnsupportedHostException;
+import io.andrewohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
 import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.io.BufferedReader;
@@ -12,6 +11,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
+import java.sql.SQLException;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -43,19 +43,23 @@ public class ImportController {
 			} else {
 				throw new ModImportException("Cannot import.  Invalid file extension.");
 			}
-		} catch (JsonSyntaxException | JsonIOException | UnsupportedHostException | IOException e){
+		} catch (JsonSyntaxException | JsonIOException | IOException e){
 			throw new ModImportException("Cannot import", e);
 		}
 	}
 
-	private int importModsList(Path sourcePath) throws FileNotFoundException, IOException, UnsupportedHostException {
+	private int importModsList(Path sourcePath) throws FileNotFoundException, IOException {
 		int imported = 0;
 		try (BufferedReader reader = new BufferedReader(new FileReader(sourcePath.toFile()))){
 			while (reader.ready()){
 				String url = reader.readLine();
 				if (!url.trim().isEmpty()){
-					if (modManager.downloadNewMod(new URL(url))){
-						imported++;
+					try {
+						if (modManager.downloadNewMod(new URL(url))){
+							imported++;
+						}
+					} catch (SQLException | ModUpdateFailedException e) {
+						e.printStackTrace();  // TODO send all exceptions to the user somehow
 					}
 				}
 			}
@@ -63,13 +67,17 @@ public class ImportController {
 		return imported;
 	}
 
-	private int importJsonList(Path sourcePath) throws JsonIOException, JsonSyntaxException, FileNotFoundException, MalformedURLException, UnsupportedHostException {
+	private int importJsonList(Path sourcePath) throws JsonIOException, JsonSyntaxException, FileNotFoundException, MalformedURLException {
 		int imported = 0;
 		JsonArray mods = new JsonParser().parse(new FileReader(sourcePath.toFile())).getAsJsonArray();
 		for (JsonElement modEle : mods){
 			String url = modEle.getAsJsonObject().get("pageUrl").getAsString();
-			if (modManager.downloadNewMod(new URL(url))){
-				imported++;
+			try {
+				if (modManager.downloadNewMod(new URL(url))){
+					imported++;
+				}
+			} catch (SQLException | ModUpdateFailedException e) {
+				e.printStackTrace();  // TODO send all exceptions to the user somehow
 			}
 		}
 		return imported;

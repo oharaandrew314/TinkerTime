@@ -39,7 +39,7 @@ public abstract class PageLoader<T> {
 
 	protected abstract T loadPage(URL url) throws IOException;
 
-	public final T getPage(URL url) throws IOException {
+	public T getPage(URL url) throws IOException {
 		try {
 			return cache.get(url);
 		} catch (ExecutionException e) {

@@ -1,7 +1,6 @@
 package io.andrewohara.tinkertime.io.crawlers;
 
 import io.andrewohara.tinkertime.io.crawlers.pageLoaders.PageLoader;
-import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.io.IOException;
 import java.net.URL;
@@ -21,8 +20,8 @@ import org.jsoup.nodes.Element;
  */
 public class CurseCrawler extends Crawler<Document> {
 
-	public CurseCrawler(Mod mod, PageLoader<Document> pageLoader){
-		super(mod, pageLoader);
+	public CurseCrawler(URL url, PageLoader<Document> pageLoader){
+		super(url, pageLoader);
 	}
 
 	@Override

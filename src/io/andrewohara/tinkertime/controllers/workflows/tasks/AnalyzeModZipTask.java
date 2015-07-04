@@ -1,7 +1,6 @@
 package io.andrewohara.tinkertime.controllers.workflows.tasks;
 
 import io.andrewohara.common.workflows.tasks.WorkflowTask;
-import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinator;
 import io.andrewohara.tinkertime.models.ModFile;
 import io.andrewohara.tinkertime.models.mod.Mod;
 
@@ -19,15 +18,17 @@ import java.util.zip.ZipFile;
 
 import org.apache.commons.io.IOUtils;
 
+import com.j256.ormlite.dao.Dao;
+
 public class AnalyzeModZipTask extends WorkflowTask {
 
 	private final Mod mod;
-	private final ModUpdateCoordinator modUpdateCoordinator;
+	private final Dao<ModFile, Integer> modFilesDao;
 
-	public AnalyzeModZipTask(Mod mod, ModUpdateCoordinator modUpdateCoordinator) {
+	public AnalyzeModZipTask(Mod mod, Dao<ModFile, Integer> modFilesDao) {
 		super("Analyzing Mod");
 		this.mod = mod;
-		this.modUpdateCoordinator = modUpdateCoordinator;
+		this.modFilesDao = modFilesDao;
 	}
 
 	@Override
@@ -82,7 +83,7 @@ public class AnalyzeModZipTask extends WorkflowTask {
 					entry = entries.nextElement();
 					Path entryPath = Paths.get(entry.getName());
 					if (!entry.isDirectory() && entryPath.getNameCount() >= 2){
-						files.add(new ModFile(mod, entry.getName(), entryPath));
+						files.add(new ModFile(mod, entry.getName(), entryPath, modFilesDao));
 					}
 				}
 			} else {
@@ -95,7 +96,7 @@ public class AnalyzeModZipTask extends WorkflowTask {
 							entryPath.startsWith(gameDataPath) && !entryPath.equals(gameDataPath) &&
 							!(entry.getName().contains("ModuleManager") && entry.getName().endsWith(".dll"))
 							){
-						files.add(new ModFile(mod, entry.getName(), gameDataPath.relativize(entryPath)));
+						files.add(new ModFile(mod, entry.getName(), gameDataPath.relativize(entryPath), modFilesDao));
 					}
 				}
 			}
@@ -108,13 +109,14 @@ public class AnalyzeModZipTask extends WorkflowTask {
 					if (entry.getName().endsWith(".dll")){
 						Path entryPath = Paths.get(entry.getName());
 						Path path = gameDataPath == null ? entryPath : gameDataPath.relativize(entryPath);
-						files.add(new ModFile(mod, entry.getName(), path));
+						files.add(new ModFile(mod, entry.getName(), path, modFilesDao));
 					}
 				}
 			}
 		}
 
-		modUpdateCoordinator.updateModFiles(mod, files, readmeText);
+		mod.setModFiles(files);
+		mod.setReadmeText(readmeText);
 		return true;
 	}
 

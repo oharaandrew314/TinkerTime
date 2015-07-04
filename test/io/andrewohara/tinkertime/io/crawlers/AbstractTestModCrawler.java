@@ -5,6 +5,7 @@ import io.andrewohara.tinkertime.io.crawlers.pageLoaders.JsonLoader;
 import io.andrewohara.tinkertime.io.crawlers.pageLoaders.PageLoader;
 import io.andrewohara.tinkertime.models.Installation.InvalidGameDataPathException;
 import io.andrewohara.tinkertime.models.mod.Mod;
+import io.andrewohara.tinkertime.models.mod.ModUpdateData;
 import io.andrewohara.tinkertime.testUtil.ModTestFixtures;
 import io.andrewohara.tinkertime.testUtil.StaticAssetSelector;
 
@@ -30,25 +31,26 @@ public abstract class AbstractTestModCrawler {
 		testFixtures = new ModTestFixtures();
 	}
 
-	protected void testMod(Mod expectedMod) throws IOException {
+	protected void testMod(Mod mod) throws IOException {
 		// Setup Crawler
-		Crawler<?> crawler = getCrawler(expectedMod);
+		Crawler<?> crawler = getCrawler(mod);
 		crawler.setAssetSelector(new StaticAssetSelector());
 
-		// Test Fields
-		Mod actualMod = crawler.getMod();
-		assertEquals(expectedMod.getName(), actualMod.getName());
-		assertEquals(expectedMod.getCreator(), actualMod.getCreator());
-		assertEquals(expectedMod.getUrl(), actualMod.getUrl());
-		assertEquals(expectedMod.getModVersion().toString(), actualMod.getModVersion().toString());
-		assertEquals(expectedMod.getSupportedVersion(), actualMod.getSupportedVersion());
+		// Test Mod Update Data
+		ModUpdateData updateData = crawler.getModUpdateData();
+		assertEquals(mod.getName(), updateData.name);
+		assertEquals(mod.getCreator(), updateData.creator);
+		assertEquals(mod.getModVersion().getNormalVersion(), updateData.modVersion.getNormalVersion());
+		assertEquals(mod.getSupportedVersion(), updateData.kspVersion);
 
 		// Test Updated On
 		Calendar expectedDate = Calendar.getInstance();
-		expectedDate.setTime(expectedMod.getUpdatedOn());
+		expectedDate.setTime(mod.getUpdatedOn());
 
 		Calendar actualDate = Calendar.getInstance();
-		actualDate.setTime(actualMod.getUpdatedOn());
+		if (updateData.updatedOn != null){
+			actualDate.setTime(updateData.updatedOn);
+		}
 
 		assertEquals(expectedDate.get(Calendar.YEAR), actualDate.get(Calendar.YEAR));
 		assertEquals(expectedDate.get(Calendar.MONTH), actualDate.get(Calendar.MONTH));
@@ -70,7 +72,7 @@ public abstract class AbstractTestModCrawler {
 	protected PageLoader<Document> getDocLoader(){
 		return new PageLoader<Document>(){
 			@Override
-			protected Document loadPage(URL url) throws IOException {
+			public Document getPage(URL url) throws IOException {
 				String resourceName = "html/" + urlToPath(url);
 				try(InputStream is = getClass().getClassLoader().getResourceAsStream(resourceName)){
 					return Jsoup.parse(is, null, url.toString());
@@ -78,13 +80,18 @@ public abstract class AbstractTestModCrawler {
 					throw new RuntimeException("Error opening stream: " + url.toString());
 				}
 			}
+
+			@Override
+			protected Document loadPage(URL url) throws IOException {
+				return null;
+			}
 		};
 	}
 
 	protected PageLoader<JsonElement> getJsonLoader(){
 		return new JsonLoader(){
 			@Override
-			protected JsonElement loadPage(URL url) throws IOException {
+			public JsonElement getPage(URL url) throws IOException {
 				String resourceName = "json/" + urlToPath(url);
 				URL resourceUrl = getClass().getClassLoader().getResource(resourceName);
 				return super.loadPage(resourceUrl);

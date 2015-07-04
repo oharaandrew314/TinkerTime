@@ -3,7 +3,6 @@ package io.andrewohara.tinkertime.io.crawlers;
 import io.andrewohara.common.version.Version;
 import io.andrewohara.common.version.VersionParser;
 import io.andrewohara.tinkertime.io.crawlers.pageLoaders.PageLoader;
-import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -25,8 +24,8 @@ public class JenkinsCrawler extends Crawler<JsonElement> {
 
 	private JsonObject cachedJson;
 
-	public JenkinsCrawler(Mod mod, PageLoader<JsonElement> pageLoader) {
-		super(mod, pageLoader);
+	public JenkinsCrawler(URL url, PageLoader<JsonElement> pageLoader) {
+		super(url, pageLoader);
 	}
 
 	@Override

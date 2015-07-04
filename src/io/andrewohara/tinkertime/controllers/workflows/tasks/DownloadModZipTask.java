@@ -2,6 +2,7 @@ package io.andrewohara.tinkertime.controllers.workflows.tasks;
 
 import io.andrewohara.common.workflows.tasks.FileTransferTask;
 import io.andrewohara.tinkertime.io.crawlers.Crawler;
+import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.io.IOException;
 import java.net.URL;
@@ -14,10 +15,12 @@ import java.nio.file.StandardCopyOption;
 public class DownloadModZipTask extends FileTransferTask {
 
 	private final Crawler<?> crawler;
+	private final Mod mod;
 
-	public DownloadModZipTask(Crawler<?> crawler){
+	public DownloadModZipTask(Crawler<?> crawler, Mod mod){
 		super(null, null);
 		this.crawler = crawler;
+		this.mod = mod;
 	}
 
 	private URL getUrl() throws IOException{
@@ -26,7 +29,7 @@ public class DownloadModZipTask extends FileTransferTask {
 
 	@Override
 	public boolean execute() throws Exception {
-		Path dest = crawler.getMod().getZipPath();
+		Path dest = mod.getZipPath();
 		Path tempDest = Paths.get(dest.toString() + ".tempDownload");
 
 		try {

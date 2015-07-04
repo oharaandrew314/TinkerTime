@@ -1,8 +1,8 @@
 package io.andrewohara.tinkertime.views;
 
 import io.andrewohara.common.views.DecoratedComponent;
-import io.andrewohara.tinkertime.db.ConfigFactory;
-import io.andrewohara.tinkertime.db.InstallationManager;
+import io.andrewohara.common.views.Dialogs;
+import io.andrewohara.tinkertime.controllers.InstallationManager;
 import io.andrewohara.tinkertime.models.Installation;
 import io.andrewohara.tinkertime.models.Installation.InvalidGameDataPathException;
 
@@ -14,6 +14,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -34,14 +35,12 @@ public class InstallationSelectorView implements DecoratedComponent<JPanel> {
 	private final JPanel panel = new JPanel();
 	private final InstallationManager installationManager;
 	private final JComboBox<Installation> installations;
-	private final ConfigFactory configFactory;
 
 	private JDialog dialog;
 
 	@Inject
-	InstallationSelectorView(InstallationManager installationManager, ConfigFactory configFactory){
+	InstallationSelectorView(InstallationManager installationManager){
 		this.installationManager = installationManager;
-		this.configFactory = configFactory;
 
 		panel.setLayout(new BorderLayout());
 
@@ -91,7 +90,6 @@ public class InstallationSelectorView implements DecoratedComponent<JPanel> {
 		dialog.setModalityType(Dialog.DEFAULT_MODALITY_TYPE);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		dialog.setAlwaysOnTop(true);
 		dialog.add(getComponent());
 
 		dialog.addWindowListener(new WindowAdapter(){
@@ -142,7 +140,7 @@ public class InstallationSelectorView implements DecoratedComponent<JPanel> {
 	}
 
 	private Installation getConfigured() throws NoSelectedInstallationException {
-		Installation installation = configFactory.getConfig().getSelectedInstallation();
+		Installation installation = installationManager.getSelectedInstallation();
 		if (installation == null){
 			throw new NoSelectedInstallationException();
 		}
@@ -154,7 +152,7 @@ public class InstallationSelectorView implements DecoratedComponent<JPanel> {
 	}
 
 	private void exceptionDialog(Exception e, String title){
-		JOptionPane.showMessageDialog(panel, e.getMessage(), title, JOptionPane.ERROR_MESSAGE);
+		Dialogs.errorDialog(panel, title, e);
 	}
 
 	private Collection<Installation> getChoices(){
@@ -192,13 +190,12 @@ public class InstallationSelectorView implements DecoratedComponent<JPanel> {
 				Path folder = FileChoosers.chooseGameDataFolder();
 				String name = getNewName(null);
 				checkForDuplicates(name, folder);
-				Installation newInstallation = new Installation(name, folder);
-				installationManager.update(newInstallation);
+				Installation newInstallation = installationManager.newInstallation(name, folder);
 				installations.addItem(newInstallation);
 				installations.setSelectedItem(newInstallation);
 			} catch (FileNotFoundException e1) {
 				// Do Nothing
-			} catch (InvalidGameDataPathException | NoNameEnteredException | DuplicatedFieldException e1) {
+			} catch (InvalidGameDataPathException | NoNameEnteredException | DuplicatedFieldException | SQLException e1) {
 				exceptionDialog(e1);
 			}
 		}
@@ -214,10 +211,12 @@ public class InstallationSelectorView implements DecoratedComponent<JPanel> {
 		public void actionPerformed(ActionEvent evt) {
 			try {
 				Installation current = getSelected();
-				installationManager.delete(current);
 				installations.removeItem(current);
+				current.delete();
 			} catch (NoSelectedInstallationException e1) {
 				// Do Nothing
+			} catch (SQLException e) {
+				exceptionDialog(e);
 			}
 		}
 
@@ -237,10 +236,9 @@ public class InstallationSelectorView implements DecoratedComponent<JPanel> {
 				checkForDuplicates(newName, null);
 				current.rename(newName);
 				installations.repaint();
-				installationManager.update(current);
 			} catch (NoSelectedInstallationException e2) {
 				// Do Nothing
-			} catch (NoNameEnteredException | DuplicatedFieldException e1) {
+			} catch (NoNameEnteredException | DuplicatedFieldException | SQLException e1) {
 				exceptionDialog(e1);
 			}
 		}

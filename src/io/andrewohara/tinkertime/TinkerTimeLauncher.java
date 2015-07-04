@@ -2,10 +2,9 @@ package io.andrewohara.tinkertime;
 
 import io.andrewohara.common.content.ImageManager;
 import io.andrewohara.common.version.Version;
+import io.andrewohara.common.views.Dialogs;
 import io.andrewohara.tinkertime.controllers.ModManager;
-import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinator;
-import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinatorImpl;
-import io.andrewohara.tinkertime.db.ConfigFactory;
+import io.andrewohara.tinkertime.controllers.ModUpdateCoordinator;
 import io.andrewohara.tinkertime.db.DbConnectionString;
 import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory.UnsupportedHostException;
 import io.andrewohara.tinkertime.models.ConfigData;
@@ -17,6 +16,7 @@ import java.awt.BorderLayout;
 import java.awt.Image;
 import java.awt.SplashScreen;
 import java.net.MalformedURLException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -24,7 +24,6 @@ import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 
 import org.flywaydb.core.Flyway;
@@ -112,18 +111,18 @@ public class TinkerTimeLauncher implements Runnable {
 
 	private static class ConfigVerifier implements Runnable {
 
-		private final ConfigFactory factory;
+		private final ConfigData config;
 		private final InstallationSelectorView selector;
 
 		@Inject
-		ConfigVerifier(ConfigFactory factory, InstallationSelectorView selector){
-			this.factory = factory;
+		ConfigVerifier(ConfigData config, InstallationSelectorView selector){
+			this.config = config;
 			this.selector = selector;
 		}
 
 		@Override
 		public void run() {
-			if (factory.getConfig().getSelectedInstallation() == null){
+			if (config.getSelectedInstallation() == null){
 				selector.toDialog();
 			}
 		}
@@ -150,42 +149,41 @@ public class TinkerTimeLauncher implements Runnable {
 
 	private static class LoadModsTask implements Runnable {
 
-		private final ModUpdateCoordinatorImpl updateCooridnator;
-		private final ConfigFactory configFactory;
+		private final ModUpdateCoordinator updateCooridnator;
+		private final ConfigData config;
 
 		@Inject
-		LoadModsTask(ModUpdateCoordinatorImpl updateCooridnator, ConfigFactory configFactory){
+		LoadModsTask(ModUpdateCoordinator updateCooridnator, ConfigData config){
 			this.updateCooridnator = updateCooridnator;
-			this.configFactory = configFactory;
+			this.config = config;
 		}
 
 		@Override
 		public void run() {
-			updateCooridnator.reload(configFactory.getConfig().getSelectedInstallation());
+			updateCooridnator.changeInstallation(config.getSelectedInstallation());
 		}
 
 	}
 
 	private static class UpdateChecker implements Runnable {
 
-		private final ConfigFactory configFactory;
+		private final ConfigData config;
 		private final ModManager modManager;
 
 		@Inject
-		UpdateChecker(ConfigFactory configFactory, ModManager modManager){
-			this.configFactory = configFactory;
+		UpdateChecker(ConfigData config, ModManager modManager){
+			this.config = config;
 			this.modManager = modManager;
 		}
 
 		@Override
 		public void run() {
-			ConfigData config = configFactory.getConfig();
 			// Check for App update on Startup
 			if (config.isCheckForAppUpdatesOnStartup()){
 				try {
 					modManager.tryUpdateModManager();
-				} catch (UnsupportedHostException | MalformedURLException e) {
-					JOptionPane.showMessageDialog(null, e.toString(), "Error Checking for App Updates", JOptionPane.ERROR_MESSAGE);
+				} catch (UnsupportedHostException | MalformedURLException | SQLException e) {
+					Dialogs.errorDialog(null, "Error Checking for App Updates", e);
 				}
 			}
 
@@ -194,7 +192,7 @@ public class TinkerTimeLauncher implements Runnable {
 				try {
 					modManager.checkForModUpdates();
 				} catch (UnsupportedHostException e) {
-					JOptionPane.showMessageDialog(null, e.toString(), "Error Checking for Mod Updates", JOptionPane.ERROR_MESSAGE);
+					Dialogs.errorDialog(null, "Error Checking for Mod Updates", e);
 				}
 			}
 		}

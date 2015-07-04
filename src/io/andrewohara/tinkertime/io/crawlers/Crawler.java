@@ -1,14 +1,15 @@
 package io.andrewohara.tinkertime.io.crawlers;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import io.andrewohara.common.version.Version;
 import io.andrewohara.common.version.VersionParser;
 import io.andrewohara.tinkertime.io.crawlers.pageLoaders.PageLoader;
 import io.andrewohara.tinkertime.models.mod.Mod;
+import io.andrewohara.tinkertime.models.mod.ModUpdateData;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
@@ -30,15 +31,15 @@ public abstract class Crawler<T> {
 
 	public static final String ZIP_EXTENSION = ".zip";
 
+	private final URL pageUrl;
 	private final PageLoader<T> pageLoader;
-	private final Mod mod;
 
 	private Asset cachedAsset;
 	private AssetSelector assetSelector = new DialogAssetSelector();
 
-	public Crawler(Mod mod, PageLoader<T> pageLoader) {
-		this.mod = mod;
-		this.pageLoader = pageLoader;
+	public Crawler(URL pageUrl, PageLoader<T> pageLoader) {
+		this.pageUrl = checkNotNull(pageUrl);
+		this.pageLoader = checkNotNull(pageLoader);
 	}
 
 	/////////
@@ -49,14 +50,14 @@ public abstract class Crawler<T> {
 		this.assetSelector = assetSelector;
 	}
 
-	public Mod getMod(){
-		return mod;
-	}
-
-	public void updateMod() throws IOException {
-		Date updatedOn = getUpdatedOn() != null ? getUpdatedOn() : Calendar.getInstance().getTime();
-		mod.setUpdateAvailable(isUpdateAvailable());
-		mod.update(getName(), getCreator(), updatedOn, getVersion(), getKspVersion());
+	public ModUpdateData getModUpdateData() throws IOException{
+		return new ModUpdateData(
+				getName(),
+				getCreator(),
+				getUpdatedOn(),
+				getVersion(),
+				getKspVersion()
+				);
 	}
 
 	public final URL getDownloadLink() throws IOException{
@@ -67,12 +68,12 @@ public abstract class Crawler<T> {
 		getPage(getApiUrl());
 	}
 
-	public boolean isUpdateAvailable(){
+	public boolean isUpdateAvailable(Mod compareTo){
 		try{
-			return getVersion().greaterThan(mod.getModVersion());
+			return getVersion().greaterThan(compareTo.getModVersion());
 		} catch (NullPointerException e){
 			try {
-				return getUpdatedOn().before(mod.getUpdatedOn());
+				return getUpdatedOn().before(compareTo.getUpdatedOn());
 			} catch (NullPointerException | IOException e1) {
 				return false;
 			}
@@ -97,7 +98,7 @@ public abstract class Crawler<T> {
 	/////////////
 
 	protected URL getPageUrl(){
-		return mod.getUrl();
+		return pageUrl;
 	}
 
 	protected URL getApiUrl() throws MalformedURLException{

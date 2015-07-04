@@ -47,6 +47,7 @@ dependencies {
 	compile 'com.google.code.gson:gson:2.3'
 	compile 'org.jsoup:jsoup:1.7.3'
 
+	testCompile 'org.easymock:easymock:3.3.1'
     testCompile 'junit:junit:4.11'
 }
 

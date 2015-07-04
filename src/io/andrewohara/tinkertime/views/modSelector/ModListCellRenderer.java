@@ -117,6 +117,7 @@ public class ModListCellRenderer extends TaskCallback implements ListCellRendere
 			frameTimer = new Timer(20, new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
+					list.validate();
 					list.repaint();
 				}
 			});

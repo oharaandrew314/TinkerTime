@@ -3,7 +3,7 @@ package io.andrewohara.tinkertime.views.modSelector;
 import io.andrewohara.common.views.Dialogs;
 import io.andrewohara.common.views.selectorPanel.SelectorListListener;
 import io.andrewohara.tinkertime.controllers.ModManager;
-import io.andrewohara.tinkertime.controllers.ModExceptions.NoModSelectedException;
+import io.andrewohara.tinkertime.controllers.ModManager.NoModSelectedException;
 import io.andrewohara.tinkertime.models.mod.Mod;
 import io.andrewohara.tinkertime.views.TinkerDialogs;
 

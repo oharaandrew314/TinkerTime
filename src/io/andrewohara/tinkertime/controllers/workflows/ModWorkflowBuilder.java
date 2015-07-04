@@ -1,8 +1,8 @@
 package io.andrewohara.tinkertime.controllers.workflows;
 
 import io.andrewohara.common.workflows.tasks.WorkflowBuilder;
-import io.andrewohara.tinkertime.controllers.ModExceptions.ModNotDownloadedException;
-import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinatorImpl;
+import io.andrewohara.tinkertime.controllers.ModLoader;
+import io.andrewohara.tinkertime.controllers.ModManager.ModNotDownloadedException;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.AnalyzeModZipTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.CheckForUpdateTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.DownloadModImageTask;
@@ -11,7 +11,6 @@ import io.andrewohara.tinkertime.controllers.workflows.tasks.DownloadModZipTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.RemoveModTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.RunCrawlerTask;
 import io.andrewohara.tinkertime.controllers.workflows.tasks.SaveModTask;
-import io.andrewohara.tinkertime.db.ModLoader;
 import io.andrewohara.tinkertime.io.crawlers.Crawler;
 import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory;
 import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory.UnsupportedHostException;
@@ -19,7 +18,6 @@ import io.andrewohara.tinkertime.models.ModFile;
 import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -29,21 +27,22 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import com.google.inject.Inject;
+import com.j256.ormlite.dao.Dao;
 
 public class ModWorkflowBuilder extends WorkflowBuilder {
 
 	private final CrawlerFactory crawlerService;
-	private final ModUpdateCoordinatorImpl updateCoordinator;
 	private final ModLoader modLoader;
+	private final Dao<ModFile, Integer> modFilesDao;
 
 	private Crawler<?> cachedCrawler;
 
 	@Inject
-	public ModWorkflowBuilder(CrawlerFactory crawlerService, ModUpdateCoordinatorImpl updateCoordinator, ModLoader modLoader, Mod mod) {
+	public ModWorkflowBuilder(CrawlerFactory crawlerService, ModLoader modLoader, Dao<ModFile, Integer> modFilesDao, Mod mod) {
 		super(mod);
 		this.crawlerService = crawlerService;
-		this.updateCoordinator = updateCoordinator;
 		this.modLoader = modLoader;
+		this.modFilesDao = modFilesDao;
 	}
 
 	private Mod getMod(){
@@ -59,15 +58,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	 * @throws UnsupportedHostException
 	 */
 	public void checkForUpdates(boolean markIfAvailable) throws UnsupportedHostException {
-		addTask(new CheckForUpdateTask(getCrawler()));
-		if (markIfAvailable){
-			addTask(new SaveModTask.FromMod(updateCoordinator, getMod()));
-		}
-	}
-
-	public void downloadNewMod() throws UnsupportedHostException, MalformedURLException {
-		addTask(new SaveModTask.FromMod(updateCoordinator, getMod()));
-		downloadMod();
+		addTask(new CheckForUpdateTask(getCrawler(), getMod(),markIfAvailable));
 	}
 
 	/**
@@ -98,26 +89,23 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	}
 
 	private void downloadMod() throws UnsupportedHostException{
+		//modUpdateCoordinator.refreshMods();
 		Crawler<?> crawler = getCrawler();
 		addTask(new RunCrawlerTask(crawler));  // prefetch metadata
-		addTask(new DownloadModZipTask(crawler));
-		addTask(new DownloadModImageTask(crawler, updateCoordinator));
-		addTask(new AnalyzeModZipTask(getMod(), updateCoordinator));
-		addTask(new SaveModTask.FromCrawler(updateCoordinator, crawler));
+		addTask(new DownloadModZipTask(crawler, getMod()));
+		addTask(new DownloadModImageTask(crawler, getMod()));
+		addTask(new AnalyzeModZipTask(getMod(), modFilesDao));
+		addTask(new SaveModTask(crawler, getMod()));
 	}
 
 	public void downloadModInBrowser(Mod mod) throws UnsupportedHostException{
-		addTask(new DownloadModInBrowserTask(getCrawler(), mod.getModVersion()));
+		addTask(new DownloadModInBrowserTask(getCrawler(), getMod()));
 	}
 
 	public void addLocalMod(Path zipPath){
-		// Show Placeholder Mod
-		addTask(new SaveModTask.FromMod(updateCoordinator, getMod()));
-
 		// Add Mod
 		copy(zipPath, getMod().getZipPath());
-		addTask(new AnalyzeModZipTask(getMod(), updateCoordinator));
-		addTask(new SaveModTask.FromMod(updateCoordinator, getMod()));
+		addTask(new AnalyzeModZipTask(getMod(), modFilesDao));
 	}
 
 	/**
@@ -145,7 +133,7 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 			// Do nothing
 		}
 
-		addTask(new RemoveModTask(getMod(), updateCoordinator));
+		addTask(new RemoveModTask(getMod()));
 		deleteModZip();
 	}
 

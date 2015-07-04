@@ -1,24 +1,28 @@
 package io.andrewohara.tinkertime.controllers.workflows.tasks;
 
 import io.andrewohara.common.workflows.tasks.WorkflowTask;
-import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinatorImpl;
 import io.andrewohara.tinkertime.io.crawlers.Crawler;
 import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
-public abstract class SaveModTask extends WorkflowTask {
+public class SaveModTask extends WorkflowTask {
 
-	private final ModUpdateCoordinatorImpl updateCoordinator;
+	private final Crawler<?> crawler;
+	private final Mod mod;
 
-	SaveModTask(ModUpdateCoordinatorImpl updateCoordinator) {
+	public SaveModTask(Crawler<?> crawler, Mod mod) {
 		super("Saving Mod");
-		this.updateCoordinator = updateCoordinator;
+		this.crawler = crawler;
+		this.mod = mod;
 	}
 
 	@Override
-	public boolean execute() throws IOException {
-		updateCoordinator.updateMod(getMod());
+	public boolean execute() throws IOException, SQLException {
+		mod.update(crawler.getModUpdateData());
+		mod.setUpdateAvailable(false);
+		mod.commit();
 		return true;
 	}
 
@@ -26,40 +30,4 @@ public abstract class SaveModTask extends WorkflowTask {
 	protected int findTargetProgress() throws IOException {
 		return 0;
 	}
-
-	protected abstract Mod getMod() throws IOException;
-
-	public static class FromMod extends SaveModTask {
-
-		private final Mod mod;
-
-		public FromMod(ModUpdateCoordinatorImpl updateCoordinator, Mod mod){
-			super(updateCoordinator);
-			this.mod = mod;
-		}
-
-		@Override
-		protected Mod getMod() {
-			return mod;
-		}
-	}
-
-	public static class FromCrawler extends SaveModTask {
-
-		private final Crawler<?> crawler;
-
-		public FromCrawler(ModUpdateCoordinatorImpl updateCoordinator, Crawler<?> crawler) {
-			super(updateCoordinator);
-			this.crawler = crawler;
-		}
-
-		@Override
-		protected Mod getMod() throws IOException {
-			crawler.updateMod();
-			crawler.getMod().setUpdateAvailable(false);  // Force set update-available to false for new mods
-			return crawler.getMod();
-		}
-
-	}
-
 }

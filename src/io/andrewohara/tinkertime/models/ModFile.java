@@ -4,14 +4,17 @@ import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.misc.BaseDaoEnabled;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "modFiles")
-public class ModFile {
+public class ModFile extends BaseDaoEnabled<ModFile, Integer>{
 
 	@DatabaseField(generatedId=true)
 	private int id;
@@ -23,12 +26,17 @@ public class ModFile {
 	private String entryName, relDestPath;
 
 	// Required by ormlite
-	ModFile() { }
+	ModFile() {	}
 
-	public ModFile(Mod mod, String entryName, Path relPath){
+	public ModFile(Mod mod, String entryName, Path relPath, Dao<ModFile, Integer> dao) throws SQLException{
 		this.mod = mod;
 		this.entryName = entryName.toString();
 		this.relDestPath = relPath.toString();
+
+		if (id == 0 && dao != null){
+			setDao(dao);
+			create();
+		}
 	}
 
 	public Path getRelDestPath(){

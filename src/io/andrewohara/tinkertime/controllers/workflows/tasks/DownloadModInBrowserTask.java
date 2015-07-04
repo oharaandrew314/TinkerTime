@@ -1,10 +1,10 @@
 package io.andrewohara.tinkertime.controllers.workflows.tasks;
 
-import io.andrewohara.common.version.Version;
 import io.andrewohara.common.workflows.tasks.BrowserGoToTask;
 import io.andrewohara.common.workflows.tasks.WorkflowTask;
 import io.andrewohara.tinkertime.io.crawlers.Crawler;
 import io.andrewohara.tinkertime.models.mod.Mod;
+import io.andrewohara.tinkertime.models.mod.ModUpdateData;
 
 import java.io.IOException;
 
@@ -13,18 +13,17 @@ import javax.swing.JOptionPane;
 public class DownloadModInBrowserTask extends WorkflowTask {
 
 	private final Crawler<?> crawler;
-	private final Version currentVersion;
+	private final Mod mod;
 
-	public DownloadModInBrowserTask(Crawler<?> crawler, Version currentVersion) {
+	public DownloadModInBrowserTask(Crawler<?> crawler, Mod mod) {
 		super("Downloading Mod in Browser");
 		this.crawler = crawler;
-		this.currentVersion = currentVersion;
+		this.mod = mod;
 	}
 
 	@Override
 	public boolean execute() throws Exception {
-		crawler.updateMod();
-		Mod result = crawler.getMod();
+		ModUpdateData data = crawler.getModUpdateData();
 
 		if (JOptionPane.showConfirmDialog(
 				null,
@@ -33,7 +32,7 @@ public class DownloadModInBrowserTask extends WorkflowTask {
 								"Would you like to download it?%n" +
 								"%n" +
 								"You currently have v%s",
-								result.getName(), result.getModVersion(), currentVersion
+								data.name, data.modVersion, mod.getModVersion()
 						),
 						"Update Tinker Time",
 						JOptionPane.YES_NO_OPTION,

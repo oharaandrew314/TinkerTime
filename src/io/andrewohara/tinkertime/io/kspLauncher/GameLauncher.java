@@ -1,6 +1,6 @@
 package io.andrewohara.tinkertime.io.kspLauncher;
 
-import io.andrewohara.tinkertime.db.ConfigFactory;
+import io.andrewohara.tinkertime.models.ConfigData;
 
 import java.io.IOException;
 
@@ -8,16 +8,16 @@ import com.google.inject.Inject;
 
 public class GameLauncher {
 
-	private final ConfigFactory configFactory;
+	private final ConfigData config;
 	private final GameExecStrategy strategy;
 
 	@Inject
-	GameLauncher(ConfigFactory configFactory, GameExecStrategy launchStrategy){
-		this.configFactory = configFactory;
+	GameLauncher(ConfigData config, GameExecStrategy launchStrategy){
+		this.config = config;
 		this.strategy = launchStrategy;
 	}
 
 	public void launchGame() throws IOException{
-		strategy.getProcessBuilder(configFactory.getConfig()).start();
+		strategy.getProcessBuilder(config).start();
 	}
 }

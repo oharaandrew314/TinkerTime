@@ -2,7 +2,7 @@ package io.andrewohara.tinkertime.views.modSelector;
 
 import io.andrewohara.common.views.Dialogs;
 import io.andrewohara.tinkertime.controllers.ModManager;
-import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory.UnsupportedHostException;
+import io.andrewohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
 
 import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.sql.SQLException;
 import java.util.Collection;
 
 class DragDropHandler implements DropTargetListener {
@@ -70,13 +71,13 @@ class DragDropHandler implements DropTargetListener {
 			String contents = new String(Files.readAllBytes(file.toPath()));
 			String url = contents.split("URL=")[1].split("]")[0];
 			mm.downloadNewMod(new URL(url));
-		} catch (IOException | UnsupportedHostException e) {
+		} catch (IOException | SQLException | ModUpdateFailedException e) {
 			Dialogs.errorDialog(listenTo, e);
 		}
 
 	}
 
-	private void handleZipFile(File file){
+	private void handleZipFile(File file) throws SQLException{
 		mm.addModZip(file.toPath());
 	}
 
@@ -105,7 +106,7 @@ class DragDropHandler implements DropTargetListener {
 			} else if (isUrl(file)){
 				handleUrlFile(file);
 			}
-		} catch (UnsupportedFlavorException | IOException e) {
+		} catch (UnsupportedFlavorException | IOException | SQLException e) {
 			Dialogs.errorDialog(listenTo, e);
 		}
 	}

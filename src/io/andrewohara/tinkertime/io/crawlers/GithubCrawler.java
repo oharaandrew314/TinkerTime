@@ -1,7 +1,6 @@
 package io.andrewohara.tinkertime.io.crawlers;
 
 import io.andrewohara.tinkertime.io.crawlers.pageLoaders.PageLoader;
-import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -18,8 +17,8 @@ import com.google.gson.JsonObject;
 
 public class GithubCrawler extends Crawler<JsonElement> {
 
-	public GithubCrawler(Mod mod, PageLoader<JsonElement> pageLoader) {
-		super(mod, pageLoader);
+	public GithubCrawler(URL url, PageLoader<JsonElement> pageLoader) {
+		super(url, pageLoader);
 	}
 
 	@Override

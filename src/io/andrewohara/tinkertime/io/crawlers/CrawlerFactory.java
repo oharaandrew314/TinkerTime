@@ -34,13 +34,13 @@ public class CrawlerFactory {
 	public Crawler<?> getCrawler(Mod mod) throws UnsupportedHostException{
 		String host = mod.getUrl().getHost();
 		if (host.contains(HOST_CURSE)){
-			return new CurseCrawler(mod, docLoader);
+			return new CurseCrawler(mod.getUrl(), docLoader);
 		} else if (host.contains(HOST_GITHUB)){
-			return new GithubCrawler(mod, jsonLoader);
+			return new GithubCrawler(mod.getUrl(), jsonLoader);
 		} else if (host.contains(HOST_KERBAL_STUFF)){
-			return new KerbalStuffCrawler(mod, jsonLoader);
+			return new KerbalStuffCrawler(mod.getUrl(), jsonLoader);
 		} else if (host.equals(HOST_MODULE_MANAGER)){
-			return new JenkinsCrawler(mod, jsonLoader);
+			return new JenkinsCrawler(mod.getUrl(), jsonLoader);
 		}
 		throw new UnsupportedHostException(host);
 	}

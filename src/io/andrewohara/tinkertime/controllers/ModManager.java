@@ -2,20 +2,16 @@ package io.andrewohara.tinkertime.controllers;
 
 import io.andrewohara.common.Listenable;
 import io.andrewohara.common.workflows.tasks.TaskCallback;
-import io.andrewohara.tinkertime.controllers.ModExceptions.CannotDeleteModException;
-import io.andrewohara.tinkertime.controllers.ModExceptions.ModNotDownloadedException;
-import io.andrewohara.tinkertime.controllers.ModExceptions.ModUpdateFailedException;
-import io.andrewohara.tinkertime.controllers.ModExceptions.NoModSelectedException;
 import io.andrewohara.tinkertime.controllers.workflows.ModWorkflowBuilder;
 import io.andrewohara.tinkertime.controllers.workflows.ModWorkflowBuilderFactory;
-import io.andrewohara.tinkertime.db.ModLoader;
+import io.andrewohara.tinkertime.controllers.workflows.TaskLauncher;
 import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory.UnsupportedHostException;
 import io.andrewohara.tinkertime.models.mod.Mod;
-import io.andrewohara.tinkertime.models.mod.ModFactory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
+import java.sql.SQLException;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -35,16 +31,14 @@ public class ModManager extends Listenable<TaskCallback> {
 	private final TaskLauncher taskLauncher;
 	private final ModWorkflowBuilderFactory workflowBuilderFactory;
 	private final ModLoader modLoader;
-	private final ModFactory modFactory;
 
 	private Mod selectedMod;
 
 	@Inject
-	ModManager(ModWorkflowBuilderFactory workflowBuilderFactory, ModLoader modLoader, TaskLauncher taskLauncher, ModFactory modFactory){
+	ModManager(ModWorkflowBuilderFactory workflowBuilderFactory, ModLoader modLoader, TaskLauncher taskLauncher){
 		this.workflowBuilderFactory = workflowBuilderFactory;
 		this.modLoader = modLoader;
 		this.taskLauncher = taskLauncher;
-		this.modFactory = modFactory;
 	}
 
 	// -- Interface --------------------------------------------------------
@@ -60,7 +54,7 @@ public class ModManager extends Listenable<TaskCallback> {
 		this.selectedMod = mod;
 	}
 
-	public void updateMod(Mod mod, boolean forceUpdate) throws ModUpdateFailedException, ModNotDownloadedException {
+	public void updateMod(Mod mod, boolean forceUpdate) throws ModUpdateFailedException {
 		if (!mod.isUpdateable()){
 			throw new ModUpdateFailedException(mod, "Mod is a local zip only, and cannot be updated.");
 		}
@@ -73,19 +67,17 @@ public class ModManager extends Listenable<TaskCallback> {
 		}
 	}
 
-	public boolean downloadNewMod(URL url) throws MalformedURLException, UnsupportedHostException {
+	public boolean downloadNewMod(URL url) throws SQLException, ModUpdateFailedException {
 		if (modLoader.getByUrl(url) == null){
-			Mod newMod = modFactory.newMod(url);
-			ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder(newMod);
-			builder.downloadNewMod();
-			taskLauncher.submitDownloadWorkflow(builder);
+			Mod newMod = modLoader.newMod(url);
+			updateMod(newMod, false);
 			return true;
 		}
 		return false;
 	}
 
-	public void addModZip(Path zipPath){
-		Mod newMod = modFactory.newLocalMod(zipPath);
+	public void addModZip(Path zipPath) throws SQLException{
+		Mod newMod = modLoader.newLocalMod(zipPath);
 		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder(newMod);
 		builder.addLocalMod(zipPath);
 		taskLauncher.submitDownloadWorkflow(builder);
@@ -136,11 +128,44 @@ public class ModManager extends Listenable<TaskCallback> {
 		}
 	}
 
-	public void tryUpdateModManager() throws UnsupportedHostException, MalformedURLException {
-		Mod tempMod = modFactory.newModManagerMod();
+	public void tryUpdateModManager() throws UnsupportedHostException, MalformedURLException, SQLException {
+		Mod tempMod = Mod.newModManagerMod();
 		ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder(tempMod);
 		builder.checkForUpdates(false);
 		builder.downloadModInBrowser(tempMod);
 		taskLauncher.submitDownloadWorkflow(builder);
+	}
+
+	////////////////
+	// Exceptions //
+	////////////////
+
+	@SuppressWarnings("serial")
+	public static class ModNotDownloadedException extends Exception {
+		public ModNotDownloadedException(Mod mod, String message){
+			super("Error for " + mod + ": " + message);
+		}
+	}
+
+	@SuppressWarnings("serial")
+	public static class ModUpdateFailedException extends Exception {
+		public ModUpdateFailedException(Exception e){
+			super(e);
+		}
+		public ModUpdateFailedException(Mod mod, String message){
+			super("Error for " + mod + ": " + message);
+		}
+	}
+
+	@SuppressWarnings("serial")
+	public static class NoModSelectedException extends Exception {
+
+	}
+
+	@SuppressWarnings("serial")
+	public static class CannotDeleteModException extends Exception {
+		public CannotDeleteModException(Mod mod, String reason){
+			super(String.format("Cannot delete %s: %s", mod, reason));
+		}
 	}
 }

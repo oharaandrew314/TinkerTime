@@ -4,16 +4,8 @@ import io.andrewohara.common.OS;
 import io.andrewohara.common.views.selectorPanel.SelectorPanelBuilder;
 import io.andrewohara.tinkertime.controllers.ImportController;
 import io.andrewohara.tinkertime.controllers.ModManager;
-import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinator;
-import io.andrewohara.tinkertime.controllers.coordinators.ModUpdateCoordinatorImpl;
-import io.andrewohara.tinkertime.db.ConfigFactory;
-import io.andrewohara.tinkertime.db.DaoConfigFactory;
-import io.andrewohara.tinkertime.db.DaoInstallationManager;
-import io.andrewohara.tinkertime.db.DaoModLoader;
 import io.andrewohara.tinkertime.db.DbConnectionString;
 import io.andrewohara.tinkertime.db.DbConnectionStringImpl;
-import io.andrewohara.tinkertime.db.InstallationManager;
-import io.andrewohara.tinkertime.db.ModLoader;
 import io.andrewohara.tinkertime.io.crawlers.pageLoaders.JsonLoader;
 import io.andrewohara.tinkertime.io.crawlers.pageLoaders.PageLoader;
 import io.andrewohara.tinkertime.io.crawlers.pageLoaders.WebpageLoader;
@@ -35,6 +27,7 @@ import io.andrewohara.tinkertime.views.modView.ModView;
 
 import java.awt.Dimension;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -65,10 +58,6 @@ public class MainModule extends AbstractModule {
 	protected void configure() {
 		bind(new TypeLiteral<PageLoader<Document>>(){}).to(WebpageLoader.class);
 		bind(new TypeLiteral<PageLoader<JsonElement>>(){}).to(JsonLoader.class);
-		bind(ConfigFactory.class).to(DaoConfigFactory.class);
-		bind(ModLoader.class).to(DaoModLoader.class);
-		bind(ModUpdateCoordinator.class).to(ModUpdateCoordinatorImpl.class);
-		bind(InstallationManager.class).to(DaoInstallationManager.class);
 		bind(DbConnectionString.class).to(DbConnectionStringImpl.class);
 	}
 
@@ -123,15 +112,26 @@ public class MainModule extends AbstractModule {
 		return DaoManager.createDao(source, ModFile.class);
 	}
 
+	@Singleton
 	@Provides
-	public JToolBar createToolBar(ModManager mm, GameLauncher gameLauncher, ConfigFactory configFactory, InstallationSelectorView installationSelector){
+	ConfigData getConfigData(Dao<ConfigData, Integer> configDao) throws SQLException{
+		List<ConfigData> configs = configDao.queryForAll();
+		return !configs.isEmpty() ? configs.get(0) : new ConfigData(configDao);
+	}
+
+	////////////////////
+	// Swing Elements //
+	////////////////////
+
+	@Provides
+	public JToolBar createToolBar(ModManager mm, GameLauncher gameLauncher, ConfigData config, InstallationSelectorView installationSelector){
 		JToolBar toolBar = new JToolBar();
 		toolBar.setFloatable(false);
 
 		toolBar.add(new Actions.LaunchKspAction(toolBar, mm, gameLauncher)).setFocusPainted(false);
 		toolBar.addSeparator();
 
-		toolBar.add(new Actions.OpenGameDataFolder(toolBar, mm, configFactory)).setFocusPainted(false);
+		toolBar.add(new Actions.OpenGameDataFolder(toolBar, mm, config)).setFocusPainted(false);
 		toolBar.add(new Actions.LaunchInstallationSelector(toolBar, mm, installationSelector)).setFocusPainted(false);
 
 		toolBar.addSeparator();
@@ -148,7 +148,7 @@ public class MainModule extends AbstractModule {
 	}
 
 	@Provides
-	public JMenuBar createMenuBar(ModManager mm, ImportController importController, ConfigFactory configFactory){
+	public JMenuBar createMenuBar(ModManager mm, ImportController importController, ConfigData config){
 		JMenuBar menuBar = new JMenuBar();
 
 		JMenu modMenu = new JMenu("Mod");
@@ -168,17 +168,16 @@ public class MainModule extends AbstractModule {
 		importExportMenu.add(new Actions.ExportMods(menuBar, importController).withoutIcon());
 		menuBar.add(importExportMenu);
 
-		ConfigData config = configFactory.getConfig();
 		JMenu optionsMenu = new JMenu("Options");
 		JCheckBox checkAppUpdatesBox = new JCheckBox(
 				String.format("Check for Updates to %s on Startup", TinkerTimeLauncher.NAME),
 				config.isCheckForAppUpdatesOnStartup()
 				);
-		checkAppUpdatesBox.addActionListener(new Actions.CheckForAppUpdatesAction(checkAppUpdatesBox, configFactory));
+		checkAppUpdatesBox.addActionListener(new Actions.CheckForAppUpdatesAction(checkAppUpdatesBox, config));
 		optionsMenu.add(checkAppUpdatesBox);
 
 		JCheckBox checkModUpdatesBox = new JCheckBox("Check for Updates to Mods on Startup", config.isCheckForModUpdatesOnStartup());
-		checkModUpdatesBox.addActionListener(new Actions.CheckForModUpdatesAction(checkModUpdatesBox, configFactory));
+		checkModUpdatesBox.addActionListener(new Actions.CheckForModUpdatesAction(checkModUpdatesBox, config));
 		optionsMenu.add(checkModUpdatesBox);
 
 		menuBar.add(optionsMenu);

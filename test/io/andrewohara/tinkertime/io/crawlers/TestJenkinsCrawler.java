@@ -1,8 +1,6 @@
 package io.andrewohara.tinkertime.io.crawlers;
 
-import io.andrewohara.tinkertime.io.crawlers.Crawler;
 import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory.UnsupportedHostException;
-import io.andrewohara.tinkertime.io.crawlers.JenkinsCrawler;
 import io.andrewohara.tinkertime.models.mod.Mod;
 
 import java.io.IOException;
@@ -18,6 +16,6 @@ public class TestJenkinsCrawler extends AbstractTestModCrawler {
 
 	@Override
 	protected Crawler<?> getCrawler(Mod mod) {
-		return new JenkinsCrawler(mod, getJsonLoader());
+		return new JenkinsCrawler(mod.getUrl(), getJsonLoader());
 	}
 }
