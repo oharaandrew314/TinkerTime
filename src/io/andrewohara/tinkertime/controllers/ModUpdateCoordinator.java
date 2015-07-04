@@ -4,6 +4,7 @@ import io.andrewohara.common.workflows.tasks.TaskCallback;
 import io.andrewohara.common.workflows.tasks.WorkflowTask.TaskEvent;
 import io.andrewohara.tinkertime.models.ConfigData;
 import io.andrewohara.tinkertime.models.Installation;
+import io.andrewohara.tinkertime.views.SelectedInstallationView;
 import io.andrewohara.tinkertime.views.modSelector.ModListCellRenderer;
 import io.andrewohara.tinkertime.views.modSelector.ModSelectorPanelController;
 
@@ -17,7 +18,7 @@ public class ModUpdateCoordinator extends TaskCallback implements ModUpdateHandl
 
 	private final ConfigData config;
 
-	private ModSelectorPanelController modSelector;
+	private ModUpdateHandler modSelector, installationView;
 	private ModListCellRenderer modListCellRenderer;
 
 	@Inject
@@ -25,9 +26,10 @@ public class ModUpdateCoordinator extends TaskCallback implements ModUpdateHandl
 		this.config = config;
 	}
 
-	public void setListeners(ModSelectorPanelController modSelector, ModListCellRenderer modListCellRender){
+	public void setListeners(ModSelectorPanelController modSelector, ModListCellRenderer modListCellRender, SelectedInstallationView installationView){
 		this.modSelector = modSelector;
 		this.modListCellRenderer = modListCellRender;
+		this.installationView = installationView;
 	}
 
 	@Override
@@ -35,6 +37,7 @@ public class ModUpdateCoordinator extends TaskCallback implements ModUpdateHandl
 		try {
 			config.setSelectedInstallation(newInstallation);
 			modSelector.changeInstallation(newInstallation);
+			installationView.changeInstallation(newInstallation);
 		} catch (SQLException e){
 			throw new RuntimeException(e);
 		}

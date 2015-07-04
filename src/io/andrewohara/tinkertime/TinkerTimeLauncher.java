@@ -9,6 +9,7 @@ import io.andrewohara.tinkertime.db.DbConnectionString;
 import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory.UnsupportedHostException;
 import io.andrewohara.tinkertime.models.ConfigData;
 import io.andrewohara.tinkertime.views.InstallationSelectorView;
+import io.andrewohara.tinkertime.views.SelectedInstallationView;
 import io.andrewohara.tinkertime.views.modSelector.ModListCellRenderer;
 import io.andrewohara.tinkertime.views.modSelector.ModSelectorPanelController;
 
@@ -133,17 +134,19 @@ public class TinkerTimeLauncher implements Runnable {
 		private final ModSelectorPanelController modSelectorPanelController;
 		private final ModListCellRenderer modListCellRenderer;
 		private final ModUpdateCoordinator modUpdateCoordinator;
+		private final SelectedInstallationView installationView;
 
 		@Inject
-		SetupListeners(ModUpdateCoordinator modUpdateCoordinator, ModSelectorPanelController modSelectorPanelController, ModListCellRenderer modListCellRender) {
+		SetupListeners(ModUpdateCoordinator modUpdateCoordinator, ModSelectorPanelController modSelectorPanelController, ModListCellRenderer modListCellRender, SelectedInstallationView installationView) {
 			this.modUpdateCoordinator = modUpdateCoordinator;
 			this.modSelectorPanelController = modSelectorPanelController;
 			this.modListCellRenderer = modListCellRender;
+			this.installationView = installationView;
 		}
 
 		@Override
 		public void run() {
-			modUpdateCoordinator.setListeners(modSelectorPanelController, modListCellRenderer);
+			modUpdateCoordinator.setListeners(modSelectorPanelController, modListCellRenderer, installationView);
 		}
 	}
 

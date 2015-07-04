@@ -20,6 +20,7 @@ import io.andrewohara.tinkertime.models.ModFile;
 import io.andrewohara.tinkertime.models.mod.Mod;
 import io.andrewohara.tinkertime.views.Actions;
 import io.andrewohara.tinkertime.views.InstallationSelectorView;
+import io.andrewohara.tinkertime.views.SelectedInstallationView;
 import io.andrewohara.tinkertime.views.modSelector.ModListCellRenderer;
 import io.andrewohara.tinkertime.views.modSelector.ModListListener;
 import io.andrewohara.tinkertime.views.modSelector.ModSelectorPanelController;
@@ -128,7 +129,7 @@ public class MainModule extends AbstractModule {
 	////////////////////
 
 	@Provides
-	public JToolBar createToolBar(ModManager mm, GameLauncher gameLauncher, ConfigData config, InstallationSelectorView installationSelector){
+	public JToolBar createToolBar(ModManager mm, GameLauncher gameLauncher, ConfigData config, InstallationSelectorView installationSelector, SelectedInstallationView installationView){
 		JToolBar toolBar = new JToolBar();
 		toolBar.setFloatable(false);
 
@@ -147,6 +148,10 @@ public class MainModule extends AbstractModule {
 
 		toolBar.add(new Actions.UpdateModAction(toolBar, mm)).setFocusPainted(false);
 		toolBar.add(new Actions.CheckforUpdatesAction(toolBar, mm)).setFocusPainted(false);
+
+		toolBar.addSeparator();
+
+		toolBar.add(installationView.getComponent());
 
 		return toolBar;
 	}
