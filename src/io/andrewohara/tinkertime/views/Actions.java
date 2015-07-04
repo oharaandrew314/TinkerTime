@@ -38,7 +38,7 @@ public class Actions {
 	public
 	static abstract class TinkerAction extends AbstractAction {
 
-		private static final ImageManager IMAGE_MANAGER = new ImageManager();;
+		protected static final ImageManager IMAGE_MANAGER = new ImageManager();;
 		protected final JComponent parent;
 		protected final ModManager mm;
 
@@ -234,13 +234,17 @@ public class Actions {
 							"Attribution-ShareAlike 4.0 International License.\n",
 							new UrlLabels.UrlLink("View a copy of this license", new URL("http://creativecommons.org/licenses/by-sa/4.0/")).getComponent(),
 							"\n",
-							TinkerTimeLauncher.NAME + " uses Glyphicons (glyphicons.com)"
+							TinkerTimeLauncher.NAME + " uses Glyphicons (glyphicons.com)",
+							"\n",
+							new UrlLabels.UrlLink(TinkerTimeLauncher.NAME + " Website", new URL("http://andrewohara.io/TinkerTime")).getComponent(),
 			};
+
 			JOptionPane.showMessageDialog(
 					parent,
 					message,
 					"About " + TinkerTimeLauncher.NAME,
-					JOptionPane.INFORMATION_MESSAGE
+					JOptionPane.INFORMATION_MESSAGE,
+					IMAGE_MANAGER.getIcon("icon/app/icon 128x128.png")
 					);
 		}
 	}
