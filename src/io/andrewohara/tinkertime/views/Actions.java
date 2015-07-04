@@ -29,6 +29,7 @@ import javax.swing.Action;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 public class Actions {
 
@@ -438,6 +439,27 @@ public class Actions {
 				config.setCheckForModUpdatesOnStartup(checkBox.isSelected());
 			} catch (SQLException e1) {
 				Dialogs.errorDialog(checkBox, e1);
+			}
+		}
+	}
+
+	public static class UpdateLaunchArgumentsAction extends AbstractAction {
+
+		private final JTextField argsField;
+		private final ConfigData config;
+
+		public UpdateLaunchArgumentsAction(JTextField argsField, ConfigData config){
+			super("Update Launch Arguments");
+			this.argsField = argsField;
+			this.config = config;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			try {
+				config.setLaunchArguments(argsField.getText());
+			} catch (SQLException e1) {
+				Dialogs.errorDialog(argsField, "Erro setting launch arguments", e1);
 			}
 		}
 	}

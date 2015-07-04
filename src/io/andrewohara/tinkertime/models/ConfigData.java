@@ -39,6 +39,11 @@ public class ConfigData extends BaseDaoEnabled<ConfigData, Integer> {
 	// Setters //
 	/////////////
 
+	public void setLaunchArguments(String args) throws SQLException{
+		this.launchArguments = args;
+		update();
+	}
+
 	public void setCheckForAppUpdatesOnStartup(boolean check) throws SQLException{
 		this.checkForAppUpdatesOnStartup = check;
 		update();

@@ -25,6 +25,7 @@ import io.andrewohara.tinkertime.views.modSelector.ModListListener;
 import io.andrewohara.tinkertime.views.modSelector.ModSelectorPanelController;
 import io.andrewohara.tinkertime.views.modView.ModView;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.sql.SQLException;
 import java.util.List;
@@ -32,10 +33,13 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
 import org.jsoup.nodes.Document;
@@ -169,6 +173,15 @@ public class MainModule extends AbstractModule {
 		menuBar.add(importExportMenu);
 
 		JMenu optionsMenu = new JMenu("Options");
+
+		// Launch Args option
+		JPanel launchArgsPanel = new JPanel(new BorderLayout());
+		JTextField argsField = new JTextField(config.getLaunchArguments());
+		launchArgsPanel.add(argsField, BorderLayout.CENTER);
+		launchArgsPanel.add(new JButton(new Actions.UpdateLaunchArgumentsAction(argsField, config)), BorderLayout.EAST);
+		optionsMenu.add(launchArgsPanel);
+
+		// Check for app updates on startup option
 		JCheckBox checkAppUpdatesBox = new JCheckBox(
 				String.format("Check for Updates to %s on Startup", TinkerTimeLauncher.NAME),
 				config.isCheckForAppUpdatesOnStartup()
@@ -176,6 +189,7 @@ public class MainModule extends AbstractModule {
 		checkAppUpdatesBox.addActionListener(new Actions.CheckForAppUpdatesAction(checkAppUpdatesBox, config));
 		optionsMenu.add(checkAppUpdatesBox);
 
+		// check for mod updates on startup option
 		JCheckBox checkModUpdatesBox = new JCheckBox("Check for Updates to Mods on Startup", config.isCheckForModUpdatesOnStartup());
 		checkModUpdatesBox.addActionListener(new Actions.CheckForModUpdatesAction(checkModUpdatesBox, config));
 		optionsMenu.add(checkModUpdatesBox);
