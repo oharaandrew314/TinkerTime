@@ -11,6 +11,8 @@ import io.andrewohara.tinkertime.testUtil.StaticAssetSelector;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Calendar;
@@ -21,6 +23,7 @@ import org.jsoup.nodes.Document;
 import org.junit.Before;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 public abstract class AbstractTestModCrawler {
 
@@ -89,12 +92,18 @@ public abstract class AbstractTestModCrawler {
 	}
 
 	protected PageLoader<JsonElement> getJsonLoader(){
+
+		final JsonParser parser = new JsonParser();
+
 		return new JsonLoader(){
 			@Override
 			public JsonElement getPage(URL url) throws IOException {
 				String resourceName = "json/" + urlToPath(url);
-				URL resourceUrl = getClass().getClassLoader().getResource(resourceName);
-				return super.loadPage(resourceUrl);
+				ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+				InputStream stream = classLoader.getResourceAsStream(resourceName);
+				try(Reader r = new InputStreamReader(stream)){
+					return parser.parse(r);
+				}
 			}
 		};
 	}
