@@ -29,7 +29,6 @@ import javax.swing.Action;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 
 public class Actions {
 
@@ -445,23 +444,25 @@ public class Actions {
 	}
 
 	@SuppressWarnings("serial")
-	public static class UpdateLaunchArgumentsAction extends AbstractAction {
+	public static class UpdateLaunchArgsAction extends AbstractAction {
 
-		private final JTextField argsField;
 		private final ConfigData config;
 
-		public UpdateLaunchArgumentsAction(JTextField argsField, ConfigData config){
-			super("Update Launch Arguments");
-			this.argsField = argsField;
+		public UpdateLaunchArgsAction(ConfigData config){
+			super("KSP Launch Args");
 			this.config = config;
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				config.setLaunchArguments(argsField.getText());
-			} catch (SQLException e1) {
-				Dialogs.errorDialog(argsField, "Erro setting launch arguments", e1);
+				String curArgs = config.getLaunchArguments();
+				String newArgs = JOptionPane.showInputDialog(null, "Modify the Launch Args for KSP", curArgs);
+				if (newArgs != null && !newArgs.equals(curArgs)){
+					config.setLaunchArguments(newArgs);
+				}
+			} catch (SQLException e1){
+				Dialogs.errorDialog(null, "Error updating KSP Launch Args", e1);
 			}
 		}
 	}
