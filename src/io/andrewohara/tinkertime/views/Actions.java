@@ -384,6 +384,7 @@ public class Actions {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	public static class LaunchInstallationSelector extends TinkerAction {
 
 		private final InstallationSelectorView selector;
@@ -443,6 +444,7 @@ public class Actions {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	public static class UpdateLaunchArgumentsAction extends AbstractAction {
 
 		private final JTextField argsField;
