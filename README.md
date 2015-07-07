@@ -1,7 +1,7 @@
 TinkerTime
 ==========
 
-Automatically Updating Mod Manager for Kerbal Space Program
+The Ultimate Personal Mechanic for your KSP Mods
 
 Master: [![Build Status](https://travis-ci.org/oharaandrew314/TinkerTime.svg?branch=master)](https://travis-ci.org/oharaandrew314/TinkerTime)
 

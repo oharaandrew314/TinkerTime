@@ -233,13 +233,12 @@ public class Actions {
 			Object[] message = {
 					TinkerTimeLauncher.FULL_NAME,
 					"\n",
-					"This work is licensed under the Creative Commons \n" +
-							"Attribution-ShareAlike 4.0 International License.\n",
-							new UrlLabels.UrlLink("View a copy of this license", new URL("http://creativecommons.org/licenses/by-sa/4.0/")).getComponent(),
-							"\n",
-							TinkerTimeLauncher.NAME + " uses Glyphicons (glyphicons.com)",
-							"\n",
-							new UrlLabels.UrlLink(TinkerTimeLauncher.NAME + " Website", new URL("http://andrewohara.io/TinkerTime")).getComponent(),
+					"This work is licensed under the GNU GPL v3.0 License\n",
+					new UrlLabels.UrlLink("View a copy of this license", new URL("http://opensource.org/licenses/gpl-3.0")).getComponent(),
+					"\n",
+					TinkerTimeLauncher.NAME + " uses Glyphicons (glyphicons.com)",
+					"\n",
+					new UrlLabels.UrlLink(TinkerTimeLauncher.NAME + " Website", new URL("http://andrewohara.io/TinkerTime")).getComponent(),
 			};
 
 			JOptionPane.showMessageDialog(
