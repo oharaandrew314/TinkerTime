@@ -21,6 +21,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Arrays;
 
@@ -29,6 +30,8 @@ import javax.swing.Action;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+
+import org.apache.commons.io.FilenameUtils;
 
 public class Actions {
 
@@ -270,6 +273,7 @@ public class Actions {
 	public static class ExportMods extends TinkerAction {
 
 		private final ImportController importController;
+		private static final String ALL = "Export All Mods", ENABLED = "Export Enabled Mods";
 
 		public ExportMods(JComponent parent, ImportController importController){
 			super("Export Mods", "icon/glyphicons_359_file_export.png", parent, null);
@@ -278,16 +282,24 @@ public class Actions {
 
 		@Override
 		protected void call() throws Exception {
-			int result = JOptionPane.showConfirmDialog(parent, "Would you like to export only the enabled mods?  Otherwise, all.", "Choose mods to export", JOptionPane.YES_NO_CANCEL_OPTION);
-			boolean enabledOnly = false;
-			switch(result){
-			case JOptionPane.YES_OPTION: enabledOnly = true; break;
-			case JOptionPane.NO_OPTION: enabledOnly = false; break;
-			case JOptionPane.CANCEL_OPTION:
-			default: return;
+			Object result = JOptionPane.showInputDialog(
+					parent, "Which mods would you like to export?",
+					"Export Mods", JOptionPane.QUESTION_MESSAGE, null,
+					new String[] { ALL, ENABLED }, ALL);
+
+			boolean enabledOnly = true;
+			if (result == null){
+				return;
+			} else if (result.equals(ALL)){
+				enabledOnly = false;
 			}
 
+			// Set default file extension if not set
 			Path exportPath = FileChoosers.chooseImportExportFile(true);
+			if (FilenameUtils.getExtension(exportPath.toString()).isEmpty()){
+				exportPath = Paths.get(exportPath.toString() + ".txt");
+			}
+
 			int exported = importController.exportMods(exportPath, enabledOnly);
 			JOptionPane.showMessageDialog(
 					parent,
