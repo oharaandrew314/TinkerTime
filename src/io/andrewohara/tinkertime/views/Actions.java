@@ -21,6 +21,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Arrays;
 
@@ -29,7 +30,8 @@ import javax.swing.Action;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
+
+import org.apache.commons.io.FilenameUtils;
 
 public class Actions {
 
@@ -231,13 +233,12 @@ public class Actions {
 			Object[] message = {
 					TinkerTimeLauncher.FULL_NAME,
 					"\n",
-					"This work is licensed under the Creative Commons \n" +
-							"Attribution-ShareAlike 4.0 International License.\n",
-							new UrlLabels.UrlLink("View a copy of this license", new URL("http://creativecommons.org/licenses/by-sa/4.0/")).getComponent(),
-							"\n",
-							TinkerTimeLauncher.NAME + " uses Glyphicons (glyphicons.com)",
-							"\n",
-							new UrlLabels.UrlLink(TinkerTimeLauncher.NAME + " Website", new URL("http://andrewohara.io/TinkerTime")).getComponent(),
+					"This work is licensed under the GNU GPL v3.0 License\n",
+					new UrlLabels.UrlLink("View a copy of this license", new URL("http://opensource.org/licenses/gpl-3.0")).getComponent(),
+					"\n",
+					TinkerTimeLauncher.NAME + " uses Glyphicons (glyphicons.com)",
+					"\n",
+					new UrlLabels.UrlLink(TinkerTimeLauncher.NAME + " Website", new URL("http://andrewohara.io/TinkerTime")).getComponent(),
 			};
 
 			JOptionPane.showMessageDialog(
@@ -271,6 +272,7 @@ public class Actions {
 	public static class ExportMods extends TinkerAction {
 
 		private final ImportController importController;
+		private static final String ALL = "Export All Mods", ENABLED = "Export Enabled Mods";
 
 		public ExportMods(JComponent parent, ImportController importController){
 			super("Export Mods", "icon/glyphicons_359_file_export.png", parent, null);
@@ -279,16 +281,24 @@ public class Actions {
 
 		@Override
 		protected void call() throws Exception {
-			int result = JOptionPane.showConfirmDialog(parent, "Would you like to export only the enabled mods?  Otherwise, all.", "Choose mods to export", JOptionPane.YES_NO_CANCEL_OPTION);
-			boolean enabledOnly = false;
-			switch(result){
-			case JOptionPane.YES_OPTION: enabledOnly = true; break;
-			case JOptionPane.NO_OPTION: enabledOnly = false; break;
-			case JOptionPane.CANCEL_OPTION:
-			default: return;
+			Object result = JOptionPane.showInputDialog(
+					parent, "Which mods would you like to export?",
+					"Export Mods", JOptionPane.QUESTION_MESSAGE, null,
+					new String[] { ALL, ENABLED }, ALL);
+
+			boolean enabledOnly = true;
+			if (result == null){
+				return;
+			} else if (result.equals(ALL)){
+				enabledOnly = false;
 			}
 
+			// Set default file extension if not set
 			Path exportPath = FileChoosers.chooseImportExportFile(true);
+			if (FilenameUtils.getExtension(exportPath.toString()).isEmpty()){
+				exportPath = Paths.get(exportPath.toString() + ".txt");
+			}
+
 			int exported = importController.exportMods(exportPath, enabledOnly);
 			JOptionPane.showMessageDialog(
 					parent,
@@ -384,6 +394,7 @@ public class Actions {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	public static class LaunchInstallationSelector extends TinkerAction {
 
 		private final InstallationSelectorView selector;
@@ -443,23 +454,26 @@ public class Actions {
 		}
 	}
 
-	public static class UpdateLaunchArgumentsAction extends AbstractAction {
+	@SuppressWarnings("serial")
+	public static class UpdateLaunchArgsAction extends AbstractAction {
 
-		private final JTextField argsField;
 		private final ConfigData config;
 
-		public UpdateLaunchArgumentsAction(JTextField argsField, ConfigData config){
-			super("Update Launch Arguments");
-			this.argsField = argsField;
+		public UpdateLaunchArgsAction(ConfigData config){
+			super("KSP Launch Args");
 			this.config = config;
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				config.setLaunchArguments(argsField.getText());
-			} catch (SQLException e1) {
-				Dialogs.errorDialog(argsField, "Erro setting launch arguments", e1);
+				String curArgs = config.getLaunchArguments();
+				String newArgs = JOptionPane.showInputDialog(null, "Modify the Launch Args for KSP", curArgs);
+				if (newArgs != null && !newArgs.equals(curArgs)){
+					config.setLaunchArguments(newArgs);
+				}
+			} catch (SQLException e1){
+				Dialogs.errorDialog(null, "Error updating KSP Launch Args", e1);
 			}
 		}
 	}

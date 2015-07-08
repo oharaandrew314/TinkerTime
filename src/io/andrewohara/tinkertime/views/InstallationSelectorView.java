@@ -178,6 +178,7 @@ public class InstallationSelectorView implements DecoratedComponent<JPanel> {
 	// Actions //
 	/////////////
 
+	@SuppressWarnings("serial")
 	private class AddAction extends AbstractAction {
 
 		private AddAction(){
@@ -201,6 +202,7 @@ public class InstallationSelectorView implements DecoratedComponent<JPanel> {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	private class RemoveAction extends AbstractAction {
 
 		private RemoveAction(){
@@ -222,6 +224,7 @@ public class InstallationSelectorView implements DecoratedComponent<JPanel> {
 
 	}
 
+	@SuppressWarnings("serial")
 	private class RenameAction extends AbstractAction {
 
 		private RenameAction(){
@@ -244,6 +247,7 @@ public class InstallationSelectorView implements DecoratedComponent<JPanel> {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	private class OkAction extends AbstractAction {
 
 		private OkAction(){
@@ -268,18 +272,21 @@ public class InstallationSelectorView implements DecoratedComponent<JPanel> {
 	//Exceptions //
 	////////////////
 
+	@SuppressWarnings("serial")
 	private static class NoNameEnteredException extends Exception {
 		private NoNameEnteredException(){
 			super("No name was entered for the installation");
 		}
 	}
 
+	@SuppressWarnings("serial")
 	private static class DuplicatedFieldException extends Exception {
 		private DuplicatedFieldException(String type){
 			super("Another installation is already using that " + type);
 		}
 	}
 
+	@SuppressWarnings("serial")
 	public static class NoSelectedInstallationException extends Exception {
 		public NoSelectedInstallationException(){
 			super("No Installation was selected");

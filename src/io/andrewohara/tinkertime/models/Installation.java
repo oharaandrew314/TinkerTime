@@ -114,6 +114,7 @@ public class Installation extends BaseDaoEnabled<Installation, Integer>{
 	// Exceptions //
 	////////////////
 
+	@SuppressWarnings("serial")
 	public static class InvalidGameDataPathException extends Exception {
 
 		public InvalidGameDataPathException(Path path, String reason){

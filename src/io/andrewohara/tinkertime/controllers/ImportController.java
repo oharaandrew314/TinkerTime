@@ -97,6 +97,7 @@ public class ImportController {
 		return exported;
 	}
 
+	@SuppressWarnings("serial")
 	public static class ModImportException extends Exception {
 
 		public ModImportException(String message, Exception cause){
