@@ -47,6 +47,7 @@ You will need to re-install all your mods. Fortunately, you can import your lega
     - TinkerTime will now keep track of multiple KSP installations, and can switch them on the fly
   - You can now filter your mods with a text filter
   - New Splash screen on startup
+  - New App Icons based on splash screen
   - You can now import mod URLs from a plain-text file
   - You can now export all of your mods, rather than just enabled ones
 
