@@ -1,12 +1,5 @@
 package io.andrewohara.tinkertime.controllers;
 
-import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory;
-import io.andrewohara.tinkertime.models.ConfigData;
-import io.andrewohara.tinkertime.models.Installation;
-import io.andrewohara.tinkertime.models.mod.Mod;
-import io.andrewohara.tinkertime.models.mod.ModUpdateData;
-
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.sql.SQLException;
@@ -16,6 +9,10 @@ import org.flywaydb.core.internal.util.ObjectUtils;
 
 import com.google.inject.Inject;
 import com.j256.ormlite.dao.Dao;
+
+import io.andrewohara.tinkertime.models.ConfigData;
+import io.andrewohara.tinkertime.models.mod.Mod;
+import io.andrewohara.tinkertime.models.mod.ModUpdateData;
 
 public class ModLoader {
 
@@ -65,14 +62,5 @@ public class ModLoader {
 			mod = new Mod(url, config.getSelectedInstallation(), modsDao);
 		}
 		return mod;
-	}
-
-	public void createDefaultsFor(Installation installation) throws SQLException {
-		try {
-			URL moduleManagerURl = new URL("https", CrawlerFactory.HOST_MODULE_MANAGER, "/jenkins/job/ModuleManager");
-			new Mod(moduleManagerURl, installation, true, modsDao);
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(e); // Programming error if this occurs
-		}
 	}
 }
