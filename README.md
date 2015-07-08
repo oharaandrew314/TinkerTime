@@ -50,6 +50,7 @@ You will need to re-install all your mods. Fortunately, you can import your lega
   - New App Icons based on splash screen
   - You can now import mod URLs from a plain-text file
   - You can now export all of your mods, rather than just enabled ones
+  - Updated mods will now be automatically re-installed if they were before updating
 
 - Bug Fixes
   - Fix slowdown anbd freezing during long use

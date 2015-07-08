@@ -1,13 +1,5 @@
 package io.andrewohara.tinkertime.controllers;
 
-import io.andrewohara.common.Listenable;
-import io.andrewohara.common.workflows.tasks.TaskCallback;
-import io.andrewohara.tinkertime.controllers.workflows.ModWorkflowBuilder;
-import io.andrewohara.tinkertime.controllers.workflows.ModWorkflowBuilderFactory;
-import io.andrewohara.tinkertime.controllers.workflows.TaskLauncher;
-import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory.UnsupportedHostException;
-import io.andrewohara.tinkertime.models.mod.Mod;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -15,6 +7,14 @@ import java.sql.SQLException;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
+import io.andrewohara.common.Listenable;
+import io.andrewohara.common.workflows.tasks.TaskCallback;
+import io.andrewohara.tinkertime.controllers.workflows.ModWorkflowBuilder;
+import io.andrewohara.tinkertime.controllers.workflows.ModWorkflowBuilderFactory;
+import io.andrewohara.tinkertime.controllers.workflows.TaskLauncher;
+import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory.UnsupportedHostException;
+import io.andrewohara.tinkertime.models.mod.Mod;
 
 /**
  * Controller for initiating Asynchronous Tasks for Mod Processing.
@@ -61,8 +61,11 @@ public class ModManager extends Listenable<TaskCallback> {
 		try {
 			ModWorkflowBuilder builder = workflowBuilderFactory.createBuilder(mod);
 			builder.updateMod(forceUpdate);
+			if (mod.isEnabled()){
+				builder.enableMod();
+			}
 			taskLauncher.submitDownloadWorkflow(builder);
-		} catch (UnsupportedHostException e) {
+		} catch (UnsupportedHostException | ModNotDownloadedException e) {
 			throw new ModUpdateFailedException(e);
 		}
 	}
