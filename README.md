@@ -1,7 +1,7 @@
 TinkerTime
 ==========
 
-Automatically Updating Mod Manager for Kerbal Space Program
+The Ultimate Personal Mechanic for your KSP Mods
 
 Master: [![Build Status](https://travis-ci.org/oharaandrew314/TinkerTime.svg?branch=master)](https://travis-ci.org/oharaandrew314/TinkerTime)
 
@@ -31,6 +31,37 @@ The [Tinker Time Wiki](https://github.com/oharaandrew314/TinkerTime/wiki) contai
 - Beta Testers ([foonix](https://github.com/foonix), [jcsntoll](https://github.com/jcsntoll), and [apemanzilla](https://github.com/apemanzilla))
 
 ### Change Log
+
+##### v2.0
+
+This Major Update converts TinkerTime to use the pure-java H2 Database engine. TinkerTime will now run much faster, as more data can be cached, rather than constantly analyzing the mod zip files.
+
+###### LEGACY BREAKING CHANGES:
+
+You will need to re-install all your mods. Fortunately, you can import your legacy TinkerTime-mods.json files, which are stored in Kerbal Space Program/TinkerTime. This will help make for a smoother transition. In the future, the database will be automatically migrated for changes.
+
+- New Features
+  - Faster due to the H2 database engine migration
+    - you may notice that mod info in the right panel switches far faster than before
+  - Improved KSP Installation Management
+    - TinkerTime will now keep track of multiple KSP installations, and can switch them on the fly
+  - You can now filter your mods with a text filter
+  - New Splash screen on startup
+  - New App Icons based on splash screen
+  - You can now import mod URLs from a plain-text file
+  - You can now export all of your mods, rather than just enabled ones
+  - Updated mods will now be automatically re-installed if they were before updating
+
+- Bug Fixes
+  - Fix slowdown anbd freezing during long use
+    - Reduced Memory Consumption in this case, too
+  - Links to KerbalStuff mods will no longer go to the API page
+
+- Other interesting points
+  - app is now packaged in io.andrewohara.tinkertime
+  - Much deeper dependency injection migration for easier maintenance and development
+  - Major refactor in an attempt to increase maintainability
+  - Mod Images and readme text is now stored directly in the database
 
 ##### v1.4.5
 - Fix first-time startup error related to empty GameData Path

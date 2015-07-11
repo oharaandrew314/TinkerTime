@@ -1,0 +1,4 @@
+CREATE TABLE `config` (`id` INTEGER , `checkForAppUpdatesOnStartup` TINYINT(1) NOT NULL , `checkForModUpdatesOnStartup` TINYINT(1) NOT NULL , `selectedInstallation_id` INTEGER , `launchArguments` VARCHAR(255) , PRIMARY KEY (`id`) );
+CREATE TABLE `installations` (`id` INTEGER AUTO_INCREMENT , `name` VARCHAR(255) NOT NULL , `path` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`) );
+CREATE TABLE `mods` (`id` INTEGER AUTO_INCREMENT , `updatedOn` TIMESTAMP , `name` VARCHAR(255) , `creator` VARCHAR(255) , `modVersion` VARCHAR(255) , `kspVersion` VARCHAR(255) , `url` VARCHAR(255) NOT NULL , `updateAvailable` TINYINT(1) , `builtIn` TINYINT(1) , `installation_id` INTEGER NOT NULL , `imageBytes` BLOB , `readmeText` TEXT , PRIMARY KEY (`id`) );
+CREATE TABLE `modFiles` (`id` INTEGER AUTO_INCREMENT , `mod_id` INTEGER NOT NULL , `entryName` VARCHAR(255) NOT NULL , `relDestPath` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`) );
