@@ -32,6 +32,14 @@ The [Tinker Time Wiki](https://github.com/oharaandrew314/TinkerTime/wiki) contai
 
 ### Change Log
 
+##### v2.0.1
+
+- User Exceptions will now be logged to file, and the user will be given a link to open them
+- Fix OpenJDK compatability issue with image encoding
+- Fix issue where local mods could not be saved
+- Fix error where user could not select a new mod by right-clicking it after deleting a mod
+- Throw user exception at startup if database connection cannot established
+
 ##### v2.0
 
 This Major Update converts TinkerTime to use the pure-java H2 Database engine. TinkerTime will now run much faster, as more data can be cached, rather than constantly analyzing the mod zip files.

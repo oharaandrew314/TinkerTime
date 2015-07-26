@@ -1,5 +1,17 @@
 package io.andrewohara.tinkertime.controllers.workflows;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
+import com.google.inject.Inject;
+import com.j256.ormlite.dao.Dao;
+
 import io.andrewohara.common.workflows.tasks.WorkflowBuilder;
 import io.andrewohara.tinkertime.controllers.ModLoader;
 import io.andrewohara.tinkertime.controllers.ModManager.ModNotDownloadedException;
@@ -16,18 +28,6 @@ import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory;
 import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory.UnsupportedHostException;
 import io.andrewohara.tinkertime.models.ModFile;
 import io.andrewohara.tinkertime.models.mod.Mod;
-
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-
-import com.google.inject.Inject;
-import com.j256.ormlite.dao.Dao;
 
 public class ModWorkflowBuilder extends WorkflowBuilder {
 
@@ -89,7 +89,6 @@ public class ModWorkflowBuilder extends WorkflowBuilder {
 	}
 
 	private void downloadMod() throws UnsupportedHostException{
-		//modUpdateCoordinator.refreshMods();
 		Crawler<?> crawler = getCrawler();
 		addTask(new RunCrawlerTask(crawler));  // prefetch metadata
 		addTask(new DownloadModZipTask(crawler, getMod()));

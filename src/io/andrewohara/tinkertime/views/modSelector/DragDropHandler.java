@@ -1,9 +1,5 @@
 package io.andrewohara.tinkertime.views.modSelector;
 
-import io.andrewohara.common.views.Dialogs;
-import io.andrewohara.tinkertime.controllers.ModManager;
-import io.andrewohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
-
 import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -20,14 +16,20 @@ import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.Collection;
 
+import io.andrewohara.common.views.Dialogs;
+import io.andrewohara.tinkertime.controllers.ModManager;
+import io.andrewohara.tinkertime.controllers.ModManager.ModUpdateFailedException;
+
 class DragDropHandler implements DropTargetListener {
 
 	private final Component listenTo;
 	private final ModManager mm;
+	private Dialogs dialogs;
 
-	DragDropHandler(Component listenTo, ModManager mm){
+	DragDropHandler(Component listenTo, ModManager mm, Dialogs dialogs){
 		this.listenTo = listenTo;
 		this.mm = mm;
+		this.dialogs = dialogs;
 	}
 
 	@Override
@@ -72,7 +74,7 @@ class DragDropHandler implements DropTargetListener {
 			String url = contents.split("URL=")[1].split("]")[0];
 			mm.downloadNewMod(new URL(url));
 		} catch (IOException | SQLException | ModUpdateFailedException e) {
-			Dialogs.errorDialog(listenTo, e);
+			dialogs.errorDialog(listenTo, e);
 		}
 
 	}
@@ -107,7 +109,7 @@ class DragDropHandler implements DropTargetListener {
 				handleUrlFile(file);
 			}
 		} catch (UnsupportedFlavorException | IOException | SQLException e) {
-			Dialogs.errorDialog(listenTo, e);
+			dialogs.errorDialog(listenTo, e);
 		}
 	}
 

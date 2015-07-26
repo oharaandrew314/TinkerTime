@@ -39,8 +39,10 @@ public class DownloadModImageTask extends FileTransferTask {
 					){
 				transfer(is, os);
 				BufferedImage img = ImageIO.read(new ByteArrayInputStream(os.toByteArray()));
-				img = imageManager.resizeImage(img, imageManager.scaleToFit(img, Mod.MAX_IMAGE_SIZE));
-				mod.setImage(img);
+				if (img != null){
+					img = imageManager.resizeImage(img, imageManager.scaleToFit(img, Mod.MAX_IMAGE_SIZE));
+					mod.setImage(img);
+				}
 			}
 		}
 		return true;

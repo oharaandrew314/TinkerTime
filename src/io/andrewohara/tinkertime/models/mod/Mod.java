@@ -1,10 +1,5 @@
 package io.andrewohara.tinkertime.models.mod;
 
-import io.andrewohara.common.version.Version;
-import io.andrewohara.tinkertime.TinkerTimeLauncher;
-import io.andrewohara.tinkertime.models.Installation;
-import io.andrewohara.tinkertime.models.ModFile;
-
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -26,6 +21,11 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.misc.BaseDaoEnabled;
 import com.j256.ormlite.table.DatabaseTable;
+
+import io.andrewohara.common.version.Version;
+import io.andrewohara.tinkertime.TinkerTimeLauncher;
+import io.andrewohara.tinkertime.models.Installation;
+import io.andrewohara.tinkertime.models.ModFile;
 
 /**
  * Model for holding Mod information and status.
@@ -117,7 +117,7 @@ public class Mod extends BaseDaoEnabled<Mod, Integer> implements Comparable<Mod>
 	public void setImage(BufferedImage image) throws IOException, SQLException{
 		if (image != null){
 			ByteArrayOutputStream baos=new ByteArrayOutputStream();
-			ImageIO.write(image, "jpg", baos);
+			ImageIO.write(image, "png", baos);
 			this.imageBytes = baos.toByteArray();
 		} else {
 			this.imageBytes = null;
@@ -137,8 +137,8 @@ public class Mod extends BaseDaoEnabled<Mod, Integer> implements Comparable<Mod>
 	}
 
 	public String getName(){
-		if (name == null && url != null){
-			return getUrl().getHost() + " Mod";
+		if (name == null){
+			return (url != null ? getUrl().getHost(): "Local") + " Mod";
 		}
 		return name;
 	}

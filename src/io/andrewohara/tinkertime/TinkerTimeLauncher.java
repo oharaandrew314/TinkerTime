@@ -1,5 +1,30 @@
 package io.andrewohara.tinkertime;
 
+import java.awt.BorderLayout;
+import java.awt.Image;
+import java.awt.SplashScreen;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.Callable;
+
+import javax.swing.JFrame;
+import javax.swing.JMenuBar;
+import javax.swing.JToolBar;
+
+import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.FlywayException;
+
+import com.google.inject.Guice;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.j256.ormlite.support.ConnectionSource;
+
 import io.andrewohara.common.content.ImageManager;
 import io.andrewohara.common.version.Version;
 import io.andrewohara.common.views.Dialogs;
@@ -13,27 +38,6 @@ import io.andrewohara.tinkertime.views.SelectedInstallationView;
 import io.andrewohara.tinkertime.views.modSelector.ModListCellRenderer;
 import io.andrewohara.tinkertime.views.modSelector.ModSelectorPanelController;
 
-import java.awt.BorderLayout;
-import java.awt.Image;
-import java.awt.SplashScreen;
-import java.net.MalformedURLException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.swing.JFrame;
-import javax.swing.JMenuBar;
-import javax.swing.JToolBar;
-
-import org.flywaydb.core.Flyway;
-import org.flywaydb.core.api.FlywayException;
-
-import com.google.inject.Guice;
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-
 /**
  * Main Class for Tinker Time
  *
@@ -45,7 +49,7 @@ public class TinkerTimeLauncher implements Runnable {
 	NAME = "Tinker Time",
 	AUTHOR = "oharaandrew314",
 	DOWNLOAD_URL = "https://kerbalstuff.com/mod/243";
-	public static final Version VERSION = Version.valueOf("2.0.0");
+	public static final Version VERSION = Version.valueOf("2.0.1");
 	public static final String
 	SAFE_NAME = NAME.replace(" ", ""),
 	FULL_NAME = String.format("%s %s by %s", NAME, VERSION, AUTHOR);
@@ -68,8 +72,15 @@ public class TinkerTimeLauncher implements Runnable {
 		}
 	}
 
+	public static Path getHomePath(){
+		return Paths.get(System.getProperty("user.home"), "Documents", TinkerTimeLauncher.NAME);
+	}
+
 	public static void main(String[] args) {
 		Injector injector = Guice.createInjector(new MainModule());
+
+		// Test Database Connection
+		injector.getInstance(TestConnectionTask.class).call();
 
 		// Migrate database
 		injector.getInstance(DatabaseMigrator.class).run();
@@ -83,12 +94,34 @@ public class TinkerTimeLauncher implements Runnable {
 	// Startup Tasks //
 	///////////////////
 
+	public static class TestConnectionTask implements Callable<Void> {
+
+		private final ConnectionSource dbConnection;
+		private final Dialogs dialogs;
+
+		@Inject
+		TestConnectionTask(ConnectionSource dbConnection, Dialogs dialogs){
+			this.dbConnection = dbConnection;
+			this.dialogs = dialogs;
+		}
+
+		@Override
+		public Void call() {
+			try {
+				dbConnection.getReadWriteConnection();
+			} catch (SQLException e) {
+				dialogs.errorDialog(null, "Error Connection to Database", e);
+			}
+			return null;
+		}
+	}
+
 	public static class DatabaseMigrator implements Runnable {
 
 		private final DbConnectionString connectionString;
 
 		@Inject
-		public DatabaseMigrator(DbConnectionString connectionString){
+		DatabaseMigrator(DbConnectionString connectionString){
 			this.connectionString = connectionString;
 		}
 
@@ -105,9 +138,7 @@ public class TinkerTimeLauncher implements Runnable {
 				flyway.repair();
 				throw e;
 			}
-
 		}
-
 	}
 
 	private static class ConfigVerifier implements Runnable {
@@ -172,11 +203,13 @@ public class TinkerTimeLauncher implements Runnable {
 
 		private final ConfigData config;
 		private final ModManager modManager;
+		private final Dialogs dialogs;
 
 		@Inject
-		UpdateChecker(ConfigData config, ModManager modManager){
+		UpdateChecker(ConfigData config, ModManager modManager, Dialogs dialogs){
 			this.config = config;
 			this.modManager = modManager;
+			this.dialogs = dialogs;
 		}
 
 		@Override
@@ -186,7 +219,7 @@ public class TinkerTimeLauncher implements Runnable {
 				try {
 					modManager.tryUpdateModManager();
 				} catch (UnsupportedHostException | MalformedURLException | SQLException e) {
-					Dialogs.errorDialog(null, "Error Checking for App Updates", e);
+					dialogs.errorDialog(null, "Error Checking for App Updates", e);
 				}
 			}
 
@@ -195,7 +228,7 @@ public class TinkerTimeLauncher implements Runnable {
 				try {
 					modManager.checkForModUpdates();
 				} catch (UnsupportedHostException e) {
-					Dialogs.errorDialog(null, "Error Checking for Mod Updates", e);
+					dialogs.errorDialog(null, "Error Checking for Mod Updates", e);
 				}
 			}
 		}

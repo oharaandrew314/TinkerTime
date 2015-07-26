@@ -1,0 +1,1 @@
+ALTER TABLE `mods` ALTER COLUMN `url` SET NULL;

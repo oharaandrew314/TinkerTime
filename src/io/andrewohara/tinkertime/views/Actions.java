@@ -1,18 +1,5 @@
 package io.andrewohara.tinkertime.views;
 
-import io.andrewohara.common.Util;
-import io.andrewohara.common.content.ImageManager;
-import io.andrewohara.common.views.Dialogs;
-import io.andrewohara.common.views.UrlLabels;
-import io.andrewohara.tinkertime.TinkerTimeLauncher;
-import io.andrewohara.tinkertime.controllers.ImportController;
-import io.andrewohara.tinkertime.controllers.ModManager;
-import io.andrewohara.tinkertime.controllers.ModManager.NoModSelectedException;
-import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory;
-import io.andrewohara.tinkertime.io.kspLauncher.GameLauncher;
-import io.andrewohara.tinkertime.models.ConfigData;
-import io.andrewohara.tinkertime.models.mod.Mod;
-
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,6 +20,19 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FilenameUtils;
 
+import io.andrewohara.common.Util;
+import io.andrewohara.common.content.ImageManager;
+import io.andrewohara.common.views.Dialogs;
+import io.andrewohara.common.views.UrlLabels;
+import io.andrewohara.tinkertime.TinkerTimeLauncher;
+import io.andrewohara.tinkertime.controllers.ImportController;
+import io.andrewohara.tinkertime.controllers.ModManager;
+import io.andrewohara.tinkertime.controllers.ModManager.NoModSelectedException;
+import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory;
+import io.andrewohara.tinkertime.io.kspLauncher.GameLauncher;
+import io.andrewohara.tinkertime.models.ConfigData;
+import io.andrewohara.tinkertime.models.mod.Mod;
+
 public class Actions {
 
 	// -- Helpers ---------------------------------------------------------
@@ -44,11 +44,13 @@ public class Actions {
 		protected static final ImageManager IMAGE_MANAGER = new ImageManager();;
 		protected final JComponent parent;
 		protected final ModManager mm;
+		private final Dialogs dialogs;
 
-		private TinkerAction(String title, String iconName, JComponent parent, ModManager mm){
+		private TinkerAction(String title, String iconName, JComponent parent, ModManager mm, Dialogs dialogs){
 			super(title, iconName != null ? IMAGE_MANAGER.getIcon(iconName): null);
 			this.parent = parent;
 			this.mm = mm;
+			this.dialogs = dialogs;
 			putValue(Action.SHORT_DESCRIPTION, title);
 		}
 
@@ -57,7 +59,7 @@ public class Actions {
 			try {
 				call();
 			} catch (Exception e){
-				Dialogs.errorDialog(parent, e);
+				dialogs.errorDialog(parent, e);
 			}
 		}
 
@@ -74,8 +76,8 @@ public class Actions {
 
 		private final URL url;
 
-		GoToUrlAction(String title, String url, String iconPath, JComponent parent) {
-			super(title, iconPath, parent, null);
+		GoToUrlAction(String title, String url, String iconPath, JComponent parent, Dialogs dialogs) {
+			super(title, iconPath, parent, null, dialogs);
 			try {
 				this.url = new URL(url);
 			} catch (MalformedURLException e) {
@@ -94,8 +96,8 @@ public class Actions {
 	@SuppressWarnings("serial")
 	public static class AddModAction extends TinkerAction {
 
-		public AddModAction(JComponent parent, ModManager mm){
-			super("Add Mod", "icon/glyphicons_432_plus.png", parent, mm);
+		public AddModAction(JComponent parent, ModManager mm, Dialogs dialogs){
+			super("Add Mod", "icon/glyphicons_432_plus.png", parent, mm, dialogs);
 		}
 
 		@Override
@@ -126,8 +128,8 @@ public class Actions {
 	@SuppressWarnings("serial")
 	public static class DeleteModAction extends TinkerAction {
 
-		public DeleteModAction(JComponent parent, ModManager mm){
-			super("Delete Mod", "icon/glyphicons_433_minus.png", parent, mm);
+		public DeleteModAction(JComponent parent, ModManager mm, Dialogs dialogs){
+			super("Delete Mod", "icon/glyphicons_433_minus.png", parent, mm, dialogs);
 		}
 
 		@Override
@@ -147,12 +149,12 @@ public class Actions {
 	@SuppressWarnings("serial")
 	public static class UpdateModAction extends TinkerAction {
 
-		public UpdateModAction(JComponent parent, ModManager mm){
-			this("Update Mod", parent, mm);
+		public UpdateModAction(JComponent parent, ModManager mm, Dialogs dialogs){
+			this("Update Mod", parent, mm, dialogs);
 		}
 
-		private UpdateModAction(String title, JComponent parent, ModManager mm){
-			super(title, "icon/glyphicons_181_download_alt.png", parent, mm);
+		private UpdateModAction(String title, JComponent parent, ModManager mm, Dialogs dialogs){
+			super(title, "icon/glyphicons_181_download_alt.png", parent, mm, dialogs);
 		}
 
 		@Override
@@ -168,8 +170,8 @@ public class Actions {
 	@SuppressWarnings("serial")
 	public static class UpdateAllAction extends UpdateModAction {
 
-		public UpdateAllAction(JComponent parent, ModManager mm) {
-			super("Update All", parent, mm);
+		public UpdateAllAction(JComponent parent, ModManager mm, Dialogs dialogs) {
+			super("Update All", parent, mm, dialogs);
 		}
 
 		@Override
@@ -181,8 +183,8 @@ public class Actions {
 	@SuppressWarnings("serial")
 	public static class CheckforUpdatesAction extends TinkerAction {
 
-		public CheckforUpdatesAction(JComponent parent, ModManager mm){
-			super("Check for Mod Updates", "icon/glyphicons_027_search.png", parent, mm);
+		public CheckforUpdatesAction(JComponent parent, ModManager mm, Dialogs dialogs){
+			super("Check for Mod Updates", "icon/glyphicons_027_search.png", parent, mm, dialogs);
 		}
 
 		@Override
@@ -194,8 +196,8 @@ public class Actions {
 	@SuppressWarnings("serial")
 	public static class EnableDisableModAction extends TinkerAction {
 
-		public EnableDisableModAction(JComponent parent, ModManager mm){
-			super("Enable/Disable", "icon/glyphicons_457_transfer.png", parent, mm);
+		public EnableDisableModAction(JComponent parent, ModManager mm, Dialogs dialogs){
+			super("Enable/Disable", "icon/glyphicons_457_transfer.png", parent, mm, dialogs);
 		}
 
 		@Override
@@ -208,24 +210,25 @@ public class Actions {
 		}
 	}
 
-	public static TinkerAction newHelpAction(JComponent parent){
+	public static TinkerAction newHelpAction(JComponent parent, Dialogs dialogs){
 		return new GoToUrlAction(
 				"Help",
 				"https://github.com/oharaandrew314/TinkerTime/wiki",
 				"icon/glyphicons_194_circle_question_mark.png",
-				parent
+				parent,
+				dialogs
 				);
 	}
 
-	public static TinkerAction newWebsiteAction(JComponent parent){
-		return new GoToUrlAction("Website", "http://andrewohara.io/TinkerTime", null, parent);
+	public static TinkerAction newWebsiteAction(JComponent parent, Dialogs dialogs){
+		return new GoToUrlAction("Website", "http://andrewohara.io/TinkerTime", null, parent, dialogs);
 	}
 
 	@SuppressWarnings("serial")
 	public static class AboutAction extends TinkerAction {
 
-		public AboutAction(JComponent parent, ModManager mm){
-			super("About", "icon/glyphicons_003_user.png", parent, mm);
+		public AboutAction(JComponent parent, ModManager mm, Dialogs dialogs){
+			super("About", "icon/glyphicons_003_user.png", parent, mm, dialogs);
 		}
 
 		@Override
@@ -254,8 +257,8 @@ public class Actions {
 	@SuppressWarnings("serial")
 	public static class ContactAction extends TinkerAction {
 
-		public ContactAction(JComponent parent, ModManager mm){
-			super("Contact Me", "icon/glyphicons_010_envelope.png", parent, mm);
+		public ContactAction(JComponent parent, ModManager mm, Dialogs dialogs){
+			super("Contact Me", "icon/glyphicons_010_envelope.png", parent, mm, dialogs);
 		}
 
 		@Override
@@ -274,8 +277,8 @@ public class Actions {
 		private final ImportController importController;
 		private static final String ALL = "Export All Mods", ENABLED = "Export Enabled Mods";
 
-		public ExportMods(JComponent parent, ImportController importController){
-			super("Export Mods", "icon/glyphicons_359_file_export.png", parent, null);
+		public ExportMods(JComponent parent, ImportController importController, Dialogs dialogs){
+			super("Export Mods", "icon/glyphicons_359_file_export.png", parent, null, dialogs);
 			this.importController = importController;
 		}
 
@@ -314,8 +317,8 @@ public class Actions {
 
 		private final ImportController importController;
 
-		public ImportMods(JComponent parent, ImportController importController){
-			super("Import Mods", "icon/glyphicons-359-file-import.png", parent, null);
+		public ImportMods(JComponent parent, ImportController importController, Dialogs dialogs){
+			super("Import Mods", "icon/glyphicons-359-file-import.png", parent, null, dialogs);
 			this.importController = importController;
 		}
 
@@ -334,8 +337,8 @@ public class Actions {
 	@SuppressWarnings("serial")
 	public static class UpdateTinkerTime extends TinkerAction {
 
-		public UpdateTinkerTime(JComponent parent, ModManager mm){
-			super("Check for Tinker Time Update", null, parent, mm);
+		public UpdateTinkerTime(JComponent parent, ModManager mm, Dialogs dialogs){
+			super("Check for Tinker Time Update", null, parent, mm, dialogs);
 		}
 
 		@Override
@@ -348,8 +351,8 @@ public class Actions {
 	@SuppressWarnings("serial")
 	public static class AddModZip extends TinkerAction {
 
-		public AddModZip(JComponent parent, ModManager mm){
-			super("Add Mod from Zip File", "icon/glyphicons_410_compressed.png", parent, mm);
+		public AddModZip(JComponent parent, ModManager mm, Dialogs dialogs){
+			super("Add Mod from Zip File", "icon/glyphicons_410_compressed.png", parent, mm, dialogs);
 		}
 
 		@Override
@@ -367,8 +370,8 @@ public class Actions {
 
 		private final GameLauncher launcher;
 
-		public LaunchKspAction(JComponent parent, ModManager mm, GameLauncher launcher){
-			super("Launch KSP", "icon/rocket.png", parent, mm);
+		public LaunchKspAction(JComponent parent, ModManager mm, GameLauncher launcher, Dialogs dialogs){
+			super("Launch KSP", "icon/rocket.png", parent, mm, dialogs);
 			this.launcher = launcher;
 		}
 
@@ -383,8 +386,8 @@ public class Actions {
 
 		private final ConfigData config;
 
-		public OpenGameDataFolder(JComponent parent, ModManager mm, ConfigData config) {
-			super("Open GameData Folder", "icon/glyphicons_144_folder_open.png", parent, mm);
+		public OpenGameDataFolder(JComponent parent, ModManager mm, ConfigData config, Dialogs dialogs) {
+			super("Open GameData Folder", "icon/glyphicons_144_folder_open.png", parent, mm, dialogs);
 			this.config = config;
 		}
 
@@ -399,8 +402,8 @@ public class Actions {
 
 		private final InstallationSelectorView selector;
 
-		public LaunchInstallationSelector(JComponent parent, ModManager mm, InstallationSelectorView selector) {
-			super("Select KSP Installation", "icon/glyphicons_342_hdd.png", parent, mm);
+		public LaunchInstallationSelector(JComponent parent, ModManager mm, InstallationSelectorView selector, Dialogs dialogs) {
+			super("Select KSP Installation", "icon/glyphicons_342_hdd.png", parent, mm, dialogs);
 			this.selector = selector;
 		}
 
@@ -418,10 +421,12 @@ public class Actions {
 
 		private final JCheckBox checkBox;
 		private final ConfigData config;
+		private final Dialogs dialogs;
 
-		public CheckForAppUpdatesAction(JCheckBox checkBox, ConfigData config){
+		public CheckForAppUpdatesAction(JCheckBox checkBox, ConfigData config, Dialogs dialogs){
 			this.checkBox = checkBox;
 			this.config = config;
+			this.dialogs = dialogs;
 		}
 
 		@Override
@@ -429,7 +434,7 @@ public class Actions {
 			try {
 				config.setCheckForAppUpdatesOnStartup(checkBox.isSelected());
 			} catch (SQLException e1) {
-				Dialogs.errorDialog(checkBox, e1);
+				dialogs.errorDialog(checkBox, e1);
 			}
 		}
 	}
@@ -438,10 +443,12 @@ public class Actions {
 
 		private final JCheckBox checkBox;
 		private final ConfigData config;
+		private final Dialogs dialogs;
 
-		public CheckForModUpdatesAction(JCheckBox checkBox, ConfigData config){
+		public CheckForModUpdatesAction(JCheckBox checkBox, ConfigData config, Dialogs dialogs){
 			this.checkBox = checkBox;
 			this.config = config;
+			this.dialogs = dialogs;
 		}
 
 		@Override
@@ -449,7 +456,7 @@ public class Actions {
 			try {
 				config.setCheckForModUpdatesOnStartup(checkBox.isSelected());
 			} catch (SQLException e1) {
-				Dialogs.errorDialog(checkBox, e1);
+				dialogs.errorDialog(checkBox, e1);
 			}
 		}
 	}
@@ -458,10 +465,12 @@ public class Actions {
 	public static class UpdateLaunchArgsAction extends AbstractAction {
 
 		private final ConfigData config;
+		private final Dialogs dialogs;
 
-		public UpdateLaunchArgsAction(ConfigData config){
+		public UpdateLaunchArgsAction(ConfigData config, Dialogs dialogs){
 			super("KSP Launch Args");
 			this.config = config;
+			this.dialogs = dialogs;
 		}
 
 		@Override
@@ -473,7 +482,7 @@ public class Actions {
 					config.setLaunchArguments(newArgs);
 				}
 			} catch (SQLException e1){
-				Dialogs.errorDialog(null, "Error updating KSP Launch Args", e1);
+				dialogs.errorDialog(null, "Error updating KSP Launch Args", e1);
 			}
 		}
 	}
