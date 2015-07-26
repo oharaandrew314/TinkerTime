@@ -117,7 +117,7 @@ public class Mod extends BaseDaoEnabled<Mod, Integer> implements Comparable<Mod>
 	public void setImage(BufferedImage image) throws IOException, SQLException{
 		if (image != null){
 			ByteArrayOutputStream baos=new ByteArrayOutputStream();
-			ImageIO.write(image, "jpg", baos);
+			ImageIO.write(image, "png", baos);
 			this.imageBytes = baos.toByteArray();
 		} else {
 			this.imageBytes = null;
