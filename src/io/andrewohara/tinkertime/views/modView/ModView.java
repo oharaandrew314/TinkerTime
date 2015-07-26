@@ -1,8 +1,5 @@
 package io.andrewohara.tinkertime.views.modView;
 
-import io.andrewohara.common.views.selectorPanel.SelectorView;
-import io.andrewohara.tinkertime.models.mod.Mod;
-
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.text.SimpleDateFormat;
@@ -15,6 +12,10 @@ import javax.swing.JPanel;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
+import io.andrewohara.common.views.Dialogs;
+import io.andrewohara.common.views.selectorPanel.SelectorView;
+import io.andrewohara.tinkertime.models.mod.Mod;
 
 /**
  * Panel for displaying a Mod's information.
@@ -40,7 +41,7 @@ public class ModView extends SelectorView.AbstractSelectorView<Mod> {
 	private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
 
 	@Inject
-	ModView(ModImageView imageView, ReadmePanel readmePanel){
+	ModView(ModImageView imageView, ReadmePanel readmePanel, Dialogs dialogs){
 		this.imageView = imageView;
 		this.readmePanel = readmePanel;
 
@@ -56,7 +57,7 @@ public class ModView extends SelectorView.AbstractSelectorView<Mod> {
 		infoPanel.add(modVersionLabel);
 		infoPanel.add(kspVersionLabel);
 		infoPanel.add(updatedOnLabel);
-		infoPanel.add((urlPanel = new ModUrlPanel()).getComponent());
+		infoPanel.add((urlPanel = new ModUrlPanel(dialogs)).getComponent());
 
 		// Create Top Panel (Info Panel and Mod Image)
 		topPanel.add(infoPanel, BorderLayout.CENTER);

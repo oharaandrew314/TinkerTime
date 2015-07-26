@@ -1,11 +1,5 @@
 package io.andrewohara.tinkertime.views;
 
-import io.andrewohara.common.views.DecoratedComponent;
-import io.andrewohara.common.views.Dialogs;
-import io.andrewohara.tinkertime.controllers.InstallationManager;
-import io.andrewohara.tinkertime.models.Installation;
-import io.andrewohara.tinkertime.models.Installation.InvalidGameDataPathException;
-
 import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.FlowLayout;
@@ -30,17 +24,25 @@ import javax.swing.WindowConstants;
 
 import com.google.inject.Inject;
 
+import io.andrewohara.common.views.DecoratedComponent;
+import io.andrewohara.common.views.Dialogs;
+import io.andrewohara.tinkertime.controllers.InstallationManager;
+import io.andrewohara.tinkertime.models.Installation;
+import io.andrewohara.tinkertime.models.Installation.InvalidGameDataPathException;
+
 public class InstallationSelectorView implements DecoratedComponent<JPanel> {
 
 	private final JPanel panel = new JPanel();
 	private final InstallationManager installationManager;
 	private final JComboBox<Installation> installations;
+	private final Dialogs dialogs;
 
 	private JDialog dialog;
 
 	@Inject
-	InstallationSelectorView(InstallationManager installationManager){
+	InstallationSelectorView(InstallationManager installationManager, Dialogs dialogs){
 		this.installationManager = installationManager;
+		this.dialogs = dialogs;
 
 		panel.setLayout(new BorderLayout());
 
@@ -152,7 +154,7 @@ public class InstallationSelectorView implements DecoratedComponent<JPanel> {
 	}
 
 	private void exceptionDialog(Exception e, String title){
-		Dialogs.errorDialog(panel, title, e);
+		dialogs.errorDialog(panel, title, e);
 	}
 
 	private Collection<Installation> getChoices(){

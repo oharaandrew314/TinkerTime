@@ -1,10 +1,5 @@
 package io.andrewohara.tinkertime.models.mod;
 
-import io.andrewohara.common.version.Version;
-import io.andrewohara.tinkertime.TinkerTimeLauncher;
-import io.andrewohara.tinkertime.models.Installation;
-import io.andrewohara.tinkertime.models.ModFile;
-
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -26,6 +21,11 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.misc.BaseDaoEnabled;
 import com.j256.ormlite.table.DatabaseTable;
+
+import io.andrewohara.common.version.Version;
+import io.andrewohara.tinkertime.TinkerTimeLauncher;
+import io.andrewohara.tinkertime.models.Installation;
+import io.andrewohara.tinkertime.models.ModFile;
 
 /**
  * Model for holding Mod information and status.

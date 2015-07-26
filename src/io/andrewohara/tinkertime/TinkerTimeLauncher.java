@@ -1,22 +1,11 @@
 package io.andrewohara.tinkertime;
 
-import io.andrewohara.common.content.ImageManager;
-import io.andrewohara.common.version.Version;
-import io.andrewohara.common.views.Dialogs;
-import io.andrewohara.tinkertime.controllers.ModManager;
-import io.andrewohara.tinkertime.controllers.ModUpdateCoordinator;
-import io.andrewohara.tinkertime.db.DbConnectionString;
-import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory.UnsupportedHostException;
-import io.andrewohara.tinkertime.models.ConfigData;
-import io.andrewohara.tinkertime.views.InstallationSelectorView;
-import io.andrewohara.tinkertime.views.SelectedInstallationView;
-import io.andrewohara.tinkertime.views.modSelector.ModListCellRenderer;
-import io.andrewohara.tinkertime.views.modSelector.ModSelectorPanelController;
-
 import java.awt.BorderLayout;
 import java.awt.Image;
 import java.awt.SplashScreen;
 import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,6 +22,19 @@ import org.flywaydb.core.api.FlywayException;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+
+import io.andrewohara.common.content.ImageManager;
+import io.andrewohara.common.version.Version;
+import io.andrewohara.common.views.Dialogs;
+import io.andrewohara.tinkertime.controllers.ModManager;
+import io.andrewohara.tinkertime.controllers.ModUpdateCoordinator;
+import io.andrewohara.tinkertime.db.DbConnectionString;
+import io.andrewohara.tinkertime.io.crawlers.CrawlerFactory.UnsupportedHostException;
+import io.andrewohara.tinkertime.models.ConfigData;
+import io.andrewohara.tinkertime.views.InstallationSelectorView;
+import io.andrewohara.tinkertime.views.SelectedInstallationView;
+import io.andrewohara.tinkertime.views.modSelector.ModListCellRenderer;
+import io.andrewohara.tinkertime.views.modSelector.ModSelectorPanelController;
 
 /**
  * Main Class for Tinker Time
@@ -66,6 +68,10 @@ public class TinkerTimeLauncher implements Runnable {
 		for (Runnable task : startupTasks){
 			task.run();
 		}
+	}
+
+	public static Path getHomePath(){
+		return Paths.get(System.getProperty("user.home"), "Documents", TinkerTimeLauncher.NAME);
 	}
 
 	public static void main(String[] args) {
@@ -172,11 +178,13 @@ public class TinkerTimeLauncher implements Runnable {
 
 		private final ConfigData config;
 		private final ModManager modManager;
+		private final Dialogs dialogs;
 
 		@Inject
-		UpdateChecker(ConfigData config, ModManager modManager){
+		UpdateChecker(ConfigData config, ModManager modManager, Dialogs dialogs){
 			this.config = config;
 			this.modManager = modManager;
+			this.dialogs = dialogs;
 		}
 
 		@Override
@@ -186,7 +194,7 @@ public class TinkerTimeLauncher implements Runnable {
 				try {
 					modManager.tryUpdateModManager();
 				} catch (UnsupportedHostException | MalformedURLException | SQLException e) {
-					Dialogs.errorDialog(null, "Error Checking for App Updates", e);
+					dialogs.errorDialog(null, "Error Checking for App Updates", e);
 				}
 			}
 
@@ -195,7 +203,7 @@ public class TinkerTimeLauncher implements Runnable {
 				try {
 					modManager.checkForModUpdates();
 				} catch (UnsupportedHostException e) {
-					Dialogs.errorDialog(null, "Error Checking for Mod Updates", e);
+					dialogs.errorDialog(null, "Error Checking for Mod Updates", e);
 				}
 			}
 		}
