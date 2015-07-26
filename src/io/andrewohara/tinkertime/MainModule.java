@@ -136,7 +136,7 @@ public class MainModule extends AbstractModule {
 
 	@Singleton
 	@Provides
-	Dialogs getDialogs(ConfigData config){
+	Dialogs getDialogs(){
 		return new Dialogs(TinkerTimeLauncher.getHomePath().resolve("Exceptions"));
 	}
 
