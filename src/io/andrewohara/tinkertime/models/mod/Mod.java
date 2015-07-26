@@ -137,8 +137,8 @@ public class Mod extends BaseDaoEnabled<Mod, Integer> implements Comparable<Mod>
 	}
 
 	public String getName(){
-		if (name == null && url != null){
-			return getUrl().getHost() + " Mod";
+		if (name == null){
+			return (url != null ? getUrl().getHost(): "Local") + " Mod";
 		}
 		return name;
 	}
