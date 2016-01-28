@@ -1,6 +1,8 @@
 TinkerTime
 ==========
 
+Sorry, I am no longer supporting Tinker Time.  I stopped playing KSP soon after the initial release of TinkerTime, and I have been finding that the quality of TinkerTime has been suffering greatly as a result of my reduced interest and lack of testing.
+
 The Ultimate Personal Mechanic for your KSP Mods
 
 Master: [![Build Status](https://travis-ci.org/oharaandrew314/TinkerTime.svg?branch=master)](https://travis-ci.org/oharaandrew314/TinkerTime)
